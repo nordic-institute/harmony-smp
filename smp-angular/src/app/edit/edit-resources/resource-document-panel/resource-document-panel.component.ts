@@ -52,6 +52,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
       'payloadCreatedOn': new FormControl({value: null}),
       'payloadVersion': new FormControl({value: null}),
       'payload': new FormControl({value: null}),
+      'properties': new FormControl({value: null}),
     });
     this.resource = editResourceService.selectedResource
 
@@ -103,6 +104,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
       this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
       this.documentForm.controls['payload'].setValue(value.payload);
       this.documentForm.controls['payload'].enable();
+      this.documentForm.controls['properties'].setValue(value.properties);
       // the method documentVersionsExists already uses the current value to check if versions exists
       if (!this.documentVersionsExists) {
         this.documentForm.controls['payloadVersion'].disable();
@@ -116,6 +118,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
       this.documentForm.controls['payloadVersion'].setValue("");
       this.documentForm.controls['payloadCreatedOn'].setValue("");
       this.documentForm.controls['payload'].setValue("");
+      this.documentForm.controls['properties'].setValue([]);
     }
     this.documentForm.markAsPristine();
   }
@@ -123,6 +126,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
   get document(): DocumentRo {
     let doc: DocumentRo = {...this._document};
     doc.payload = this.documentForm.controls['payload'].value;
+    doc.properties = this.documentForm.controls['properties'].value;
     return doc;
   }
 
@@ -156,6 +160,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
 
 
   onSaveButtonClicked(): void {
+
     this.editResourceService.saveDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
       if (value) {
         this.alertService.success("Document is saved with current version [" + value.currentResourceVersion + "].")

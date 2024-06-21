@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentProperty;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,5 +98,24 @@ class DocumentDaoTest extends AbstractBaseDao {
         // the default setup  createResources  sets two versions (1 and 2 ) with current version 2
         assertEquals(2, result.get().getVersion());
         assertEquals(testUtilsDao.getDocumentD1G1RD1_S1().getDocumentVersions().get(1), result.get());
+    }
+
+    @Test
+    void testPersistDocumentProperty() {
+        // given
+        DBDocument document = testUtilsDao.createDocument(2, "value1", "schema1");
+        DBDocumentProperty property1 = new DBDocumentProperty("property1", "value1", document);
+        DBDocumentProperty property2 = new DBDocumentProperty("property2", "value1", document);
+        document.getDocumentProperties().add(property1);
+        document.getDocumentProperties().add(property2);
+        // when
+        testInstance.persistFlushDetach(document);
+        // then
+        DBDocument result = testInstance.find(document.getId());
+        assertNotNull(result.getId());
+        // different object instances
+        assertSame(document, result);
+        assertEquals(2, result.getDocumentProperties().size());
+        assertEquals(property1, result.getDocumentProperties().get(0));
     }
 }

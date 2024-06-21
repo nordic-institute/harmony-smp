@@ -77,7 +77,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
                 )
                 .andExpect(status().isOk()).andReturn();
         // then
-        DocumentRo documentRo = getObjectFromResponse(result, DocumentRo.class);
+        DocumentRO documentRo = getObjectFromResponse(result, DocumentRO.class);
         assertNotNull(documentRo);
         assertTrue(documentRo.getAllVersions().isEmpty()); // was just created without document
     }
@@ -106,7 +106,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
                 )
                 .andExpect(status().isOk()).andReturn();
         // then
-        DocumentRo documentRo = getObjectFromResponse(result, DocumentRo.class);
+        DocumentRO documentRo = getObjectFromResponse(result, DocumentRO.class);
         assertNotNull(documentRo);
         assertFalse(documentRo.getAllVersions().isEmpty()); // was just created without document
         assertNotNull(documentRo.getPayload());
@@ -129,7 +129,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         ResourceRO resourceRO = resources.get(0);
 
         // document to validate
-        DocumentRo documentRo = new DocumentRo();
+        DocumentRO documentRo = new DocumentRO();
         documentRo.setPayload(TestROUtils.createSMP10ServiceGroupPayload(resourceRO.getIdentifierValue(), resourceRO.getIdentifierScheme()));
 
         // when
@@ -160,7 +160,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         ResourceRO resourceRO = resources.get(0);
 
         // document to validate
-        DocumentRo documentRo = new DocumentRo();
+        DocumentRO documentRo = new DocumentRO();
         documentRo.setPayload("invalid payload");
 
         // when
@@ -203,7 +203,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
                 )
                 .andExpect(status().isOk()).andReturn();
 
-        DocumentRo result = getObjectFromResponse(response, DocumentRo.class);
+        DocumentRO result = getObjectFromResponse(response, DocumentRO.class);
         assertNotNull(result);
         assertNotNull(result.getPayload());
     }

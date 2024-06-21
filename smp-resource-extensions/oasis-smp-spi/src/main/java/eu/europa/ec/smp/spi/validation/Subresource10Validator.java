@@ -32,8 +32,11 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALID_PARAMETERS;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALID_RESOURCE;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 
 /**
@@ -96,14 +99,36 @@ public class Subresource10Validator {
 
         final ParticipantIdentifierType participantId = serviceInformation.getParticipantIdentifier();
         final DocumentIdentifier documentId = serviceInformation.getDocumentIdentifier();
+
+        String participantIdValue = participantId.getValue();
+        String participantIdScheme = participantId.getScheme();
+        String documentIdValue = documentId.getValue();
+        String documentIdScheme = documentId.getScheme();
+
+        if (equalsIgnoreCase(trim(participantIdValue), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+            participantIdValue = participantIdentifierFromUrl.getValue();
+        }
+
+        if (equalsIgnoreCase(trim(participantIdScheme), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+            participantIdScheme = participantIdentifierFromUrl.getScheme();
+        }
+
+        if (equalsIgnoreCase(trim(documentIdValue), SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+            documentIdValue = documentIdentifierFromUrl.getValue();
+        }
+
+        if (equalsIgnoreCase(trim(documentIdScheme), SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+            documentIdScheme = documentIdentifierFromUrl.getScheme();
+        }
+
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
                 domainCode,
-                participantId.getValue(),
-                participantId.getScheme());
+                participantIdValue,
+                participantIdScheme);
         ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(
                 domainCode,
-                documentId.getValue(),
-                documentId.getScheme());
+                documentIdValue,
+                documentIdScheme);
 
         ResourceIdentifier nrmResIdentifierFromUrl = smpIdentifierApi.normalizeResourceIdentifier(
                 domainCode,

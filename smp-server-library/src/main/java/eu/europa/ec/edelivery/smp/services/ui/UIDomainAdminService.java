@@ -31,6 +31,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPRole;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
@@ -61,6 +62,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainAdminService.class);
 
     private final DomainDao domainDao;
+    private final DomainConfigurationDao domainConfigurationDao;
     private final DomainMemberDao domainMemberDao;
     private final ResourceDao resourceDao;
     private final ResourceDefDao resourceDefDao;
@@ -72,6 +74,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
 
     public UIDomainAdminService(ConversionService conversionService,
                                 DomainDao domainDao,
+                                DomainConfigurationDao domainConfigurationDao,
                                 DomainMemberDao domainMemberDao,
                                 ResourceDao resourceDao,
                                 ResourceDefDao resourceDefDao,
@@ -81,6 +84,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
                                 SMLIntegrationService smlIntegrationService) {
         this.conversionService = conversionService;
         this.domainDao = domainDao;
+        this.domainConfigurationDao = domainConfigurationDao;
         this.resourceDao = resourceDao;
         this.resourceDefDao = resourceDefDao;
         this.domainResourceDefDao = domainResourceDefDao;
@@ -240,18 +244,9 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         if (domain == null) {
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
         }
-        List<DBDomainConfiguration> domainConfiguration = domainDao.getDomainConfiguration(domain);
-
-        Map<String, DomainPropertyRO> dbList = domainConfiguration.stream()
-                .map(dc -> conversionService.convert(dc, DomainPropertyRO.class))
-                .collect(Collectors.toMap(DomainPropertyRO::getProperty, dp -> dp));
-
-        return Arrays.stream(SMPDomainPropertyEnum.values()).map(enumType -> {
-            if (dbList.containsKey(enumType.getProperty())) {
-                return dbList.get(enumType.getProperty());
-            }
-            return conversionService.convert(enumType, DomainPropertyRO.class);
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        return domainConfigurationDao.getDomainPropertiesForRole(domain, SMPRole.SYSTEM_ADMIN).stream()
+                .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -260,38 +255,9 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         if (domain == null) {
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
         }
-        // get current domain configuration
-        Map<String, DBDomainConfiguration> currentDomainConfiguration = domainDao.getDomainConfiguration(domain)
-                .stream().collect(Collectors.toMap(DBDomainConfiguration::getProperty, Function.identity()));
-        Map<String, DomainPropertyRO> newDomainPropertyValues =
-                domainProperties.stream().collect(Collectors.toMap(DomainPropertyRO::getProperty, dp -> dp));
-
-        List<DBDomainConfiguration> listOfDomainConfiguration = new ArrayList<>();
-
-        // database domain configuration property list must match SMPDomainPropertyEnum
-        for (SMPDomainPropertyEnum domainProp : SMPDomainPropertyEnum.values()) {
-            DBDomainConfiguration domainConfiguration = currentDomainConfiguration.get(domainProp.getProperty());
-            DomainPropertyRO domainPropertyRO = newDomainPropertyValues.get(domainProp.getProperty());
-            // if property already exists in the database, update value
-            DBDomainConfiguration updatedDomainProp = domainDao.updateDomainProperty(domain, domainProp,
-                    domainConfiguration, domainPropertyRO);
-            listOfDomainConfiguration.add(updatedDomainProp);
-            // remove updated property from the map
-            currentDomainConfiguration.remove(domainProp.getProperty());
-            LOG.debug("Updated domain property [{}]: [{}] for domain [{}]",
-                    domainProp.getProperty(), updatedDomainProp, domain.getDomainCode());
-
-        }
-        // remove properties that are not in the new list
-        currentDomainConfiguration.values().forEach(domainConfiguration -> {
-            domainDao.removeConfiguration(domainConfiguration);
-            LOG.debug("Removed domain property [{}]: [{}] for domain [{}]",
-                    domainConfiguration.getProperty(), domainConfiguration.getValue(),
-                    domain.getDomainCode());
-        });
-
-        // up
-        return listOfDomainConfiguration.stream().map(dc -> conversionService.convert(dc, DomainPropertyRO.class))
+        return domainConfigurationDao.updateDomainPropertiesForRole(domain, domainProperties, SMPRole.SYSTEM_ADMIN)
+        .stream()
+                .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
                 .collect(Collectors.toList());
     }
 
@@ -350,6 +316,4 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         }
         groupDao.remove(group);
     }
-
-
 }

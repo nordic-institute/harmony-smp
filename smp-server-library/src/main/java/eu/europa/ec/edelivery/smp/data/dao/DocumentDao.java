@@ -63,6 +63,25 @@ public class DocumentDao extends BaseDao<DBDocument> {
         }
     }
 
+    /**
+     * Method returns the document for the  (detached) subresource
+     *
+     * @param dbSubresource resource
+     * @return document for the resource or empty if not found
+     */
+    public Optional<DBDocument> getDocumentForSubresource(DBSubresource dbSubresource) {
+        try {
+            // expected is only one domain,
+            TypedQuery<DBDocument> query = memEManager.createNamedQuery(QUERY_DOCUMENT_FOR_SUBRESOURCE, DBDocument.class);
+            query.setParameter(PARAM_SUBRESOURCE_ID, dbSubresource.getId());
+            return Optional.of(query.getSingleResult());
+        } catch (NonUniqueResultException e) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, dbSubresource.getIdentifierValue(), dbSubresource.getIdentifierScheme(), "Multiple documents");
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
     public Optional<DBDocumentVersion> getCurrentDocumentVersionForResource(DBResource dbResource) {
 
         try {

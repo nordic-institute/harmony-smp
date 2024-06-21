@@ -158,6 +158,12 @@ import {HttpSessionInterceptor} from "./http/http-session-interceptor";
 import {
   SessionExpirationDialogComponent
 } from "./common/dialogs/session-expiration-dialog/session-expiration-dialog.component";
+import {
+  DocumentPropertiesPanelComponent
+} from "./common/panels/document-properties-panel/document-properties-panel.component";
+import {
+  DocumentPropertyDialogComponent
+} from "./common/dialogs/document-property-dialog/document-property-dialog.component";
 
 
 @NgModule({
@@ -190,6 +196,8 @@ import {
     DnsToolsComponent,
     DnsQueryPanelComponent,
     DocumentWizardDialogComponent,
+    DocumentPropertiesPanelComponent,
+    DocumentPropertyDialogComponent,
     DomainGroupComponent,
     DomainPanelComponent,
     DomainResourceTypePanelComponent,

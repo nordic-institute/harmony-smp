@@ -30,6 +30,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiRequestData;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
+import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
@@ -39,8 +40,11 @@ import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -109,7 +113,17 @@ public class AbstractResourceHandler {
         if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
+        // read and replace properties
+        Map<String, Object> docProp =  resourceStorage.getResourceProperties(resource);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            StringNamedSubstitutor.resolve( new ByteArrayInputStream(content), docProp, baos);
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+
         return buildRequestDataForResource(domain,
                 resource,
                 inputStream);
@@ -129,10 +143,19 @@ public class AbstractResourceHandler {
                     subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
                     resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
+
+        Map<String, Object> docProp =  resourceStorage.getSubresourceProperties(resource, subresource);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            StringNamedSubstitutor.resolve( new ByteArrayInputStream(content), docProp, baos);
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
+
         return new SpiRequestData(domain.getDomainCode(),
                 SPIUtils.toUrlIdentifier(resource),
                 SPIUtils.toUrlIdentifier(subresource),
-                new ByteArrayInputStream(content));
+                new ByteArrayInputStream(baos.toByteArray() ));
     }
 
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {

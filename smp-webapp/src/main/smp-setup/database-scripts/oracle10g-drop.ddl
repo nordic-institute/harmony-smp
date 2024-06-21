@@ -27,6 +27,10 @@
 
     drop table SMP_DOCUMENT_AUD cascade constraints;
 
+    drop table SMP_DOCUMENT_PROPERTY cascade constraints;
+
+    drop table SMP_DOCUMENT_PROPERTY_AUD cascade constraints;
+
     drop table SMP_DOCUMENT_VERSION cascade constraints;
 
     drop table SMP_DOCUMENT_VERSION_AUD cascade constraints;
@@ -90,6 +94,8 @@
     drop sequence SMP_ALERT_SEQ;
 
     drop sequence SMP_CREDENTIAL_SEQ;
+
+    drop sequence SMP_DOC_PROP_SEQ;
 
     drop sequence SMP_DOCUMENT_SEQ;
 

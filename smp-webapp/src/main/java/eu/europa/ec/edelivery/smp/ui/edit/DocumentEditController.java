@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.ui.edit;
 
 
-import eu.europa.ec.edelivery.smp.data.ui.DocumentRo;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIDocumentService;
@@ -54,7 +54,7 @@ public class DocumentEditController {
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public DocumentRo getDocumentForResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public DocumentRO getDocumentForResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                              @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                              @RequestParam(value = PARAM_NAME_VERSION, defaultValue = "-1") int version) {
         logAdminAccess("getDocumentForResource");
@@ -65,7 +65,7 @@ public class DocumentEditController {
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET_SUBRESOURCE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public DocumentRo getDocumentForSubResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public DocumentRO getDocumentForSubResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                 @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                                 @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,
                                                 @RequestParam(value = PARAM_NAME_VERSION, defaultValue = "-1") int version) {
@@ -80,7 +80,7 @@ public class DocumentEditController {
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
     public void validateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                  @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
-                                 @RequestBody DocumentRo document) {
+                                 @RequestBody DocumentRO document) {
         logAdminAccess("validateDocumentForResource");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         uiDocumentService.validateDocumentForResource(resourceId, document);
@@ -92,7 +92,7 @@ public class DocumentEditController {
     public void validateSubresourceDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                             @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                             @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,
-                                            @RequestBody DocumentRo document) {
+                                            @RequestBody DocumentRO document) {
         logAdminAccess("validateDocumentForResource");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         Long subresourceId = SessionSecurityUtils.decryptEntityId(subresourceEncId);
@@ -103,9 +103,9 @@ public class DocumentEditController {
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public DocumentRo generateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public DocumentRO generateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                        @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
-                                       @RequestBody(required = false) DocumentRo document) {
+                                       @RequestBody(required = false) DocumentRO document) {
         logAdminAccess("generateDocument");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         return uiDocumentService.generateDocumentForResource(resourceId, document);
@@ -114,10 +114,10 @@ public class DocumentEditController {
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_GENERATE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public DocumentRo generateSubresourceDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public DocumentRO generateSubresourceDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                   @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                                   @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,
-                                                  @RequestBody(required = false) DocumentRo document) {
+                                                  @RequestBody(required = false) DocumentRO document) {
         logAdminAccess("generateDocument");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         Long subresourceId = SessionSecurityUtils.decryptEntityId(subresourceEncId);
@@ -129,9 +129,9 @@ public class DocumentEditController {
             produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public DocumentRo saveDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public DocumentRO saveDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                    @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
-                                   @RequestBody DocumentRo document) {
+                                   @RequestBody DocumentRO document) {
         logAdminAccess("validateDocumentForResource");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         return uiDocumentService.saveDocumentForResource(resourceId, document);
@@ -142,10 +142,10 @@ public class DocumentEditController {
             produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public DocumentRo saveSubresourceDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public DocumentRO saveSubresourceDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                               @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                               @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,
-                                              @RequestBody DocumentRo document) {
+                                              @RequestBody DocumentRO document) {
         logAdminAccess("validateDocumentForResource");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         Long subresourceId = SessionSecurityUtils.decryptEntityId(subresourceEncId);

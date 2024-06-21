@@ -5,6 +5,7 @@
 create sequence SMP_ALERT_PROP_SEQ start with 1 increment by  1;
 create sequence SMP_ALERT_SEQ start with 1 increment by  1;
 create sequence SMP_CREDENTIAL_SEQ start with 1 increment by  1;
+create sequence SMP_DOC_PROP_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_VERSION_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_CONF_SEQ start with 1 increment by  1;
@@ -303,6 +304,36 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         primary key (ID, REV)
     );
 
+    create table SMP_DOCUMENT_PROPERTY (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
+        DESCRIPTION varchar2(4000 char),
+        PROPERTY_NAME varchar2(255 char),
+        PROPERTY_VALUE varchar2(1024 char),
+        FK_DOCUMENT_ID number(19,0),
+        primary key (ID)
+    );
+
+    comment on column SMP_DOCUMENT_PROPERTY.ID is
+        'Unique document property id';
+
+    comment on column SMP_DOCUMENT_PROPERTY.DESCRIPTION is
+        'Property description';
+
+    create table SMP_DOCUMENT_PROPERTY_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
+        DESCRIPTION varchar2(4000 char),
+        PROPERTY_NAME varchar2(255 char),
+        PROPERTY_VALUE varchar2(1024 char),
+        FK_DOCUMENT_ID number(19,0),
+        primary key (ID, REV)
+    );
+
     create table SMP_DOCUMENT_VERSION (
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
@@ -417,7 +448,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp not null,
         DESCRIPTION varchar2(4000 char),
         PROPERTY_NAME varchar2(512 char) not null,
-        USER_SYSTEM_DEFAULT number(1,0) not null,
+        SYSTEM_DEFAULT number(1,0) not null,
         PROPERTY_VALUE varchar2(4000 char),
         FK_DOMAIN_ID number(19,0) not null,
         primary key (ID)
@@ -435,7 +466,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_DOMAIN_CONFIGURATION.PROPERTY_NAME is
         'Property name/key';
 
-    comment on column SMP_DOMAIN_CONFIGURATION.USER_SYSTEM_DEFAULT is
+    comment on column SMP_DOMAIN_CONFIGURATION.SYSTEM_DEFAULT is
         'Use system default value';
 
     comment on column SMP_DOMAIN_CONFIGURATION.PROPERTY_VALUE is
@@ -449,7 +480,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp,
         DESCRIPTION varchar2(4000 char),
         PROPERTY_NAME varchar2(512 char),
-        USER_SYSTEM_DEFAULT number(1,0),
+        SYSTEM_DEFAULT number(1,0),
         PROPERTY_VALUE varchar2(4000 char),
         FK_DOMAIN_ID number(19,0),
         primary key (ID, REV)
@@ -825,6 +856,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     alter table SMP_CREDENTIAL 
        add constraint SMP_CRD_USER_NAME_TYPE_IDX unique (CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
+
+    alter table SMP_DOCUMENT_PROPERTY 
+       add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);
 create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_DOCUMENT_VERSION 
@@ -927,6 +961,16 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
     alter table SMP_DOCUMENT_AUD 
        add constraint FKh9epnme26i271eixtvrpqejvi 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_DOCUMENT_PROPERTY 
+       add constraint FKfag3795e9mrvfvesd00yis9yh 
+       foreign key (FK_DOCUMENT_ID) 
+       references SMP_DOCUMENT;
+
+    alter table SMP_DOCUMENT_PROPERTY_AUD 
+       add constraint FK81057kcrugb1cfm0io5vkxtin 
        foreign key (REV) 
        references SMP_REV_INFO;
 

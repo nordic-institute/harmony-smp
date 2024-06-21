@@ -5,6 +5,7 @@ import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormat
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
+import eu.europa.ec.edelivery.smp.data.dao.DomainConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
@@ -33,10 +34,14 @@ public class IdentifierFormatterService {
     private static final Logger LOG = LoggerFactory.getLogger(IdentifierFormatterService.class);
 
     private final DomainDao domainDao;
+    private final DomainConfigurationDao domainConfigurationDao;
     private final ConfigurationService configurationService;
 
-    public IdentifierFormatterService(DomainDao domainDao, ConfigurationService configurationService) {
+    public IdentifierFormatterService(DomainDao domainDao,
+                                      DomainConfigurationDao domainConfigurationDao,
+                                      ConfigurationService configurationService) {
         this.domainDao = domainDao;
+        this.domainConfigurationDao = domainConfigurationDao;
         this.configurationService = configurationService;
     }
 
@@ -53,7 +58,7 @@ public class IdentifierFormatterService {
         DBDomain domain = domainDao.getDomainByCode(domainCode)
                 .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,  domainCode));
 
-        List<DBDomainConfiguration> listDomainConf =  domainDao.getDomainConfiguration(domain);
+        List<DBDomainConfiguration> listDomainConf =  domainConfigurationDao.getDomainConfiguration(domain);
         IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder
                 .create()
                 .addFormatterTypes(new EBCorePartyIdFormatterType())
@@ -82,7 +87,7 @@ public class IdentifierFormatterService {
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
                 .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,  domainCode));
-        List<DBDomainConfiguration> listDomainConf =  domainDao.getDomainConfiguration(domain);
+        List<DBDomainConfiguration> listDomainConf =  domainConfigurationDao.getDomainConfiguration(domain);
         IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder
                 .create()
                 .build();

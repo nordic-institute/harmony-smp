@@ -1,0 +1,79 @@
+<div style="display: flex;flex-direction: row;height: 100%">
+  <div *ngIf="showPropertyPanel" id="document-properties-panel">
+    <div style="display:flex; flex-grow: 1; flex-direction: column">
+      <mat-form-field style="width: 100%">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" #input>
+      </mat-form-field>
+      <div id="property-table-container">
+        <table #DocumentPropertyTable mat-table class="mat-elevation-z1"
+               style="max-height: 100%;flex-grow: 1;"
+               id="document-property-table"
+               [dataSource]="propertyDataSource" matSort>
+
+          <ng-container matColumnDef="property">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Property</th>
+            <td mat-cell *matCellDef="let row"
+                [matTooltip]="row.desc">{{ row.property }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Value</th>
+            <td mat-cell *matCellDef="let row">{{ getTableRowValue(row) }}</td>
+          </ng-container>
+          <tr mat-header-row
+              *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+          <tr mat-row
+              *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+              (click)="propertySelected(row)"
+              (dblclick)="onEditSelectedProperty()"
+              [ngClass]="getRowClass(row, odd)"
+          ></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="2">No Document properties found</td>
+          </tr>
+        </table>
+      </div>
+      <!-- mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons
+                     [pageSize]="10" [length]="propertyDataSource.data?.length"
+                     aria-label="Select page of properties"></mat-paginator-->
+
+    </div>
+  </div>
+  <!-- table Toolbar -->
+  <div style="width: 42px">
+    <button mat-mini-fab aria-label="Expand/Collapse"
+            matTooltip="Expand/Collapse property panel"
+            (click)="onToggleButtonClicked()">
+      <mat-icon *ngIf="showPropertyPanel">chevron_left</mat-icon>
+      <mat-icon *ngIf="!showPropertyPanel">chevron_right</mat-icon>
+    </button>
+    <tool-button-spacer [vertical]="false"></tool-button-spacer>
+    <button id="createButton" mat-mini-fab aria-label="Create"
+            matTooltip="Create new property"
+            (click)="onCreateProperty()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button id="editButton" mat-mini-fab aria-label="Edit"
+            matTooltip="Edit property"
+            (click)="onEditSelectedProperty()"
+            [disabled]="editButtonDisabled">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button id="deleteButton" mat-mini-fab aria-label="Delete/Remove"
+            matTooltip="Delete selected property"
+            (click)="onDeleteSelectedProperty()"
+            [disabled]="deleteButtonDisabled"
+    >
+      <mat-icon>remove</mat-icon>
+    </button>
+    <tool-button-spacer [vertical]="false"></tool-button-spacer>
+    <button id="resetButton" mat-mini-fab aria-label="Reset changes"
+            matTooltip="Reset changes"
+            (click)="onResetButtonClicked()"
+            color="primary"
+            [disabled]="!cancelButtonEnabled">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+</div>

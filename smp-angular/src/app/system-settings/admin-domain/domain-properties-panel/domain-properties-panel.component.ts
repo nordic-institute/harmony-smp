@@ -17,7 +17,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {Subscription} from "rxjs";
 import {PropertyController} from "../../admin-properties/property-controller";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
-import {PropertyTypeEnum} from "../../../common/enums/property-type.enum";
+import {PropertySourceEnum} from "../../../common/enums/property-source.enum";
 import {EditDomainService} from "../../../edit/edit-domain/edit-domain.service";
 
 @Component({
@@ -145,7 +145,7 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
     const dialogRef: MatDialogRef<any> =  this.propertyController.edit({
       data: {
         edit: this.selected?.status != EntityStatus.NEW,
-        propertyType: PropertyTypeEnum.DOMAIN,
+        propertyType: PropertySourceEnum.DOMAIN,
         row: this.selected
       }
     })

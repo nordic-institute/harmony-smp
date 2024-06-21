@@ -22,6 +22,7 @@ package eu.europa.ec.edelivery.smp.services.resource;
 import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
+import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
@@ -31,7 +32,12 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 
 /**
  * The class handles the resource action as creating, updating and reading the resources.
@@ -54,9 +60,7 @@ public class ResourceStorage {
 
     public byte[] getDocumentContentForResource(DBResource dbResource) {
         LOG.debug("getDocumentContentForResource: [{}]", dbResource);
-
         Optional<DBDocumentVersion> documentVersion = this.documentDao.getCurrentDocumentVersionForResource(dbResource);
-
         return documentVersion.isPresent() ? documentVersion.get().getContent() : null;
     }
 
@@ -65,6 +69,72 @@ public class ResourceStorage {
         Optional<DBDocumentVersion> documentVersion = documentDao.getCurrentDocumentVersionForSubresource(subresource);
 
         return documentVersion.isPresent() ? documentVersion.get().getContent() : null;
+    }
+
+
+    @Transactional
+    public Map<String, Object> getResourceProperties(DBResource resource){
+
+        DBDocument document = documentDao.getDocumentForResource(resource).orElseGet(null);
+        if (document == null) {
+            LOG.debug("Document not found for resource [{}]", resource);
+            return Collections.emptyMap();
+        }
+
+        Map<String, Object> documentProperties = new HashMap<>();
+        documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
+        if (resource.getIdentifierScheme()!=null) {
+            documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resource.getIdentifierScheme());
+        }
+        // add document properties
+        documentProperties.putAll(getDocumentProperties(document));
+        return  documentProperties;
+    }
+
+    /**
+     * Method returns the 'transient' and custom document properties as map. If
+     * document is null, empty map is returned.
+     *
+     * @param document document
+     * @return document properties the key, value map
+     */
+    private Map<String, Object> getDocumentProperties(DBDocument document){
+        if (document == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> documentProperties = new HashMap<>();
+        documentProperties.put(DOCUMENT_NAME.getPropertyName(), document.getName());
+        documentProperties.put(DOCUMENT_MIMETYPE.getPropertyName(), document.getMimeType());
+        documentProperties.put(DOCUMENT_VERSION.getPropertyName(), document.getCurrentVersion());
+
+        document.getDocumentProperties().forEach(property -> {
+            documentProperties.put(property.getProperty(), property.getValue());
+        });
+        return documentProperties;
+    }
+
+    @Transactional
+    public Map<String, Object> getSubresourceProperties(DBResource resource, DBSubresource subresource){
+
+        Map<String, Object> documentProperties = new HashMap<>();
+        DBDocument document = documentDao.getDocumentForSubresource(subresource).orElseGet(null);
+        if (document == null) {
+            LOG.debug("Document not found for subresource [{}]", resource);
+            return Collections.emptyMap();
+        }
+        // add identifiers
+        documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
+        if (resource.getIdentifierScheme()!=null) {
+            documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resource.getIdentifierScheme());
+        }
+        documentProperties.put(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(), subresource.getIdentifierValue());
+        if (resource.getIdentifierScheme()!=null) {
+            documentProperties.put(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(), subresource.getIdentifierScheme());
+        }
+
+        // add document properties
+        documentProperties.putAll(getDocumentProperties(document));
+        return  documentProperties;
     }
 
 

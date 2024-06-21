@@ -179,6 +179,30 @@
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+    create table SMP_DOCUMENT_PROPERTY (
+       ID bigint not null auto_increment comment 'Unique document property id',
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
+        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
+        PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FK_DOCUMENT_ID bigint,
+        primary key (ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_DOCUMENT_PROPERTY_AUD (
+       ID bigint not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
+        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FK_DOCUMENT_ID bigint,
+        primary key (ID, REV)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
     create table SMP_DOCUMENT_VERSION (
        ID bigint not null auto_increment comment 'Unique version document id',
         CREATED_ON datetime not null,
@@ -245,7 +269,7 @@
         LAST_UPDATED_ON datetime not null,
         DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
         PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Property name/key',
-        USER_SYSTEM_DEFAULT bit not null comment 'Use system default value',
+        SYSTEM_DEFAULT bit not null comment 'Use system default value',
         PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property value',
         FK_DOMAIN_ID bigint not null,
         primary key (ID)
@@ -259,7 +283,7 @@
         LAST_UPDATED_ON datetime,
         DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        USER_SYSTEM_DEFAULT bit,
+        SYSTEM_DEFAULT bit,
         PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOMAIN_ID bigint,
         primary key (ID, REV)
@@ -560,6 +584,9 @@
 
     alter table SMP_CREDENTIAL 
        add constraint SMP_CRD_USER_NAME_TYPE_IDX unique (CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
+
+    alter table SMP_DOCUMENT_PROPERTY 
+       add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);
 create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_DOCUMENT_VERSION 
@@ -662,6 +689,16 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
     alter table SMP_DOCUMENT_AUD 
        add constraint FKh9epnme26i271eixtvrpqejvi 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
+    alter table SMP_DOCUMENT_PROPERTY 
+       add constraint FKfag3795e9mrvfvesd00yis9yh 
+       foreign key (FK_DOCUMENT_ID) 
+       references SMP_DOCUMENT (ID);
+
+    alter table SMP_DOCUMENT_PROPERTY_AUD 
+       add constraint FK81057kcrugb1cfm0io5vkxtin 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

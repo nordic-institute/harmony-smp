@@ -1,5 +1,5 @@
 
-export enum PropertyTypeEnum {
+export enum PropertySourceEnum {
   /**
    * Resource, group of domain is marked as PUBLIC.
    */

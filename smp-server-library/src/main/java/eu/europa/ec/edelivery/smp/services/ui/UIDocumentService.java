@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,7 +27,8 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
-import eu.europa.ec.edelivery.smp.data.ui.DocumentRo;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentPropertyRO;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -44,10 +45,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 
 @Service
 public class UIDocumentService {
+
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDocumentService.class);
     ResourceDao resourceDao;
     SubresourceDao subresourceDao;
@@ -62,7 +68,7 @@ public class UIDocumentService {
     }
 
     @Transactional
-    public void validateDocumentForResource(Long resourceId, DocumentRo documentRo) {
+    public void validateDocumentForResource(Long resourceId, DocumentRO documentRo) {
         DBResource resource = resourceDao.find(resourceId);
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
@@ -75,7 +81,7 @@ public class UIDocumentService {
     }
 
     @Transactional
-    public void validateDocumentForSubresource(Long subresourceId, Long resourceId, DocumentRo documentRo) {
+    public void validateDocumentForSubresource(Long subresourceId, Long resourceId, DocumentRO documentRo) {
         DBSubresource entity = subresourceDao.find(subresourceId);
         DBResource parentEntity = resourceDao.find(resourceId);
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(entity.getSubresourceDef(), entity.getSubresourceDef().getResourceDef());
@@ -88,20 +94,20 @@ public class UIDocumentService {
     }
 
     @Transactional
-    public DocumentRo generateDocumentForResource(Long resourceId, DocumentRo documentRo) {
-        LOG.info("Generate document");
+    public DocumentRO generateDocumentForResource(Long resourceId, DocumentRO documentRo) {
+        LOG.info("generate Document For Resource");
         DBResource resource = resourceDao.find(resourceId);
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
                 resource, null);
 
-        return getDocumentRo(resourceHandler, data);
+        return generateDocumentWithHandler(resourceHandler, data);
     }
 
     @Transactional
-    public DocumentRo generateDocumentForSubresource(Long subresourceId, Long resourceId, DocumentRo documentRo) {
-        LOG.info("Generate document");
+    public DocumentRO generateDocumentForSubresource(Long subresourceId, Long resourceId, DocumentRO documentRo) {
+        LOG.info("generate Document For Subresource");
         DBResource parentEntity = resourceDao.find(resourceId);
         DBSubresource entity = subresourceDao.find(subresourceId);
         DBSubresourceDef subresourceDef = entity.getSubresourceDef();
@@ -110,10 +116,17 @@ public class UIDocumentService {
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(),
                 parentEntity, entity, null);
 
-        return getDocumentRo(resourceHandler, data);
+        return generateDocumentWithHandler(resourceHandler, data);
     }
 
-    private DocumentRo getDocumentRo(ResourceHandlerSpi resourceHandler, RequestData data) {
+    /**
+     * Generate document with ResourceHandlerSpi. Method invokes the given handler to generate the document.
+     *
+     * @param resourceHandler handler to generate document
+     * @param data            request data
+     * @return DocumentRo with payload
+     */
+    private DocumentRO generateDocumentWithHandler(ResourceHandlerSpi resourceHandler, RequestData data) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ResponseData responseData = new SpiResponseData(bos);
         try {
@@ -122,14 +135,13 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
         String genDoc = bos.toString();
-        LOG.info("Generate document [{}]", genDoc);
-        DocumentRo result = new DocumentRo();
+        DocumentRO result = new DocumentRO();
         result.setPayload(genDoc);
         return result;
     }
 
     @Transactional
-    public DocumentRo saveDocumentForResource(Long resourceId, DocumentRo documentRo) {
+    public DocumentRO saveDocumentForResource(Long resourceId, DocumentRO documentRo) {
 
         DBResource resource = resourceDao.find(resourceId);
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
@@ -144,11 +156,11 @@ public class UIDocumentService {
         }
 
         DBDocument document = resource.getDocument();
-        return createNewVersionAndConvert(document, bos);
+        return createNewVersionAndConvert(document, bos, getInitialProperties(resource));
     }
 
     @Transactional
-    public DocumentRo saveSubresourceDocumentForResource(Long subresource, Long resourceId, DocumentRo documentRo) {
+    public DocumentRO saveSubresourceDocumentForResource(Long subresource, Long resourceId, DocumentRO documentRo) {
 
         DBResource parentResource = resourceDao.find(resourceId);
         DBSubresource entity = subresourceDao.find(subresource);
@@ -166,7 +178,7 @@ public class UIDocumentService {
         }
 
         DBDocument document = entity.getDocument();
-        return createNewVersionAndConvert(document, bos);
+        return createNewVersionAndConvert(document, bos, getInitialProperties(entity) );
     }
 
     /**
@@ -178,18 +190,40 @@ public class UIDocumentService {
      * @return DocumentRo with payload and version
      */
     @Transactional
-    public DocumentRo getDocumentForResource(Long resourceId, int version) {
+    public DocumentRO getDocumentForResource(Long resourceId, int version) {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
-        return convertWithVersion(document, version);
+
+
+        return convertWithVersion(document, version, getInitialProperties(resource));
     }
 
     @Transactional
-    public DocumentRo getDocumentForSubResource(Long subresourceId, Long resourceId, int version) {
+    public DocumentRO getDocumentForSubResource(Long subresourceId, Long resourceId, int version) {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
-        return convertWithVersion(document, version);
+        return convertWithVersion(document, version, getInitialProperties(subresource));
     }
+
+    private List<DocumentPropertyRO> getInitialProperties(DBResource resource) {
+        List<DocumentPropertyRO> propertyROS = new ArrayList<>();
+        propertyROS.add(new DocumentPropertyRO(RESOURCE_IDENTIFIER_VALUE.getPropertyName(),
+                resource.getIdentifierValue(), RESOURCE_IDENTIFIER_VALUE.getPropertyDescription(), true));
+        propertyROS.add(new DocumentPropertyRO(RESOURCE_IDENTIFIER_SCHEME.getPropertyName(),
+                resource.getIdentifierScheme(), RESOURCE_IDENTIFIER_SCHEME.getPropertyDescription(), true));
+        return propertyROS;
+    }
+
+    private List<DocumentPropertyRO> getInitialProperties(DBSubresource subresource) {
+        List<DocumentPropertyRO> propertyROS = getInitialProperties(subresource.getResource());
+        propertyROS.add(new DocumentPropertyRO(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(),
+                subresource.getIdentifierValue(), SUBRESOURCE_IDENTIFIER_VALUE.getPropertyDescription(), true));
+        propertyROS.add(new DocumentPropertyRO(SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyName(),
+                subresource.getIdentifierScheme(), SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyDescription(), true));
+        return Collections.emptyList();
+    }
+
+
 
     /**
      * return Create new Document version and convert DBDocument  to DocumentRo
@@ -198,7 +232,7 @@ public class UIDocumentService {
      * @param baos     to write document content
      * @return DocumentRo
      */
-    private DocumentRo createNewVersionAndConvert(DBDocument document, ByteArrayOutputStream baos) {
+    private DocumentRO createNewVersionAndConvert(DBDocument document, ByteArrayOutputStream baos, List<DocumentPropertyRO> initialProperties) {
 
         // get max version
         int version = document.getDocumentVersions().stream().mapToInt(DBDocumentVersion::getVersion)
@@ -213,10 +247,10 @@ public class UIDocumentService {
 
         document.getDocumentVersions().add(documentVersion);
         document.setCurrentVersion(documentVersion.getVersion());
-        return convert(document, documentVersion);
+        return convert(document, documentVersion, initialProperties);
     }
 
-    public DocumentRo convertWithVersion(DBDocument document, int version) {
+    public DocumentRO convertWithVersion(DBDocument document, int version, List<DocumentPropertyRO> initialProperties) {
         DBDocumentVersion currentVersion = null;
         DBDocumentVersion documentVersion = null;
         for (DBDocumentVersion dv : document.getDocumentVersions()) {
@@ -231,11 +265,18 @@ public class UIDocumentService {
         if (documentVersion == null && !document.getDocumentVersions().isEmpty()) {
             documentVersion = document.getDocumentVersions().get(document.getDocumentVersions().size() - 1);
         }
-        return convert(document, documentVersion);
+        return convert(document, documentVersion, initialProperties);
     }
 
-    public DocumentRo convert(DBDocument document, DBDocumentVersion version) {
-        DocumentRo documentRo = new DocumentRo();
+    public DocumentRO convert(DBDocument document, DBDocumentVersion version, List<DocumentPropertyRO> initialProperties) {
+        DocumentRO documentRo = new DocumentRO();
+        documentRo.addProperty(DOCUMENT_NAME.getPropertyName(),
+                document.getName(), "Document Name", true);
+        documentRo.addProperty(DOCUMENT_MIMETYPE.getPropertyName(),
+                document.getMimeType(), "Document Mimetype", true);
+
+        documentRo.getProperties().addAll(initialProperties);
+
         // set list of versions
         document.getDocumentVersions().forEach(dv ->
                 documentRo.getAllVersions().add(dv.getVersion()));
@@ -243,11 +284,16 @@ public class UIDocumentService {
         documentRo.setMimeType(document.getMimeType());
         documentRo.setName(document.getName());
         documentRo.setCurrentResourceVersion(document.getCurrentVersion());
+        document.getDocumentProperties().stream()
+                .forEach(p -> documentRo.addProperty(p.getProperty(), p.getValue(), p.getDescription(), false));
+
+
         if (version != null) {
             documentRo.setPayloadCreatedOn(version.getCreatedOn());
             documentRo.setPayloadVersion(version.getVersion());
             documentRo.setPayload(new String(version.getContent()));
         }
+
         return documentRo;
     }
 }

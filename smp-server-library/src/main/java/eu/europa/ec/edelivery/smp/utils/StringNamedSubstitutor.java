@@ -51,7 +51,25 @@ public class StringNamedSubstitutor {
     public static String resolve(InputStream templateIS, Map<String, Object> config) throws IOException {
         Map<String, Object> lowerCaseMap = config.entrySet().stream()
                 .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
-        StringBuilder builder = new StringBuilder();
+        //StringBuilder builder = new StringBuilder();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        resolve(templateIS, lowerCaseMap, byteArrayOutputStream);
+        return byteArrayOutputStream.toString();
+    }
+
+    /**
+     * Substitute named variables in the string with key value pairs from the map.
+     * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
+     *
+     * @param templateIS the InputStream to resolve
+     * @param config     the config to use
+     * @param outputStream the output stream to write the resolved string
+     * @throws IOException if an I/O error occurs
+     */
+    public static void resolve(InputStream templateIS, Map<String, Object> config, OutputStream outputStream) throws IOException {
+        Map<String, Object> lowerCaseMap = config.entrySet().stream()
+                .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
 
         BufferedReader template = new BufferedReader(new InputStreamReader(templateIS));
         int read;
@@ -61,24 +79,24 @@ public class StringNamedSubstitutor {
                 template.skip(1L);
                 String name = readName(template, END_NAME);
                 if (name == null) {
-                    builder.append(START_NAME);
+                    outputStream.write(START_NAME.getBytes());
                 } else {
                     String key = StringUtils.lowerCase(name);
                     Object objValue = lowerCaseMap.get(key);
-                    String value  = objValue!=null? String.valueOf(lowerCaseMap.get(key)): null;
+                    String value = objValue != null ? String.valueOf(lowerCaseMap.get(key)) : null;
 
                     if (value != null) {
-                        builder.append(value);
+                        outputStream.write(value.getBytes());
                     } else {
-                        builder.append(START_NAME).append(name).append(END_NAME);
+                        outputStream.write(START_NAME.getBytes());
+                        outputStream.write(name.getBytes());
+                        outputStream.write(END_NAME);
                     }
                 }
             } else {
-                builder.append((char) read);
+                outputStream.write((char) read);
             }
         }
-
-        return builder.toString();
     }
 
     public static boolean isStartSequence(BufferedReader reader) throws IOException {

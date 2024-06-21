@@ -1,3 +1,5 @@
+import {DocumentPropertyRo} from "./document-property-ro.model";
+
 export interface DocumentRo {
   mimeType?: string;
   name?: string;
@@ -7,5 +9,7 @@ export interface DocumentRo {
   payloadVersion?:number;
   payloadCreatedOn?: Date;
   payload?:string;
+
+  properties?: DocumentPropertyRo[];
 }
 

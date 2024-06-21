@@ -22,7 +22,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DocumentRo {
+public class DocumentRO {
 
     String documentId;
     String mimeType;
@@ -32,6 +32,8 @@ public class DocumentRo {
     Integer payloadVersion;
     String payload;
     OffsetDateTime payloadCreatedOn;
+
+    List<DocumentPropertyRO> properties = new ArrayList<>();
 
     public String getDocumentId() {
         return documentId;
@@ -94,5 +96,13 @@ public class DocumentRo {
 
     public void setPayloadCreatedOn(OffsetDateTime payloadCreatedOn) {
         this.payloadCreatedOn = payloadCreatedOn;
+    }
+
+    public List<DocumentPropertyRO> getProperties() {
+        return properties;
+    }
+
+public void addProperty(String key, String value, String description, boolean readonly) {
+        this.properties.add(new DocumentPropertyRO(key, value, description, readonly));
     }
 }

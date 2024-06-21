@@ -56,7 +56,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME;
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 @Component
 public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
@@ -86,9 +90,10 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
         resource.setSMPVersionID(new SMPVersionID());
         resource.getSMPVersionID().setValue("2.0");
         resource.setParticipantID(new ParticipantID());
-        resource.getParticipantID().setValue(identifier.getValue());
-        resource.getParticipantID().setSchemeID(identifier.getScheme());
-
+        resource.getParticipantID().setValue(RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        if (identifier.getScheme() != null) {
+            resource.getParticipantID().setSchemeID(RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        }
         try {
             reader.serializeNative(resource, responseData.getOutputStream(), true);
         } catch (TechnicalException e) {
@@ -177,8 +182,13 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
 
         } else {
             LOG.info("Update Resource/ServiceGroup identifier before saving. Old: [{}], New: [{}]", orgResourceId, nrmResourceId);
-            orgResourceId.setValue(nrmResourceId.getValue());
-            orgResourceId.setSchemeID(nrmResourceId.getScheme());
+            if (!StringUtils.equalsIgnoreCase(orgResourceId.getValue(), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+                orgResourceId.setValue(nrmResourceId.getValue());
+            }
+            if (!StringUtils.equalsIgnoreCase(orgResourceId.getSchemeID(), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+                orgResourceId.setSchemeID(nrmResourceId.getScheme());
+            }
+
             try {
                 // need to save resource because of the update on the resource identifier values
                 reader.serializeNative(resource, responseData.getOutputStream(), true);
@@ -220,9 +230,20 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while reading the Oasis SMP 2.0 ServiceGroup with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         final ParticipantID participantId = resource.getParticipantID();
+        String participantIdValue = participantId.getValue();
+        String participantIdScheme = participantId.getSchemeID();
+        if (equalsIgnoreCase(trim(participantIdValue), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+            participantIdValue = identifier.getValue();
+        }
+
+        if (equalsIgnoreCase(trim(participantIdScheme), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+            participantIdScheme = identifier.getScheme();
+        }
+
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
                 resourceData.getDomainCode(),
-                participantId.getValue(), participantId.getSchemeID());
+                participantIdValue, participantIdScheme);
+
 
         if (!xmlResourceIdentifier.equals(identifier)) {
             // Business identifier must equal path

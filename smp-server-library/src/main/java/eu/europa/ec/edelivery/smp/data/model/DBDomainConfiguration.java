@@ -68,7 +68,7 @@ public class DBDomainConfiguration extends BaseEntity {
     @ColumnDescription(comment = "Property description")
     String description;
 
-    @Column(name = "USER_SYSTEM_DEFAULT", nullable = false)
+    @Column(name = "SYSTEM_DEFAULT", nullable = false)
     @ColumnDescription(comment = "Use system default value")
     boolean useSystemDefault = true;
 
