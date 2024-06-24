@@ -3,7 +3,7 @@ import {NavigationNode} from "../../sidenav/navigation-model.service";
 
 
 /**
- * Top page navigation bar  Breadcrumb-  side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
+ * Top page navigation bar  Breadcrumbs - side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
  *
  * @author Joze Rihtarsic
  * @since 5.0
@@ -18,23 +18,23 @@ export class BreadcrumbItemComponent {
   @Output() onClickEvent: EventEmitter<NavigationNode> = new EventEmitter();
   @Input() value : NavigationNode;
 
-
-  constructor() {
-  }
-
-  get icon(){
+  get icon() {
     return this.value.icon;
   }
-  get name(){
+
+  get name() {
     return this.value.name;
   }
 
-  get description(){
+  get description() {
     return this.value.code;
   }
 
   triggerClickEvent() {
-    this.onClickEvent.emit(this.value);
+    this.clickable && this.onClickEvent.emit(this.value);
   }
 
+  get clickable(): boolean {
+    return this.value.clickable;
+  }
 }
