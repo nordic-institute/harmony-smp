@@ -141,6 +141,11 @@ ngx-datatable span:before {
   bottom: 0;
 }
 
+.smp-disabled {
+  pointer-events: none;
+  opacity: 50%;
+}
+
 /*Hamburger button*/
 #sandwichMenu {
 
