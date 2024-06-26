@@ -56,6 +56,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
 
 @Component
@@ -91,11 +92,17 @@ public class OasisSMPSubresource20Handler extends AbstractOasisSMPHandler {
         subresource.setSMPVersionID(new SMPVersionID());
         subresource.getSMPVersionID().setValue("2.0");
         subresource.setParticipantID(new ParticipantID());
-        subresource.getParticipantID().setValue(identifier.getValue());
-        subresource.getParticipantID().setSchemeID(identifier.getScheme());
+        subresource.getParticipantID().setValue(RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        if (identifier.getScheme() != null) {
+            subresource.getParticipantID().setSchemeID(RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        }
+
         subresource.setServiceID(new ServiceID());
-        subresource.getServiceID().setValue(subresourceIdentifier.getValue());
-        subresource.getServiceID().setSchemeID(subresourceIdentifier.getScheme());
+        subresource.getServiceID().setValue(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        if (subresourceIdentifier.getScheme() != null) {
+            subresource.getServiceID().setSchemeID(SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        }
+
         ProcessMetadata processMetadata = new ProcessMetadata();
         subresource.getProcessMetadatas().add(processMetadata);
         Process process = new Process();

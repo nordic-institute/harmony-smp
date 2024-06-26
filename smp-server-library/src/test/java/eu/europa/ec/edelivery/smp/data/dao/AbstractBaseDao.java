@@ -43,6 +43,7 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
         ResourceDao.class,
         SubresourceDao.class,
         DomainDao.class,
+        DomainConfigurationDao.class,
         UserDao.class,
         CredentialDao.class,
         ConfigurationDao.class}

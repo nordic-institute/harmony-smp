@@ -57,24 +57,6 @@ td , th {
   word-wrap: break-word !important;
 }
 
-div:before,
-table:before,
-tr:before,
-td:before,
-form:before,
-tbody:before,
-mat-card:before,
-mat-card-content:before,
-.panel:before,
-.selectionCriteria:before,
-table.buttonsRow:before,
-table.buttonsMoveRow,
-mat-input-container:before,
-ngx-datatable span:before {
-  content: " " !important;
-}
-
-
 .ngx-datatable span {
   word-wrap: break-word;
 }
@@ -282,26 +264,8 @@ mat-card {
   margin-top: 0 !important;
 }
 
-/* --- INPUT ---*/
-.panel mat-select, .panel mat-datepicker {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
 .panel mat-select, .panel mat-form-field, .panel mat-datepicker {
-  margin-right: 2%;
-}
-
-@media (max-width: 991px) {
-  .panel mat-form-field, .panel mat-select, .panel mat-datepicker {
-    width: 46%;
-  }
-}
-
-@media (max-width: 767px) {
-  .panel mat-form-field, .panel mat-select, .panel mat-datepicker {
-    width: 100%;
-  }
+  margin-right: 5px;
 }
 
 .mat-select-menu-container,
@@ -351,6 +315,13 @@ mat-card {
 .mat-mdc-row .mat-mdc-cell {
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
+}
+
+.mat-mdc-table .mdc-data-table__header-row {
+  height: 2.0em;
+}
+.mat-mdc-table .mdc-data-table__row {
+  height: 1.8em;
 }
 
 /*--------------------------------------------------

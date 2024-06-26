@@ -28,7 +28,6 @@ export class UserAlertsComponent implements OnInit, OnDestroy, BeforeLeaveGuard 
     private securityEventService: SecurityEventService,
     public dialog: MatDialog) {
 
-
     this.securityEventServiceSub = this.securityEventService.onLoginSuccessEvent().subscribe(() => {
         this.updateUserData(this.securityService.getCurrentUser())
       }

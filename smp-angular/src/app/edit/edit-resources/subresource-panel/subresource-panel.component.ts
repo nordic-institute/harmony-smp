@@ -12,7 +12,7 @@ import {EditResourceService} from "../edit-resource.service";
 import {SubresourceRo} from "../../../common/model/subresource-ro.model";
 import {MatTableDataSource} from "@angular/material/table";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SubresourceDialogComponent} from "./resource-dialog/subresource-dialog.component";
+import {SubresourceDialogComponent} from "./subresource-dialog/subresource-dialog.component";
 import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
 
@@ -22,7 +22,7 @@ import {NavigationNode, NavigationService} from "../../../window/sidenav/navigat
   templateUrl: './subresource-panel.component.html',
   styleUrls: ['./subresource-panel.component.scss']
 })
-export class SubresourcePanelComponent implements AfterViewInit, OnInit, BeforeLeaveGuard {
+export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuard {
 
 
   title: string = "Subresources";
@@ -42,9 +42,6 @@ export class SubresourcePanelComponent implements AfterViewInit, OnInit, BeforeL
               private navigationService: NavigationService,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
-  }
-
-  ngOnInit(): void {
   }
 
   ngAfterViewInit() {

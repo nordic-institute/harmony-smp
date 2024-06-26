@@ -40,5 +40,4 @@ public interface ExtensionInfo {
     List<ResourceDefinitionSpi> resourceTypes();
 
     List<PayloadValidatorSpi> payloadValidators();
-
 }

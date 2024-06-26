@@ -172,7 +172,7 @@ class TruststoreAdminControllerTest extends AbstractControllerTest {
         CertificateRO res = getObjectFromResponse(result, CertificateRO.class);
 
         assertNotNull(res);
-        assertEquals(EntityROStatus.REMOVE.getStatusNumber(), res.getStatus());
+        assertEquals(EntityROStatus.REMOVED.getStatusNumber(), res.getStatus());
         assertEquals(countStart - 1, uiTruststoreService.getCertificateROEntriesList().size());
     }
 }

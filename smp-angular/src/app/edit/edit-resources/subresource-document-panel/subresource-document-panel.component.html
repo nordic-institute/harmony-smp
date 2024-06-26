@@ -58,62 +58,44 @@
       </div>
     </mat-toolbar-row>
   </mat-toolbar>
-  <div class="panel">
+  <div class="panel" [formGroup]="documentForm"
+       style="display: flex;flex-direction: row;flex-grow: 1; ">
 
-    <div style="display: flex;flex-direction: row;width: 100%">
-      <smp-titled-label style="flex-grow: 1" title="Resource identifier:"
-                        value="{{resource?.identifierValue}}"></smp-titled-label>
-      <smp-titled-label style="flex-grow: 1" title="Resource scheme:"
-                        value="{{resource?.identifierScheme}}"></smp-titled-label>
-    </div>
-    <div style="display: flex;flex-direction: row;width: 100%">
-      <smp-titled-label style="flex-grow: 1" title="Subresource identifier:"
-                        value="{{subresource?.identifierValue}}"></smp-titled-label>
-      <smp-titled-label style="flex-grow: 1" title="Subresource scheme:"
-                        value="{{subresource?.identifierScheme}}"></smp-titled-label>
-    </div>
-    <div style="display: flex;flex-direction: row;width: 100%">
-      <smp-titled-label style="flex-grow: 1" title="Document name:" value="{{_document?.name}}"></smp-titled-label>
-      <smp-titled-label style="flex-grow: 1" title="Document mimeType:"
-                        value="{{_document?.mimeType}}"></smp-titled-label>
-      <smp-titled-label style="flex-grow: 1" title="Current document version:"
-                        value="{{_document?.currentResourceVersion}}"></smp-titled-label>
-    </div>
-  </div>
-
-  <div [formGroup]="documentForm" style="width: 100%; display: flex; flex-direction: column; flex:1; gap:0.5em ">
     <div
-      style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5"
+      style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;border: ridge 3px #b0bec5"
       (click)="onEditPanelClick()"
     >
-      <smp-editor #smpDocumentEditor
-                  formControlName="payload"
-                  ngDefaultControl
-      ></smp-editor>
+      <smp-editor #smpDocumentEditor formControlName="payload"
+                  ngDefaultControl></smp-editor>
     </div>
-    <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
-      <mat-toolbar-row class="smp-toolbar-row">
-        <button id="back_id" mat-raised-button color="primary"
-                (click)="onBackButtonClicked()">
-          <mat-icon>arrow_circle_left</mat-icon>
-          <span>Back</span>
-        </button>
-        <button id="cancel_id" mat-raised-button color="primary"
-                [disabled]="cancelButtonDisabled"
-                (click)="onDocumentResetButtonClicked()">
-          <mat-icon>cancel</mat-icon>
-          <span>Cancel</span>
-        </button>
-        <button id="saveResource_id" mat-raised-button
-                color="primary"
-                matTooltip="Validate resource"
-                [disabled]="saveButtonDisabled"
-                (click)="onSaveButtonClicked()"
-        >
-          <mat-icon>save</mat-icon>
-          <span>Save</span>
-        </button>
-      </mat-toolbar-row>
-    </mat-toolbar>
+    <document-properties-panel style="min-height: 0; overflow: auto"
+                               formControlName="properties"
+                               ngDefaultControl></document-properties-panel>
   </div>
+
+  <mat-toolbar class="mat-elevation-z2"
+               style="flex-grow: 0;">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button id="back_id" mat-raised-button color="primary"
+              (click)="onBackButtonClicked()">
+        <mat-icon>arrow_circle_left</mat-icon>
+        <span>Back</span>
+      </button>
+      <button id="cancel_id" mat-raised-button color="primary"
+              [disabled]="cancelButtonDisabled"
+              (click)="onDocumentResetButtonClicked()">
+        <mat-icon>cancel</mat-icon>
+        <span>Cancel</span>
+      </button>
+      <button id="saveResource_id" mat-raised-button
+              color="primary"
+              matTooltip="Validate resource"
+              [disabled]="saveButtonDisabled"
+              (click)="onSaveButtonClicked()"
+      >
+        <mat-icon>save</mat-icon>
+        <span>Save</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
 </div>

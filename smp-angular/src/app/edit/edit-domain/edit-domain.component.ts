@@ -12,7 +12,6 @@ import {MatTabGroup} from "@angular/material/tabs";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {firstValueFrom} from "rxjs";
 
-
 @Component({
   templateUrl: './edit-domain.component.html',
   styleUrls: ['./edit-domain.component.css']

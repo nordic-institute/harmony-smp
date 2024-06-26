@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -30,6 +30,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiRequestData;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
+import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
@@ -39,8 +40,11 @@ import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -109,10 +113,18 @@ public class AbstractResourceHandler {
         if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
-        return buildRequestDataForResource(domain,
-                resource,
-                inputStream);
+        // read and replace properties
+        Map<String, Object> docProp = resourceStorage.getResourceProperties(resource);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos);
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+            return buildRequestDataForResource(domain,
+                    resource,
+                    inputStream);
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
     }
 
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
@@ -129,10 +141,18 @@ public class AbstractResourceHandler {
                     subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
                     resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
-        return new SpiRequestData(domain.getDomainCode(),
-                SPIUtils.toUrlIdentifier(resource),
-                SPIUtils.toUrlIdentifier(subresource),
-                new ByteArrayInputStream(content));
+
+        Map<String, Object> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos);
+            return new SpiRequestData(domain.getDomainCode(),
+                    SPIUtils.toUrlIdentifier(resource),
+                    SPIUtils.toUrlIdentifier(subresource),
+                    new ByteArrayInputStream(baos.toByteArray()));
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
     }
 
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {

@@ -1,0 +1,12 @@
+export enum PropertyValueTypeEnum {
+  STRING = 'STRING',
+  LIST_STRING = 'LIST_STRING',
+  MAP_STRING = 'MAP_STRING',
+  FILENAME = 'FILENAME',
+  PATH = 'PATH',
+  INTEGER = 'INTEGER',
+  BOOLEAN = 'BOOLEAN',
+  REGEXP = 'REGEXP',
+  EMAIL = 'EMAIL',
+  URL = 'URL',
+}

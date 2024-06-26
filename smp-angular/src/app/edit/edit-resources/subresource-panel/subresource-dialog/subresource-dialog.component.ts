@@ -1,15 +1,17 @@
 import {Component, ElementRef, Inject, Input, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {AlertMessageService} from "../../../../common/alert-message/alert-message.service";
-import {VisibilityEnum} from "../../../../common/enums/visibility.enum";
-import {GroupRo} from "../../../../common/model/group-ro.model";
+import {
+  AlertMessageService
+} from "../../../../common/alert-message/alert-message.service";
 import {ResourceRo} from "../../../../common/model/resource-ro.model";
 import {DomainRo} from "../../../../common/model/domain-ro.model";
-import {ResourceDefinitionRo} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
-import {EditGroupService} from "../../../edit-group/edit-group.service";
+import {
+  ResourceDefinitionRo
+} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
 import {SubresourceRo} from "../../../../common/model/subresource-ro.model";
 import {EditResourceService} from "../../edit-resource.service";
+
 @Component({
   templateUrl: './subresource-dialog.component.html',
   styleUrls: ['./subresource-dialog.component.css']

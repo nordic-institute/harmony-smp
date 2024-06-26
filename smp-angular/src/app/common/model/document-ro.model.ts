@@ -1,4 +1,8 @@
-export interface DocumentRo {
+import {DocumentPropertyRo} from "./document-property-ro.model";
+import {SearchTableEntity} from "../search-table/search-table-entity.model";
+import {EntityStatus} from "../enums/entity-status.enum";
+
+export interface DocumentRo extends SearchTableEntity  {
   mimeType?: string;
   name?: string;
   documentId?: string;
@@ -7,5 +11,7 @@ export interface DocumentRo {
   payloadVersion?:number;
   payloadCreatedOn?: Date;
   payload?:string;
+  payloadStatus: EntityStatus;
+  properties?: DocumentPropertyRo[];
 }
 

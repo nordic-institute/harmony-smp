@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
 
 @Component
@@ -95,11 +96,16 @@ public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
         serviceInformationType.setProcessList(processListType);
         subresource.setServiceInformation(serviceInformationType);
         serviceInformationType.setParticipantIdentifier(new ParticipantIdentifierType());
-        serviceInformationType.getParticipantIdentifier().setValue(identifier.getValue());
-        serviceInformationType.getParticipantIdentifier().setScheme(identifier.getScheme());
+        serviceInformationType.getParticipantIdentifier().setValue(RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        if (identifier.getScheme()!= null) {
+            serviceInformationType.getParticipantIdentifier().setScheme(RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        }
+
         serviceInformationType.setDocumentIdentifier(new DocumentIdentifier());
-        serviceInformationType.getDocumentIdentifier().setValue(subresourceIdentifier.getValue());
-        serviceInformationType.getDocumentIdentifier().setScheme(subresourceIdentifier.getScheme());
+        serviceInformationType.getDocumentIdentifier().setValue(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        if (subresourceIdentifier.getScheme()!= null) {
+            serviceInformationType.getDocumentIdentifier().setScheme(SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        }
 
         try {
             reader.serializeNativeAny(subresource, responseData.getOutputStream(), true);

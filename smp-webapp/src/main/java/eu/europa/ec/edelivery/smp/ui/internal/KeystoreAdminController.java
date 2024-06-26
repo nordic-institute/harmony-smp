@@ -130,11 +130,11 @@ public class KeystoreAdminController {
             if (x509Certificate == null) {
                 String msg = "Certificate Key not removed because alias [" + alias + "] does not exist in keystore!";
                 LOG.error(msg);
-                response = creatEmptyResponse(alias, EntityROStatus.REMOVE, msg);
+                response = creatEmptyResponse(alias, EntityROStatus.REMOVED, msg);
             } else {
                 response = uiKeystoreService.convertToRo(x509Certificate);
                 response.setAlias(alias);
-                response.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+                response.setStatus(EntityROStatus.REMOVED.getStatusNumber());
             }
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
             String msg = e.getClass().getName() + " occurred while reading the keystore: " + e.getMessage();

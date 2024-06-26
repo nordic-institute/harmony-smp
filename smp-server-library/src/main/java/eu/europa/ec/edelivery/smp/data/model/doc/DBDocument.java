@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_RESOURCE;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_SUBRESOURCE;
 
 /**
  * Database optimization: load service metadata xml only when needed and
@@ -46,7 +47,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_
 @Table(name = "SMP_DOCUMENT")
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
 @NamedQueries({
-        @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id")
+        @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id"),
+        @NamedQuery(name = QUERY_DOCUMENT_FOR_SUBRESOURCE, query = "SELECT d FROM DBSubresource  sr JOIN sr.document d WHERE sr.id =:subresource_id")
 })
 public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);
@@ -63,7 +65,6 @@ public class DBDocument extends BaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY
-
     )
     List<DBDocumentVersion> documentVersions;
 
@@ -77,6 +78,13 @@ public class DBDocument extends BaseEntity {
     @Column(name = "NAME")
     private String name;
 
+    @OneToMany(
+            mappedBy = "document",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBDocumentProperty> documentProperties = new ArrayList<>();
 
     @Override
     public Long getId() {
@@ -90,17 +98,18 @@ public class DBDocument extends BaseEntity {
 
     /**
      * Returns document version ordered from the latest version to first version
+     *
      * @return document versions
      */
     public List<DBDocumentVersion> getDocumentVersions() {
-        if (documentVersions ==null) {
+        if (documentVersions == null) {
             documentVersions = new ArrayList<>();
         }
         return documentVersions;
     }
 
-    public DBDocumentVersion addNewDocumentVersion(DBDocumentVersion documentVersion){
-        if (documentVersion.getId() !=null && getDocumentVersions().contains(documentVersion)) {
+    public DBDocumentVersion addNewDocumentVersion(DBDocumentVersion documentVersion) {
+        if (documentVersion.getId() != null && getDocumentVersions().contains(documentVersion)) {
             LOG.info("Document version [{}] already exists on document [{}]", documentVersion, this);
             return documentVersion;
         }
@@ -111,19 +120,19 @@ public class DBDocument extends BaseEntity {
         return documentVersion;
     }
 
-    public void removeDocumentVersion(DBDocumentVersion documentVersion){
+    public void removeDocumentVersion(DBDocumentVersion documentVersion) {
         boolean removed = getDocumentVersions().remove(documentVersion);
-        if (removed){
+        if (removed) {
             documentVersion.setDocument(null);
         }
     }
 
 
-    protected int getNextVersionIndex(){
+    protected int getNextVersionIndex() {
         List<DBDocumentVersion> list = getDocumentVersions();
         return list.stream()
                 .map(DBDocumentVersion::getVersion)
-                .reduce(0, (a, b) -> Integer.max(a, b)) + 1;
+                .reduce(0, Integer::max) + 1;
     }
 
 
@@ -133,6 +142,29 @@ public class DBDocument extends BaseEntity {
 
     public void setCurrentVersion(int currentVersion) {
         this.currentVersion = currentVersion;
+    }
+
+    public List<DBDocumentProperty> getDocumentProperties() {
+        if (documentProperties == null) {
+            documentProperties = new ArrayList<>();
+        }
+        return documentProperties;
+    }
+
+    private void removeTransientProperties() {
+        getDocumentProperties().removeIf(DBDocumentProperty::isTransient);
+    }
+
+    @Override
+    public void prePersist() {
+        super.prePersist();
+        removeTransientProperties();
+    }
+
+    @Override
+    public void preUpdate() {
+        super.preUpdate();
+        removeTransientProperties();
     }
 
 

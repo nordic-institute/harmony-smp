@@ -19,6 +19,7 @@ import {
 } from "../subresource-document-wizard-dialog/subresource-wizard-edit-ro.model";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SmpEditorComponent} from "../../../common/components/smp-editor/smp-editor.component";
+import {EntityStatus} from "../../../common/enums/entity-status.enum";
 
 @Component({
   templateUrl: './subresource-document-panel.component.html',
@@ -66,6 +67,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
       'payloadVersion': new FormControl({value: null}),
       'payloadCreatedOn': new FormControl({value: null}),
       'payload': new FormControl({value: null}),
+      'properties': new FormControl({value: null}),
     });
     this.documentForm.controls['payload'].setValue("")
 
@@ -133,7 +135,8 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   @Input() set document(value: DocumentRo) {
     this._document = value;
     this.documentForm.disable();
-    if (!!value) {
+    if (!!value){
+      this.documentEditor.mimeType = value.mimeType;
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
@@ -141,6 +144,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
       this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
       this.documentForm.controls['payload'].setValue(!value.payload ? "" : value.payload);
       this.documentForm.controls['payload'].enable();
+      this.documentForm.controls['properties'].setValue(value.properties);
 
       if (!this.documentVersionsExists) {
         this.documentForm.controls['payloadVersion'].disable();
@@ -155,13 +159,18 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
       this.documentForm.controls['payloadVersion'].setValue("");
       this.documentForm.controls['payloadCreatedOn'].setValue("");
       this.documentForm.controls['payload'].setValue("");
+      this.documentForm.controls['properties'].setValue([]);
     }
     this.documentForm.markAsPristine();
   }
 
   get document(): DocumentRo {
     let doc: DocumentRo = {...this._document};
-    doc.payload = this.documentForm.controls['payload'].value;
+    if(this.documentForm.controls['payload'].dirty){
+      doc.payload = this.documentForm.controls['payload'].value;
+      doc.payloadStatus = EntityStatus.UPDATED;
+    }
+    doc.properties = this.documentForm.controls['properties'].value;
     return doc;
   }
 
@@ -288,7 +297,6 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   }
 
   onDocumentResetButtonClicked(): void {
-
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Cancel changes",

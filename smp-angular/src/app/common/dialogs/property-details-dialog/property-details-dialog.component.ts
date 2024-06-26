@@ -24,7 +24,7 @@ import {
 import {
   PropertyValidationRo
 } from "../../../system-settings/admin-properties/property-validate-ro.model";
-import {PropertyTypeEnum} from "../../enums/property-type.enum";
+import {PropertySourceEnum} from "../../enums/property-source.enum";
 import {firstValueFrom} from "rxjs";
 
 @Component({
@@ -44,7 +44,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
   propertyForm: UntypedFormGroup;
   disabled: true;
   showSpinner: boolean = false;
-  propertyType: PropertyTypeEnum = PropertyTypeEnum.SYSTEM;
+  propertyType: PropertySourceEnum = PropertySourceEnum.SYSTEM;
 
 
   constructor(
@@ -58,7 +58,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
 
     this.editMode = data.edit;
     this.propertyType = data.propertyType;
-    this.propertyType = !data.propertyType ? PropertyTypeEnum.SYSTEM : data.propertyType;
+    this.propertyType = !data.propertyType ? PropertySourceEnum.SYSTEM : data.propertyType;
     this.formTitle = (this.editMode ? PropertyDetailsDialogComponent.EDIT_MODE : PropertyDetailsDialogComponent.NEW_MODE)
       .replace('{TYPE}', this.capitalize(this.propertyType));
 
@@ -111,7 +111,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
     let request: PropertyRo = this.getCurrent();
 
     // if domain property we do not need to validate
-    if (this.propertyType == PropertyTypeEnum.DOMAIN) {
+    if (this.propertyType == PropertySourceEnum.DOMAIN) {
       this.propertyForm.controls['errorMessage'].setValue("");
       // we can close the dialog
       this.closeDialog();
@@ -258,7 +258,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
   }
 
   get isDomainProperty(): boolean {
-    return this.propertyType == PropertyTypeEnum.DOMAIN;
+    return this.propertyType == PropertySourceEnum.DOMAIN;
   }
 
   capitalize<T extends string>(str: T): string {

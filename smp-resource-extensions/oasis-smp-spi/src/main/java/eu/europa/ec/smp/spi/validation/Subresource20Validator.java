@@ -38,7 +38,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
+import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_SCHEME;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALID_PARAMETERS;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 
 /**
@@ -64,14 +68,38 @@ public class Subresource20Validator {
 
         final ParticipantID participantId = subresource.getParticipantID();
         final ServiceID documentId = subresource.getServiceID();
+
+        String participantIdValue = participantId.getValue();
+        String participantIdScheme = participantId.getSchemeID();
+        String documentIdValue = documentId.getValue();
+        String documentIdScheme = documentId.getSchemeID();
+
+        if (equalsIgnoreCase(trim(participantIdValue), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+            participantIdValue = participantIdentifierFromUrl.getValue();
+        }
+
+        if (equalsIgnoreCase(trim(participantIdScheme), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+            participantIdScheme = participantIdentifierFromUrl.getScheme();
+        }
+
+        if (equalsIgnoreCase(trim(documentIdValue), SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+            documentIdValue = documentIdentifierFromUrl.getValue();
+        }
+
+        if (equalsIgnoreCase(trim(documentIdScheme), SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+            documentIdScheme = documentIdentifierFromUrl.getScheme();
+        }
+
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
                 domainCode,
-                participantId.getValue(),
-                participantId.getSchemeID());
+                participantIdValue,
+                participantIdScheme);
         ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(
                 domainCode,
-                documentId.getValue(),
-                documentId.getSchemeID());
+                documentIdValue,
+                documentIdScheme);
+
+
         if (!xmlResourceIdentifier.equals(participantIdentifierFromUrl)) {
             // Business identifier must equal path
             throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + participantIdentifierFromUrl + "] and XML body: [" + xmlResourceIdentifier + "]");
@@ -84,7 +112,6 @@ public class Subresource20Validator {
 
         List<ProcessMetadata> processMetadata = subresource.getProcessMetadatas();
         validateProcesses(processMetadata);
-
     }
 
 

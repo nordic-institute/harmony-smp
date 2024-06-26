@@ -19,6 +19,8 @@
 package eu.europa.ec.edelivery.smp.data.ui.enums;
 
 
+import java.util.Arrays;
+
 /**
  * Enumeration of Resource Object status.
  * @author Joze Rihtarsic
@@ -28,7 +30,7 @@ public enum EntityROStatus {
     PERSISTED(0),
     UPDATED(1),
     NEW(2),
-    REMOVE(3),
+    REMOVED(3),
     ERROR(4);
 
     int statusNumber;
@@ -37,7 +39,18 @@ public enum EntityROStatus {
         this.statusNumber = statusNumber;
     }
 
-    public int getStatusNumber() {
+    public final int getStatusNumber() {
         return statusNumber;
+    }
+
+    /**
+     * Method returns EntityROStatus based on status number. If status number is not found, method returns null.
+     * @param statusNumber status number
+     * @return EntityROStatus or null
+     */
+    public static EntityROStatus fromStatusNumber(int statusNumber) {
+        return Arrays.stream(EntityROStatus.values())
+                .filter(entityROStatus -> entityROStatus.getStatusNumber() == statusNumber)
+                .findFirst().orElse(null);
     }
 }

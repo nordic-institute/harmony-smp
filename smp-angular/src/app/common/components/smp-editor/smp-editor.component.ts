@@ -8,16 +8,38 @@ import {
   ViewChild,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {EditorView} from "@codemirror/view";
-import {basicSetup} from "codemirror";
+import {
+  EditorView,
+  lineNumbers,
+  keymap,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  drawSelection,
+  dropCursor,
+  rectangularSelection, crosshairCursor, highlightActiveLine
+} from "@codemirror/view";
 import {Compartment, EditorState, Extension} from "@codemirror/state"
-import {LanguageSupport} from "@codemirror/language"
+import {
+  bracketMatching,
+  defaultHighlightStyle,
+  foldGutter, foldKeymap, indentOnInput,
+  LanguageSupport,
+  syntaxHighlighting
+} from "@codemirror/language"
 import {javascript} from "@codemirror/lang-javascript"
 import {xml} from "@codemirror/lang-xml"
 import {html} from "@codemirror/lang-html"
 import {json} from "@codemirror/lang-json"
 import {ThemeService} from "../../theme-service/theme.service";
 import {oneDark} from "@codemirror/theme-one-dark";
+import {defaultKeymap, history, historyKeymap} from "@codemirror/commands";
+import {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap, completionKeymap
+} from "@codemirror/autocomplete";
+import {highlightSelectionMatches, searchKeymap} from "@codemirror/search";
+import {lintKeymap} from "@codemirror/lint";
 
 function normalizeLineEndings(str: string): string {
   if (!str) {
@@ -46,7 +68,7 @@ export class SmpEditorComponent
   @Input() name = 'smpEditor';
   @ViewChild('editorRoot') ref!: ElementRef<HTMLDivElement>;
   value = '';
-  _readOnly:boolean = false;
+  _readOnly: boolean = false;
   _mimeType: string = "text/xml";
 
   codeMirror: EditorView;
@@ -54,7 +76,7 @@ export class SmpEditorComponent
   documentLanguage = new Compartment;
   themeConfig = new Compartment;
 
-  constructor( private  themeService: ThemeService) {
+  constructor(private themeService: ThemeService) {
   }
 
   ngAfterViewInit() {
@@ -65,16 +87,41 @@ export class SmpEditorComponent
       }
     });
     // configure the default extensions
-    let initExtensions: Extension[] =  [
-        basicSetup,
-        EditorView.lineWrapping,
-        updateListenerExtension,
-        this.documentLanguage.of(xml()),
-        this.readOnlyDocument.of(EditorState.readOnly.of(false))
-      ];
+    let initExtensions: Extension[] = [
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightSpecialChars(),
+      history(),
+      foldGutter(),
+      drawSelection(),
+      dropCursor(),
+      EditorState.allowMultipleSelections.of(true),
+      indentOnInput(),
+      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      bracketMatching(),
+      closeBrackets(),
+      autocompletion(),
+      rectangularSelection(),
+      crosshairCursor(),
+      highlightActiveLine(),
+      highlightSelectionMatches(),
+      keymap.of([
+        ...closeBracketsKeymap,
+        ...defaultKeymap,
+        ...searchKeymap,
+        ...historyKeymap,
+        ...foldKeymap,
+        ...completionKeymap,
+        ...lintKeymap
+      ]),
+      EditorView.lineWrapping,
+      updateListenerExtension,
+      this.documentLanguage.of(xml()),
+      this.readOnlyDocument.of(EditorState.readOnly.of(false))
+    ];
     // add the dark theme extension
     if (this.themeService.currentTheme === "pink_blue-grey_theme"
-      || this.themeService.currentTheme === "purple_green_theme" ) {
+      || this.themeService.currentTheme === "purple_green_theme") {
       initExtensions.push(this.themeConfig.of(oneDark));
     }
     this.codeMirror = new EditorView({
@@ -125,7 +172,6 @@ export class SmpEditorComponent
     let length = this.codeMirror.state.doc.length
     this.codeMirror.dispatch({selection: {anchor: length, head: length}})
   }
-
 
   ngOnDestroy() {
     // is there a lighter-weight way to remove the cm instance?

@@ -21,21 +21,28 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
-import eu.europa.ec.edelivery.smp.data.ui.DocumentRo;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentPropertyRO;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
+import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import eu.europa.ec.smp.spi.def.OasisSMPResource10;
 import eu.europa.ec.smp.spi.def.OasisSMPSubresource10;
+import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.smp.spi.handler.OasisSMPResource10Handler;
 import eu.europa.ec.smp.spi.handler.OasisSMPSubresource10Handler;
 import eu.europa.ec.smp.spi.validation.Subresource10Validator;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,6 +55,9 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Autowired
     protected UIDocumentService testInstance;
 
+    @Autowired
+    ResourceHandlerService resourceHandlerService;
+
     @BeforeEach
     public void prepareDatabase() {
         // setup initial data!
@@ -58,7 +68,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Test
     void testGenerateDocumentForResource() {
 
-        DocumentRo result = testInstance.generateDocumentForResource(testUtilsDao.getResourceD1G1RD1().getId(), null);
+        DocumentRO result = testInstance.generateDocumentForResource(testUtilsDao.getResourceD1G1RD1().getId(), null);
         assertNotNull(result);
         assertNotNull(result.getPayload());
     }
@@ -67,7 +77,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     void testGenerateDocumentForSubResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
 
-        DocumentRo result = testInstance.generateDocumentForSubresource(subresource.getId(),
+        DocumentRO result = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId(),
                 null);
         assertNotNull(result);
@@ -77,7 +87,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Test
     void testValidateForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
-        DocumentRo testDoc = testInstance.generateDocumentForResource(resource.getId(), null);
+        DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId(), null);
         assertNotNull(testDoc.getPayload());
         // must not throw exception
         testInstance.validateDocumentForResource(resource.getId(), testDoc);
@@ -86,11 +96,11 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Test
     void testValidateForResourceError() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
-        DocumentRo testDoc = new DocumentRo();
+        DocumentRO testDoc = new DocumentRO();
         testDoc.setPayload("test");
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
-            testInstance.validateDocumentForResource(resource.getId(), testDoc));
+                testInstance.validateDocumentForResource(resource.getId(), testDoc));
 
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
@@ -99,7 +109,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Test
     void testValidateForSubresource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
-        DocumentRo testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
+        DocumentRO testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId(),
                 null);
 
@@ -111,11 +121,11 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Test
     void testValidateForSubresourceError() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
-        DocumentRo testDoc = new DocumentRo();
+        DocumentRO testDoc = new DocumentRO();
         testDoc.setPayload("test");
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
-            testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc));
+                testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc));
 
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
@@ -123,38 +133,69 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Test
     void testGetDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
-        DocumentRo testDoc = testInstance.getDocumentForResource(resource.getId(), 1);
+        DocumentRO testDoc = testInstance.getDocumentForResource(resource.getId(), 1);
         assertNotNull(testDoc.getPayload());
     }
 
     @Test
     void testGetDocumentForSubResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
-        DocumentRo testDoc = testInstance.getDocumentForSubResource(subresource.getId(), subresource.getResource().getId(), 1);
+        DocumentRO testDoc = testInstance.getDocumentForSubResource(subresource.getId(), subresource.getResource().getId(), 1);
         assertNotNull(testDoc.getPayload());
     }
 
     @Test
     void testSaveDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
-        DocumentRo testDoc = testInstance.generateDocumentForResource(resource.getId(), null);
+        DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId(), null);
         assertNotNull(testDoc.getPayload());
         //when
-        DocumentRo result = testInstance.saveDocumentForResource(resource.getId(), testDoc);
+        DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc);
         // then
         assertNotNull(result);
     }
 
     @Test
-    void testSaveSubresourceDocumentForResource() {
+    void testSaveDocumentForSubresource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
-        DocumentRo testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
+        DocumentRO testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId(),
                 null);
         assertNotNull(testDoc.getPayload());
+
         //when
-        DocumentRo result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
+        DocumentRO result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
         // then
         assertNotNull(result);
+    }
+
+    @Test
+    void testTransientResolutionForSubresourceDocument() {
+        DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
+        DocumentRO testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
+                subresource.getResource().getId(),
+                null);
+        assertNotNull(testDoc.getPayload());
+        // extension used by this test is SMP example extension which generates document with placeholders
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+
+        //when
+        DocumentRO result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
+
+        Map<String, Object> mapProperties = result.getProperties().stream().collect(Collectors.toMap(DocumentPropertyRO::getProperty, DocumentPropertyRO::getValue));
+        String resolved = StringNamedSubstitutor.resolve(result.getPayload(), mapProperties);
+        // then
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+
+        Assertions.assertThat(resolved).contains(subresource.getIdentifierValue());
+        Assertions.assertThat(resolved).contains(subresource.getIdentifierScheme());
+        Assertions.assertThat(resolved).contains(subresource.getResource().getIdentifierValue());
+        Assertions.assertThat(resolved).contains(subresource.getResource().getIdentifierScheme());
     }
 }

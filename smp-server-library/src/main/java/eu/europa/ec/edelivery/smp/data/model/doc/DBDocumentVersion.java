@@ -71,11 +71,9 @@ public class DBDocumentVersion extends BaseEntity {
     @ColumnDescription(comment = "Unique version document id")
     Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FK_DOCUMENT_ID")
     private DBDocument document;
-
 
     @Column(name = "VERSION", nullable = false)
     private int version;

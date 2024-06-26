@@ -39,6 +39,14 @@
        drop 
        foreign key FKh9epnme26i271eixtvrpqejvi;
 
+    alter table SMP_DOCUMENT_PROPERTY 
+       drop 
+       foreign key FKfag3795e9mrvfvesd00yis9yh;
+
+    alter table SMP_DOCUMENT_PROPERTY_AUD 
+       drop 
+       foreign key FK81057kcrugb1cfm0io5vkxtin;
+
     alter table SMP_DOCUMENT_VERSION 
        drop 
        foreign key FKalsuoqx4csyp9mygvng911do;
@@ -194,6 +202,10 @@
     drop table if exists SMP_DOCUMENT;
 
     drop table if exists SMP_DOCUMENT_AUD;
+
+    drop table if exists SMP_DOCUMENT_PROPERTY;
+
+    drop table if exists SMP_DOCUMENT_PROPERTY_AUD;
 
     drop table if exists SMP_DOCUMENT_VERSION;
 

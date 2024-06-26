@@ -121,7 +121,7 @@ import {ResourceDetailsPanelComponent} from "./edit/edit-resources/resource-deta
 import {ResourceDocumentPanelComponent} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
 import {DocumentWizardDialogComponent} from "./edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
 import {SubresourcePanelComponent} from "./edit/edit-resources/subresource-panel/subresource-panel.component";
-import {SubresourceDialogComponent} from "./edit/edit-resources/subresource-panel/resource-dialog/subresource-dialog.component";
+import {SubresourceDialogComponent} from "./edit/edit-resources/subresource-panel/subresource-dialog/subresource-dialog.component";
 import {SubresourceDocumentPanelComponent} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
 import {SubresourceDocumentWizardComponent} from "./edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
 import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/smp-warning-panel.component";
@@ -158,6 +158,12 @@ import {HttpSessionInterceptor} from "./http/http-session-interceptor";
 import {
   SessionExpirationDialogComponent
 } from "./common/dialogs/session-expiration-dialog/session-expiration-dialog.component";
+import {
+  DocumentPropertiesPanelComponent
+} from "./common/panels/document-properties-panel/document-properties-panel.component";
+import {
+  DocumentPropertyDialogComponent
+} from "./common/dialogs/document-property-dialog/document-property-dialog.component";
 
 
 @NgModule({
@@ -190,6 +196,8 @@ import {
     DnsToolsComponent,
     DnsQueryPanelComponent,
     DocumentWizardDialogComponent,
+    DocumentPropertiesPanelComponent,
+    DocumentPropertyDialogComponent,
     DomainGroupComponent,
     DomainPanelComponent,
     DomainResourceTypePanelComponent,
