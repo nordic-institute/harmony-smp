@@ -1,10 +1,11 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
   MatDialogRef
 } from '@angular/material/dialog';
 import {
+  AbstractControl,
   UntypedFormBuilder,
   UntypedFormControl,
   UntypedFormGroup
@@ -25,16 +26,31 @@ import {
   templateUrl: './document-property-dialog.component.html',
   styleUrls: ['./document-property-dialog.component.css']
 })
-export class DocumentPropertyDialogComponent implements OnInit {
+export class DocumentPropertyDialogComponent {
 
   static readonly NEW_MODE: string = 'Create Document Property';
   static readonly EDIT_MODE: string = 'Edit Document Property';
-  public propertyTypes: string[] = Object.keys(PropertyValueTypeEnum);
+  public propertyTypes: string[] = Object.keys(PropertyValueTypeEnum)
+  protected readonly PropertyValueTypeEnum = PropertyValueTypeEnum;
   formTitle: string;
   current: DocumentPropertyRo;
   propertyForm: UntypedFormGroup;
   disabled: true;
-  showSpinner: boolean = false;
+  private allPropertyNames: string[] = [];
+
+  notInList(list: string[], exception: string) {
+    if (!list || !exception) {
+      return (c: AbstractControl): { [key: string]: any } => {
+        return null;
+      }
+    }
+
+    return (c: AbstractControl): { [key: string]: any } => {
+      if (c.value && c.value !== exception && list.includes(c.value))
+        return {'notInList': {valid: false}};
+      return null;
+    }
+  }
 
 
   constructor(
@@ -46,11 +62,13 @@ export class DocumentPropertyDialogComponent implements OnInit {
     private fb: UntypedFormBuilder) {
 
     this.current = {...data.row};
+    this.allPropertyNames = data.allPropertyNames;
 
     this.updateTitle();
 
     this.propertyForm = fb.group({
-      'property': new UntypedFormControl({value: '', readonly: true}, null),
+      'property': new UntypedFormControl({value: '', readonly: true}, [
+        this.notInList(this.allPropertyNames, this.current.property)]),
       'desc': new UntypedFormControl({value: '', readonly: true}, null),
       'type': new UntypedFormControl({value: '', readonly: true}, null),
       'value': new UntypedFormControl({value: ''}),
@@ -60,10 +78,6 @@ export class DocumentPropertyDialogComponent implements OnInit {
 
     this.propertyForm.controls['errorMessage'].setValue('');
     this.updateValueState();
-  }
-
-  ngOnInit() {
-
   }
 
   get isNewItem(): boolean {
@@ -106,20 +120,18 @@ export class DocumentPropertyDialogComponent implements OnInit {
    * @param propertyType
    */
   public valueFromPropertyStringValue(value: string, propertyType: PropertyValueTypeEnum) {
-    switch (propertyType) {
-      case PropertyValueTypeEnum.BOOLEAN:
-        return value === 'true';
-      default:
-        return value;
+    if (propertyType === PropertyValueTypeEnum.BOOLEAN) {
+      return value === 'true';
+    } else {
+      return value;
     }
   }
 
   public valueToPropertyStringValue(value: any, propertyType: PropertyValueTypeEnum) {
-    switch (propertyType) {
-      case PropertyValueTypeEnum.BOOLEAN:
-        return value ? 'true' : 'false';
-      default:
-        return value;
+    if (propertyType === PropertyValueTypeEnum.BOOLEAN) {
+      return value ? 'true' : 'false';
+    } else {
+      return value;
     }
   }
 
@@ -147,17 +159,18 @@ export class DocumentPropertyDialogComponent implements OnInit {
     }
   }
 
-
   public getCurrent(): DocumentPropertyRo {
-    if (this.current.status === EntityStatus.NEW) {
-      this.current.property = this.propertyForm.value['property'];
-      this.current.desc = this.propertyForm.value['desc'];
-      this.current.type = this.propertyForm.value['type'];
-      this.current.value = this.valueToPropertyStringValue(this.propertyForm.value['value'], this.current.type);
+    if (!this.propertyForm.dirty) {
       return this.current;
     }
-    this.current.status = EntityStatus.UPDATED;
-    this.current.value = this.propertyForm.value['value'];
+    if (this.current.status === EntityStatus.NEW) {
+      this.current.property = this.propertyForm.value['property'];
+    } else if (this.current.status === EntityStatus.PERSISTED) {
+      this.current.status = EntityStatus.UPDATED;
+    }
+    this.current.desc = this.propertyForm.value['desc'];
+    this.current.type = this.propertyForm.value['type'];
+    this.current.value = this.valueToPropertyStringValue(this.propertyForm.value['value'], this.current.type);
     return this.current;
   }
 
@@ -175,7 +188,7 @@ export class DocumentPropertyDialogComponent implements OnInit {
       this.propertyForm.controls['property'].disable();
     } else {
       this.propertyForm.controls['property'].enable();
-      this.propertyForm.markAsDirty()
+      this.propertyForm.markAsDirty();
     }
 
     if (this.isReadOnly) {
@@ -202,6 +215,4 @@ export class DocumentPropertyDialogComponent implements OnInit {
   propertyValueTypeDescription(name: string): string {
     return PropertyValueTypeEnumUtil.getDescription(PropertyValueTypeEnum[name]);
   }
-
-    protected readonly PropertyValueTypeEnum = PropertyValueTypeEnum;
 }

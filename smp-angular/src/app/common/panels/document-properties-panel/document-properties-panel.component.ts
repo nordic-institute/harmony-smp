@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 import {
   AfterViewInit,
   Component,
@@ -25,6 +43,7 @@ import {
   DocumentPropertyDialogComponent
 } from "../../dialogs/document-property-dialog/document-property-dialog.component";
 import {PropertyValueTypeEnum} from "../../enums/property-value-type.enum";
+import {MatPaginator} from "@angular/material/paginator";
 
 /**
  * Component to display the properties of a document in a table. The properties can be edited and saved.
@@ -44,7 +63,7 @@ import {PropertyValueTypeEnum} from "../../enums/property-value-type.enum";
   ]
 })
 export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
-
+  private readonly NEW_PROPERTY_NAME_TEMPLATE: string = 'document.property.v';
   displayedColumns: string[] = ['property', 'value'];
   private onChangeCallback: (_: any) => void = () => {
   };
@@ -55,7 +74,7 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
   propertyDataSource: MatTableDataSource<DocumentPropertyRo> = new MatTableDataSource();
 
   @ViewChild("DocumentPropertyTable") table: MatTable<DocumentPropertyRo>;
-  //@ViewChild(MatPaginator) paginator: MatPaginator
+  @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(public dialog: MatDialog, private controlContainer: ControlContainer) {
@@ -75,7 +94,7 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
 
 
   ngAfterViewInit() {
-    //  this.propertyDataSource.paginator = this.paginator;
+    this.propertyDataSource.paginator = this.paginator;
     this.propertyDataSource.sort = this.sort;
   }
 
@@ -107,32 +126,49 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
    */
   public onCreateProperty(): void {
     const newProperty: DocumentPropertyRo = {
-      property: "my.property",
+      property: this.uniquePropertyName,
       value: "",
       type: PropertyValueTypeEnum.STRING,
       desc: "",
       status: EntityStatus.NEW,
       readonly: false
     };
-    this.addNewProperty(newProperty);
-    /* this.editSelectedProperty(newProperty).afterClosed().subscribe((result) => {
+    this.editSelectedProperty(newProperty).afterClosed()
+      .subscribe((result): void => {
         if (result) {
           this.addNewProperty(result);
         }
       });
+  }
 
-     */
+  /**
+   * Method returns unique property name. The method checks all properties in the list and
+   * creates a new name with index if the name is already used.
+   */
+  get uniquePropertyName(): string {
+    let propertyNames: string[] = this.allPropertyNames;
+    // create index and check "my.property.[index]" until we find unique name
+    // and format index with 3 digits
+    let index: number = 1;
+    let propertyName: string = this.NEW_PROPERTY_NAME_TEMPLATE + index.toString().padStart(3, '0');
+
+    while (propertyNames.includes(propertyName)) {
+      index++;
+      propertyName = this.NEW_PROPERTY_NAME_TEMPLATE + index.toString().padStart(3, '0');
+    }
+    return propertyName
   }
 
   private addNewProperty(newProperty: DocumentPropertyRo) {
     this.propertyDataSource.data.push(newProperty);
-    this.dataChanged = true
+
     // to trigger refresh . render rows does not work on angular 16
     this.propertyDataSource.data = [...this.propertyDataSource.data];
-    this.table.renderRows();
     if (this.propertyDataSource.paginator) {
       this.propertyDataSource.paginator.lastPage();
     }
+    this.selected = newProperty;
+    this.dataChanged = true;
     this.onChangeCallback(this.propertyDataSource.data);
   }
 
@@ -141,7 +177,37 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
       return;
     }
 
-    this.editSelectedProperty(this.selected);
+    this.editSelectedProperty(this.selected).afterClosed()
+      .subscribe((result): void => {
+        if (result) {
+          let indexToUpdate = this.propertyDataSource.data
+            .findIndex(item => item.property === result.property);
+
+          let property: DocumentPropertyRo = this.equals(this.initPropertyList[indexToUpdate], result) ?
+            this.initPropertyList[indexToUpdate] : result;
+
+
+          this.propertyDataSource.data[indexToUpdate] = property;
+          // trigger reload
+          this.propertyDataSource.data = [...this.propertyDataSource.data];
+          this.selected = property;
+          this.dataChanged = true;
+          this.onChangeCallback(this.propertyDataSource.data);
+        }
+      });
+  }
+
+  /**
+   * Method compares two DocumentPropertyRo objects and returns true if they are equal. The method
+   * validates property name, value, type and description.
+   * @param value1
+   * @param value2
+   */
+  private equals(value1: DocumentPropertyRo, value2: DocumentPropertyRo): boolean {
+    return value1.property === value2.property
+      && value1.value === value2.value
+      && value1.desc === value2.desc
+      && value1.type === value2.type;
   }
 
   public onDeleteSelectedProperty(): void {
@@ -232,16 +298,21 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
    */
   writeValue(propertyList: DocumentPropertyRo[]): void {
     this.initPropertyList = propertyList;
-    console.log("writeValue" + propertyList)
-    this.propertyDataSource.data = !propertyList?.length ?
-      [] : [...propertyList]
-    this.dataChanged = false
+    this.propertyDataSource.data = !propertyList?.length ? [] : [...propertyList];
+    this.dataChanged = false;
   }
 
   public editSelectedProperty(row: DocumentPropertyRo): MatDialogRef<any> {
     return this.dialog.open(DocumentPropertyDialogComponent, {
-      data: {editMode: row.status, row: row}
+      data: {
+        editMode: row.status,
+        row: row,
+        allPropertyNames: this.allPropertyNames
+      }
     });
+  }
 
+  get allPropertyNames(): string[] {
+    return this.propertyDataSource.data.map(item => item.property);
   }
 }

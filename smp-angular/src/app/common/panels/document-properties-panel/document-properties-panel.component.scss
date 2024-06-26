@@ -13,25 +13,12 @@
   left: 0;
   right: 0;
   verflow-y: scroll;
-  background-color: #00a3f2;
 }
 
 #property-table-container table {
   width: 100%;
 }
 
-#property-table-container table .mat-header-row th {
-  position: sticky;
-  top: 0;
-  background-color: white;
-}
-
-
-#property-table-container table .mdc-data-table__content {
-
-  background-color: blue;
-  overflow-y: scroll;
-}
 
 .deleted {
   text-decoration: line-through !important;

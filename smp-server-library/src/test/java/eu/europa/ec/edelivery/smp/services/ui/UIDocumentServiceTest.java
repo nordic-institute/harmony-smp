@@ -21,21 +21,28 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
+import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import eu.europa.ec.smp.spi.def.OasisSMPResource10;
 import eu.europa.ec.smp.spi.def.OasisSMPSubresource10;
+import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.smp.spi.handler.OasisSMPResource10Handler;
 import eu.europa.ec.smp.spi.handler.OasisSMPSubresource10Handler;
 import eu.europa.ec.smp.spi.validation.Subresource10Validator;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,6 +54,9 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIDocumentService testInstance;
+
+    @Autowired
+    ResourceHandlerService resourceHandlerService;
 
     @BeforeEach
     public void prepareDatabase() {
@@ -90,7 +100,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         testDoc.setPayload("test");
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
-            testInstance.validateDocumentForResource(resource.getId(), testDoc));
+                testInstance.validateDocumentForResource(resource.getId(), testDoc));
 
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
@@ -115,7 +125,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         testDoc.setPayload("test");
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
-            testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc));
+                testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc));
 
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
@@ -146,15 +156,46 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    void testSaveSubresourceDocumentForResource() {
+    void testSaveDocumentForSubresource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
         DocumentRO testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId(),
                 null);
         assertNotNull(testDoc.getPayload());
+
         //when
         DocumentRO result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
         // then
         assertNotNull(result);
+    }
+
+    @Test
+    void testTransientResolutionForSubresourceDocument() {
+        DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
+        DocumentRO testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
+                subresource.getResource().getId(),
+                null);
+        assertNotNull(testDoc.getPayload());
+        // extension used by this test is SMP example extension which generates document with placeholders
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(testDoc.getPayload()).contains(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+
+        //when
+        DocumentRO result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
+
+        Map<String, Object> mapProperties = result.getProperties().stream().collect(Collectors.toMap(DocumentPropertyRO::getProperty, DocumentPropertyRO::getValue));
+        String resolved = StringNamedSubstitutor.resolve(result.getPayload(), mapProperties);
+        // then
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
+
+        Assertions.assertThat(resolved).contains(subresource.getIdentifierValue());
+        Assertions.assertThat(resolved).contains(subresource.getIdentifierScheme());
+        Assertions.assertThat(resolved).contains(subresource.getResource().getIdentifierValue());
+        Assertions.assertThat(resolved).contains(subresource.getResource().getIdentifierScheme());
     }
 }

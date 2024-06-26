@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.model.doc;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
@@ -31,6 +32,7 @@ import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Document property entity
@@ -63,6 +65,10 @@ public class DBDocumentProperty extends BaseEntity {
     @Column(name = "DESCRIPTION", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
     @ColumnDescription(comment = "Property description")
     String description;
+
+    @Column(name = "PROPERTY_TYPE", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
+    @Enumerated(EnumType.STRING)
+    private SMPPropertyTypeEnum type;
 
     @NotNull
     @ManyToOne
@@ -117,6 +123,14 @@ public class DBDocumentProperty extends BaseEntity {
         this.value = value;
     }
 
+    public SMPPropertyTypeEnum getType() {
+        return type;
+    }
+
+    public void setType(SMPPropertyTypeEnum type) {
+        this.type = type;
+    }
+
     @Transient
     public void setDateTime(OffsetDateTime date) {
         setValue(date == null ? null : date.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
@@ -151,5 +165,17 @@ public class DBDocumentProperty extends BaseEntity {
 
     public boolean isTransient() {
         return TransientDocumentPropertyType.fromPropertyName(getProperty()) != null;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", DBDocumentProperty.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("property='" + property + "'")
+                .add("value='" + value + "'")
+                .add("description='" + description + "'")
+                .add("type=" + type)
+                .add("document=" + document)
+                .toString();
     }
 }

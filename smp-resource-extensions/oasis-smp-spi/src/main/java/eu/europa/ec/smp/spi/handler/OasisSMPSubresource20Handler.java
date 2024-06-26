@@ -98,7 +98,7 @@ public class OasisSMPSubresource20Handler extends AbstractOasisSMPHandler {
         }
 
         subresource.setServiceID(new ServiceID());
-        subresource.getParticipantID().setValue(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
+        subresource.getServiceID().setValue(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
         if (subresourceIdentifier.getScheme() != null) {
             subresource.getServiceID().setSchemeID(SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
         }

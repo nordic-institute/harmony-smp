@@ -120,11 +120,11 @@ public class TruststoreAdminController {
             if (x509Certificate == null) {
                 String msg = "Certificate not removed because alias [" + alias + "] does not exist in truststore!";
                 LOG.error(msg);
-                response = creatEmptyResponse(alias, EntityROStatus.REMOVE, msg);
+                response = creatEmptyResponse(alias, EntityROStatus.REMOVED, msg);
             } else {
                 response = uiTruststoreService.convertToRo(x509Certificate);
                 response.setAlias(alias);
-                response.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+                response.setStatus(EntityROStatus.REMOVED.getStatusNumber());
             }
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
             String msg = e.getClass().getName() + " occurred while reading the truststore: " + e.getMessage();

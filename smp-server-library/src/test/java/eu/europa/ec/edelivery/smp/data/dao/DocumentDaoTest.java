@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,6 +102,7 @@ class DocumentDaoTest extends AbstractBaseDao {
     }
 
     @Test
+    @Transactional
     void testPersistDocumentProperty() {
         // given
         DBDocument document = testUtilsDao.createDocument(2, "value1", "schema1");
@@ -114,7 +116,7 @@ class DocumentDaoTest extends AbstractBaseDao {
         DBDocument result = testInstance.find(document.getId());
         assertNotNull(result.getId());
         // different object instances
-        assertSame(document, result);
+        assertNotSame(document, result);
         assertEquals(2, result.getDocumentProperties().size());
         assertEquals(property1, result.getDocumentProperties().get(0));
     }

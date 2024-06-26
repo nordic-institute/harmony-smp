@@ -462,7 +462,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         validateCredentials(credential, userId, credentialType, credentialTargetType);
         credentialDao.remove(credential);
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
-        credentialRO.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+        credentialRO.setStatus(EntityROStatus.REMOVED.getStatusNumber());
 
         return credentialRO;
     }

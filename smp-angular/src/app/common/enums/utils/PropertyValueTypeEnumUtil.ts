@@ -54,13 +54,12 @@ export class PropertyValueTypeEnumUtil {
       case PropertyValueTypeEnum.MAP_STRING:
       case PropertyValueTypeEnum.FILENAME:
       case PropertyValueTypeEnum.PATH:
-        return 'text';
-      case PropertyValueTypeEnum.INTEGER:
-        return 'text';
-      case PropertyValueTypeEnum.BOOLEAN:
-        return 'checkbox';
       case PropertyValueTypeEnum.REGEXP:
         return 'text';
+      case PropertyValueTypeEnum.INTEGER:
+        return 'number';
+      case PropertyValueTypeEnum.BOOLEAN:
+        return 'checkbox';
       case PropertyValueTypeEnum.EMAIL:
         return 'email';
       case PropertyValueTypeEnum.URL:

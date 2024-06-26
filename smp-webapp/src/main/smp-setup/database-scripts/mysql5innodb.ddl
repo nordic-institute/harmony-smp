@@ -185,6 +185,7 @@
         LAST_UPDATED_ON datetime not null,
         DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
         PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_TYPE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint,
         primary key (ID)
@@ -198,6 +199,7 @@
         LAST_UPDATED_ON datetime,
         DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_TYPE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint,
         primary key (ID, REV)

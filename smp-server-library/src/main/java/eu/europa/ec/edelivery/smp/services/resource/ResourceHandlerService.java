@@ -120,7 +120,6 @@ public class ResourceHandlerService extends AbstractResourceHandler {
 
         LOG.debug("Handle the CREATE action for resource request [{}]", resourceRequest);
         // locate the resource handler
-
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         DBResource resource = resolvedData.getResource();
         DBDomain domain = resolvedData.getDomain();

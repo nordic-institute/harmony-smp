@@ -310,6 +310,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp not null,
         DESCRIPTION varchar2(4000 char),
         PROPERTY_NAME varchar2(255 char),
+        PROPERTY_TYPE varchar2(64 char),
         PROPERTY_VALUE varchar2(1024 char),
         FK_DOCUMENT_ID number(19,0),
         primary key (ID)
@@ -329,6 +330,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp,
         DESCRIPTION varchar2(4000 char),
         PROPERTY_NAME varchar2(255 char),
+        PROPERTY_TYPE varchar2(64 char),
         PROPERTY_VALUE varchar2(1024 char),
         FK_DOCUMENT_ID number(19,0),
         primary key (ID, REV)

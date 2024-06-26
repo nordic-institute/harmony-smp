@@ -18,11 +18,9 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
@@ -46,7 +44,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -305,7 +302,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         // finally remove the domain
         domainDao.remove(domain);
         DomainRO domainRO = conversionService.convert(domain, DomainRO.class);
-        domainRO.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+        domainRO.setStatus(EntityROStatus.REMOVED.getStatusNumber());
         return domainRO;
     }
 

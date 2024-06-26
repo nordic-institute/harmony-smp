@@ -51,19 +51,18 @@ public class StringNamedSubstitutor {
     public static String resolve(InputStream templateIS, Map<String, Object> config) throws IOException {
         Map<String, Object> lowerCaseMap = config.entrySet().stream()
                 .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
-        //StringBuilder builder = new StringBuilder();
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        resolve(templateIS, lowerCaseMap, byteArrayOutputStream);
-        return byteArrayOutputStream.toString();
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            resolve(templateIS, lowerCaseMap, byteArrayOutputStream);
+            return byteArrayOutputStream.toString();
+        }
     }
 
     /**
      * Substitute named variables in the string with key value pairs from the map.
      * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
      *
-     * @param templateIS the InputStream to resolve
-     * @param config     the config to use
+     * @param templateIS   the InputStream to resolve
+     * @param config       the config to use
      * @param outputStream the output stream to write the resolved string
      * @throws IOException if an I/O error occurs
      */
@@ -71,11 +70,14 @@ public class StringNamedSubstitutor {
         Map<String, Object> lowerCaseMap = config.entrySet().stream()
                 .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
 
-        BufferedReader template = new BufferedReader(new InputStreamReader(templateIS));
-        int read;
-        while ((read = template.read()) != -1) {
-            if (read == START_NAME.charAt(0) && isStartSequence(template)) {
-                //skip (START_NAME.length() - 1L)  which is 1L
+        try (BufferedReader template = new BufferedReader(new InputStreamReader(templateIS))) {
+            int read;
+            while ((read = template.read()) != -1) {
+                if (read != START_NAME.charAt(0) || !isStartSequence(template)) {
+                    outputStream.write((char) read);
+                    continue;
+                }
+
                 template.skip(1L);
                 String name = readName(template, END_NAME);
                 if (name == null) {
@@ -93,8 +95,6 @@ public class StringNamedSubstitutor {
                         outputStream.write(END_NAME);
                     }
                 }
-            } else {
-                outputStream.write((char) read);
             }
         }
     }

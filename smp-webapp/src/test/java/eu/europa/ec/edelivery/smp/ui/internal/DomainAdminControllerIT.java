@@ -168,7 +168,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         //
         assertNotNull(resultObject);
         assertEquals(domainCode, resultObject.getDomainCode());
-        assertEquals(EntityROStatus.REMOVE.getStatusNumber(), resultObject.getStatus());
+        assertEquals(EntityROStatus.REMOVED.getStatusNumber(), resultObject.getStatus());
     }
 
     @Test

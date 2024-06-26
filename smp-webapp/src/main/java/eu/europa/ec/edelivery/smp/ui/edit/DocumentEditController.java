@@ -129,9 +129,9 @@ public class DocumentEditController {
             produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public DocumentRO saveDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
-                                   @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
-                                   @RequestBody DocumentRO document) {
+    public DocumentRO saveDocumentForResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                              @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                              @RequestBody DocumentRO document) {
         logAdminAccess("validateDocumentForResource");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         return uiDocumentService.saveDocumentForResource(resourceId, document);

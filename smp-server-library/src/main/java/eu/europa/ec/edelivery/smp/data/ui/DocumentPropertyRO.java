@@ -55,6 +55,14 @@ public class DocumentPropertyRO extends BaseRO {
         this.desc = desc;
     }
 
+    public SMPPropertyTypeEnum getType() {
+        return type;
+    }
+
+    public void setType(SMPPropertyTypeEnum type) {
+        this.type = type;
+    }
+
     public boolean isReadonly() {
         return readonly;
     }
@@ -63,7 +71,5 @@ public class DocumentPropertyRO extends BaseRO {
         this.readonly = readonly;
     }
 
-    public SMPPropertyTypeEnum getType() {
-        return type;
-    }
+
 }
