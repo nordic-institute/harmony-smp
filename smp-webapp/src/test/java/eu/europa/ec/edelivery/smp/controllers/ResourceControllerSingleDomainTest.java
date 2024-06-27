@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,7 +18,9 @@
  */
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.server.security.SignatureUtil;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBodyWithScheme;
 import static java.lang.String.format;
@@ -105,6 +108,23 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
                 .andExpect(status().is(expectedStatus));
     }
 
+    @Test
+    void addServiceGroupWithUTF8() throws Exception {
+        String resourceLocation = "/input/ServiceGroupWithUTF8.xml";
+        LOG.info(resourceLocation);
+
+        InputStream inputStream = SignatureUtil.class.getResourceAsStream(resourceLocation);
+        byte[] data = IOUtils.toByteArray(inputStream);
+
+        mvc.perform(put(URL_PATH)
+                        .with(ADMIN_CREDENTIALS)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .content(data))
+                .andExpect(status().isCreated());
+        // get service group
+        mvc.perform(get(URL_PATH))
+                .andExpect(status().isOk());
+    }
 
     @Test
     void anonymousUserCannotCreateServiceGroup() throws Exception {

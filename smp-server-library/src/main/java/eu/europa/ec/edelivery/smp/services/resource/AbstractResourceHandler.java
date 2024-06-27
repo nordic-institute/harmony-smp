@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 
 public class AbstractResourceHandler {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(AbstractResourceHandler.class);
+    private static final String EXPECTED_RESOURCE_CHARSET= "UTF-8";
     // the Spring beans for the resource definitions
     final List<ResourceDefinitionSpi> resourceDefinitionSpiList;
     final ResourceStorage resourceStorage;
@@ -117,7 +118,7 @@ public class AbstractResourceHandler {
         Map<String, Object> docProp = resourceStorage.getResourceProperties(resource);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos);
+            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos, EXPECTED_RESOURCE_CHARSET);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
             return buildRequestDataForResource(domain,
                     resource,
@@ -145,7 +146,7 @@ public class AbstractResourceHandler {
         Map<String, Object> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos);
+            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos, EXPECTED_RESOURCE_CHARSET);
             return new SpiRequestData(domain.getDomainCode(),
                     SPIUtils.toUrlIdentifier(resource),
                     SPIUtils.toUrlIdentifier(subresource),
