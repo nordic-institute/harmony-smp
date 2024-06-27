@@ -43,7 +43,7 @@ import java.util.Properties;
 public class MailTemplateService {
     private static final String DEFAULT_LANGUAGE = "en";
     private static final String MAIL_TEMPLATE = "/mail-messages/mail-template.htm";
-
+    private static final String MAIL_TEMPLATE_CHARSET= "UTF-8";
     private static final String MAIL_HEADER = "MAIL_HEADER";
     private static final String MAIL_FOOTER = "MAIL_FOOTER";
     private static final String MAIL_TITLE = "MAIL_TITLE";
@@ -58,7 +58,7 @@ public class MailTemplateService {
             modelData.put(MAIL_FOOTER, getMailFooter(model));
             modelData.put(MAIL_TITLE, getMailTitle(model));
             modelData.put(MAIL_CONTENT, getMailBody(model));
-            return StringNamedSubstitutor.resolve(templateIS, modelData);
+            return StringNamedSubstitutor.resolve(templateIS, modelData, MAIL_TEMPLATE_CHARSET);
         } catch (IOException e) {
             throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error reading mail template", ExceptionUtils.getRootCauseMessage(e));
         }

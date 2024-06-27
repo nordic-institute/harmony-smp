@@ -19,8 +19,10 @@
 package eu.europa.ec.edelivery.smp.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
  * @since 4.2
  */
 public class StringNamedSubstitutor {
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(StringNamedSubstitutor.class);
     private static final String START_NAME = "${";
     private static final char END_NAME = '}';
 
@@ -44,15 +47,62 @@ public class StringNamedSubstitutor {
      * Substitute named variables in the string with key value pairs from the map.
      * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
      *
-     * @param templateIS the InputStream to resolve
-     * @param config     the config to use
+     * @param string the string to resolve
+     * @param config the config to use
      * @return the resolved string
      */
+    public static String resolve(String string, Map<String, Object> config) {
+        String charset = Charset.defaultCharset().name();
+        LOG.debug("Using default charset: [{}]", charset);
+        return resolve(string, config, charset);
+    }
+    /**
+     * Substitute named variables in the string with key value pairs from the map.
+     * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
+     *
+     * @param string the string to resolve
+     * @param config the config to use
+     * @param charset the character of the input stream
+     * @return the resolved string
+     */
+    public static String resolve(String string, Map<String, Object> config, String charset) {
+        try {
+            return resolve(new ByteArrayInputStream(string.getBytes()), config, charset);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * Substitute named variables in the string with key value pairs from the map.
+     * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
+     * The input stream is ready with default charset.
+     *
+     * @param templateIS the InputStream to resolve
+     * @param config the map of property names and its values
+     * @return the resolved string
+     * @throws IOException if an I/O error occurs
+     */
     public static String resolve(InputStream templateIS, Map<String, Object> config) throws IOException {
+        String charset = Charset.defaultCharset().name();
+        LOG.debug("Using default charset: [{}]", charset);
+        return resolve(templateIS, config, charset);
+    }
+
+    /**
+     * Substitute named variables in the string with key value pairs from the map.
+     * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
+     *
+     * @param templateIS the InputStream to resolve
+     * @param config     the config to use
+     * @param charset    the character of the input stream
+     * @return the resolved string
+     */
+    public static String resolve(InputStream templateIS, Map<String, Object> config, String charset) throws IOException {
         Map<String, Object> lowerCaseMap = config.entrySet().stream()
                 .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            resolve(templateIS, lowerCaseMap, byteArrayOutputStream);
+            resolve(templateIS, lowerCaseMap, byteArrayOutputStream, charset);
             return byteArrayOutputStream.toString();
         }
     }
@@ -64,42 +114,45 @@ public class StringNamedSubstitutor {
      * @param templateIS   the InputStream to resolve
      * @param config       the config to use
      * @param outputStream the output stream to write the resolved string
+     * @param charset      the charset to use
      * @throws IOException if an I/O error occurs
      */
-    public static void resolve(InputStream templateIS, Map<String, Object> config, OutputStream outputStream) throws IOException {
+    public static void resolve(InputStream templateIS, Map<String, Object> config,
+                               OutputStream outputStream, String charset) throws IOException {
         Map<String, Object> lowerCaseMap = config.entrySet().stream()
                 .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
 
-        try (BufferedReader template = new BufferedReader(new InputStreamReader(templateIS))) {
+        try (BufferedReader template = new BufferedReader(new InputStreamReader(templateIS, charset));
+             Writer writer = new OutputStreamWriter(outputStream, charset)) {
             int read;
             while ((read = template.read()) != -1) {
                 if (read != START_NAME.charAt(0) || !isStartSequence(template)) {
-                    outputStream.write((char) read);
+                    writer.write((char) read);
                     continue;
                 }
 
                 template.skip(1L);
                 String name = readName(template, END_NAME);
                 if (name == null) {
-                    outputStream.write(START_NAME.getBytes());
+                    writer.write(START_NAME);
                 } else {
                     String key = StringUtils.lowerCase(name);
                     Object objValue = lowerCaseMap.get(key);
                     String value = objValue != null ? String.valueOf(lowerCaseMap.get(key)) : null;
 
                     if (value != null) {
-                        outputStream.write(value.getBytes());
+                        writer.write(value);
                     } else {
-                        outputStream.write(START_NAME.getBytes());
-                        outputStream.write(name.getBytes());
-                        outputStream.write(END_NAME);
+                        writer.write(START_NAME);
+                        writer.write(name);
+                        writer.write(END_NAME);
                     }
                 }
             }
         }
     }
 
-    public static boolean isStartSequence(BufferedReader reader) throws IOException {
+    private static boolean isStartSequence(BufferedReader reader) throws IOException {
         reader.mark(START_NAME.length());
         int read = reader.read();
         if (read == -1) {
@@ -143,21 +196,5 @@ public class StringNamedSubstitutor {
             builder.append(currChar);
         }
         return null;
-    }
-
-    /**
-     * Substitute named variables in the string with key value pairs from the map.
-     * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
-     *
-     * @param string the string to resolve
-     * @param config the config to use
-     * @return the resolved string
-     */
-    public static String resolve(String string, Map<String, Object> config) {
-        try {
-            return resolve(new ByteArrayInputStream(string.getBytes()), config);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 }
