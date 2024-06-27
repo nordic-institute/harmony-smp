@@ -20,6 +20,7 @@ import {
 export class HttpSessionInterceptor implements HttpInterceptor {
 
   private readonly TIME_BEFORE_EXPIRATION_IN_SECONDS = 60;
+  private readonly MAXIMUM_TIMEOUT_VALUE = 2147483647;
 
   private timerId: number;
   private timerToLogoutId: number;
@@ -34,7 +35,7 @@ export class HttpSessionInterceptor implements HttpInterceptor {
     clearTimeout(this.timerToLogoutId);
     let user = this.securityService.getCurrentUser();
     if (user && user.sessionMaxIntervalTimeoutInSeconds && user.sessionMaxIntervalTimeoutInSeconds > this.TIME_BEFORE_EXPIRATION_IN_SECONDS) {
-      let timeout = (user.sessionMaxIntervalTimeoutInSeconds - this.TIME_BEFORE_EXPIRATION_IN_SECONDS) * 1000;
+      let timeout = Math.min((user.sessionMaxIntervalTimeoutInSeconds - this.TIME_BEFORE_EXPIRATION_IN_SECONDS) * 1000, this.MAXIMUM_TIMEOUT_VALUE);
       this.timerId = setTimeout(() => this.sessionExpiringSoon(user.sessionMaxIntervalTimeoutInSeconds), timeout);
     }
     return next.handle(req);
@@ -54,3 +55,4 @@ export class HttpSessionInterceptor implements HttpInterceptor {
     });
   }
 }
+
