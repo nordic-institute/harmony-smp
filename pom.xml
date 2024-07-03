@@ -57,7 +57,7 @@ See the Licence for the specific language governing permissions and limitations 
         <bdmsl-api.version>4.3</bdmsl-api.version>
         <!-- plugin versions -->
         <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
-        <plugin.dependency-check-maven.version>9.1.0</plugin.dependency-check-maven.version>
+        <plugin.dependency-check-maven.version>10.0.1</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.11</plugin.jacoco-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
@@ -821,7 +821,7 @@ See the Licence for the specific language governing permissions and limitations 
                         <version>${plugin.dependency-check-maven.version}</version>
                         <inherited>false</inherited>
                         <configuration>
-                            <nvdApiKey>${nvdApiKey}</nvdApiKey>
+                            <nvdApiServerId>edelivery-owasp</nvdApiServerId>
                             <skipProvidedScope>true</skipProvidedScope>
                             <skipRuntimeScope>true</skipRuntimeScope>
                             <!-- Disable .Net Assembly Analyzer -->
