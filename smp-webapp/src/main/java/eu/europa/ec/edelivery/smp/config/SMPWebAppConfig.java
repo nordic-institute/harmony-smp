@@ -33,6 +33,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.util.UrlPathHelper;
@@ -147,7 +148,8 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
         dateFormat.setTimeZone(TimeZone.getDefault());
         objectMapper.setDateFormat(dateFormat);
 
-        converters.add(0, converter);
+        converters.add(0, new ResourceHttpMessageConverter());
+        converters.add(1, converter);
     }
 
     @Override

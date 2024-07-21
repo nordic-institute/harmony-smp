@@ -20,6 +20,7 @@ import {
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SmpEditorComponent} from "../../../common/components/smp-editor/smp-editor.component";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   templateUrl: './subresource-document-panel.component.html',
@@ -28,7 +29,6 @@ import {EntityStatus} from "../../../common/enums/entity-status.enum";
 })
 export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeLeaveGuard {
 
-  title: string = "Subresources";
   private _resource: ResourceRo;
   private _subresource: SubresourceRo;
 
@@ -47,7 +47,8 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private navigationService: NavigationService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
     this.resourceForm = this.formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
@@ -181,7 +182,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   onSaveButtonClicked(): void {
     this.editResourceService.saveSubresourceDocumentObservable(this.subresource, this._resource, this.document).subscribe((value: DocumentRo) => {
       if (value) {
-        this.alertService.success("Document is saved with current version [" + value.currentResourceVersion + "].")
+        this.alertService.success(this.translateService.instant("subresource.document.panel.success.save", { currentResourceVersion: value.currentResourceVersion }));
         this.document = value;
       } else {
         this.document = null;
@@ -194,7 +195,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   onGenerateButtonClicked(): void {
     this.editResourceService.generateSubresourceDocumentObservable(this.subresource, this._resource).subscribe((value: DocumentRo) => {
       if (value) {
-        this.alertService.success("Document is generated.")
+        this.alertService.success(this.translateService.instant("subresource.document.panel.success.generate"))
         this.documentForm.controls['payload'].setValue(value.payload);
         this.documentForm.controls['payload'].markAsDirty();
       } else {
@@ -251,7 +252,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
 
   validateCurrentDocument(): void {
     this.editResourceService.validateSubresourceDocumentObservable(this.subresource, this._resource, this.document).subscribe((value: DocumentRo) => {
-      this.alertService.success("Document is Valid.")
+      this.alertService.success(this.translateService.instant("subresource.document.panel.success.valid"))
     }, (error: any) => {
       this.alertService.error(error.error?.errorDescription)
     });
@@ -299,8 +300,8 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   onDocumentResetButtonClicked(): void {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Cancel changes",
-        description: "Do you want to cancel all changes on the document?"
+        title: this.translateService.instant("subresource.document.panel.cancel.confirmation.dialog.title"),
+        description: this.translateService.instant("subresource.document.panel.cancel.confirmation.dialog.description")
       }
     }).afterClosed().subscribe(result => {
       if (result) {

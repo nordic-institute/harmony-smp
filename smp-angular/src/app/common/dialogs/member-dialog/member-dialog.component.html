@@ -1,9 +1,9 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content style="width:700px">
   <form [formGroup]="memberForm">
-    <b *ngIf="newMode">You're inviting members to {{inviteTarget}}.</b>
+    <b *ngIf="newMode">{{ "member.dialog.label.invite.members" | translate: {target: inviteTarget} }}</b>
     <mat-form-field  style="width: 100%">
-      <mat-label>Choose User to invite</mat-label>
+      <mat-label>{{ "member.dialog.label.choose.user" | translate }}</mat-label>
       <input id="member-user" type="text" matInput formControlName="member-user"
              [matAutocomplete]="auto" (keyup)="applyUserFilter($event)"
              required>
@@ -12,35 +12,35 @@
           {{user.username}}
         </mat-option>
       </mat-autocomplete>
-      <mat-hint *ngIf="newMode">Type username or name to locate the user and select user from the list</mat-hint>
+      <mat-hint *ngIf="newMode">{{ "member.dialog.hint.type.username" | translate }}</mat-hint>
     </mat-form-field>
 
 
     <mat-form-field style="width:100%">
       <mat-label>Select role for the user</mat-label>
-      <select matNativeControl placeholder="Role for the member"
+      <select matNativeControl placeholder="{{ 'member.dialog.placeholder.role.type' | translate }}"
                   formControlName="member-roleType"
                   name="Role type"
-                  matTooltip="Role type for the member."
+                  matTooltip="{{ 'member.dialog.tooltip.role.type' | translate }}"
                   id="member-user_id" required>
         <option *ngFor="let role of memberRoles"
                     [value]="role.value">
           {{role.key}}
         </option>
       </select>
-      <mat-hint> Choose member role</mat-hint>
+      <mat-hint>{{ "member.dialog.hint.choose.role" | translate }}</mat-hint>
     </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button id="closeDialogButton" mat-raised-button color="primary" (click)="closeDialog()">
     <mat-icon>cancel</mat-icon>
-    <span>Close</span>
+    <span>{{ "member.dialog.button.close" | translate }}</span>
   </button>
   <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
           [disabled]="!submitButtonEnabled">
     <mat-icon>save</mat-icon>
-    <span>Save</span>
+    <span>{{ "member.dialog.button.save" | translate }}</span>
   </button>
 </mat-dialog-actions>
 

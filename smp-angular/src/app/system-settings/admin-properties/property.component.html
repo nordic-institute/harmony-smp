@@ -1,6 +1,6 @@
 <smp-search-table
   #searchTable
-  [title]="'Properties'"
+  [title]="'property.title' | translate"
   [columnPicker]="columnPicker"
   [url]="baseUrl"
   [searchTableController]="propertyController"
@@ -15,10 +15,10 @@
 >
   <ng-template #searchPanel>
     <mat-form-field style="width: 100%" >
-      <mat-label>Filter by property name</mat-label>
+      <mat-label>{{ "property.label.filter" | translate }}</mat-label>
       <input matInput name="Property"
              [(ngModel)]="filter.property"
-             [matTooltip]='"Filter by property name"' (input)="searchPropertyChanged()" id="searchProperty">
+             [matTooltip]="'property.tooltip.filter' | translate" (input)="searchPropertyChanged()" id="searchProperty">
     </mat-form-field>
   </ng-template>
 
@@ -27,7 +27,7 @@
   </ng-template>
 
   <ng-template #tableTitle>
-    <span *ngIf="isServerRestartNeeded()" [class]="'alert-message'">Server restart is needed!</span>
+    <span *ngIf="isServerRestartNeeded()" [class]="'alert-message'">{{ "property.label.server.restart.needed" | translate }}</span>
   </ng-template>
   <ng-template #propertyValueTemplate
                let-row="row"
@@ -35,9 +35,9 @@
                ngx-datatable-cell-template>
     <span [class]='aliasCssClass(value, row)'
       [matTooltip]='row.desc'>{{ value }}</span>
-    <span *ngIf="row.updateDate" style="display: block;font-size: 0.8em;color: darkorange">New Value: '{{ row.newValue +"." }}'
+    <span *ngIf="row.updateDate" style="display: block;font-size: 0.8em;color: darkorange">{{ "property.label.new.value" | translate: { value: row.newValue } }}
         <span *ngIf="!row.restartNeeded">
-      Scheduled update time:  {{ row.updateDate | date:'yyyy-MM-dd HH:mm:ss' }}</span>
+      {{ "property.label.server.restart.time" | translate: { date: (row.updateDate | date:'yyyy-MM-dd HH:mm:ss') } }}</span>
     </span>
 
 

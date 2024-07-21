@@ -1,11 +1,11 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content style="width:700px">
   <form [formGroup]="resourceForm">
-    <b *ngIf="newMode">To create a new resource enter unique identifier and scheme and click save.</b>
+    <b *ngIf="newMode">{{ "resource.dialog.description" | translate }}</b>
     <mat-form-field style="width:100%">
-      <mat-label>Selected resource type</mat-label>
-      <select matNativeControl placeholder="Select resource type for the resource"
-                  matTooltip="Select type for the resource."
+      <mat-label>{{ "resource.dialog.label.resource.type" | translate }}</mat-label>
+      <select matNativeControl placeholder="{{ 'resource.dialog.placeholder.resource.type' | translate }}"
+                  matTooltip="{{ 'resource.dialog.tooltip.resource.type' | translate }}"
                   id="resourceTypeIdentifier"
                   formControlName="resourceTypeIdentifier"
                   required>
@@ -16,7 +16,7 @@
       </select>
     </mat-form-field>
     <mat-form-field  style="width: 100%">
-      <mat-label>Resource identifier</mat-label>
+      <mat-label>{{ "resource.dialog.label.resource.id" | translate }}</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
              required auto-focus-directive
@@ -24,17 +24,17 @@
       <div
         *ngIf="(newMode && resourceForm.controls['identifierValue'].touched ) &&  resourceForm.controls['identifierValue'].hasError('required')"
         style="color:red; font-size: 70%">
-        Participant identifier must not be empty and must be up to 255 characters long.
+        {{ "resource.dialog.label.resource.id.mandatory" | translate }}
       </div>
       <div
         *ngIf="(newMode &&  resourceForm.controls['identifierValue'].hasError('dbExist'))"
         style="color:red; font-size: 70%">
-        Participant identifier for given scheme is already defined in database!
+        {{ "resource.dialog.label.resource.id.already.exists" | translate }}
       </div>
     </mat-form-field>
 
     <mat-form-field  style="width: 100%">
-      <mat-label>Resource scheme</mat-label>
+      <mat-label>{{ "resource.dialog.label.resource.scheme" | translate }}</mat-label>
       <input id="identifierScheme_id" type="text" matInput
              formControlName="identifierScheme"
              maxlength="255"
@@ -42,7 +42,7 @@
       <div
         *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&  resourceForm.controls['identifierScheme'].hasError('required')"
         style="color:red; font-size: 70%">
-        Participant scheme must not be empty.
+        {{ "resource.dialog.label.resource.scheme.mandatory" | translate }}
       </div>
       <div
         *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&
@@ -54,10 +54,10 @@
 
 
     <mat-form-field style="width:100%">
-      <mat-label>Resource visibility</mat-label>
-      <select matNativeControl placeholder="Resource visibility"
+      <mat-label>{{ "resource.dialog.label.resource.visibility" | translate }}</mat-label>
+      <select matNativeControl placeholder="{{ 'resource.dialog.placeholder.resource.visibility' | translate }}"
                   formControlName="visibility"
-                  matTooltip="Resource visibility."
+                  matTooltip="{{ 'resource.dialog.tooltip.resource.visibility' | translate }}"
                   id="visibility_id" required>
         <option *ngFor="let visibility of groupVisibilityOptions"
                     [value]="visibility.value">
@@ -70,12 +70,12 @@
 <mat-dialog-actions>
   <button id="closeDialogButton" mat-raised-button color="primary" (click)="closeDialog()">
     <mat-icon>cancel</mat-icon>
-    <span>Close</span>
+    <span>{{ "resource.dialog.button.close" | translate }}</span>
   </button>
   <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
           [disabled]="!submitButtonEnabled">
     <mat-icon>save</mat-icon>
-    <span>Save</span>
+    <span>{{ "resource.dialog.button.save" | translate }}</span>
   </button>
 </mat-dialog-actions>
 

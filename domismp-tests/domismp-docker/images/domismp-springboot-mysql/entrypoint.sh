@@ -127,6 +127,7 @@ init_smp_properties() {
     echo "# SMP init parameters"
     echo "smp.security.folder=${SMP_HOME}/smp/"
     echo "smp.libraries.folder=${SMP_HOME}/smp-libs"
+    echo "smp.locale.folder=${SMP_HOME}/locales"
     echo "smp.automation.authentication.external.tls.clientCert.enabled=true"
     echo "bdmsl.integration.enabled=false"
     echo "bdmsl.participant.multidomain.enabled=false"

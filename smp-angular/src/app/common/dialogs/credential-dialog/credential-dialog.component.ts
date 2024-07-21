@@ -8,6 +8,7 @@ import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
 import {CertificateService} from "../../services/certificate.service";
 import {CertificateRo} from "../../model/certificate-ro.model";
 import {UserService} from "../../services/user.service";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   templateUrl: './credential-dialog.component.html',
@@ -18,7 +19,7 @@ export class CredentialDialogComponent {
   public static ACCESS_TOKEN_TYPE: string = "ACCESS_TOKEN";
 
   dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-  formTitle: string = "New Access token created";
+  formTitle: string;
   credentialForm: FormGroup;
   certificateForm: FormGroup;
 
@@ -37,7 +38,8 @@ export class CredentialDialogComponent {
               private httpErrorHandlerService: HttpErrorHandlerService,
               private certificateService: CertificateService,
               public dialogRef: MatDialogRef<CredentialDialogComponent>,
-              private formBuilder: FormBuilder
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService,
   ) {
     dialogRef.disableClose = true;//disable default close operation
     this.formTitle = data.formTitle;
@@ -151,7 +153,7 @@ export class CredentialDialogComponent {
           this.newCertFile = file;
         } else {
           this.clearCertificateData()
-          this.showErrorMessage("Error occurred while reading certificate. Check if uploaded file has valid certificate type", true)
+          this.showErrorMessage(this.translateService.instant("credentials.dialog.error.read.certificate"), true)
         }
       },
       err => {
@@ -160,7 +162,10 @@ export class CredentialDialogComponent {
           this.closeDialog();
           return;
         }
-        this.showErrorMessage("Error uploading certificate file [" + file.name + "]." + err.error?.errorDescription, true)
+        this.showErrorMessage(this.translateService.instant("credentials.dialog.error.upload.certificate", {
+            fileName: file.name,
+            errorDescription: err.error?.errorDescription
+        }), true);
       }
     );
   }
@@ -176,10 +181,10 @@ export class CredentialDialogComponent {
     this.clearAlert();
     this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe((response: AccessTokenRo) => {
       this.accessTokenValue = response.value;
-      this.showSuccessMessage(
-        `Token with ID: "${response.identifier}" and value: "${response.value}" was generated!
-          <br/><br/>Copy the access token's value and save it in a safe space.
-          You won't be able to see your token's value once you click <b>Close.</b>`)
+      this.showSuccessMessage(this.translateService.instant("credentials.dialog.success.generate.token", {
+          responseIdentifier: response.identifier,
+          responseValue: response.value
+      }));
       this.userService.notifyAccessTokenUpdated(response.credential);
       this.setDisabled(true);
     }, (err) => {

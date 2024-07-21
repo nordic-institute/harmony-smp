@@ -10,7 +10,7 @@
               <mat-toolbar-row class="smp-toolbar-row">
                 <button mat-raised-button color="primary" [disabled]="!filterForm.form.valid" id="searchbutton_id">
                   <mat-icon>search</mat-icon>
-                  <span>Search</span>
+                  <span>{{ "search.table.button.search" | translate }}</span>
                 </button>
                 <ng-container *ngTemplateOutlet="additionalSearchAreaButtons"></ng-container>
               </mat-toolbar-row>
@@ -93,12 +93,12 @@
 
         <button id="editSearchRowButton" *ngIf="allowEditItems" mat-icon-button color="primary"
                 [disabled]="row.deleted || loading"
-                (click)="editSearchTableEntityRow(row)" matTooltip="Edit">
+                (click)="editSearchTableEntityRow(row)" matTooltip="{{ 'search.table.tooltip.edit' | translate }}">
           <mat-icon>edit</mat-icon>
         </button>
         <button id="deleteRowButton" *ngIf="allowDeleteItems" mat-icon-button color="primary"
                 [disabled]="row.deleted || loading"
-                (click)="onDeleteRowActionClicked(row)" matTooltip="Delete">
+                (click)="onDeleteRowActionClicked(row)" matTooltip="{{ 'search.table.tooltip.delete' | translate }}">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
@@ -112,12 +112,12 @@
           <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary"
                   [disabled]="!submitButtonsEnabled">
             <mat-icon>cancel</mat-icon>
-            <span>Cancel</span>
+            <span>{{ "search.table.button.cancel" | translate }}</span>
           </button>
           <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked(false)" color="primary"
                   [disabled]="!submitButtonsEnabled">
             <mat-icon>save</mat-icon>
-            <span>Save</span>
+            <span>{{ "search.table.button.save" | translate }}</span>
           </button>
 
           <tool-button-spacer *ngIf="allowNewItems || allowEditItems || allowDeleteItems"></tool-button-spacer>
@@ -126,17 +126,17 @@
           <button *ngIf="allowNewItems" id="newButton" mat-raised-button (click)="onNewButtonClicked()"
                   [disabled]="loading || !allowNewItems" color="primary">
             <mat-icon>add</mat-icon>
-            <span>New</span>
+            <span>{{ "search.table.button.new" | translate }}</span>
           </button>
           <button *ngIf="allowEditItems" id="editButton" mat-raised-button (click)="onEditButtonClicked()"
                   [disabled]="!editButtonEnabled || loading" color="primary">
             <mat-icon>edit</mat-icon>
-            <span>Edit</span>
+            <span>{{ "search.table.button.edit" | translate }}</span>
           </button>
           <button *ngIf="allowDeleteItems" id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()"
                   [disabled]="!deleteButtonEnabled || loading || !allowDeleteItems" color="primary">
             <mat-icon>delete</mat-icon>
-            <span>Delete</span>
+            <span>{{ "search.table.button.delete" | translate }}</span>
           </button>
         </ng-container>
         <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>

@@ -18,6 +18,7 @@ import {SearchTableValidationResult} from "./search-table-validation-result.mode
 import {ExtendedHttpClient} from "../../http/extended-http-client";
 import {Router} from "@angular/router";
 import ObjectUtils from "../utils/object-utils";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'smp-search-table',
@@ -87,7 +88,8 @@ export class SearchTableComponent implements OnInit {
               protected alertService: AlertMessageService,
               private downloadService: DownloadService,
               public dialog: MatDialog,
-              private router: Router) {
+              private router: Router,
+              private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -181,8 +183,8 @@ export class SearchTableComponent implements OnInit {
 
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
-          title: "Not persisted data",
-          description: "Action will refresh all data and not saved data will be lost. <br/><br/>Do you wish to continue?"
+          title: this.translateService.instant("search.table.dirty.confirmation.dialog.title"),
+          description: this.translateService.instant("search.table.dirty.confirmation.dialog.description")
         }
       }).afterClosed().subscribe(result => {
         if (result) {
@@ -306,7 +308,7 @@ export class SearchTableComponent implements OnInit {
           this.showSpinner = true;
           this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
             this.showSpinner = false;
-            this.alertService.success('The operation \'update\' completed successfully.', false);
+            this.alertService.success(this.translateService.instant("search.table.success.update"), false);
             this.forceRefresh = true;
             this.onRefresh();
             this.searchTableController.dataSaved();
@@ -320,10 +322,10 @@ export class SearchTableComponent implements OnInit {
               let parser = new DOMParser();
               let xmlDoc = parser.parseFromString(err.error, "text/xml");
               let errDesc = xmlDoc.getElementsByTagName("ErrorDescription")[0].childNodes[0].nodeValue;
-              this.alertService.exception('The operation \'update\' not completed successfully.', errDesc, false);
+              this.alertService.exception(this.translateService.instant("search.table.error.update"), errDesc, false);
             } catch (err2) {
               // if parse failed
-              this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
+              this.alertService.exception(this.translateService.instant("search.table.error.update"), err, false);
             }
           });
         } else {
@@ -336,7 +338,7 @@ export class SearchTableComponent implements OnInit {
     } catch (err) {
       // this.isBusy = false;
       this.showSpinner = false;
-      this.alertService.exception('The operation \'update\' completed with errors.', err);
+      this.alertService.exception(this.translateService.instant("search.table.error.update"), err);
     }
   }
 
@@ -425,7 +427,7 @@ export class SearchTableComponent implements OnInit {
 
     this.searchTableController.validateDeleteOperation(rows).subscribe((res: SearchTableValidationResult) => {
       if (!res.validOperation) {
-        this.alertService.exception("Delete validation error", res.stringMessage, false);
+        this.alertService.exception(this.translateService.instant("search.table.error.delete"), res.stringMessage, false);
       } else {
         for (const row of rows) {
           if (row.status === EntityStatus.NEW) {

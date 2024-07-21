@@ -41,6 +41,7 @@ import {firstValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
 import {CertificateRo} from "../../common/model/certificate-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -78,7 +79,8 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
               private extensionService: ExtensionService,
               protected lookups: GlobalLookups,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
 
     this.domainUpdatedEventSub = domainService.onDomainUpdatedEvent()
       .subscribe((updateDomainList: DomainRo[]): void => {
@@ -179,18 +181,18 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     if (domain.status == EntityStatus.NEW) {
       this.domainList.push(domain)
       this.selected = domain;
-      this.alertService.success("Domain: [" + domain.domainCode + "] was created!");
+      this.alertService.success(this.translateService.instant("admin.domain.success.create", { domainCode: domain.domainCode } ));
     } else if (domain.status == EntityStatus.UPDATED) {
       // update value in the array
       let itemIndex = this.domainList.findIndex(item => item.domainId == domain.domainId);
       this.domainList[itemIndex] = domain;
       this.selected = domain;
     } else if (domain.status == EntityStatus.REMOVED) {
-      this.alertService.success("Domain: [" + domain.domainCode + "]  is removed!");
+      this.alertService.success(this.translateService.instant("admin.domain.success.remove", { domainCode: domain.domainCode } ));
       this.selected = null;
       this.domainList = this.domainList.filter(item => item.domainCode !== domain.domainCode)
     } else if (domain.status == EntityStatus.ERROR) {
-      this.alertService.error("ERROR: " + domain.actionMessage);
+      this.alertService.error(this.translateService.instant("admin.domain.error", { actionMessage: domain.actionMessage }));
     }
     this.dataSource.data = this.domainList;
 

@@ -17,7 +17,7 @@ import {EditResourceService} from "../../edit-resource.service";
   styleUrls: ['./subresource-dialog.component.css']
 })
 export class SubresourceDialogComponent {
-  formTitle = "Subresource dialog";
+  formTitle = "";
   resourceForm: FormGroup;
   message: string;
   messageType: string = "alert-error";

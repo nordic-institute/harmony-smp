@@ -241,6 +241,7 @@ init_smp_properties() {
     echo "# SMP init parameters"
     echo "smp.security.folder=${DATA_DIR}/smp/"
     echo "smp.libraries.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
+    echo "smp.locale.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/locales"
     echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
     echo "smp.automation.authentication.external.tls.clientCert.enabled=true"
     echo "bdmsl.integration.enabled=true"

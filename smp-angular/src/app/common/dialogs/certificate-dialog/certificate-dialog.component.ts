@@ -3,6 +3,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {UntypedFormBuilder} from "@angular/forms";
 import {SmpConstants} from "../../../smp.constants";
 import {CertificateRo} from "../../model/certificate-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'keystore-certificate-dialog',
@@ -15,9 +16,10 @@ export class CertificateDialogComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: UntypedFormBuilder) {
+    private fb: UntypedFormBuilder,
+    private translateService: TranslateService) {
 
-    this.formTitle = "Certificate details";
+    this.translateService.get("certificate.dialog.title").subscribe(title => this.formTitle = title);
     this.current = {...data.row}
 
   }

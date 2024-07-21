@@ -16,6 +16,7 @@ import {InformationDialogComponent} from "../common/dialogs/information-dialog/i
 import {formatDate} from "@angular/common";
 import {EntityStatus} from "../common/enums/entity-status.enum";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   templateUrl: './login.component.html',
@@ -36,7 +37,8 @@ export class LoginComponent implements OnInit, OnDestroy {
               private securityService: SecurityService,
               private alertService: AlertMessageService,
               private securityEventService: SecurityEventService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
   }
 
 
@@ -83,10 +85,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             const forbiddenCode = error.message;
             switch (forbiddenCode) {
               case USER_INACTIVE:
-                message = 'The user is inactive. Please contact your administrator.';
+                message = this.translateService.instant("login.error.inactive.user");
                 break;
               default:
-                message = error.status + ' The username/password combination you provided are not valid. Please try again or contact your administrator.';
+                message = this.translateService.instant("login.error.invalid.credentials", { errorStatus: error.status } );
                 // clear the password
                 this.loginForm['password'].setValue('');
                 break;
@@ -94,10 +96,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             break;
           case HTTP_GATEWAY_TIMEOUT:
           case HTTP_NOTFOUND:
-            message = 'Unable to login. SMP is not running.';
+            message = this.translateService.instant("login.error.smp.not.running");
             break;
           default:
-            message = 'Default error (' + error.status + ') occurred during login.';
+            message = this.translateService.instant("login.error.generic.error", { errorStatus: error.status } );
             break;
         }
         this.alertService.error(message);
@@ -124,7 +126,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.loginForm.get('password').value
       );
     } else {
-      this.alertService.error('Please enter a valid username and password.');
+      this.alertService.error(this.translateService.instant("login.error.invalid.username.or.password"));
     }
   }
 
@@ -135,15 +137,17 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.resetForm.get('resetUsername').value
       );
     } else {
-      this.alertService.error('Please enter a valid username.');
+      this.alertService.error(this.translateService.instant("login.error.invalid.username"));
     }
   }
 
   showWarningBeforeExpire(user: User) {
     this.dialog.open(InformationDialogComponent, {
       data: {
-        title: "Warning! Your password is about to expire",
-        description: "Your password is about to expire on " + formatDate(user.passwordExpireOn, "longDate", "en-US") + "! Please change the password before the expiration date!"
+        title: this.translateService.instant("login.dialog.password.expiration.dialog.title"),
+        description: this.translateService.instant("login.dialog.password.expiration.dialog.description", {
+          expirationDate: formatDate(user.passwordExpireOn, "longDate", user.smpLocale || "en-US")
+        })
       }
     }).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
   }

@@ -11,6 +11,7 @@ import {HttpErrorHandlerService} from "../../common/error/http-error-handler.ser
 import {UserService} from "../../common/services/user.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -30,7 +31,8 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
 
   constructor(private httpErrorHandlerService: HttpErrorHandlerService,
               private userService: UserService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private translateService: TranslateService) {
 
 
     this.userService.onCertificateCredentiasUpdateSubject().subscribe((credentials: CredentialRo[]) => {
@@ -82,8 +84,8 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
   public onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete Certificate",
-        description: "Action will delete certificate: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
+        title: this.translateService.instant("user.certificates.delete.confirmation.dialog.title"),
+        description: this.translateService.instant("user.certificates.delete.confirmation.dialog.description", { credentialName: credential.name })
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -96,7 +98,7 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
     this.dialog.open(CredentialDialogComponent, {
       data: {
         credentialType: CredentialDialogComponent.CERTIFICATE_TYPE,
-        formTitle: "Import Certificate"
+        formTitle: this.translateService.instant("user.certificates.credentials.dialog.title")
       }
     }).afterClosed();
 
@@ -121,8 +123,8 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Update Certificate",
-        description: "Action will update Certificate data:<br />" + credential.name + "!<br /><br />Do you wish to continue?"
+        title: this.translateService.instant("user.certificates.update.confirmation.dialog.title"),
+        description: this.translateService.instant("user.certificates.update.confirmation.dialog.description", { credentialName: credential.name })
       }
     }).afterClosed().subscribe(result => {
       if (result) {

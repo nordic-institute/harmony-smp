@@ -1,6 +1,6 @@
 ﻿<smp-search-table
   #searchTable
-  [title]="'Alerts'"
+  [title]="'alert.panel.title' | translate"
   [columnPicker]="columnPicker"
   [url]="baseUrl"
   [additionalToolButtons]="additionalToolButtons"
@@ -22,7 +22,7 @@
     <div class='truncate-text' title="{{value}}">{{ value }}</div>
   </ng-template>
   <ng-template #forUser let-row="row" let-value="value" ngx-datatable-cell-template>
-    <div class='truncate-text' title="{{value}} (Email:'{{row.mailTo}}')">{{ value }}</div>
+    <div class='truncate-text' title="{{ 'alert.panel.user.title' | translate: {value, mailTo: row.mailTo} }}">{{ value }}</div>
   </ng-template>
   <ng-template #credentialType let-row="row" let-value="value" ngx-datatable-cell-template>
     <div class='truncate-text'>{{ value['CREDENTIAL_TYPE'] }}</div>

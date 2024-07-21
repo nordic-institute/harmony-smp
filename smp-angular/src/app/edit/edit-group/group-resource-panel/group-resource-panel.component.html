@@ -3,29 +3,29 @@
     <mat-toolbar-row class="smp-toolbar-row">
       <button id="createButton" mat-raised-button (click)="onCreateResourceButtonClicked()" color="primary"
               [disabled]="createResourceDisabled"
-              matTooltip="Create"
+              matTooltip="{{ 'group.resource.panel.tooltip.create' | translate }}"
       >
         <mat-icon>add</mat-icon>
-        <span>Create</span>
+        <span>{{ "group.resource.panel.button.create" | translate }}</span>
       </button>
       <button id="editButton" mat-raised-button (click)="onEditSelectedButtonClicked()" color="primary"
               [disabled]="!selected"
-              matTooltip="Edit"
+              matTooltip="{{ 'group.resource.panel.button.edit' | translate }}"
       >
         <mat-icon>edit</mat-icon>
-        <span>Edit data</span>
+        <span>{{ "group.resource.panel.button.edit" | translate }}</span>
       </button>
       <button id="groupMembersButton" mat-raised-button (click)="onEditSelectedGroupMembersButtonClicked()" color="primary"
-              matTooltip="Group members"
+              matTooltip="{{ 'group.resource.panel.tooltip.members' | translate }}"
               [disabled]="!selected">
         <mat-icon>group</mat-icon>
-        <span>Resource members</span>
+        <span>{{ "group.resource.panel.button.members" | translate }}</span>
       </button>
       <button id="deleteButton" mat-raised-button (click)="onDeleteSelectedButtonClicked()" color="primary"
-              matTooltip="Delete selected resource"
+              matTooltip="{{ 'group.resource.panel.tooltip.delete' | translate }}"
               [disabled]="!selected">
         <mat-icon>delete</mat-icon>
-        <span>Delete</span>
+        <span>{{ "group.resource.panel.button.delete" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
@@ -39,9 +39,9 @@
     <div class="edit-resource-table-container">
 
       <mat-form-field id="edit-resource-filter" style="width: 100%">
-        <mat-label>Resource filter</mat-label>
+        <mat-label>{{ "group.resource.panel.label.filter" | translate }}</mat-label>
         <input matInput (keyup)="applyResourceFilter($event)"
-               placeholder="Resource filter"
+               placeholder="{{ 'group.resource.panel.placeholder.filter' | translate }}"
                [disabled]="disabledForm"
                #inputDomainMemberFilter>
       </mat-form-field>
@@ -49,12 +49,12 @@
       <table class="mat-elevation-z2" mat-table [dataSource]="data">
 
         <ng-container matColumnDef="identifierScheme">
-          <th mat-header-cell *matHeaderCellDef>Scheme</th>
+          <th mat-header-cell *matHeaderCellDef>{{ "group.resource.panel.label.identifier.scheme" | translate }}</th>
           <td mat-cell *matCellDef="let row">{{row.identifierScheme}}</td>
         </ng-container>
 
         <ng-container matColumnDef="identifierValue">
-          <th mat-header-cell *matHeaderCellDef>Identifier</th>
+          <th mat-header-cell *matHeaderCellDef>{{ "group.resource.panel.label.identifier.value" | translate }}</th>
           <td mat-cell *matCellDef="let row">{{row.identifierValue}}</td>
         </ng-container>
 
@@ -68,12 +68,11 @@
         ></tr>
 
         <tr class="mat-row" *matNoDataRow>
-          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No resources
-            matching the filter
-            "{{inputDomainMemberFilter.value}}"
+          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">
+            {{ "group.resource.panel.label.no.filter.results" | translate: { filterValue: inputDomainMemberFilter.value } }}
           </td>
           <ng-template #noDataFound>
-            <td class="mat-cell" colspan="2">The group has no resources</td>
+            <td class="mat-cell" colspan="2">{{ "group.resource.panel.label.no.data.found" | translate }}</td>
           </ng-template>
         </tr>
       </table>
@@ -84,6 +83,6 @@
                    [hidePageSize]="true"
                    [pageSize]="5"
                    [disabled]="disabledForm"
-                   aria-label="Select pages"></mat-paginator>
+                   attr.aria-label="{{ 'group.resource.panel.label.select.pages' | translate }}"></mat-paginator>
   </div>
 </div>

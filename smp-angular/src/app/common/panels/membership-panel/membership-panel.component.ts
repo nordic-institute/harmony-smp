@@ -17,6 +17,7 @@ import {Observable} from "rxjs";
 import {SearchTableResult} from "../../search-table/search-table-result.model";
 import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {ResourceRo} from "../../model/resource-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -45,7 +46,8 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   constructor(private domainService: AdminDomainService,
               private membershipService: MembershipService,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
   }
   ngAfterViewInit() {
     this.loadMembershipData();
@@ -54,11 +56,11 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   get title(): string {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-        return "Direct Domain members" + (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")
+        return this.translateService.instant("membership.panel.title.domain", {value: (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")});
       case MemberTypeEnum.GROUP:
-        return "Direct Group members" + (!!this._group ? ": [" + this._group.groupName + "]" : "")
+        return this.translateService.instant("membership.panel.title.group", {value: (!!this._group ? ": [" + this._group.groupName + "]" : "")});
       case MemberTypeEnum.RESOURCE:
-        return "Resource direct members"
+        return this.translateService.instant("membership.panel.title.resource");
     }
   }
 
@@ -185,9 +187,8 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Remove member",
-        description: "Action will remove member  [" + this.selectedMember.username + "]! " +
-          "<br/><br/>Do you wish to continue?"
+        title: this.translateService.instant("membership.panel.delete.confirmation.dialog.title"),
+        description: this.translateService.instant("membership.panel.delete.confirmation.dialog.description", {username: this.selectedMember.username})
       }
     }).afterClosed().subscribe(result => {
       if (result) {

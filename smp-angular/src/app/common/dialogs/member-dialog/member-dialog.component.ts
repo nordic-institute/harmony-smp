@@ -11,6 +11,7 @@ import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {GroupRo} from "../../model/group-ro.model";
 import {ResourceRo} from "../../model/resource-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -43,7 +44,8 @@ export class MemberDialogComponent implements OnInit {
               private membershipService: MembershipService,
               public dialogRef: MatDialogRef<MemberDialogComponent>,
               private alertService: AlertMessageService,
-              private formBuilder: FormBuilder
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService
   ) {
     dialogRef.disableClose = true;//disable default close operation
     this._currentDomain = data.domain;
@@ -63,7 +65,9 @@ export class MemberDialogComponent implements OnInit {
     this.currentFilter = "";
   }
   get formTitle(){
-    return (!this._currentMember.memberId? "Invite":"Edit") + " " + this.membershipType + " member"
+    return this._currentMember.memberId
+      ? this.translateService.instant("manage.dialog.title.edit.mode", {membershipType: this.membershipType})
+      : this.translateService.instant("manage.dialog.title.invite.mode", {membershipType: this.membershipType});
   }
 
   get member(): MemberRo {

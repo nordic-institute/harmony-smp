@@ -18,7 +18,7 @@ export class GroupDialogComponent {
     .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
-  formTitle = "Group dialog";
+  formTitle = '';
   groupForm: FormGroup;
 
   message: string;

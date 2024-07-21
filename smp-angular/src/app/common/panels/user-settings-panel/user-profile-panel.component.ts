@@ -11,7 +11,7 @@ import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 import {ApplicationRoleEnum} from "../../enums/application-role.enum";
 import {UserRo} from "../../model/user-ro.model";
 import {UserController} from "../../services/user-controller";
-
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'user-profile-panel',
@@ -24,6 +24,12 @@ export class UserProfilePanelComponent {
   @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
   @Output() onChangeUserPasswordEvent: EventEmitter<UserRo> = new EventEmitter();
 
+  siteLanguage = 'English';
+
+  languageList = [
+    { code: 'en', label: 'English' },
+    { code: 'ro', label: 'Romanian' },
+  ];
 
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
@@ -33,7 +39,6 @@ export class UserProfilePanelComponent {
   readonly applicationRoles = Object.keys(ApplicationRoleEnum).map(el => {
     return {key: el, value: ApplicationRoleEnum[el]}
   });
-
 
   userForm: FormGroup;
   userCredentialForm: FormGroup;
@@ -46,7 +51,6 @@ export class UserProfilePanelComponent {
 
   @ViewChild('username', {static: false}) usernameField: ElementRef;
 
-
   constructor(
     private securityService: SecurityService,
     private themeService: ThemeService,
@@ -55,7 +59,8 @@ export class UserProfilePanelComponent {
     private http: HttpClient,
     private lookups: GlobalLookups,
     private dateAdapter: DateAdapter<Date>,
-    private ngxMatDateAdapter: NgxMatDateAdapter<Date>) {
+    private ngxMatDateAdapter: NgxMatDateAdapter<Date>,
+    private translateService: TranslateService) {
 
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
@@ -69,7 +74,7 @@ export class UserProfilePanelComponent {
         Validators.maxLength(255)]),
       'fullName': new FormControl({value: '', disabled: false}),
       'smpTheme': new FormControl({value: 'default_theme', disabled: false}),
-      'smpLocale': new FormControl({value: 'fr', disabled: false}),
+      'smpLocale': new FormControl({value: 'en', disabled: false}),
 
     });
 
@@ -107,7 +112,7 @@ export class UserProfilePanelComponent {
       this.userForm.controls['emailAddress'].setValue(this._managedUserData.emailAddress);
       this.userForm.controls['fullName'].setValue(this._managedUserData.fullName);
       this.userForm.controls['smpTheme'].setValue(!this._managedUserData.smpTheme ? 'default_theme' : this._managedUserData.smpTheme);
-      this.userForm.controls['smpLocale'].setValue(!this._managedUserData.smpLocale ? 'fr' : this._managedUserData.smpLocale);
+      this.userForm.controls['smpLocale'].setValue(!this._managedUserData.smpLocale ? 'en' : this._managedUserData.smpLocale);
       // mark form as pristine
       this.userForm.enable();
       // disable fields
@@ -127,7 +132,7 @@ export class UserProfilePanelComponent {
       this.userForm.controls['emailAddress'].setValue("");
       this.userForm.controls['fullName'].setValue("");
       this.userForm.controls['smpTheme'].setValue('default_theme');
-      this.userForm.controls['smpLocale'].setValue('fr');
+      this.userForm.controls['smpLocale'].setValue('en');
       this.userForm.disable();
     }
     this.userForm.markAsPristine();
@@ -208,6 +213,9 @@ export class UserProfilePanelComponent {
       this.dateAdapter.setLocale(target);
       this.ngxMatDateAdapter.setLocale(target);
     }
+
+    let selected = this.languageList.map(language => language.code).find(code => code === target);
+    this.translateService.use(selected);
   }
 
   isDirty(): boolean {

@@ -7,6 +7,7 @@ import {AlertMessageService} from "../../../common/alert-message/alert-message.s
 import {GlobalLookups} from "../../../common/global-lookups";
 import {CertificateService} from "../../../common/services/certificate.service";
 import {CertificateRo} from "../../../common/model/certificate-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -15,8 +16,6 @@ import {CertificateRo} from "../../../common/model/certificate-ro.model";
 })
 export class SubresourceDocumentWizardComponent {
 
-  static readonly NEW_MODE = 'New ServiceMetadata XML';
-  static readonly EDIT_MODE = 'Edit ServiceMetadata XML';
   static readonly EBCORE_IDENTIFIER_PREFIX = "urn:oasis:names:tc:ebcore:partyid-type:";
 
   isNewSubresource: boolean;
@@ -35,6 +34,7 @@ export class SubresourceDocumentWizardComponent {
     private dialogFormBuilder: UntypedFormBuilder,
     private certificateService: CertificateService,
     private lookups: GlobalLookups,
+    private translateService: TranslateService
   ) {
     this.isNewSubresource = this.data.isNewSubresource;
 
@@ -84,11 +84,14 @@ export class SubresourceDocumentWizardComponent {
             'endpointCertificate': res.encodedValue
           });
         } else {
-          this.certificateValidationMessage = 'Error occurred while reading certificate. Check if uploaded file has valid certificate type';
+          this.certificateValidationMessage = this.translateService.instant("subresource.document.wizard.error.read");
         }
       },
       err => {
-        this.certificateValidationMessage = 'Error uploading certificate file [' + file.name + '] ' + err.error?.errorDescription;
+        this.certificateValidationMessage = this.translateService.instant("subresource.document.wizard.error.upload", {
+          fileName: file.name,
+          errorDescription: err.error?.errorDescription
+        });
       }
     );
   }

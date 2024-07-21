@@ -15,6 +15,7 @@ import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-
 import {SubresourceDialogComponent} from "./subresource-dialog/subresource-dialog.component";
 import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -25,7 +26,7 @@ import {NavigationNode, NavigationService} from "../../../window/sidenav/navigat
 export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuard {
 
 
-  title: string = "Subresources";
+  title: string = "";
   @Input() group: GroupRo;
   private _resource: ResourceRo;
   @Input() domain: DomainRo;
@@ -41,7 +42,9 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
   constructor(private editResourceService: EditResourceService,
               private navigationService: NavigationService,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
+    this.title = this.translateService.instant("subresource.panel.title");
   }
 
   ngAfterViewInit() {
@@ -113,7 +116,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
         subresourceDefs: subResDef,
         subresource: this.createSubresource(subResDef),
 
-        formTitle: "Create Subresource Dialog"
+        formTitle: this.translateService.instant("subresource.panel.subresource.dialog.title")
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -157,7 +160,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     return {
       code: "subresource-document",
       icon: "description",
-      name: "Edit subresource document",
+      name: this.translateService.instant("subresource.panel.label.subresource.name"),
       routerLink: "subresource-document",
       selected: true,
       tooltip: "",
@@ -167,20 +170,22 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
 
   public onDeleteSelectedButtonClicked() {
     if (!this._resource || !this._resource.resourceId) {
-      this.alertService.error("Can not delete subresource because of invalid resource data. Is resource selected?");
+      this.alertService.error(this.translateService.instant("subresource.panel.error.delete.resource.data"));
       return;
     }
 
     if (!this.selected || !this.selected.subresourceId) {
-      this.alertService.error("Can not delete subresource because of invalid subresource data. Is subresource selected?");
+      this.alertService.error(this.translateService.instant("subresource.panel.error.delete.subresource.data"));
       return;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete Resource with scheme from DomiSMP",
-        description: "Action will permanently delete subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "]! " +
-          "<br/><br/>Do you wish to continue?"
+        title: this.translateService.instant("subresource.panel.delete.confirmation.dialog.title"),
+        description: this.translateService.instant("subresource.panel.delete.confirmation.dialog.description", {
+          identifierScheme: this.selected.identifierScheme,
+          identifierValue: this.selected.identifierValue
+        })
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -200,7 +205,10 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
         }))
       .subscribe((result: SubresourceRo) => {
           if (result) {
-            this.alertService.success("Subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "] deleted.");
+            this.alertService.success(this.translateService.instant("subresource.panel.success.delete", {
+              identifierScheme: this.selected.identifierScheme,
+              identifierValue: this.selected.identifierValue
+            }));
             this.selected = null;
           }
         }, (error) => {

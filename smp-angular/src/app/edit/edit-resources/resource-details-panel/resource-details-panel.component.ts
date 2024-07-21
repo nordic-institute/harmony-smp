@@ -10,6 +10,7 @@ import {EditResourceService} from "../edit-resource.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -24,7 +25,7 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       return {key: el, value: VisibilityEnum[el]}
     });
 
-  title: string = "Resources";
+  title: string = '';
   private _resource: ResourceRo;
   @Input() private group: GroupRo;
   @Input() domain: DomainRo;
@@ -37,7 +38,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
               private navigationService: NavigationService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
     this.resourceForm = formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
@@ -45,6 +47,7 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       'resourceTypeIdentifier': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
+    this.title = this.translateService.instant("resource.details.panel.title");
   }
 
   get resource(): ResourceRo {
@@ -87,7 +90,7 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     return {
       code: "resource-document",
       icon: "note",
-      name: "Edit resource document",
+      name: this.translateService.instant("resource.details.panel.label.resource.name"),
       routerLink: "resource-document",
       selected: true,
       tooltip: "",
@@ -101,14 +104,14 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
   get visibilityDescription(): string {
     if (this.resourceForm.get('visibility').value == VisibilityEnum.Private) {
-      return "The private resource is accessible only to the resource members!"
+      return this.translateService.instant("resource.details.panel.label.resource.visibility.private");
     }
     if (this.group.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private group. Only the group members and group resource members can access the resource!"
+      return this.translateService.instant("resource.details.panel.label.resource.visibility.private.group");
     }
     if (this.domain.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private domain. Only the domain members, domain group members and its resource members can access the resource!"
+      return this.translateService.instant("resource.details.panel.label.resource.visibility.private.domain");
     }
-    return "The resource is public on the public group and the public domain. The resource data is accessible to all users."
+    return this.translateService.instant("resource.details.panel.label.resource.visibility.public");
   }
 }

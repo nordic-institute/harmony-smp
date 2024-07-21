@@ -4,13 +4,13 @@
 
       <!-- Name Column -->
       <ng-container matColumnDef="key">
-        <th mat-header-cell *matHeaderCellDef>Key</th>
+        <th mat-header-cell *matHeaderCellDef>{{ "object.properties.dialog.header.key" | translate }}</th>
         <td mat-cell *matCellDef="let element">{{element[0] | titlecase }}</td>
       </ng-container>
 
       <!-- Weight Column -->
       <ng-container matColumnDef="value">
-        <th mat-header-cell *matHeaderCellDef>Value</th>
+        <th mat-header-cell *matHeaderCellDef>{{ "object.properties.dialog.header.value" | translate }}</th>
         <td mat-cell *matCellDef="let element">{{element[1]}}</td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -21,6 +21,6 @@
 <mat-dialog-actions>
   <button mat-raised-button color="primary" (click)="dialogRef.close(false)" id="nobuttondialog_id">
     <mat-icon>close</mat-icon>
-    <span>Close</span>
+    <span>{{ "object.properties.dialog.button.close" | translate }}</span>
   </button>
 </mat-dialog-actions>

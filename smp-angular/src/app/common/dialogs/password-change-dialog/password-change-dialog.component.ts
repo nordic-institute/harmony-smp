@@ -7,6 +7,7 @@ import {SecurityService} from "../../../security/security.service";
 import {UserDetailsService} from "../../services/user-details.service";
 import {UserRo} from "../../model/user-ro.model";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'smp-password-change-dialog',
@@ -15,7 +16,6 @@ import {AlertMessageService} from "../../alert-message/alert-message.service";
 })
 export class PasswordChangeDialogComponent {
 
-  formTitle = "Set/Change password dialog";
   dialogForm: UntypedFormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
@@ -34,7 +34,8 @@ export class PasswordChangeDialogComponent {
     private securityService: SecurityService,
     private alertService: AlertMessageService,
     public dialog: MatDialog,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
+    private translateService: TranslateService
   ) {
     // disable close of focus lost
     dialogRef.disableClose = true;
@@ -93,7 +94,13 @@ export class PasswordChangeDialogComponent {
   }
 
   get getPasswordTitle(): string {
-    return this.adminUser ? "Admin password for user [" + this.securityService.getCurrentUser().username + "]" : "Current password";
+    return this.adminUser
+      ? this.translateService.instant("password.change.dialog.label.password.admin", {username: this.securityService.getCurrentUser().username})
+      : this.translateService.instant("password.change.dialog.label.password.user");
+  }
+
+  get formTitle(): string {
+    return this.translateService.instant("password.change.dialog.title");
   }
 
   changeCurrentUserPassword() {
@@ -128,8 +135,9 @@ export class PasswordChangeDialogComponent {
   }
 
   async showPassChangeDialog() {
-    this.alertService.success("Password has been successfully set/changed." +
-      (!this.adminUser ? " Login again to the application with the new password!" : ""), true);
+    this.alertService.success(this.adminUser
+        ? this.translateService.instant("password.change.dialog.success.password.change.admin")
+        : this.translateService.instant("password.change.dialog.success.password.change.user"), true);
 
 
     if (!this.adminUser) {

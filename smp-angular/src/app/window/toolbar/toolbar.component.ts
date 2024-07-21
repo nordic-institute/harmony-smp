@@ -8,6 +8,7 @@ import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
 import {NavigationService} from "../sidenav/navigation-model.service";
 import {UserController} from "../../common/services/user-controller";
+import {TranslateService} from "@ngx-translate/core";
 
 /**
  * Expanded side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
@@ -32,7 +33,8 @@ export class ToolbarComponent {
               private navigation: NavigationService,
               private http: HttpClient,
               private dialog: MatDialog,
-              private lookups: GlobalLookups) {
+              private lookups: GlobalLookups,
+              private translateService: TranslateService) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
   }
 
@@ -82,9 +84,9 @@ export class ToolbarComponent {
 
   get currentUserRoleDescription(): string {
     if (this.securityService.isCurrentUserSystemAdmin()) {
-      return "System administrator";
+      return this.translateService.instant("toolbar.component.label.system.administrator.role");
     }
-    return "SMP user";
+    return this.translateService.instant("toolbar.component.label.user.role");
   }
 
   openCurrentCasUserData() {

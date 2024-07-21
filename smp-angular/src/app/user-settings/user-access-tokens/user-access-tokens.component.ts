@@ -9,6 +9,7 @@ import {AccessTokenPanelComponent} from "./access-token-panel/access-token-panel
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 import {UserService} from "../../common/services/user.service";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   templateUrl: './user-access-tokens.component.html',
@@ -26,7 +27,8 @@ export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuar
   paginator: MatPaginator;
 
   constructor(private userService: UserService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private translateService: TranslateService) {
     this.userService.onAccessTokenCredentialsUpdateSubject().subscribe((credentials: CredentialRo[]) => {
       this.updateAccessTokenCredentials(credentials);
     });
@@ -77,8 +79,8 @@ export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuar
   public onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete Access token",
-        description: "Action will delete access token: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
+        title: this.translateService.instant("user.access.tokens.delete.confirmation.dialog.title"),
+        description: this.translateService.instant("user.access.tokens.delete.confirmation.dialog.description", { credentialName: credential.name })
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -91,7 +93,7 @@ export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuar
     this.dialog.open(CredentialDialogComponent, {
       data: {
         credentialType: CredentialDialogComponent.ACCESS_TOKEN_TYPE,
-        formTitle: "New Access token created"
+        formTitle: this.translateService.instant("user.access.tokens.credentials.dialog.title")
       }
     }).afterClosed();
   }
@@ -99,8 +101,8 @@ export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuar
   public onSaveItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Update Access token",
-        description: "Action will update access token: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
+        title: this.translateService.instant("user.access.tokens.update.confirmation.dialog.title"),
+        description: this.translateService.instant("user.access.tokens.update.confirmation.dialog.description", { credentialName: credential.name })
       }
     }).afterClosed().subscribe(result => {
       if (result) {

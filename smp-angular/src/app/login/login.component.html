@@ -1,23 +1,23 @@
 ﻿<div id="page" class="login-page" [style]="'justify-content:center; align-items:center; height:100%'">
   <div fxLayout="row" [style]="'justify-content:center; align-items:center; height:100%'">
     <mat-card *ngIf="isUserAuthSSOEnabled()  == true" fxFlex="400px" class="login-panel" >
-      <mat-card-title class="title-panel">SSO Login: {{ lookups.cachedApplicationInfo.ssoAuthenticationLabel }}
+      <mat-card-title class="title-panel">{{ "login.title.sso.login" | translate }} {{ lookups.cachedApplicationInfo.ssoAuthenticationLabel }}
       </mat-card-title>
       <mat-card-content class="login-panel-content">
         <a mat-raised-button color="primary" href="{{lookups.cachedApplicationInfo.ssoAuthenticationURI}}">
           <mat-icon>input</mat-icon>
-          <span> SSO Login</span>
+          <span>{{ "login.button.sso.login" | translate }}</span>
         </a>
       </mat-card-content>
     </mat-card>
     <mat-card *ngIf="isUserAuthPasswdEnabled() == true"  class="login-panel">
-      <mat-card-title class="title-panel">SMP Login</mat-card-title>
+      <mat-card-title class="title-panel">{{ "login.title.smp.login" | translate }}</mat-card-title>
       <mat-card-content class="login-panel-content">
         <mat-tab-group>
-          <mat-tab label="Login">
+          <mat-tab label="{{ 'login.label.login' | translate }}">
             <ng-container *ngTemplateOutlet="loginFormContainer"></ng-container>
           </mat-tab>
-          <mat-tab label="Request password reset">
+          <mat-tab label="{{ 'login.label.password.reset' | translate }}">
             <ng-container *ngTemplateOutlet="requestResetContainer"></ng-container>
           </mat-tab>
         </mat-tab-group>
@@ -31,21 +31,21 @@
 <ng-template #loginFormContainer>
   <div [formGroup]="loginForm" class="form-control">
     <mat-form-field style="width: 100%">
-      <mat-label>Username</mat-label>
+      <mat-label>{{ "login.label.login.username" | translate }}</mat-label>
       <input matInput id="username_id"
              formControlName="username"
              auto-focus-directive
              required>
     </mat-form-field>
     <mat-form-field style="width: 100%">
-      <mat-label>Password</mat-label>
+      <mat-label>{{ "login.label.password" | translate }}</mat-label>
       <input matInput id="password_id" type="password"
              formControlName="password" required>
     </mat-form-field>
     <button mat-raised-button color="primary" id="loginbutton_id" [disabled]="!loginForm.valid"
             (click)="login()">
       <mat-icon>input</mat-icon>
-      <span> Login</span>
+      <span>{{ "login.button.login" | translate }}</span>
     </button>
   </div>
 </ng-template>
@@ -53,7 +53,7 @@
 <ng-template #requestResetContainer>
   <div [formGroup]="resetForm" class="form-control">
     <mat-form-field style="width: 100%">
-      <mat-label>Username</mat-label>
+      <mat-label>{{ "login.label.password.reset.username" | translate }}</mat-label>
       <input matInput id="reset_username_id"
              formControlName="resetUsername"
              auto-focus-directive
@@ -64,7 +64,7 @@
             (click)="requestCredentialReset()"
     >
       <mat-icon>input</mat-icon>
-      <span> Request reset password</span>
+      <span>{{ "login.button.password.reset" | translate }}</span>
     </button>
     </div>
 </ng-template>

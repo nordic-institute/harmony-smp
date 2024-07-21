@@ -26,6 +26,7 @@ import {
 } from "../../../system-settings/admin-properties/property-validate-ro.model";
 import {PropertySourceEnum} from "../../enums/property-source.enum";
 import {firstValueFrom} from "rxjs";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'property-details-dialog',
@@ -33,10 +34,6 @@ import {firstValueFrom} from "rxjs";
   styleUrls: ['./property-details-dialog.component.css']
 })
 export class PropertyDetailsDialogComponent implements OnInit {
-
-  static readonly NEW_MODE: string = 'New {TYPE} Property';
-  static readonly EDIT_MODE: string = '{TYPE} Property Edit';
-
 
   editMode: boolean;
   formTitle: string;
@@ -54,13 +51,15 @@ export class PropertyDetailsDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<PropertyDetailsDialogComponent>,
     private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: UntypedFormBuilder) {
+    private fb: UntypedFormBuilder,
+    private translateService: TranslateService) {
 
     this.editMode = data.edit;
     this.propertyType = data.propertyType;
     this.propertyType = !data.propertyType ? PropertySourceEnum.SYSTEM : data.propertyType;
-    this.formTitle = (this.editMode ? PropertyDetailsDialogComponent.EDIT_MODE : PropertyDetailsDialogComponent.NEW_MODE)
-      .replace('{TYPE}', this.capitalize(this.propertyType));
+    this.formTitle = this.editMode
+      ? this.translateService.instant("property.details.dialog.title.edit.mode", {type: this.capitalize(this.propertyType)})
+      : this.translateService.instant("property.details.dialog.title.new.mode", {type: this.capitalize(this.propertyType)});
 
     this.current = this.editMode
       ? {
@@ -128,7 +127,9 @@ export class PropertyDetailsDialogComponent implements OnInit {
       const result: PropertyValidationRo = await firstValueFrom(validationObservable);
       this.showSpinner = false;
       if (!result.propertyValid) {
-        this.propertyForm.controls['errorMessage'].setValue(result.errorMessage ? result.errorMessage : 'Invalid property');
+        this.propertyForm.controls['errorMessage'].setValue(result.errorMessage
+          ? result.errorMessage
+          : this.translateService.instant("property.details.dialog.error.invalid.property"));
       } else {
         this.propertyForm.controls['errorMessage'].setValue("");
         // we can close the dialog
@@ -139,7 +140,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
         this.closeDialog();
         return;
       }
-      this.alertService.error("Error occurred on Validation the property", err)
+      this.alertService.error(this.translateService.instant("property.details.dialog.error.validation"), err)
       console.log("Error occurred on Validation the property: " + err);
     }
   }

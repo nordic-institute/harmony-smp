@@ -22,7 +22,7 @@ export class ResourceDialogComponent {
       return {key: el, value: VisibilityEnum[el]}
     });
 
-  formTitle = "Resource dialog";
+  formTitle = "";
   resourceForm: FormGroup;
   message: string;
   messageType: string = "alert-error";

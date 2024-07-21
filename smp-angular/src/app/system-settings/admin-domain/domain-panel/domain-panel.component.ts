@@ -8,6 +8,7 @@ import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {CertificateRo} from "../../../common/model/certificate-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'domain-panel',
@@ -80,7 +81,8 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   constructor(private domainService: AdminDomainService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
 
     this.domainForm = formBuilder.group({
       'domainCode': new FormControl({value: '', readonly: true}, [Validators.pattern(this.domainCodePattern),
@@ -148,17 +150,17 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   }
 
   get showWarningMessage() {
-    let message = "To complete domain configuration, please: <ul>";
+    let message = this.translateService.instant("domain.panel.warning.domain.configuration.prefix");
     if (!this._domain.signatureKeyAlias) {
-      message += "<li>select the signature key to be used for signing the domain's responses!</li>";
+      message += this.translateService.instant("domain.panel.warning.domain.configuration.option.signature.key");
     }
     if (!this.domainResourceTypes?.length) {
-      message += "<li>select at least one resource type from the Resource Types tab</li>";
+      message += this.translateService.instant("domain.panel.warning.domain.configuration.option.resource.type");
     }
     if (!this._domain.adminMemberCount || this._domain.adminMemberCount < 1) {
-      message += "<li>add a domain member with 'ADMIN' role from the Members tab!</li>";
+      message += this.translateService.instant("domain.panel.warning.domain.configuration.option.admin.member");
     }
-    message += "</ul>";
+    message += "</ul>"; // No need to translate this part
     return message;
   }
 

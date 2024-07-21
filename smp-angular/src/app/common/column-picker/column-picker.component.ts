@@ -57,4 +57,9 @@ export class ColumnPickerComponent {
     const isChecked = this.selectedColumns.find(c => c.name === col.name) != null;
     return isChecked;
   }
+
+  // todo: add translate for column names
+  translate(col: string): string {
+    return col;
+  }
 }

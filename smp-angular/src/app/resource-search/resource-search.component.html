@@ -1,6 +1,6 @@
 <smp-search-table #searchTable
   page_id='search_id'
-  [title]="'Search'"
+  [title]="'resource.search.title' | translate"
   [columnPicker]="columnPicker"
   [url]="baseUrl"
   [additionalToolButtons]="additionalToolButtons"
@@ -14,26 +14,26 @@
 >
   <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template>
     <a target="_blank"
-       href="{{contextPath}}{{createResourceURL(row)}}">Open URL</a>
+       href="{{contextPath}}{{createResourceURL(row)}}">{{ "resource.search.label.open.url" | translate }}</a>
   </ng-template>
 
   <ng-template #searchPanel>
     <div style="display: flex;flex-direction: row;width: 100%">
     <mat-form-field class="smp-data-panel-field">
-      <mat-label>Resource Identifier</mat-label>
+      <mat-label>{{ "resource.search.label.resource.id" | translate }}</mat-label>
       <input matInput name="ResourceIdentifier"
              [(ngModel)]="filter.participantIdentifier"
              #messageId="ngModel" id="ResourceIdentifier">
     </mat-form-field>
     <mat-form-field  class="smp-data-panel-field">
-      <mat-label>Resource scheme</mat-label>
+      <mat-label>{{ "resource.search.label.resource.scheme" | translate }}</mat-label>
       <input matInput  name="ResourceScheme" [(ngModel)]="filter.participantScheme"
              #messageId="ngModel" id="ResourceScheme">
     </mat-form-field>
     <mat-form-field class="smp-data-panel-field">
-      <mat-label>Domain</mat-label>
-      <mat-select class="mat-select" placeholder="Domain"
-                  matTooltip="Domain"
+      <mat-label>{{ "resource.search.label.domain" | translate }}</mat-label>
+      <mat-select class="mat-select" placeholder="{{ 'resource.search.placeholder.domain' | translate }}"
+                  matTooltip="{{ 'resource.search.tooltip.domain' | translate }}"
                   id="Domain"
                   [(value)]="filter.domainCode">
         <mat-option *ngFor="let domainCode of domainList"
@@ -43,9 +43,9 @@
       </mat-select>
     </mat-form-field>
       <mat-form-field class="smp-data-panel-field">
-        <mat-label>Document Type</mat-label>
-        <mat-select class="mat-select" placeholder="Document type"
-                    matTootip="Document type"
+        <mat-label>{{ "resource.search.label.document.type" | translate }}</mat-label>
+        <mat-select class="mat-select" placeholder="{{ 'resource.search.placeholder.document.type' | translate }}"
+                    matTootip="{{ 'resource.search.tooltip.document.type' | translate }}"
                     id="DocumentType"
                     [(value)]="filter.documentType">
           <mat-option *ngFor="let documentType of documentTypeList"
@@ -60,7 +60,7 @@
   <ng-template #additionalSearchAreaButtons>
     <button mat-raised-button color="primary" (click)="clearFilters()" id="clearallbutton_id">
       <mat-icon>search</mat-icon>
-      <span>Clear All</span>
+      <span>{{ "resource.search.button.clear.all" | translate }}</span>
     </button>
   </ng-template>
 
@@ -69,7 +69,7 @@
 
   <ng-template #tableRowDetailContainer let-row="row">
     <div *ngIf="row.serviceMetadata.length===0" style="padding-left:20px;">
-      No subresources
+      {{ "resource.search.label.no.subresources" | translate }}
     </div>
     <div *ngIf="row.serviceMetadata.length !== 0">
       <ngx-datatable
@@ -80,17 +80,16 @@
         [headerHeight]='50'
         [footerHeight]='50'
         [rowHeight]='"auto"'>
-        <ngx-datatable-column prop="documentIdentifierScheme" name="Subresource identifier scheme"
+        <ngx-datatable-column prop="documentIdentifierScheme" name="{{ 'resource.search.label.subresource.id.scheme' | translate }}"
                               maxWidth="350"></ngx-datatable-column>
-        <ngx-datatable-column prop="documentIdentifier" name="Subresource identifier"
+        <ngx-datatable-column prop="documentIdentifier" name="{{ 'resource.search.label.subresource.id' | translate }}"
                               maxWidth="250"></ngx-datatable-column>
         <ngx-datatable-column [cellTemplate]="rowMetadataSMPUrlLinkAction" name="URL"
                               maxWidth="250"></ngx-datatable-column>
 
         <ng-template #rowMetadataSMPUrlLinkAction let-rowSmd="row" ngx-datatable-cell-template>
           <a target="_blank"
-             href="{{contextPath}}{{createServiceMetadataURL(row, rowSmd)}}">Open
-            URL</a>
+             href="{{contextPath}}{{createServiceMetadataURL(row, rowSmd)}}">{{ "resource.search.label.open.url" | translate }}</a>
         </ng-template>
       </ngx-datatable>
     </div>

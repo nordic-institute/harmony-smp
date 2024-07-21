@@ -1,7 +1,7 @@
 <div id="admin-resource-panel">
   <data-panel id="admin-resource-data-panel"
-              title="Edit Resource"
-              text="Edit resource administration panel is a tool for resource administrators to administer the resource"
+              title="{{ 'edit.resource.title' | translate }}"
+              text="{{ 'edit.resource.text' | translate }}"
               [labelColumnContent]="searchGroupPanel">
 
     <mat-tab-group #resourceTabs
@@ -9,7 +9,7 @@
                    style="height: 100%">
       <mat-tab>
         <ng-template mat-tab-label>
-          <smp-label icon="article" label="Resource details"></smp-label>
+          <smp-label icon="article" label="{{ 'edit.resource.label.resource.details' | translate }}"></smp-label>
         </ng-template>
         <resource-detail-panel
           [domainResourceDefs]="selectedDomainResourceDefs"
@@ -21,7 +21,7 @@
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <smp-label icon="groups" label="Members"></smp-label>
+          <smp-label icon="groups" label="{{ 'edit.resource.label.members' | translate }}"></smp-label>
         </ng-template>
         <domain-member-panel #groupMemberPanelComponent
                              [membershipType]="groupMembershipType"
@@ -33,7 +33,7 @@
       </mat-tab>
       <mat-tab *ngIf="hasSubResources">
         <ng-template mat-tab-label>
-          <smp-label icon="description" label="Subresources"></smp-label>
+          <smp-label icon="description" label="{{ 'edit.resource.label.subresources' | translate }}"></smp-label>
         </ng-template>
         <subresource-panel
           [domainResourceDefs]="selectedDomainResourceDefs"
@@ -49,7 +49,7 @@
                        class="smp-no-data-panel"
                        icon="warning"
                        type="warning"
-                       [label]="filterResourceResults?'No resources for give filter':'User is not administrator of any of the resources'"></smp-warning-panel>
+                       [label]="(filterResourceResults ? 'edit.resource.label.no.filter.results.admin': 'edit.resource.label.user.not.administrator') | translate"></smp-warning-panel>
   </ng-template>
 </div>
 
@@ -58,9 +58,9 @@
     *ngIf="hasResources || filterResourceResults "
   >
     <mat-form-field style="width:100%">
-      <mat-label>Selected domain</mat-label>
-      <mat-select placeholder="Select domain"
-                  matTooltip="Select domain."
+      <mat-label>{{ "edit.resource.label.selected.domain" | translate }}</mat-label>
+      <mat-select placeholder="{{ 'edit.resource.placeholder.selected.domain' | translate }}"
+                  matTooltip="{{ 'edit.resource.tooltip.selected.domain' | translate }}"
                   id="domain_id"
                   [(value)]="selectedDomain"
                   required>
@@ -74,9 +74,9 @@
     </mat-form-field>
 
     <mat-form-field style="width:100%">
-      <mat-label>Selected Group</mat-label>
-      <mat-select placeholder="Select group"
-                  matTooltip="Select group."
+      <mat-label>{{ "edit.resource.label.selected.group" | translate }}</mat-label>
+      <mat-select placeholder="{{ 'edit.resource.placeholder.selected.group' | translate }}"
+                  matTooltip="{{ 'edit.resource.tooltip.selected.group' | translate }}"
                   id="group_id"
                   [(value)]="selectedGroup"
                   required>
@@ -94,9 +94,9 @@
       <div class="edit-resource-table-container">
 
         <mat-form-field id="edit-resource-filter" style="width: 100%">
-          <mat-label>Resource filter</mat-label>
+          <mat-label>{{ "edit.resource.label.filter" | translate }}</mat-label>
           <input matInput (keyup)="applyResourceFilter($event)"
-                 placeholder="Resource filter"
+                 placeholder="{{ 'edit.resource.placeholder.filter' | translate }}"
                  [disabled]="disabledResourceFilter"
                  #inputDomainMemberFilter>
         </mat-form-field>
@@ -104,12 +104,12 @@
         <table class="mat-elevation-z2" mat-table [dataSource]="dataSource">
 
           <ng-container matColumnDef="identifierScheme">
-            <th mat-header-cell *matHeaderCellDef>Scheme</th>
+            <th mat-header-cell *matHeaderCellDef>{{ "edit.resource.label.identifier.scheme" | translate }}</th>
             <td mat-cell *matCellDef="let row">{{row.identifierScheme}}</td>
           </ng-container>
 
           <ng-container matColumnDef="identifierValue">
-            <th mat-header-cell *matHeaderCellDef>Identifier</th>
+            <th mat-header-cell *matHeaderCellDef>{{ "edit.resource.label.identifier.value" | translate }}</th>
             <td mat-cell *matCellDef="let row">{{row.identifierValue}}</td>
           </ng-container>
 
@@ -121,12 +121,11 @@
           ></tr>
 
           <tr class="mat-row" *matNoDataRow>
-            <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No resources
-              matching the filter
-              "{{inputDomainMemberFilter.value}}"
+            <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">
+              {{ "edit.resource.label.no.filter.results" | translate: { filterValue : inputDomainMemberFilter.value } }}
             </td>
             <ng-template #noDataFound>
-              <td class="mat-cell" colspan="2">the group has no resources</td>
+              <td class="mat-cell" colspan="2">{{ "edit.resource.label.no.data.found" | translate }}</td>
             </ng-template>
           </tr>
         </table>
@@ -136,7 +135,7 @@
                      (page)="onPageChanged($event)"
                      [hidePageSize]="true"
                      [pageSize]="5"
-                     aria-label="Select pages"></mat-paginator>
+                     aria-label="{{ 'edit.resource.label.select.pages' | translate }}"></mat-paginator>
     </div>
   </div>
 </ng-template>
