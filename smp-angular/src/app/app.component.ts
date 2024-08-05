@@ -10,6 +10,7 @@ import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
 import {UserController} from "./common/services/user-controller";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -35,9 +36,12 @@ export class AppComponent {
     private dialog: MatDialog,
     private lookups: GlobalLookups,
     private themeService: ThemeService,
+    private translateService: TranslateService
   ) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
     this.themeService.updateThemeFromLocalStorage();
+
+    this.translateService.setDefaultLang("en");
   }
 
   isCurrentUserSystemAdmin(): boolean {

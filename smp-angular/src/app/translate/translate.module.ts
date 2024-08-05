@@ -10,7 +10,7 @@ import {TranslateHttpLoader} from "../i18n/translate-http-loader";
     CommonModule,
     HttpClientModule,
     TranslateModule.forRoot({
-      defaultLanguage: 'en',
+      // defaultLanguage: 'en', // Using this instead of the app component's setDefaultLanguage("en") call results in a cyclic dependency (HttpSessionInterceptor -> SecurityService -> ...)
       loader: {
         provide: TranslateLoader,
         useClass: TranslateHttpLoader,
