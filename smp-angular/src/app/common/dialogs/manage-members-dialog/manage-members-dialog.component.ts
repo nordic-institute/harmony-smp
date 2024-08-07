@@ -2,7 +2,7 @@ import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {SearchUserRo} from "../../model/search-user-ro.model";
 import {MembershipService} from "../../panels/membership-panel/membership.service";
 import {MemberRo} from "../../model/member-ro.model";
@@ -24,6 +24,7 @@ export class ManageMembersDialogComponent implements OnInit {
 
   message: string;
   messageType: string = "alert-error";
+  formTitle = "";
 
   currentFilter: string;
 
@@ -63,11 +64,13 @@ export class ManageMembersDialogComponent implements OnInit {
       ...data.member
     };
     this.currentFilter = "";
+    (async () => await this.updateFormTitle()) ();
   }
-  get formTitle(){
-    return this._currentMember.memberId
-      ? this.translateService.instant("manage.members.dialog.title.edit.mode", {membershipType: this.membershipType})
-      : this.translateService.instant("manage.members.dialog.title.invite.mode", {membershipType: this.membershipType});
+
+  async updateFormTitle() {
+    this.formTitle = this._currentMember.memberId
+        ? await lastValueFrom(this.translateService.get("manage.members.dialog.title.edit.mode", {membershipType: this.membershipType}))
+        : await lastValueFrom(this.translateService.get("manage.members.dialog.title.invite.mode", {membershipType: this.membershipType}));
   }
 
   get member(): MemberRo {

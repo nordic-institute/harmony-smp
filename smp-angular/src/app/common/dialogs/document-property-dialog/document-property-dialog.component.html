@@ -38,7 +38,7 @@
 
     </mat-form-field>
     <mat-form-field appearance="fill" style="width: 100%">
-      <mat-label>Property Type:</mat-label>
+      <mat-label>{{ "document.property.dialog.label.property.type" | translate }}</mat-label>
       <mat-select formControlName="type" style="width: 100%">
         <mat-option *ngFor="let type of propertyTypes" [value]="type">
           {{ propertyValueTypeDescription(type) }}

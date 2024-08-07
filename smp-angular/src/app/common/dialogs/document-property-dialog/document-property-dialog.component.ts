@@ -21,6 +21,7 @@ import {
   PropertyValueTypeEnumUtil
 } from "../../enums/utils/PropertyValueTypeEnumUtil";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'document-property-dialog',
@@ -31,7 +32,7 @@ export class DocumentPropertyDialogComponent {
 
   public propertyTypes: string[] = Object.keys(PropertyValueTypeEnum)
   protected readonly PropertyValueTypeEnum = PropertyValueTypeEnum;
-  formTitle: string;
+  formTitle = "";
   current: DocumentPropertyRo;
   propertyForm: UntypedFormGroup;
   disabled: true;
@@ -64,7 +65,7 @@ export class DocumentPropertyDialogComponent {
     this.current = {...data.row};
     this.allPropertyNames = data.allPropertyNames;
 
-    this.updateTitle();
+    (async () => this.updateFormTitle())();
 
     this.propertyForm = fb.group({
       'property': new UntypedFormControl({value: '', readonly: true}, [
@@ -88,10 +89,10 @@ export class DocumentPropertyDialogComponent {
     return this.current?.readonly;
   }
 
-  private updateTitle(): void {
+  private async updateFormTitle() {
     this.formTitle = this.isNewItem
-      ? this.translateService.instant("document.property.dialog.title.new.mode")
-      : this.translateService.instant("document.property.dialog.title.edit.mode");
+      ? await lastValueFrom(this.translateService.get("document.property.dialog.title.new.mode"))
+      : await lastValueFrom(this.translateService.get("document.property.dialog.title.edit.mode"));
   }
 
   /**

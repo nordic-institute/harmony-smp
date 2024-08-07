@@ -12,6 +12,7 @@ import {CertificateRo} from "../../../common/model/certificate-ro.model";
 import {SmlIntegrationService} from "../../../common/services/sml-integration.service";
 import {SMLResult} from "../../../common/model/sml-result.model";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -186,15 +187,15 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   }
 
 
-  smlUnregisterSelectedDomain() {
+  async smlUnregisterSelectedDomain() {
     if (!this._domain) {
       return false;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("domain.sml.integration.panel.unregister.confirmation.dialog.title"),
-        description: this.translateService.instant("domain.sml.integration.panel.unregister.confirmation.dialog.description", { domainCode: this._domain?.domainCode })
+        title: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.unregister.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.unregister.confirmation.dialog.description", {domainCode: this._domain?.domainCode}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -203,15 +204,15 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     })
   }
 
-  smlRegisterSelectedDomain() {
+  async smlRegisterSelectedDomain() {
     if (!this._domain) {
       return false;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("domain.sml.integration.panel.register.confirmation.dialog.title"),
-        description: this.translateService.instant("domain.sml.integration.panel.register.confirmation.dialog.description", { domainCode: this._domain?.domainCode })
+        title: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.register.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.register.confirmation.dialog.description", {domainCode: this._domain?.domainCode}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -223,55 +224,55 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   smlRegisterDomain(domain: DomainRo) {
     //this.searchTable.showSpinner = true;
 
-    this.smlIntegrationService.registerDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
+    this.smlIntegrationService.registerDomainToSML$(domain.domainCode).toPromise().then(async (res: SMLResult) => {
         // this.searchTable.showSpinner = false;
         if (res) {
           if (res.success) {
-            this.alertService.success(this.translateService.instant("domain.sml.integration.panel.success.register", { domainCode: domain.domainCode }));
+            this.alertService.success(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.success.register", {domainCode: domain.domainCode})));
             domain.smlRegistered = true;
             this.domain = domain;
           } else {
-            this.alertService.exception(this.translateService.instant("domain.sml.integration.panel.error.register", { domainCode: domain.domainCode }), res.errorMessage);
+            this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register", {domainCode: domain.domainCode})), res.errorMessage);
           }
         } else {
-          this.alertService.exception(this.translateService.instant("domain.sml.integration.panel.error.register", { domainCode: domain.domainCode }),
-            this.translateService.instant("domain.sml.integration.panel.error.register.unknown.error"));
+          this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register", {domainCode: domain.domainCode})),
+            await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register.unknown.error")));
         }
       },
-      err => {
+      async err => {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           return;
         }
         //  this.searchTable.showSpinner = false;
-        this.alertService.exception(this.translateService.instant("domain.sml.integration.panel.error.register", { domainCode: domain.domainCode }), err);
+        this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register", {domainCode: domain.domainCode})), err);
       }
     )
   }
 
   smlUnregisterDomain(domain: DomainRo) {
     //  this.searchTable.showSpinner = true;
-    this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
+    this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).toPromise().then(async (res: SMLResult) => {
         // this.searchTable.showSpinner = false;
         if (res) {
           if (res.success) {
-            this.alertService.success(this.translateService.instant("domain.sml.integration.panel.success.unregister", { domainCode: domain.domainCode }));
+            this.alertService.success(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.success.unregister", {domainCode: domain.domainCode})));
             domain.smlRegistered = false;
             this.domain = domain;
           } else {
-            this.alertService.exception(this.translateService.instant("domain.sml.integration.panel.error.unregister", { domainCode :domain.domainCode}), res.errorMessage);
+            this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})), res.errorMessage);
           }
         } else {
-          this.alertService.exception(this.translateService.instant("domain.sml.integration.panel.error.unregister", { domainCode :domain.domainCode}),
-            this.translateService.instant("domain.sml.integration.panel.error.unregister.unknown.error"));
+          this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})),
+            await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister.unknown.error")));
         }
       }
       ,
-      err => {
+      async err => {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           return;
         }
         // this.searchTable.showSpinner = false;
-        this.alertService.exception(this.translateService.instant("domain.sml.integration.panel.error.unregister", { domainCode :domain.domainCode}), err);
+        this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})), err);
       }
     )
   }

@@ -8,7 +8,7 @@ import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dia
 import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {Subscription} from "rxjs";
+import {lastValueFrom, Subscription} from "rxjs";
 import {CertificateRo} from "../../common/model/certificate-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 
@@ -68,7 +68,7 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
     this.dataSource.data = this.trustedCertificateList;
   }
 
-  updateTruststoreCertificate(certificateRo: CertificateRo) {
+  async updateTruststoreCertificate(certificateRo: CertificateRo) {
 
     if (certificateRo == null) {
       return;
@@ -77,19 +77,19 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
     if (certificateRo.status == EntityStatus.NEW) {
       this.trustedCertificateList.push(certificateRo)
       this.selected = certificateRo;
-      this.alertService.success(this.translateService.instant("admin.truststore.success.import", {
+      this.alertService.success(await lastValueFrom(this.translateService.get("admin.truststore.success.import", {
         certificateId: certificateRo.certificateId,
         alias: certificateRo.alias
-      }));
+      })));
     } else if (certificateRo.status == EntityStatus.REMOVED) {
-      this.alertService.success(this.translateService.instant("admin.truststore.success.remove", {
+      this.alertService.success(await lastValueFrom(this.translateService.get("admin.truststore.success.remove", {
         certificateId: certificateRo.certificateId,
         alias: certificateRo.alias
-      }));
+      })));
       this.selected = null;
       this.trustedCertificateList = this.trustedCertificateList.filter(item => item.alias !== certificateRo.alias)
     } else if (certificateRo.status == EntityStatus.ERROR) {
-      this.alertService.error(this.translateService.instant("admin.truststore.error", { actionMessage: certificateRo.actionMessage } ));
+      this.alertService.error(await lastValueFrom(this.translateService.get("admin.truststore.error", {actionMessage: certificateRo.actionMessage})));
     }
     this.dataSource.data = this.trustedCertificateList;
     // if new cert is added - go to last page
@@ -117,11 +117,11 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
     this.truststoreService.uploadCertificate$(file);
   }
 
-  onDeleteSelectedCertificateClicked() {
+  async onDeleteSelectedCertificateClicked() {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("admin.truststore.delete.confirmation.dialog.title", { alias: this.selected.alias } ),
-        description: this.translateService.instant("admin.truststore.delete.confirmation.dialog.description")
+        title: await lastValueFrom(this.translateService.get("admin.truststore.delete.confirmation.dialog.title", {alias: this.selected.alias})),
+        description: await lastValueFrom(this.translateService.get("admin.truststore.delete.confirmation.dialog.description"))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

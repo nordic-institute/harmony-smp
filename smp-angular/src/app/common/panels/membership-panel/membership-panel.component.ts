@@ -13,7 +13,7 @@ import {MembershipService} from "./membership.service";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {GroupRo} from "../../model/group-ro.model";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {SearchTableResult} from "../../search-table/search-table-result.model";
 import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {ResourceRo} from "../../model/resource-ro.model";
@@ -41,6 +41,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   filter: any = {};
   resultsLength = 0;
   isLoadingResults = false;
+  formTitle = "";
   @ViewChild('memberPaginator') paginator: MatPaginator;
 
   constructor(private domainService: AdminDomainService,
@@ -48,19 +49,23 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
+    (async () => await this.updateTitle()) ();
   }
   ngAfterViewInit() {
     this.loadMembershipData();
   }
 
-  get title(): string {
+  async updateTitle() {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-        return this.translateService.instant("membership.panel.title.domain", {value: (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")});
+        this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.domain", {value: (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")}));
+        break;
       case MemberTypeEnum.GROUP:
-        return this.translateService.instant("membership.panel.title.group", {value: (!!this._group ? ": [" + this._group.groupName + "]" : "")});
+        this.formTitle =  await lastValueFrom(this.translateService.get("membership.panel.title.group", {value: (!!this._group ? ": [" + this._group.groupName + "]" : "")}));
+        break;
       case MemberTypeEnum.RESOURCE:
-        return this.translateService.instant("membership.panel.title.resource");
+        this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.resource"));
+        break;
     }
   }
 
@@ -182,13 +187,13 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     });
   }
 
-  public onDeleteSelectedButtonClicked() {
+  public async onDeleteSelectedButtonClicked() {
 
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("membership.panel.delete.confirmation.dialog.title"),
-        description: this.translateService.instant("membership.panel.delete.confirmation.dialog.description", {username: this.selectedMember.username})
+        title: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.description", {username: this.selectedMember.username}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

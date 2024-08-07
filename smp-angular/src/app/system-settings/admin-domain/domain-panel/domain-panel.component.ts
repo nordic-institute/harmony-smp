@@ -9,6 +9,7 @@ import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {CertificateRo} from "../../../common/model/certificate-ro.model";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'domain-panel',
@@ -34,6 +35,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   domainForm: FormGroup;
   editMode: boolean;
   createMode: boolean;
+  warningMessage = "";
 
   @Input() keystoreCertificates: CertificateRo[];
   @Input() currentDomains: DomainRo[];
@@ -92,6 +94,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       'visibility': new FormControl({value: '', readonly: true}),
       'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
     });
+    (async () => await this.updateShowWarningMessage()) ();
   }
 
   get domain(): DomainRo {
@@ -124,6 +127,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
       this.domainForm.disable();
     }
+    (async () => await this.updateShowWarningMessage()) ();
     this.domainForm.markAsPristine();
   }
 
@@ -149,19 +153,20 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       || this._domain.adminMemberCount < 1)
   }
 
-  get showWarningMessage() {
-    let message = this.translateService.instant("domain.panel.warning.domain.configuration.prefix");
+  async updateShowWarningMessage() {
+    let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
     if (!this._domain.signatureKeyAlias) {
-      message += this.translateService.instant("domain.panel.warning.domain.configuration.option.signature.key");
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.signature.key"));
     }
     if (!this.domainResourceTypes?.length) {
-      message += this.translateService.instant("domain.panel.warning.domain.configuration.option.resource.type");
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.resource.type"));
     }
     if (!this._domain.adminMemberCount || this._domain.adminMemberCount < 1) {
-      message += this.translateService.instant("domain.panel.warning.domain.configuration.option.admin.member");
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.admin.member"));
     }
     message += "</ul>"; // No need to translate this part
-    return message;
+
+    this.warningMessage = message;
   }
 
   get submitButtonEnabled(): boolean {

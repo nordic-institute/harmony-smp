@@ -6,6 +6,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {SubresourceDefinitionRo} from "../subresource-definition-ro.model";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'resource-details-dialog',
@@ -26,8 +27,12 @@ export class ResourceDetailsDialogComponent  implements AfterViewInit  {
 
     this.current = { ...data.resourceDefinition }
     this.subresourceDefDataSource.data = this.current?.subresourceDefinitions;
-    this.formTitle = this.translateService.instant("resource.details.dialog.title");
+    (async () => await this.updateFormTitle())();
 
+  }
+
+  async updateFormTitle() {
+    this.formTitle = await lastValueFrom(this.translateService.get("resource.details.dialog.title"))
   }
 
 

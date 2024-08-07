@@ -24,7 +24,7 @@
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
+  <h3 style="word-wrap: break-word; max-width: 750px">{{formTitle}}</h3>
   <div class="domain-member-container mat-elevation-z2">
     <div class="domain-member-loading-shade"
          *ngIf="isLoadingResults">
@@ -34,7 +34,7 @@
     <div class="domain-member-table-container">
 
       <mat-form-field id="domain-member-filter">
-        <mat-label>{{ "membership.panel.button.label.filter" | translate }}</mat-label>
+        <mat-label>{{ "membership.panel.label.filter" | translate }}</mat-label>
         <input matInput (keyup)="applyMemberFilter($event)"
                placeholder="{{ 'membership.panel.placeholder.filter' | translate }}"
                [disabled]="entityNotSelected"

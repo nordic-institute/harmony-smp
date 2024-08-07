@@ -9,6 +9,7 @@ import {CertificateService} from "../../services/certificate.service";
 import {CertificateRo} from "../../model/certificate-ro.model";
 import {UserService} from "../../services/user.service";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   templateUrl: './credential-dialog.component.html',
@@ -126,7 +127,7 @@ export class CredentialDialogComponent {
   uploadCertificate(event) {
     this.newCertFile = null;
     const file = event.target.files[0];
-    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe(async (res: CertificateRo) => {
         if (res && res.certificateId) {
           this.certificateForm.patchValue({
             'subject': res.subject,
@@ -153,19 +154,19 @@ export class CredentialDialogComponent {
           this.newCertFile = file;
         } else {
           this.clearCertificateData()
-          this.showErrorMessage(this.translateService.instant("credentials.dialog.error.read.certificate"), true)
+          this.showErrorMessage(await lastValueFrom(this.translateService.get("credentials.dialog.error.read.certificate")), true)
         }
       },
-      err => {
+      async err => {
         this.clearCertificateData()
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           this.closeDialog();
           return;
         }
-        this.showErrorMessage(this.translateService.instant("credentials.dialog.error.upload.certificate", {
-            fileName: file.name,
-            errorDescription: err.error?.errorDescription
-        }), true);
+        this.showErrorMessage(await lastValueFrom(this.translateService.get("credentials.dialog.error.upload.certificate", {
+          fileName: file.name,
+          errorDescription: err.error?.errorDescription
+        })), true);
       }
     );
   }
@@ -179,12 +180,12 @@ export class CredentialDialogComponent {
 
   generatedAccessToken() {
     this.clearAlert();
-    this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe((response: AccessTokenRo) => {
+    this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe(async (response: AccessTokenRo) => {
       this.accessTokenValue = response.value;
-      this.showSuccessMessage(this.translateService.instant("credentials.dialog.success.generate.token", {
-          responseIdentifier: response.identifier,
-          responseValue: response.value
-      }));
+      this.showSuccessMessage(await lastValueFrom(this.translateService.get("credentials.dialog.success.generate.token", {
+        responseIdentifier: response.identifier,
+        responseValue: response.value
+      })));
       this.userService.notifyAccessTokenUpdated(response.credential);
       this.setDisabled(true);
     }, (err) => {

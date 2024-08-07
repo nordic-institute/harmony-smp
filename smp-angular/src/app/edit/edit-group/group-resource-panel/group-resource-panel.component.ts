@@ -18,6 +18,7 @@ import {
 } from "../../../common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -46,17 +47,20 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   }
 
 
-  @Input() set group(value: GroupRo) {
-    if (this._group == value) {
-      return;
-    }
-    this._group = value;
-    this.title = this.translateService.instant("group.resource.panel.title", {groupName: (!!this._group?": [" +this._group.groupName+"]":"")});
-    if (!!this._group) {
-      this.loadGroupResources();
-    } else {
-      this.isLoadingResults = false;
-    }
+  @Input()
+  set group(value: GroupRo) {
+    (async () => {
+      if (this._group == value) {
+        return;
+      }
+      this._group = value;
+      this.title = await lastValueFrom(this.translateService.get("group.resource.panel.title", {groupName: (!!this._group ? ": [" + this._group.groupName + "]" : "")}));
+      if (!!this._group) {
+        this.loadGroupResources();
+      } else {
+        this.isLoadingResults = false;
+      }
+    })();
   }
 
   get group(){
@@ -119,14 +123,14 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     this.loadGroupResources();
   }
 
-  onEditSelectedGroupMembersButtonClicked() {
+  async onEditSelectedGroupMembersButtonClicked() {
     this.dialog.open(ManageMembersDialogComponent, {
       data: {
         membershipType: MemberTypeEnum.RESOURCE,
         domain: this.domain,
         group: this._group,
         resource: this.selected,
-        formTitle: this.translateService.instant("group.resource.panel.manage.members.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("group.resource.panel.manage.members.dialog.title"))
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -135,38 +139,38 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   public onEditSelectedButtonClicked() {
     this.showResourceEditDialog(this.selected)
   }
-  public showResourceEditDialog(resource: ResourceRo) {
+  public async showResourceEditDialog(resource: ResourceRo) {
     this.dialog.open(ResourceDialogComponent, {
       data: {
         resource: resource,
         group: this._group,
         domain: this.domain,
         domainResourceDefs: this.domainResourceDefs,
-        formTitle: this.translateService.instant("group.resource.panel.resource.details.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("group.resource.panel.resource.details.dialog.title"))
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
     });
   }
 
-  public onDeleteSelectedButtonClicked() {
+  public async onDeleteSelectedButtonClicked() {
     if (!this._group || !this._group.groupId) {
-      this.alertService.error(this.translateService.instant("group.resource.panel.error.delete.group"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("group.resource.panel.error.delete.group")));
       return;
     }
 
     if (!this.selected || !this.selected.resourceId) {
-      this.alertService.error(this.translateService.instant("group.resource.panel.error.delete.resource"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("group.resource.panel.error.delete.resource")));
       return;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("group.resource.panel.delete.confirmation.dialog.title"),
-        description: this.translateService.instant("group.resource.panel.delete.confirmation.dialog.description", {
+        title: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.description", {
           identifierScheme: this.selected.identifierScheme,
           identifierValue: this.selected.identifierValue
-        })
+        }))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -183,12 +187,12 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
           this.refresh();
           this.isLoadingResults = false;
         }))
-      .subscribe((result: ResourceRo) => {
-          if(result) {
-            this.alertService.success(this.translateService.instant("group.resource.panel.success.delete", {
+      .subscribe(async (result: ResourceRo) => {
+          if (result) {
+            this.alertService.success(await lastValueFrom(this.translateService.get("group.resource.panel.success.delete", {
               identifierScheme: this.selected.identifierScheme,
               identifierValue: this.selected.identifierValue
-            }));
+            })));
           }
         }, (error)=> {
           this.alertService.error(error.error?.errorDescription);

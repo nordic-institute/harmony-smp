@@ -16,6 +16,7 @@ import {SubresourceDialogComponent} from "./subresource-dialog/subresource-dialo
 import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -44,7 +45,11 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
-    this.title = this.translateService.instant("subresource.panel.title");
+    (async () => this.updateTitle())();
+  }
+
+  async updateTitle() {
+    this.title = await lastValueFrom(this.translateService.get("subresource.panel.title"));
   }
 
   ngAfterViewInit() {
@@ -108,7 +113,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     return !this._resource;
   }
 
-  public onCreateResourceButtonClicked() {
+  public async onCreateResourceButtonClicked() {
     let subResDef = this.getSubresourceDefinitions();
     this.dialog.open(SubresourceDialogComponent, {
       data: {
@@ -116,7 +121,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
         subresourceDefs: subResDef,
         subresource: this.createSubresource(subResDef),
 
-        formTitle: this.translateService.instant("subresource.panel.subresource.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("subresource.panel.subresource.dialog.title"))
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -142,7 +147,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     this.showSubresourceEditPanel(this.selected)
   }
 
-  public showSubresourceEditPanel(subresource: SubresourceRo) {
+  public async showSubresourceEditPanel(subresource: SubresourceRo) {
     if (!this.navigationService.selected) {
       this.navigationService.select(null);
       return;
@@ -150,17 +155,17 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     this.editResourceService.selectedResource = this.resource;
     this.editResourceService.selectedSubresource = subresource;
 
-    let node:NavigationNode = this.createNew();
+    let node: NavigationNode = await this.createNew();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
 
   }
 
-  public createNew():NavigationNode{
+  public async createNew() {
     return {
       code: "subresource-document",
       icon: "description",
-      name: this.translateService.instant("subresource.panel.label.subresource.name"),
+      name: await lastValueFrom(this.translateService.get("subresource.panel.label.subresource.name")),
       routerLink: "subresource-document",
       selected: true,
       tooltip: "",
@@ -168,24 +173,24 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     }
   }
 
-  public onDeleteSelectedButtonClicked() {
+  public async onDeleteSelectedButtonClicked() {
     if (!this._resource || !this._resource.resourceId) {
-      this.alertService.error(this.translateService.instant("subresource.panel.error.delete.resource.data"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("subresource.panel.error.delete.resource.data")));
       return;
     }
 
     if (!this.selected || !this.selected.subresourceId) {
-      this.alertService.error(this.translateService.instant("subresource.panel.error.delete.subresource.data"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("subresource.panel.error.delete.subresource.data")));
       return;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("subresource.panel.delete.confirmation.dialog.title"),
-        description: this.translateService.instant("subresource.panel.delete.confirmation.dialog.description", {
+        title: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.description", {
           identifierScheme: this.selected.identifierScheme,
           identifierValue: this.selected.identifierValue
-        })
+        }))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -203,12 +208,12 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
           this.refresh();
           this.isLoadingResults = false;
         }))
-      .subscribe((result: SubresourceRo) => {
+      .subscribe(async (result: SubresourceRo) => {
           if (result) {
-            this.alertService.success(this.translateService.instant("subresource.panel.success.delete", {
+            this.alertService.success(await lastValueFrom(this.translateService.get("subresource.panel.success.delete", {
               identifierScheme: this.selected.identifierScheme,
               identifierValue: this.selected.identifierValue
-            }));
+            })));
             this.selected = null;
           }
         }, (error) => {

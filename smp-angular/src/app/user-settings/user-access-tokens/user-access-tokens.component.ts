@@ -10,6 +10,7 @@ import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 import {UserService} from "../../common/services/user.service";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   templateUrl: './user-access-tokens.component.html',
@@ -76,11 +77,11 @@ export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuar
     return credential.credentialId;
   }
 
-  public onDeleteItemClicked(credential: CredentialRo) {
+  public async onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("user.access.tokens.delete.confirmation.dialog.title"),
-        description: this.translateService.instant("user.access.tokens.delete.confirmation.dialog.description", { credentialName: credential.name })
+        title: await lastValueFrom(this.translateService.get("user.access.tokens.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("user.access.tokens.delete.confirmation.dialog.description", {credentialName: credential.name}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -89,20 +90,20 @@ export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuar
     })
   }
 
-  public createNewAccessToken() {
+  public async createNewAccessToken() {
     this.dialog.open(CredentialDialogComponent, {
       data: {
         credentialType: CredentialDialogComponent.ACCESS_TOKEN_TYPE,
-        formTitle: this.translateService.instant("user.access.tokens.credentials.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("user.access.tokens.credentials.dialog.title"))
       }
     }).afterClosed();
   }
 
-  public onSaveItemClicked(credential: CredentialRo) {
+  public async onSaveItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("user.access.tokens.update.confirmation.dialog.title"),
-        description: this.translateService.instant("user.access.tokens.update.confirmation.dialog.description", { credentialName: credential.name })
+        title: await lastValueFrom(this.translateService.get("user.access.tokens.update.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("user.access.tokens.update.confirmation.dialog.description", {credentialName: credential.name}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

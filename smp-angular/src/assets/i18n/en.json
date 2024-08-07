@@ -48,6 +48,7 @@
   "document.property.dialog.label.close": "Close",
   "document.property.dialog.label.property.description": "Property Description:",
   "document.property.dialog.label.property.name": "Property name:",
+  "document.property.dialog.label.property.type": "Property Type:",
   "document.property.dialog.label.property.value": "Property value:",
   "document.property.dialog.title.new.mode": "Create Document Property",
   "document.property.dialog.title.edit.mode": "Edit Document Property",

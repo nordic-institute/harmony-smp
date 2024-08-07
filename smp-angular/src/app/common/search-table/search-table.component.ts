@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
-import {Observable} from 'rxjs';
+import {lastValueFrom, Observable} from 'rxjs';
 import {AlertMessageService} from '../alert-message/alert-message.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ColumnPicker} from '../column-picker/column-picker.model';
@@ -178,13 +178,13 @@ export class SearchTableComponent implements OnInit {
     );
   }
 
-  page(offset: number, pageSize: number, orderBy: string, asc: boolean) {
+  async page(offset: number, pageSize: number, orderBy: string, asc: boolean) {
     if (this.safeRefresh) {
 
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
-          title: this.translateService.instant("search.table.dirty.confirmation.dialog.title"),
-          description: this.translateService.instant("search.table.dirty.confirmation.dialog.description")
+          title: await lastValueFrom(this.translateService.get("search.table.dirty.confirmation.dialog.title")),
+          description: await lastValueFrom(this.translateService.get("search.table.dirty.confirmation.dialog.description"))
         }
       }).afterClosed().subscribe(result => {
         if (result) {
@@ -300,32 +300,32 @@ export class SearchTableComponent implements OnInit {
     this.editSearchTableEntity(this.rowNumber);
   }
 
-  onSaveButtonClicked(withDownloadCSV: boolean) {
+  async onSaveButtonClicked(withDownloadCSV: boolean) {
     try {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
           const modifiedRowEntities = this.rows.filter(el => el.status !== EntityStatus.PERSISTED);
           this.showSpinner = true;
-          this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
+          this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(async res => {
             this.showSpinner = false;
-            this.alertService.success(this.translateService.instant("search.table.success.update"), false);
+            this.alertService.success(await lastValueFrom(this.translateService.get("search.table.success.update")), false);
             this.forceRefresh = true;
             this.onRefresh();
             this.searchTableController.dataSaved();
             if (withDownloadCSV) {
               this.downloadService.downloadNative(/*UserComponent.USER_CSV_URL TODO: use CSV url*/ '');
             }
-          }, err => {
+          }, async err => {
             this.showSpinner = false;
             try {
               console.log("eror: " + err)
               let parser = new DOMParser();
               let xmlDoc = parser.parseFromString(err.error, "text/xml");
               let errDesc = xmlDoc.getElementsByTagName("ErrorDescription")[0].childNodes[0].nodeValue;
-              this.alertService.exception(this.translateService.instant("search.table.error.update"), errDesc, false);
+              this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.update")), errDesc, false);
             } catch (err2) {
               // if parse failed
-              this.alertService.exception(this.translateService.instant("search.table.error.update"), err, false);
+              this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.update")), err, false);
             }
           });
         } else {
@@ -338,7 +338,7 @@ export class SearchTableComponent implements OnInit {
     } catch (err) {
       // this.isBusy = false;
       this.showSpinner = false;
-      this.alertService.exception(this.translateService.instant("search.table.error.update"), err);
+      this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.update")), err);
     }
   }
 
@@ -425,9 +425,9 @@ export class SearchTableComponent implements OnInit {
 
   private deleteSearchTableEntities(rows: Array<SearchTableEntity>) {
 
-    this.searchTableController.validateDeleteOperation(rows).subscribe((res: SearchTableValidationResult) => {
+    this.searchTableController.validateDeleteOperation(rows).subscribe(async (res: SearchTableValidationResult) => {
       if (!res.validOperation) {
-        this.alertService.exception(this.translateService.instant("search.table.error.delete"), res.stringMessage, false);
+        this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.delete")), res.stringMessage, false);
       } else {
         for (const row of rows) {
           if (row.status === EntityStatus.NEW) {

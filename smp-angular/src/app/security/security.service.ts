@@ -1,5 +1,5 @@
 ﻿import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from 'rxjs';
+import {lastValueFrom, Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
@@ -59,10 +59,11 @@ export class SecurityService {
       .subscribe({
         complete: () => {  }, // completeHandler
         error: (error: any) => {this.alertService.error(error) },    // errorHandler
-        next: () => {
-          this.alertService.success(this.translateService.instant("login.success.confirmation.email.sent", {userId: userid}),
+        next: async () => {
+          this.alertService.success(await lastValueFrom(this.translateService.get("login.success.confirmation.email.sent", {userId: userid})),
             true, -1);
-          this.router.navigate(['/search']);}
+          this.router.navigate(['/search']);
+        }
       });
   }
 
@@ -79,7 +80,9 @@ export class SecurityService {
       .subscribe({
         complete: () => { this.router.navigate(['/login']); }, // completeHandler
         error: (error: any) => {this.alertService.error(error);this.router.navigate(['/login']); },    // errorHandler
-        next: () => { this.alertService.success(this.translateService.instant("reset.credentials.success.password.reset"), true, -1);}
+        next: async () => {
+          this.alertService.success(await lastValueFrom(this.translateService.get("reset.credentials.success.password.reset")), true, -1);
+        }
       });
   }
 

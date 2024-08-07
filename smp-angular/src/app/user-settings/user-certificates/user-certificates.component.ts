@@ -12,6 +12,7 @@ import {UserService} from "../../common/services/user.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -81,11 +82,11 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
     return credential.credentialId;
   }
 
-  public onDeleteItemClicked(credential: CredentialRo) {
+  public async onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("user.certificates.delete.confirmation.dialog.title"),
-        description: this.translateService.instant("user.certificates.delete.confirmation.dialog.description", { credentialName: credential.name })
+        title: await lastValueFrom(this.translateService.get("user.certificates.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("user.certificates.delete.confirmation.dialog.description", {credentialName: credential.name}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -94,11 +95,11 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
     })
   }
 
-  public createNew() {
+  public async createNew() {
     this.dialog.open(CredentialDialogComponent, {
       data: {
         credentialType: CredentialDialogComponent.CERTIFICATE_TYPE,
-        formTitle: this.translateService.instant("user.certificates.credentials.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("user.certificates.credentials.dialog.title"))
       }
     }).afterClosed();
 
@@ -119,12 +120,12 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
   }
 
 
-  public onSaveItemClicked(credential: CredentialRo) {
+  public async onSaveItemClicked(credential: CredentialRo) {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("user.certificates.update.confirmation.dialog.title"),
-        description: this.translateService.instant("user.certificates.update.confirmation.dialog.description", { credentialName: credential.name })
+        title: await lastValueFrom(this.translateService.get("user.certificates.update.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("user.certificates.update.confirmation.dialog.description", {credentialName: credential.name}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

@@ -6,7 +6,7 @@ import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
 import {MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
-import {Subscription} from 'rxjs';
+import {lastValueFrom, Subscription} from 'rxjs';
 import {
   ExpiredPasswordDialogComponent
 } from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
 
     this.securityEventService.onLoginErrorEvent().subscribe(
-      error => {
+      async error => {
         let message;
         const HTTP_UNAUTHORIZED = 401;
         const HTTP_FORBIDDEN = 403;
@@ -85,10 +85,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             const forbiddenCode = error.message;
             switch (forbiddenCode) {
               case USER_INACTIVE:
-                message = this.translateService.instant("login.error.inactive.user");
+                message = await lastValueFrom(this.translateService.get("login.error.inactive.user"));
                 break;
               default:
-                message = this.translateService.instant("login.error.invalid.credentials", { errorStatus: error.status } );
+                message = await lastValueFrom(this.translateService.get("login.error.invalid.credentials", {errorStatus: error.status}));
                 // clear the password
                 this.loginForm['password'].setValue('');
                 break;
@@ -96,10 +96,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             break;
           case HTTP_GATEWAY_TIMEOUT:
           case HTTP_NOTFOUND:
-            message = this.translateService.instant("login.error.smp.not.running");
+            message = await lastValueFrom(this.translateService.get("login.error.smp.not.running"));
             break;
           default:
-            message = this.translateService.instant("login.error.generic.error", { errorStatus: error.status } );
+            message = await lastValueFrom(this.translateService.get("login.error.generic.error", {errorStatus: error.status}));
             break;
         }
         this.alertService.error(message);
@@ -118,7 +118,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   }
 
-  login() {
+  async login() {
     this.alertService.clearAlert();
     if (this.loginForm.valid) {
       this.securityService.login(
@@ -126,28 +126,28 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.loginForm.get('password').value
       );
     } else {
-      this.alertService.error(this.translateService.instant("login.error.invalid.username.or.password"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("login.error.invalid.username.or.password")));
     }
   }
 
-  requestCredentialReset() {
+  async requestCredentialReset() {
     this.alertService.clearAlert();
     if (this.resetForm.valid) {
       this.securityService.requestCredentialReset(
         this.resetForm.get('resetUsername').value
       );
     } else {
-      this.alertService.error(this.translateService.instant("login.error.invalid.username"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("login.error.invalid.username")));
     }
   }
 
-  showWarningBeforeExpire(user: User) {
+  async showWarningBeforeExpire(user: User) {
     this.dialog.open(InformationDialogComponent, {
       data: {
-        title: this.translateService.instant("login.dialog.password.expiration.dialog.title"),
-        description: this.translateService.instant("login.dialog.password.expiration.dialog.description", {
+        title: await lastValueFrom(this.translateService.get("login.dialog.password.expiration.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("login.dialog.password.expiration.dialog.description", {
           expirationDate: formatDate(user.passwordExpireOn, "longDate", user.smpLocale || "en-US")
-        })
+        }))
       }
     }).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
   }

@@ -8,6 +8,7 @@ import {UserDetailsService} from "../../services/user-details.service";
 import {UserRo} from "../../model/user-ro.model";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'smp-password-change-dialog',
@@ -25,6 +26,8 @@ export class PasswordChangeDialogComponent {
   message: string;
   messageType: string = "alert-error";
   forceChange: boolean = false;
+  formTitle = "";
+  passwordTitle = "";
 
   constructor(
     public dialogRef: MatDialogRef<PasswordChangeDialogComponent>,
@@ -71,6 +74,9 @@ export class PasswordChangeDialogComponent {
         this.dialogForm.controls['confirm-new-password'].updateValueAndValidity();
       }
     });
+
+    (async () => await this.updateFormTitle()) ();
+    (async () => await this.updatePasswordTitle()) ();
   }
 
   get showCurrentPasswordField():boolean {
@@ -93,14 +99,14 @@ export class PasswordChangeDialogComponent {
     return this.lookups.cachedApplicationConfig?.passwordValidationRegExp;
   }
 
-  get getPasswordTitle(): string {
-    return this.adminUser
-      ? this.translateService.instant("password.change.dialog.label.password.admin", {username: this.securityService.getCurrentUser().username})
-      : this.translateService.instant("password.change.dialog.label.password.user");
+  async updatePasswordTitle() {
+    this.passwordTitle = this.adminUser
+      ? await lastValueFrom(this.translateService.get("password.change.dialog.label.password.admin", {username: this.securityService.getCurrentUser().username}))
+      : await lastValueFrom(this.translateService.get("password.change.dialog.label.password.user"));
   }
 
-  get formTitle(): string {
-    return this.translateService.instant("password.change.dialog.title");
+  async updateFormTitle() {
+    this.formTitle = await lastValueFrom(this.translateService.get("password.change.dialog.title"));
   }
 
   changeCurrentUserPassword() {
@@ -136,8 +142,8 @@ export class PasswordChangeDialogComponent {
 
   async showPassChangeDialog() {
     this.alertService.success(this.adminUser
-        ? this.translateService.instant("password.change.dialog.success.password.change.admin")
-        : this.translateService.instant("password.change.dialog.success.password.change.user"), true);
+        ? await lastValueFrom(this.translateService.get("password.change.dialog.success.password.change.admin"))
+        : await lastValueFrom(this.translateService.get("password.change.dialog.success.password.change.user")), true);
 
 
     if (!this.adminUser) {

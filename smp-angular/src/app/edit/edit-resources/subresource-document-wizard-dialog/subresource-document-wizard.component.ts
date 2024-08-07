@@ -8,6 +8,7 @@ import {GlobalLookups} from "../../../common/global-lookups";
 import {CertificateService} from "../../../common/services/certificate.service";
 import {CertificateRo} from "../../../common/model/certificate-ro.model";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -77,21 +78,21 @@ export class SubresourceDocumentWizardComponent {
   uploadCertificate(event) {
     const file = event.target.files[0];
     this.certificateValidationMessage = null;
-    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe(async (res: CertificateRo) => {
         if (res && res.certificateId) {
 
           this.dialogForm.patchValue({
             'endpointCertificate': res.encodedValue
           });
         } else {
-          this.certificateValidationMessage = this.translateService.instant("subresource.document.wizard.error.read");
+          this.certificateValidationMessage = await lastValueFrom(this.translateService.get("subresource.document.wizard.error.read"));
         }
       },
-      err => {
-        this.certificateValidationMessage = this.translateService.instant("subresource.document.wizard.error.upload", {
+      async err => {
+        this.certificateValidationMessage = await lastValueFrom(this.translateService.get("subresource.document.wizard.error.upload", {
           fileName: file.name,
           errorDescription: err.error?.errorDescription
-        });
+        }));
       }
     );
   }

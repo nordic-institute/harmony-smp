@@ -5,6 +5,7 @@ import {AlertMessageService} from "../../../common/alert-message/alert-message.s
 import {AdminKeystoreService} from "../admin-keystore.service";
 import {KeystoreResult} from "../../../common/model/keystore-result.model";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'keystore-import-dialog',
@@ -23,7 +24,7 @@ export class KeystoreImportDialogComponent {
               private fb: UntypedFormBuilder,
               private translateService: TranslateService) {
 
-    this.formTitle = this.translateService.instant("keystore.import.dialog.title");
+    (async () => await this.updateFormTitle())();
 
     this.dialogForm = this.fb.group({
       'file': new FormControl({value: '', readonly: false}, [Validators.required]),
@@ -35,6 +36,10 @@ export class KeystoreImportDialogComponent {
     this.dialogForm.controls['file'].setValue("");
   }
 
+  async updateFormTitle() {
+    this.formTitle = await lastValueFrom(this.translateService.get("keystore.import.dialog.title"))
+  }
+
   keystoreFileSelected(event) {
     this.selectedFile = event.target.files[0];
     this.dialogForm.controls['file'].setValue(this.selectedFile ? this.selectedFile.name : "");
@@ -42,24 +47,24 @@ export class KeystoreImportDialogComponent {
 
   importKeystore() {
     this.keystoreService.uploadKeystore(this.selectedFile, this.dialogForm.controls['keystoreType'].value,
-      this.dialogForm.controls['password'].value).subscribe({next: (res: KeystoreResult) => {
+      this.dialogForm.controls['password'].value).subscribe({next: async (res: KeystoreResult) => {
         if (res) {
           if (res.errorMessage) {
-            this.alertService.exception(this.translateService.instant("keystore.import.dialog.error.import", { fileName: this.selectedFile.name }), res.errorMessage, false);
+            this.alertService.exception(await lastValueFrom(this.translateService.get("keystore.import.dialog.error.import", {fileName: this.selectedFile.name})), res.errorMessage, false);
           } else {
             if (res.ignoredAliases) {
-              this.alertService.warning(this.translateService.instant("keystore.import.dialog.warning.ignored.aliases", { ignoredAliases: res.ignoredAliases.join(",") }), false);
+              this.alertService.warning(await lastValueFrom(this.translateService.get("keystore.import.dialog.warning.ignored.aliases", {ignoredAliases: res.ignoredAliases.join(",")})), false);
             }
             this.keystoreService.notifyKeystoreEntriesUpdated(res.addedCertificates);
             this.dialogRef.close();
           }
         } else {
-          this.alertService.exception(this.translateService.instant("keystore.import.dialog.error.generic"),
-            this.translateService.instant("keystore.import.dialog.error.generic.message"), false);
+          this.alertService.exception(await lastValueFrom(this.translateService.get("keystore.import.dialog.error.generic")),
+            await lastValueFrom(this.translateService.get("keystore.import.dialog.error.generic.message")), false);
         }
       },
-      error: (err) => {
-        this.alertService.exception(this.translateService.instant("keystore.import.dialog.error.upload", { fileName: this.selectedFile.name }), err.error?.errorDescription);
+      error: async (err) => {
+        this.alertService.exception(await lastValueFrom(this.translateService.get("keystore.import.dialog.error.upload", {fileName: this.selectedFile.name})), err.error?.errorDescription);
       }
     })
   }

@@ -37,7 +37,7 @@ import {
   DomainSmlIntegrationPanelComponent
 } from "./domain-sml-panel/domain-sml-integration-panel.component";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
-import {firstValueFrom, Subscription} from "rxjs";
+import {firstValueFrom, lastValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
 import {CertificateRo} from "../../common/model/certificate-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
@@ -173,7 +173,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     this.dataSource.data = this.domainList;
   }
 
-  updateDomain(domain: DomainRo) {
+  async updateDomain(domain: DomainRo) {
     if (domain == null) {
       return;
     }
@@ -181,18 +181,18 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     if (domain.status == EntityStatus.NEW) {
       this.domainList.push(domain)
       this.selected = domain;
-      this.alertService.success(this.translateService.instant("admin.domain.success.create", { domainCode: domain.domainCode } ));
+      this.alertService.success(await lastValueFrom(this.translateService.get("admin.domain.success.create", {domainCode: domain.domainCode})));
     } else if (domain.status == EntityStatus.UPDATED) {
       // update value in the array
       let itemIndex = this.domainList.findIndex(item => item.domainId == domain.domainId);
       this.domainList[itemIndex] = domain;
       this.selected = domain;
     } else if (domain.status == EntityStatus.REMOVED) {
-      this.alertService.success(this.translateService.instant("admin.domain.success.remove", { domainCode: domain.domainCode } ));
+      this.alertService.success(await lastValueFrom(this.translateService.get("admin.domain.success.remove", {domainCode: domain.domainCode})));
       this.selected = null;
       this.domainList = this.domainList.filter(item => item.domainCode !== domain.domainCode)
     } else if (domain.status == EntityStatus.ERROR) {
-      this.alertService.error(this.translateService.instant("admin.domain.error", { actionMessage: domain.actionMessage }));
+      this.alertService.error(await lastValueFrom(this.translateService.get("admin.domain.error", {actionMessage: domain.actionMessage})));
     }
     this.dataSource.data = this.domainList;
 

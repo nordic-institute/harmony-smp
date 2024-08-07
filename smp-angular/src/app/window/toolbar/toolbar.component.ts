@@ -1,4 +1,4 @@
-﻿import {Component} from '@angular/core';
+﻿import {Component, OnDestroy} from '@angular/core';
 
 import {SecurityService} from '../../security/security.service';
 import {Authority} from "../../security/authority.model";
@@ -9,6 +9,8 @@ import {GlobalLookups} from "../../common/global-lookups";
 import {NavigationService} from "../sidenav/navigation-model.service";
 import {UserController} from "../../common/services/user-controller";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom, Subscription} from "rxjs";
+import {SecurityEventService} from "../../security/security-event.service";
 
 /**
  * Expanded side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
@@ -22,11 +24,12 @@ import {TranslateService} from "@ngx-translate/core";
   styleUrls: ['./toolbar.component.scss']
 })
 
-export class ToolbarComponent {
+export class ToolbarComponent implements OnDestroy{
 
   fullMenu: boolean = true;
   userController: UserController;
-
+  currentUserRoleDescription = "";
+  private sub: Subscription;
 
   constructor(private alertService: AlertMessageService,
               private securityService: SecurityService,
@@ -34,8 +37,15 @@ export class ToolbarComponent {
               private http: HttpClient,
               private dialog: MatDialog,
               private lookups: GlobalLookups,
+              private securityEventService: SecurityEventService,
               private translateService: TranslateService) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
+
+    this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(async user => await this.updateCurrentUserRoleDescription());
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
   clearWarning() {
@@ -82,11 +92,12 @@ export class ToolbarComponent {
     this.navigation.navigateToUserDetails();
   }
 
-  get currentUserRoleDescription(): string {
+  async updateCurrentUserRoleDescription() {
     if (this.securityService.isCurrentUserSystemAdmin()) {
-      return this.translateService.instant("toolbar.component.label.system.administrator.role");
+      this.currentUserRoleDescription = await lastValueFrom(this.translateService.get("toolbar.component.label.system.administrator.role"));
+    } else {
+      this.currentUserRoleDescription = await lastValueFrom(this.translateService.get("toolbar.component.label.user.role"));
     }
-    return this.translateService.instant("toolbar.component.label.user.role");
   }
 
   openCurrentCasUserData() {

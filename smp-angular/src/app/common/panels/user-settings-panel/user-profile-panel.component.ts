@@ -163,6 +163,10 @@ export class UserProfilePanelComponent {
 
   onSaveButtonClicked() {
     this.onSaveUserEvent.emit(this.managedUserData);
+
+    // update locale
+    let selectedLocale = this.languageList.map(language => language.code).find(code => code === this.userForm.controls['smpLocale'].value);
+    this.translateService.use(selectedLocale);
   }
 
   onResetButtonClicked() {
@@ -213,9 +217,6 @@ export class UserProfilePanelComponent {
       this.dateAdapter.setLocale(target);
       this.ngxMatDateAdapter.setLocale(target);
     }
-
-    let selected = this.languageList.map(language => language.code).find(code => code === target);
-    this.translateService.use(selected);
   }
 
   isDirty(): boolean {

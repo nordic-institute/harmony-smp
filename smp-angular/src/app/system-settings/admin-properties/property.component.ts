@@ -14,6 +14,7 @@ import {SearchTableComponent} from "../../common/search-table/search-table.compo
 import {SecurityService} from "../../security/security.service";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -43,19 +44,19 @@ export class PropertyComponent implements AfterViewInit, AfterViewChecked {
     this.changeDetector.detectChanges();
   }
 
-  initColumns() {
+  async initColumns() {
     this.columnPicker.allColumns = [
       {
-        name: this.translateService.instant("property.label.column.property"),
-        title: this.translateService.instant("property.label.column.title.property"),
+        name: await lastValueFrom(this.translateService.get("property.label.column.property")),
+        title: await lastValueFrom(this.translateService.get("property.label.column.title.property")),
         prop: 'property',
         maxWidth: 580,
         cellTemplate: this.propertyColumnTemplate,
         showInitially: true,
       },
       {
-        name: this.translateService.instant("property.label.column.value"),
-        title: this.translateService.instant("property.label.column.title.value"),
+        name: await lastValueFrom(this.translateService.get("property.label.column.value")),
+        title: await lastValueFrom(this.translateService.get("property.label.column.title.value")),
         prop: 'value',
         cellTemplate: this.propertyValueTemplate,
         showInitially: true,

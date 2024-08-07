@@ -11,6 +11,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -25,7 +26,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       return {key: el, value: VisibilityEnum[el]}
     });
 
-  title: string = '';
+  title = "";
+  visibilityDescription = "";
   private _resource: ResourceRo;
   @Input() private group: GroupRo;
   @Input() domain: DomainRo;
@@ -47,7 +49,12 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       'resourceTypeIdentifier': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
-    this.title = this.translateService.instant("resource.details.panel.title");
+    (async () => await this.updateTitle())();
+    (async () => await this.updateVisibilityDescription())();
+  }
+
+  async updateTitle() {
+    this.title = await lastValueFrom(this.translateService.get("resource.details.panel.title"));
   }
 
   get resource(): ResourceRo {
@@ -74,23 +81,24 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       this.resourceForm.controls['resourceTypeIdentifier'].setValue("");
       this.resourceForm.controls['visibility'].setValue("");
     }
+    (async () => await this.updateVisibilityDescription())();
     this.resourceForm.markAsPristine();
   }
 
-  onShowButtonDocumentClicked() {
+  async onShowButtonDocumentClicked() {
     // set selected resource
     this.editResourceService.selectedResource = this.resource;
 
-    let node: NavigationNode = this.createNew();
+    let node: NavigationNode = await this.createNew();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
   }
 
-  public createNew(): NavigationNode {
+  public async createNew() {
     return {
       code: "resource-document",
       icon: "note",
-      name: this.translateService.instant("resource.details.panel.label.resource.name"),
+      name: await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.name")),
       routerLink: "resource-document",
       selected: true,
       tooltip: "",
@@ -102,16 +110,15 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     return false;
   }
 
-  get visibilityDescription(): string {
+  async updateVisibilityDescription() {
     if (this.resourceForm.get('visibility').value == VisibilityEnum.Private) {
-      return this.translateService.instant("resource.details.panel.label.resource.visibility.private");
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private"));
+    } else if (this.group.visibility == VisibilityEnum.Private) {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private.group"));
+    } else if (this.domain.visibility == VisibilityEnum.Private) {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private.domain"));
+    } else {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.public"));
     }
-    if (this.group.visibility == VisibilityEnum.Private) {
-      return this.translateService.instant("resource.details.panel.label.resource.visibility.private.group");
-    }
-    if (this.domain.visibility == VisibilityEnum.Private) {
-      return this.translateService.instant("resource.details.panel.label.resource.visibility.private.domain");
-    }
-    return this.translateService.instant("resource.details.panel.label.resource.visibility.public");
   }
 }

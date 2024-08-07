@@ -18,6 +18,7 @@ import {
 } from "../../../common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'domain-group-panel',
@@ -66,15 +67,18 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
     return this._domain;
   }
 
-  @Input() set domain(value: DomainRo) {
-    this._domain = value;
-    if (!!value) {
-      this.title  = this.translateService.instant("domain.group.title.domains.groups.for.domain.code", { domainCode: value.domainCode } );
-      this.loadTableData();
-    } else {
-      this.title  = this.translateService.instant("domain.group.title.domains.groups");
+  @Input()
+  set domain(value: DomainRo) {
+    (async () => {
+      this._domain = value;
+      if (!!value) {
+        this.title = await lastValueFrom(this.translateService.get("domain.group.title.domains.groups.for.domain.code", {domainCode: value.domainCode}));
+        this.loadTableData();
+      } else {
+        this.title = await lastValueFrom(this.translateService.get("domain.group.title.domains.groups"));
         this.isLoadingResults = false;
-    }
+      }
+    })();
   }
 
   get domainResourceDefinitions(): ResourceDefinitionRo[] {
@@ -121,24 +125,24 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
     return false;
   }
 
-  onAddButtonClicked() {
+  async onAddButtonClicked() {
     this.dialog.open(GroupDialogComponent, {
       data: {
         domain: this._domain,
         group: this.createGroup(),
-        formTitle: this.translateService.instant("domain.group.group.details.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("domain.group.group.details.dialog.title"))
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
     });
   };
-  onEditSelectedGroupMembersButtonClicked() {
+  async onEditSelectedGroupMembersButtonClicked() {
     this.dialog.open(ManageMembersDialogComponent, {
       data: {
         membershipType: MemberTypeEnum.GROUP,
         domain: this._domain,
         group: this.selectedGroup,
-        formTitle: this.translateService.instant("domain.group.manage.members.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("domain.group.manage.members.dialog.title"))
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -148,12 +152,12 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
     this.showEditDialogForGroup(this.selectedGroup);
   };
 
-  showEditDialogForGroup(group: GroupRo) {
+  async showEditDialogForGroup(group: GroupRo) {
     this.dialog.open(GroupDialogComponent, {
       data: {
         domain: this._domain,
         group: group,
-        formTitle: this.translateService.instant("domain.group.group.details.dialog.title")
+        formTitle: await lastValueFrom(this.translateService.get("domain.group.group.details.dialog.title"))
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -164,20 +168,20 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
     this.showEditDialogForGroup(this.selectedGroup);
   };
 
-  onDeleteSelectedButtonClicked() {
+  async onDeleteSelectedButtonClicked() {
     if (!this._domain || !this._domain.domainId) {
-      this.alertService.error(this.translateService.instant("domain.group.error.delete"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("domain.group.error.delete")));
       return;
     }
     if (!this.selectedGroup || !this.selectedGroup.groupId) {
-      this.alertService.error(this.translateService.instant("domain.group.error.delete"));
+      this.alertService.error(await lastValueFrom(this.translateService.get("domain.group.error.delete")));
       return;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: this.translateService.instant("domain.group.delete.confirmation.dialog.title", { groupName: this.selectedGroup.groupName } ),
-        description: this.translateService.instant("domain.group.delete.confirmation.dialog.description")
+        title: await lastValueFrom(this.translateService.get("domain.group.delete.confirmation.dialog.title", {groupName: this.selectedGroup.groupName})),
+        description: await lastValueFrom(this.translateService.get("domain.group.delete.confirmation.dialog.description"))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -188,9 +192,9 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
 
 
   deleteGroup(domain: DomainRo, group: GroupRo) {
-    this.editDomainService.deleteDomainGroupObservable(domain.domainId, group.groupId).subscribe((result: GroupRo) => {
+    this.editDomainService.deleteDomainGroupObservable(domain.domainId, group.groupId).subscribe(async (result: GroupRo) => {
         if (result) {
-          this.alertService.success(this.translateService.instant("domain.group.success.delete", { groupName: result.groupName }));
+          this.alertService.success(await lastValueFrom(this.translateService.get("domain.group.success.delete", {groupName: result.groupName})));
           this.onGroupSelected(null);
           this.refresh()
         }

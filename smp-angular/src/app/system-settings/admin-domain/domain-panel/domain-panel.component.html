@@ -5,7 +5,7 @@
     <smp-warning-panel *ngIf="showWarning"
                        icon="warning"
                        type="warning"
-                       [htmlContent]="showWarningMessage"></smp-warning-panel>
+                       [htmlContent]="warningMessage"></smp-warning-panel>
     <mat-form-field style="width:100%">
       <mat-label>{{ "domain.panel.label.domain" | translate: { value: domainForm.controls['adminMemberCount'].value } }}</mat-label>
       <input matInput
