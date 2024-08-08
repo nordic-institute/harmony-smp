@@ -11,7 +11,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <fieldset style="border: solid gray 1px;">
-            <legend>Description:</legend>
+            <legend>{{ "property.details.dialog.legend.description" | translate }}</legend>
             <label>{{ propertyForm.controls['desc'].value}}</label>
           </fieldset>
         </mat-expansion-panel>
@@ -20,11 +20,11 @@
           formControlName="systemDefault"
                       (change)="updateValueState()"
                       style="width: 100%">
-          Use System default value
+          {{ "property.details.dialog.label.use.system.default.value" | translate }}
         </mat-checkbox>
 
         <mat-form-field *ngIf="propertyForm.controls['type'].value !== 'BOOLEAN'" appearance="fill" style="width: 100%">
-          <mat-label>Property value:</mat-label>
+          <mat-label>{{ "property.details.dialog.label.property.value" | translate }}</mat-label>
           <input style="width: 100%;padding: 5px"
             matInput [type]="getInputType(propertyForm.controls['type'].value)"
             formControlName="value"
@@ -47,11 +47,11 @@
   <button id="updatePropertyButton" mat-raised-button color="primary" (click)="submitForm()"
           [disabled]="!isDirty || !propertyForm.valid">
     <mat-icon>check_circle</mat-icon>
-    <span>OK</span>
+    <span>{{ "property.details.dialog.button.ok" | translate }}</span>
   </button>
   <button mat-raised-button color="primary" mat-dialog-close
       [disabled]="!isDirty" >
     <mat-icon>cancel</mat-icon>
-    <span>Cancel</span>
+    <span>{{ "property.details.dialog.button.cancel" | translate }}</span>
   </button>
 </mat-dialog-actions>

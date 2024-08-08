@@ -2,7 +2,7 @@ import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {SearchUserRo} from "../../model/search-user-ro.model";
 import {MembershipService} from "../../panels/membership-panel/membership.service";
 import {MemberRo} from "../../model/member-ro.model";
@@ -11,6 +11,7 @@ import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {GroupRo} from "../../model/group-ro.model";
 import {ResourceRo} from "../../model/resource-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -23,6 +24,7 @@ export class ManageMembersDialogComponent implements OnInit {
 
   message: string;
   messageType: string = "alert-error";
+  formTitle = "";
 
   currentFilter: string;
 
@@ -43,7 +45,8 @@ export class ManageMembersDialogComponent implements OnInit {
               private membershipService: MembershipService,
               public dialogRef: MatDialogRef<ManageMembersDialogComponent>,
               private alertService: AlertMessageService,
-              private formBuilder: FormBuilder
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService
   ) {
     dialogRef.disableClose = true;//disable default close operation
     this._currentDomain = data.domain;
@@ -61,9 +64,13 @@ export class ManageMembersDialogComponent implements OnInit {
       ...data.member
     };
     this.currentFilter = "";
+    (async () => await this.updateFormTitle()) ();
   }
-  get formTitle(){
-    return (!this._currentMember.memberId? "Invite":"Edit") + " " + this.membershipType + " member"
+
+  async updateFormTitle() {
+    this.formTitle = this._currentMember.memberId
+        ? await lastValueFrom(this.translateService.get("manage.members.dialog.title.edit.mode", {membershipType: this.membershipType}))
+        : await lastValueFrom(this.translateService.get("manage.members.dialog.title.invite.mode", {membershipType: this.membershipType}));
   }
 
   get member(): MemberRo {

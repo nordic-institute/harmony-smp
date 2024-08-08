@@ -1,5 +1,5 @@
 <div class="search-table-row-limiter">
-  <select matNativeControl placeholder="Rows" [(ngModel)]="pageSize" name="pageSize"
+  <select matNativeControl placeholder="{{ 'row.limiter.placeholder' | translate }}" [(ngModel)]="pageSize" name="pageSize"
           (change)="changePageSize($event.target)"
              id="pagesize_id">
     <option class="row-limiter-item" *ngFor="let rowLimit of pageSizes" [value]="rowLimit.value">

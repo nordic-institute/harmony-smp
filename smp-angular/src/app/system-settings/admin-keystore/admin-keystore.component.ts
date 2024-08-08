@@ -9,8 +9,9 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {KeystoreImportDialogComponent} from "./keystore-import-dialog/keystore-import-dialog.component";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {Subscription} from "rxjs";
+import {lastValueFrom, Subscription} from "rxjs";
 import {CertificateRo} from "../../common/model/certificate-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -31,7 +32,8 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit,
 
   constructor(private keystoreService: AdminKeystoreService,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
 
     this.updateKeystoreCertificatesSub = keystoreService.onKeystoreUpdatedEvent().subscribe(keystoreCertificates => {
         this.updateKeystoreCertificates(keystoreCertificates);
@@ -67,7 +69,7 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit,
     this.dataSource.data = this.keystoreCertificates;
   }
 
-  updateKeystoreEntries(certificateRos: CertificateRo[]) {
+  async updateKeystoreEntries(certificateRos: CertificateRo[]) {
 
     if (certificateRos == null || certificateRos.length == 0) {
       return;
@@ -90,9 +92,9 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit,
         errorsDetected.push(certificateRo.actionMessage);
       }
     });
-    let msg = aliasAdded.length > 0 ? "Certificates added [" + aliasAdded + "]." : "";
-    msg += aliasDeleted.length > 0 ? "Certificates deleted [" + aliasDeleted + "]" : "";
-    msg += errorsDetected.length > 0 ? "Errors detected [" + errorsDetected + "]" : "";
+    let msg = aliasAdded.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.added", {aliases: aliasAdded})) : "";
+    msg += aliasDeleted.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.deleted", {aliases: aliasDeleted})) : "";
+    msg += errorsDetected.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.errors.detected", {errors: errorsDetected})) : "";
 
     this.alertService.success(msg);
 
@@ -125,11 +127,11 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit,
     });
   }
 
-  onDeleteSelectedCertificateClicked() {
+  async onDeleteSelectedCertificateClicked() {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete key [" + this.selected.alias + "] from keystore",
-        description: "Action will permanently delete key from keystore! <br/><br/>Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("admin.keystore.delete.confirmation.dialog.title", {alias: this.selected.alias})),
+        description: await lastValueFrom(this.translateService.get("admin.keystore.delete.confirmation.dialog.description"))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

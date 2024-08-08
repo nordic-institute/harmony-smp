@@ -20,6 +20,8 @@ import {PropertyValueTypeEnum} from "../../enums/property-value-type.enum";
 import {
   PropertyValueTypeEnumUtil
 } from "../../enums/utils/PropertyValueTypeEnumUtil";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'document-property-dialog',
@@ -28,11 +30,9 @@ import {
 })
 export class DocumentPropertyDialogComponent {
 
-  static readonly NEW_MODE: string = 'Create Document Property';
-  static readonly EDIT_MODE: string = 'Edit Document Property';
   public propertyTypes: string[] = Object.keys(PropertyValueTypeEnum)
   protected readonly PropertyValueTypeEnum = PropertyValueTypeEnum;
-  formTitle: string;
+  formTitle = "";
   current: DocumentPropertyRo;
   propertyForm: UntypedFormGroup;
   disabled: true;
@@ -59,12 +59,13 @@ export class DocumentPropertyDialogComponent {
     private dialogRef: MatDialogRef<DocumentPropertyDialogComponent>,
     private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: UntypedFormBuilder) {
+    private fb: UntypedFormBuilder,
+    private translateService: TranslateService) {
 
     this.current = {...data.row};
     this.allPropertyNames = data.allPropertyNames;
 
-    this.updateTitle();
+    (async () => this.updateFormTitle())();
 
     this.propertyForm = fb.group({
       'property': new UntypedFormControl({value: '', readonly: true}, [
@@ -88,8 +89,10 @@ export class DocumentPropertyDialogComponent {
     return this.current?.readonly;
   }
 
-  private updateTitle(): void {
-    this.formTitle = this.isNewItem ? DocumentPropertyDialogComponent.NEW_MODE : DocumentPropertyDialogComponent.EDIT_MODE;
+  private async updateFormTitle() {
+    this.formTitle = this.isNewItem
+      ? await lastValueFrom(this.translateService.get("document.property.dialog.title.new.mode"))
+      : await lastValueFrom(this.translateService.get("document.property.dialog.title.edit.mode"));
   }
 
   /**

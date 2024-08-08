@@ -1,27 +1,27 @@
 <div style="padding-left:2em;display: flex;flex-flow: column;">
-  <h3>Selected extension data</h3>
+  <h3>{{ "extension.panel.title" | translate }}</h3>
 
   <mat-form-field style="width: 100%">
-    <mat-label>Extension name</mat-label>
-    <input matInput placeholder="Extension name"
+    <mat-label>{{ "extension.panel.label.extension.name" | translate }}</mat-label>
+    <input matInput placeholder="{{ 'extension.panel.placeholder.extension.name' | translate }}"
            [value]="extension?.name"
            maxlength="255" readonly>
   </mat-form-field>
   <mat-form-field style="width: 100%">
-    <mat-label>Extension version</mat-label>
-    <input matInput placeholder="Version"
+    <mat-label>{{ "extension.panel.label.extension.version" | translate }}</mat-label>
+    <input matInput placeholder="{{ 'extension.panel.placeholder.extension.version' | translate }}"
            [value]="extension?.version"
            maxlength="255" readonly>
   </mat-form-field>
 
   <mat-form-field style="width: 100%">
-    <mat-label>Description</mat-label>
-    <textarea matInput extension="Description"
+    <mat-label>{{ "extension.panel.label.description" | translate }}</mat-label>
+    <textarea matInput attr.extension="{{ 'extension.panel.placeholder.description' | translate }}"
               [value]="extension?.description"
               maxlength="255" readonly></textarea>
   </mat-form-field>
 
-  <h3>Resource definitions</h3>
+  <h3>{{ "extension.panel.label.resource.definitions" | translate }}</h3>
   <mat-toolbar class ="mat-elevation-z2">
     <mat-toolbar-row  class="smp-toolbar-row">
       <button id="showSelectedResourceButton" mat-raised-button
@@ -29,7 +29,7 @@
               (click)="onShowSelectedResourceDetails()"
               color="primary">
         <mat-icon>settings</mat-icon>
-        <span>Show selected resource</span>
+        <span>{{ "extension.panel.label.show.selected.resources" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
@@ -39,22 +39,22 @@
 
     <!-- Name Column -->
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "extension.panel.label.name" | translate }}</th>
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>
     </ng-container>
 
     <!-- Version Column -->
     <ng-container matColumnDef="identifier">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Identifier</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "extension.panel.label.id" | translate }}</th>
       <td mat-cell *matCellDef="let row"> {{row.identifier}}</td>
     </ng-container>
     <ng-container matColumnDef="urlSegment">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Url Segment</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "extension.panel.label.url.segment" | translate }}</th>
       <td mat-cell *matCellDef="let row"> {{row.urlSegment}}</td>
     </ng-container>
 
     <ng-container matColumnDef="mimeType">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Mime Type</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "extension.panel.label.mime.type" | translate }}</th>
       <td mat-cell *matCellDef="let row"> {{row.identifier}}</td>
     </ng-container>
 
@@ -70,6 +70,6 @@
 
   <mat-paginator class="mat-elevation-z2" #resourcePaginator
                  [hidePageSize]="true"
-                 [pageSize]="5" aria-label="Select page"></mat-paginator>
+                 [pageSize]="5" attr.aria-label="{{ 'extension.panel.label.select.page' | translate }}"></mat-paginator>
 
 </div>

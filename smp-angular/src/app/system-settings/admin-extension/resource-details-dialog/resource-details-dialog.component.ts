@@ -5,6 +5,7 @@ import {ResourceDefinitionRo} from "../resource-definition-ro.model";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {SubresourceDefinitionRo} from "../subresource-definition-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'resource-details-dialog',
@@ -12,8 +13,7 @@ import {SubresourceDefinitionRo} from "../subresource-definition-ro.model";
 })
 export class ResourceDetailsDialogComponent  implements AfterViewInit  {
 
-
-  formTitle: string ="Resource definition details";
+  formTitle: string = "";
   current: ResourceDefinitionRo & { confirmation?: string };
   subresourceDefDataSource: MatTableDataSource<ResourceDefinitionRo> = new MatTableDataSource<SubresourceDefinitionRo>();
   @ViewChild('resourcePaginator') resourcePaginator: MatPaginator;
@@ -21,14 +21,13 @@ export class ResourceDetailsDialogComponent  implements AfterViewInit  {
 
   constructor(
     public dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private translateService: TranslateService) {
 
     this.current = { ...data.resourceDefinition }
     this.subresourceDefDataSource.data = this.current?.subresourceDefinitions;
-
-
+    this.translateService.get("resource.details.dialog.title").subscribe(value => this.formTitle = value);
   }
-
 
   ngAfterViewInit() {
     this.subresourceDefDataSource.paginator = this.resourcePaginator;

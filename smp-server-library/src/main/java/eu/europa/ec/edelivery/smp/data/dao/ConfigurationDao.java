@@ -420,6 +420,19 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Encryption file does not exists or is not a File! Value:  [%s]",
                     encryptionKeyFile.getAbsolutePath()));
         }
+
+        File localeFolder = getLocaleFolder();
+        if (!localeFolder.exists()) {
+            LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", localeFolder.getPath(), localeFolder.getAbsolutePath());
+            if (!localeFolder.mkdirs()) {
+                throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Locale folder does not exists and can not be created! Value: [%s] (Absolute path [%s])",
+                        localeFolder.getPath(), localeFolder.getAbsolutePath()));
+            }
+        }
+        if (!localeFolder.isDirectory()) {
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Locale folder is not a folder! Value: [%s] (Absolute path [%s])",
+                    localeFolder.getPath(), localeFolder.getAbsolutePath()));
+        }
     }
 
     /**
@@ -554,5 +567,9 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     public File getSecurityFolder() {
         return Paths.get(environmentProperties.getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
+    }
+
+    public File getLocaleFolder() {
+        return Paths.get(environmentProperties.getEnvPropertyValue(SMPEnvPropertyEnum.LOCALE_FOLDER)).toFile();
     }
 }

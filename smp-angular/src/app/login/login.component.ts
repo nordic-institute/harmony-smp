@@ -6,7 +6,7 @@ import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
 import {MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
-import {Subscription} from 'rxjs';
+import {lastValueFrom, Subscription} from 'rxjs';
 import {
   ExpiredPasswordDialogComponent
 } from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
@@ -16,6 +16,7 @@ import {InformationDialogComponent} from "../common/dialogs/information-dialog/i
 import {formatDate} from "@angular/common";
 import {EntityStatus} from "../common/enums/entity-status.enum";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   templateUrl: './login.component.html',
@@ -28,6 +29,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   loading = false;
   returnUrl: string;
   sub: Subscription;
+  localeSub: Subscription;
 
 
   constructor(private route: ActivatedRoute,
@@ -36,7 +38,8 @@ export class LoginComponent implements OnInit, OnDestroy {
               private securityService: SecurityService,
               private alertService: AlertMessageService,
               private securityEventService: SecurityEventService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
   }
 
 
@@ -66,8 +69,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       });
 
+    this.localeSub = this.securityEventService.onLoginSuccessEvent().subscribe(user => user && this.translateService.use(user.smpLocale));
+
     this.securityEventService.onLoginErrorEvent().subscribe(
-      error => {
+      async error => {
         let message;
         const HTTP_UNAUTHORIZED = 401;
         const HTTP_FORBIDDEN = 403;
@@ -83,10 +88,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             const forbiddenCode = error.message;
             switch (forbiddenCode) {
               case USER_INACTIVE:
-                message = 'The user is inactive. Please contact your administrator.';
+                message = await lastValueFrom(this.translateService.get("login.error.inactive.user"));
                 break;
               default:
-                message = error.status + ' The username/password combination you provided are not valid. Please try again or contact your administrator.';
+                message = await lastValueFrom(this.translateService.get("login.error.invalid.credentials", {errorStatus: error.status}));
                 // clear the password
                 this.loginForm['password'].setValue('');
                 break;
@@ -94,10 +99,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             break;
           case HTTP_GATEWAY_TIMEOUT:
           case HTTP_NOTFOUND:
-            message = 'Unable to login. SMP is not running.';
+            message = await lastValueFrom(this.translateService.get("login.error.smp.not.running"));
             break;
           default:
-            message = 'Default error (' + error.status + ') occurred during login.';
+            message = await lastValueFrom(this.translateService.get("login.error.generic.error", {errorStatus: error.status}));
             break;
         }
         this.alertService.error(message);
@@ -116,7 +121,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   }
 
-  login() {
+  async login() {
     this.alertService.clearAlert();
     if (this.loginForm.valid) {
       this.securityService.login(
@@ -124,32 +129,35 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.loginForm.get('password').value
       );
     } else {
-      this.alertService.error('Please enter a valid username and password.');
+      this.alertService.error(await lastValueFrom(this.translateService.get("login.error.invalid.username.or.password")));
     }
   }
 
-  requestCredentialReset() {
+  async requestCredentialReset() {
     this.alertService.clearAlert();
     if (this.resetForm.valid) {
       this.securityService.requestCredentialReset(
         this.resetForm.get('resetUsername').value
       );
     } else {
-      this.alertService.error('Please enter a valid username.');
+      this.alertService.error(await lastValueFrom(this.translateService.get("login.error.invalid.username")));
     }
   }
 
-  showWarningBeforeExpire(user: User) {
+  async showWarningBeforeExpire(user: User) {
     this.dialog.open(InformationDialogComponent, {
       data: {
-        title: "Warning! Your password is about to expire",
-        description: "Your password is about to expire on " + formatDate(user.passwordExpireOn, "longDate", "en-US") + "! Please change the password before the expiration date!"
+        title: await lastValueFrom(this.translateService.get("login.dialog.password.expiration.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("login.dialog.password.expiration.dialog.description", {
+          expirationDate: formatDate(user.passwordExpireOn, "longDate", user.smpLocale || "en-US")
+        }))
       }
     }).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
   }
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+    this.localeSub.unsubscribe();
   }
 
   isUserAuthSSOEnabled(): boolean {

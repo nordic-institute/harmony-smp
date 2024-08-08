@@ -278,6 +278,10 @@ public class ConfigurationService {
         return  configurationDAO.getSecurityFolder();
     }
 
+    public File getLocaleFolder() {
+        return configurationDAO.getLocaleFolder();
+    }
+
     public File getTruststoreFile() {
         return configurationDAO.getCachedPropertyValue(TRUSTSTORE_FILENAME);
     }

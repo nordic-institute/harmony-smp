@@ -6,40 +6,40 @@
 
       <button id="validateResource_id" mat-raised-button
               color="primary"
-              matTooltip="Validate resource"
+              matTooltip="{{ 'resource.document.panel.tooltip.validate' | translate }}"
               [disabled]="emptyDocument"
               (click)="onDocumentValidateButtonClicked()"
       >
         <mat-icon>check_circle</mat-icon>
-        <span>Validate</span>
+        <span>{{ "resource.document.panel.button.validate" | translate }}</span>
       </button>
       <button id="GenerateResource_id" mat-raised-button
               color="primary"
-              matTooltip="Generate resource"
+              matTooltip="{{ 'resource.document.panel.tooltip.generate' | translate }}"
 
               (click)="onGenerateButtonClicked()"
       >
         <mat-icon>add_circle</mat-icon>
-        <span>Generate</span>
+        <span>{{ "resource.document.panel.button.generate" | translate }}</span>
       </button>
       <button id="documentWizard_id" mat-raised-button
               color="primary"
-              matTooltip="Show document wizard dialog"
+              matTooltip="{{ 'resource.document.panel.tooltip.document.wizard' | translate }}"
               *ngIf="showWizardDialog"
               (click)="onShowDocumentWizardDialog()"
       >
         <mat-icon>code_block</mat-icon>
-        <span>Document wizard</span>
+        <span>{{ "resource.document.panel.button.document.wizard" | translate }}</span>
       </button>
       <span style="flex: 1 1 auto;"></span>
 
       <div [formGroup]="documentForm"
            style="float: right;  vertical-align:middle;display: flex;align-items: center;justify-content: center; gap:0.4em;padding-right: 10px">
-        <span style="font-size: 0.8em">Show version:</span>
+        <span style="font-size: 0.8em">{{ "resource.document.panel.label.show.version" | translate }}</span>
         <select matNativeControl
                 style="width: 100px; border-bottom: grey solid 1px"
-                placeholder="All document version"
-                matTooltip="Select version to display."
+                placeholder="{{ 'resource.document.panel.placeholder.version' | translate }}"
+                matTooltip="{{ 'resource.document.panel.tooltip.version' | translate }}"
                 formControlName="payloadVersion"
                 id="document version_id"
                 (change)="onSelectionDocumentVersionChanged()"
@@ -51,7 +51,7 @@
           </option>
         </select>
 
-        <span style="font-size: 0.8em">Created on:</span>
+        <span style="font-size: 0.8em">{{ "resource.document.panel.label.created.on" | translate }}</span>
         <input id="payloadCreatedOn_id"
                matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
                formControlName="payloadCreatedOn"
@@ -87,22 +87,22 @@
       <button id="back_id" mat-raised-button color="primary"
               (click)="onBackButtonClicked()">
         <mat-icon>arrow_circle_left</mat-icon>
-        <span>Back</span>
+        <span>{{ "resource.document.panel.button.back" | translate }}</span>
       </button>
       <button id="cancel_id" mat-raised-button color="primary"
               [disabled]="cancelButtonDisabled"
               (click)="onDocumentResetButtonClicked()">
         <mat-icon>cancel</mat-icon>
-        <span>Cancel</span>
+        <span>{{ "resource.document.panel.button.cancel" | translate }}</span>
       </button>
       <button id="saveResource_id" mat-raised-button
               color="primary"
-              matTooltip="Validate resource"
+              matTooltip="{{ 'resource.document.panel.tooltip.save' | translate }}"
               [disabled]="saveButtonDisabled"
               (click)="onSaveButtonClicked()"
       >
         <mat-icon>save</mat-icon>
-        <span>Save</span>
+        <span>{{ "resource.document.panel.button.save" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>

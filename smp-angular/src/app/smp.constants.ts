@@ -38,6 +38,7 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_MEMBER: string = 'member';
   public static readonly PATH_RESOURCE_TYPE_GROUP: string = 'group';
   public static readonly PATH_RESOURCE_TYPE_PROPERTY: string = 'property';
+  public static readonly PATH_RESOURCE_TYPE_LOCALE: string = 'locale';
   public static readonly PATH_DNS_TOOLS: string = 'dns-tools';
 
   public static readonly PATH_RESOURCE_TYPE_RESOURCE_DEF: string = 'res-def';
@@ -77,6 +78,7 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
   public static readonly REST_PUBLIC_DNS_TOOLS = SmpConstants.REST_PUBLIC + SmpConstants.PATH_DNS_TOOLS;
   public static readonly REST_PUBLIC_DNS_TOOLS_GEN_QUERY: string = SmpConstants.REST_PUBLIC_DNS_TOOLS + '/' + SmpConstants.PATH_ACTION_GENERATE_DNS_QUERY;
+  public static readonly REST_PUBLIC_LOCALE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_LOCALE;
 
   /* Public edit services */
   public static readonly REST_EDIT_DOMAIN = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;

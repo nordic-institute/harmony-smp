@@ -8,6 +8,8 @@ import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {CertificateRo} from "../../../common/model/certificate-ro.model";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'domain-panel',
@@ -33,6 +35,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   domainForm: FormGroup;
   editMode: boolean;
   createMode: boolean;
+  warningMessage = "";
 
   @Input() keystoreCertificates: CertificateRo[];
   @Input() currentDomains: DomainRo[];
@@ -80,7 +83,8 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   constructor(private domainService: AdminDomainService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
 
     this.domainForm = formBuilder.group({
       'domainCode': new FormControl({value: '', readonly: true}, [Validators.pattern(this.domainCodePattern),
@@ -90,6 +94,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       'visibility': new FormControl({value: '', readonly: true}),
       'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
     });
+    (async () => await this.updateShowWarningMessage()) ();
   }
 
   get domain(): DomainRo {
@@ -122,6 +127,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
       this.domainForm.disable();
     }
+    (async () => await this.updateShowWarningMessage()) ();
     this.domainForm.markAsPristine();
   }
 
@@ -147,19 +153,20 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       || this._domain.adminMemberCount < 1)
   }
 
-  get showWarningMessage() {
-    let message = "To complete domain configuration, please: <ul>";
+  async updateShowWarningMessage() {
+    let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
     if (!this._domain.signatureKeyAlias) {
-      message += "<li>select the signature key to be used for signing the domain's responses!</li>";
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.signature.key"));
     }
     if (!this.domainResourceTypes?.length) {
-      message += "<li>select at least one resource type from the Resource Types tab</li>";
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.resource.type"));
     }
     if (!this._domain.adminMemberCount || this._domain.adminMemberCount < 1) {
-      message += "<li>add a domain member with 'ADMIN' role from the Members tab!</li>";
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.admin.member"));
     }
-    message += "</ul>";
-    return message;
+    message += "</ul>"; // No need to translate this part
+
+    this.warningMessage = message;
   }
 
   get submitButtonEnabled(): boolean {

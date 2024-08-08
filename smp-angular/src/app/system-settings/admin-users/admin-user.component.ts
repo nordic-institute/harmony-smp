@@ -16,8 +16,9 @@ import {
 import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
-import {firstValueFrom} from "rxjs";
+import {firstValueFrom, lastValueFrom} from "rxjs";
 import {UserRo} from "../../common/model/user-ro.model";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -43,7 +44,8 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
               private httpErrorHandlerService: HttpErrorHandlerService,
               private securityService: SecurityService,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
 
   }
 
@@ -151,12 +153,12 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   updateUserData(user: UserRo) {
     // change only allowed data
     this.adminUserService.updateManagedUser(user).subscribe({
-      next(user: UserRo) {
+      async next(user: UserRo) {
         if (user) {
           this.selected = null;
           this.managedUserData = null;
           this.loadTableData(user.username);
-          this.alertService.success("User [" + user.username + "] updated!");
+          this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.update", {username: user.username})));
 
         }
       }, error(error) {
@@ -171,12 +173,12 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   createUserData(user: UserRo) {
     // change only allowed data
     this.adminUserService.createManagedUser(user).subscribe({
-      next(user: UserRo) {
+      async next(user: UserRo) {
         if (user) {
           this.selected = null;
           this.managedUserData = null;
           this.loadTableData(user.username);
-          this.alertService.success("User [" + user.username + "] has been created!");
+          this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.create", {username: user.username})));
         }
       }, error(error) {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
@@ -187,12 +189,12 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
     });
   }
 
-  onDeleteSelectedUserClicked() {
+  async onDeleteSelectedUserClicked() {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete user " + this.managedUserData?.username + " from DomiSMP",
-        description: "Action will permanently delete user!<br/><br/> Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("admin.user.delete.confirmation.dialog.title", {username: this.managedUserData?.username})),
+        description: await lastValueFrom(this.translateService.get("admin.user.delete.confirmation.dialog.description"))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -205,12 +207,12 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
 
     // change only allowed data
     this.adminUserService.deleteManagedUser(user).subscribe({
-      next(user: UserRo) {
+      async next(user: UserRo) {
         if (user) {
           this.selected = null;
           this.managedUserData = null;
           this.loadTableData();
-          this.alertService.success("User [" + user.username + "] has been deleted!");
+          this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.delete", {username: user.username})));
         }
       }, error(error) {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
@@ -229,12 +231,12 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         adminUser: user.userId != this.securityService.getCurrentUser().userId
       },
     });
-    formRef.afterClosed().subscribe(result => {
+    formRef.afterClosed().subscribe(async result => {
       if (result) {
         this.selected = null;
         this.managedUserData = null;
         this.loadTableData();
-        this.alertService.success("User password changed!");
+        this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.password.updated")));
       }
     });
   }

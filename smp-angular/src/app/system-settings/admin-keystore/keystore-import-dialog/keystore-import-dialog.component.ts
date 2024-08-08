@@ -4,6 +4,8 @@ import {FormControl, FormGroup, UntypedFormBuilder, Validators} from "@angular/f
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {AdminKeystoreService} from "../admin-keystore.service";
 import {KeystoreResult} from "../../../common/model/keystore-result.model";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'keystore-import-dialog',
@@ -19,9 +21,10 @@ export class KeystoreImportDialogComponent {
               private dialogRef: MatDialogRef<KeystoreImportDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: UntypedFormBuilder) {
+              private fb: UntypedFormBuilder,
+              private translateService: TranslateService) {
 
-    this.formTitle = "Keystore import dialog";
+    this.translateService.get("keystore.import.dialog.title").subscribe(value => this.formTitle = value);
 
     this.dialogForm = this.fb.group({
       'file': new FormControl({value: '', readonly: false}, [Validators.required]),
@@ -40,23 +43,24 @@ export class KeystoreImportDialogComponent {
 
   importKeystore() {
     this.keystoreService.uploadKeystore(this.selectedFile, this.dialogForm.controls['keystoreType'].value,
-      this.dialogForm.controls['password'].value).subscribe({next: (res: KeystoreResult) => {
+      this.dialogForm.controls['password'].value).subscribe({next: async (res: KeystoreResult) => {
         if (res) {
           if (res.errorMessage) {
-            this.alertService.exception("Error occurred while importing keystore:" + this.selectedFile.name, res.errorMessage, false);
+            this.alertService.exception(await lastValueFrom(this.translateService.get("keystore.import.dialog.error.import", {fileName: this.selectedFile.name})), res.errorMessage, false);
           } else {
             if (res.ignoredAliases) {
-              this.alertService.warning("The following aliases have been ignored because they were already present in the current keystore: " + res.ignoredAliases.join(","), false);
+              this.alertService.warning(await lastValueFrom(this.translateService.get("keystore.import.dialog.warning.ignored.aliases", {ignoredAliases: res.ignoredAliases.join(",")})), false);
             }
             this.keystoreService.notifyKeystoreEntriesUpdated(res.addedCertificates);
             this.dialogRef.close();
           }
         } else {
-          this.alertService.exception("Error occurred while reading keystore.", "Check if uploaded file has valid keystore type.", false);
+          this.alertService.exception(await lastValueFrom(this.translateService.get("keystore.import.dialog.error.generic")),
+            await lastValueFrom(this.translateService.get("keystore.import.dialog.error.generic.message")), false);
         }
       },
-      error: (err) => {
-        this.alertService.exception('Error uploading keystore file ' + this.selectedFile.name, err.error?.errorDescription);
+      error: async (err) => {
+        this.alertService.exception(await lastValueFrom(this.translateService.get("keystore.import.dialog.error.upload", {fileName: this.selectedFile.name})), err.error?.errorDescription);
       }
     })
   }

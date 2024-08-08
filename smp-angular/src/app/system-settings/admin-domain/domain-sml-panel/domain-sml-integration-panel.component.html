@@ -2,79 +2,74 @@
 
   <div id="domain-sml-integration-panel" class="mat-elevation-z2">
 
-    <h3>SML integration data</h3>
-    <div class="panel" *ngIf="isDomainRegistered"><p style="font-weight: bold">Domain is registered to SML!</p>The Registered domain can not be deleted or changed the SMP SML identifier</div>
+    <h3>{{ "domain.sml.integration.panel.title" | translate }}</h3>
+    <div class="panel" *ngIf="isDomainRegistered"><p style="font-weight: bold">{{ "domain.sml.integration.panel.text" | translate }}</div>
     <mat-form-field style="width:100%">
-      <mat-label>SML domain</mat-label>
+      <mat-label>{{ "domain.sml.integration.panel.label.sml.domain" | translate }}</mat-label>
       <input matInput
-             matTooltip="The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: has informative value only, SML DNS zone used for publishing is based on SML configuration."
+             matTooltip="{{ 'domain.sml.integration.panel.tooltip.sml.domain' | translate }}"
              name="smlSubdomain"
              id="smldomain_id"
              (keydown)="onFieldKeyPressed('smlSubdomain', 'smlDomainCodeTimeout')"
              formControlName="smlSubdomain"
           maxlength="63">
-      <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for
-        mydomain.sml.dns.zone).
+      <mat-hint align="end">{{ "domain.sml.integration.panel.hint.sml.domain" | translate }}
       </mat-hint>
       <div
         *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
               &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
         style="color:red; font-size: 70%">
-        SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
-        should not start with a digit nor a hyphen and should not end with a hyphen.
+        {{ "domain.sml.integration.panel.label.sml.domain.mandatory" | translate }}
       </div>
       <div
         *ngIf="!!fieldWarningTimeoutMap.smlDomainCodeTimeout"
         style="color:darkorange; font-size: 70%">
-        SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
-        should not start with a digit nor a hyphen and should not end with a hyphen.
+        {{ "domain.sml.integration.panel.label.sml.domain.mandatory" | translate }}
       </div>
       <div
         *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
         style="color:red; font-size: 70%">
-        The SML subdomain is already defined!
+        {{ "domain.sml.integration.panel.label.sml.subdomain.already.exists" | translate }}
       </div>
       <div
         *ngIf="(!editMode &&  domainForm.controls['smlSubdomain'].hasError('blankDomainError'))"
         style="color:red; font-size: 70%">
-        Domain with empty sml subdomain already exists!
+        {{ "domain.sml.integration.panel.label.sml.domain.already.exists" | translate }}
       </div>
     </mat-form-field>
     <mat-form-field style="width:100%">
-      <mat-label>SML SMP identifier</mat-label>
+      <mat-label>{{ "domain.sml.integration.panel.label.smp.id" | translate }}</mat-label>
       <input matInput name="smlSmpId"
              id="smlSMPId_id" #smlSMPId
              formControlName="smlSmpId"
              (keydown)="onFieldKeyPressed('smlSmpId', 'smlsmpidTimeout')"
 
              maxlength="63">
-      <mat-hint align="end">SMP ID used for SML</mat-hint>
+      <mat-hint align="end">{{ "domain.sml.integration.panel.hint.smp.id" | translate }}</mat-hint>
       <div
         *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')"
         style="color:red; font-size: 70%">
-        SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
-        should not start with a digit nor a hyphen and should not end with a hyphen.
+        {{ "domain.sml.integration.panel.label.smp.id.mandatory" | translate }}
       </div>
       <div
         *ngIf="!!fieldWarningTimeoutMap.smlsmpidTimeout"
         style="color:darkorange; font-size: 70%">
-        SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
-        should not start with a digit nor a hyphen and should not end with a hyphen.
+        {{ "domain.sml.integration.panel.label.smp.id.mandatory" | translate }}
       </div>
       <div
         *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('notInList')"
         style="color:red; font-size: 70%">
-        SML SMP ID already exists!
+        {{ "domain.sml.integration.panel.label.smp.id.already.exists" | translate }}
       </div>
     </mat-form-field>
 
     <mat-form-field style="width:100%"
-                    matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
-      <mat-label>SML Client Certificate Alias</mat-label>
+                    matTooltip="{{ 'domain.sml.integration.panel.tooltip.smp.client.certificate.alias' | translate }}">
+      <mat-label>{{ "domain.sml.integration.panel.label.smp.client.certificate.alias" | translate }}</mat-label>
       <select matNativeControl
         formControlName="smlClientKeyAlias"
         id="smlClientKeyAlias_id">
-        <option [value]="''">Choose certificate for signing soap response</option>
+        <option [value]="''">{{ "domain.sml.integration.panel.tooltip.smp.client.certificate.alias.default.option" | translate }}</option>
         <option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
           {{cert.alias}} ({{cert.certificateId}})
         </option>
@@ -86,7 +81,7 @@
                       mat-no-ink class="mat-primary"
                       formControlName="smlClientCertAuth"
                       id="smlClientCertHeaderAuth_id">
-      Use ClientCert http header authentication.
+      {{ "domain.sml.integration.panel.label.sml.client.certificate.toggle" | translate }}
     </mat-slide-toggle>
   </div>
   <mat-toolbar class ="mat-elevation-z2">
@@ -94,24 +89,24 @@
       <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
               [disabled]="!resetButtonEnabled">
         <mat-icon>refresh</mat-icon>
-        <span>Reset</span>
+        <span>{{ "domain.sml.integration.panel.button.reset" | translate }}</span>
       </button>
       <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
               [disabled]="!submitButtonEnabled">
         <mat-icon>save</mat-icon>
-        <span>Save</span>
+        <span>{{ "domain.sml.integration.panel.button.save" | translate }}</span>
       </button>
       <tool-button-spacer></tool-button-spacer>
 
       <button  id="registerButton" mat-raised-button (click)="smlRegisterSelectedDomain()"
                [disabled]="!enableSMLRegister()" color="primary">
         <mat-icon>link</mat-icon>
-        <span>Register</span>
+        <span>{{ "domain.sml.integration.panel.button.register" | translate }}</span>
       </button>
       <button  id="unregisterButton" mat-raised-button (click)="smlUnregisterSelectedDomain()"
                [disabled]="!enableSMLUnregister()" color="primary">
         <mat-icon>link_off</mat-icon>
-        <span>Unregister</span>
+        <span>{{ "domain.sml.integration.panel.button.unregister" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>

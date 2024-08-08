@@ -1,12 +1,12 @@
-<h2 mat-dialog-title>Extend session</h2>
-<mat-dialog-content>Your session is about to expire in <b>{{data.timeLeft}}</b> seconds!<br />Would you like to logout now or extend it for another <b>{{data.timeout}}</b> seconds?</mat-dialog-content>
+<h2 mat-dialog-title>{{ "session.expiration.dialog.title" | translate }}</h2>
+<mat-dialog-content>{{ "session.expiration.dialog.label.session.about.to.expire" | translate:{timeLeft: data.timeLeft, timeout: data.timeout} }} </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-raised-button mat-dialog-close (click)="onLogoutClicked()" tabindex="-1">
     <mat-icon>power_settings_new</mat-icon>
-    <mat-label>Logout</mat-label>
+    <mat-label>{{ "session.expiration.dialog.button.logout" | translate }}</mat-label>
   </button>
   <button mat-raised-button mat-dialog-close color="primary" (click)="onExtendSessionClicked()">
     <mat-icon>autorenew</mat-icon>
-    <mat-label>Extend</mat-label>
+    <mat-label>{{ "session.expiration.dialog.button.expire" | translate }}</mat-label>
   </button>
 </mat-dialog-actions>

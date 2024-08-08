@@ -1,8 +1,8 @@
 <div id="dns-tool-panel">
   <form [formGroup]="dnsToolsForm">
-    <data-panel title="DNS lookup"
+    <data-panel title="{{ 'dns.tools.title' | translate }}"
                 [showTitle]="true"
-                text="Enter the DNS data to create DNS query"
+                text="{{ 'dns.tools.description' | translate }}"
 
                 [labelColumnContent]="dnsLookupData"
     >
@@ -13,19 +13,19 @@
     <ng-template #dnsLookupData>
       <div class="panel">
         <mat-form-field class="smp-data-panel-field">
-          <mat-label>Resource Identifier</mat-label>
+          <mat-label>{{ "dns.tools.label.resource.id" | translate }}</mat-label>
           <input matInput name="ResourceIdentifier"
                  formControlName="resourceIdentifier"
                  id="resource-identifier-id">
         </mat-form-field>
         <mat-form-field class="smp-data-panel-field">
-          <mat-label>Resource scheme</mat-label>
+          <mat-label>{{ "dns.tools.label.resource.scheme" | translate }}</mat-label>
           <input matInput name="ResourceScheme"
                  formControlName="resourceScheme"
                  id="resource-scheme-id">
         </mat-form-field>
         <mat-form-field class="smp-data-panel-field">
-          <mat-label>Top domain</mat-label>
+          <mat-label>{{ "dns.tools.label.resource.top.domain" | translate }}</mat-label>
           <input matInput name="DNS top Domain"
                  formControlName=dnsTopDomain
                  id="dns-top-domain-id">
@@ -37,7 +37,7 @@
                 (click)="generateLookupQuery()"
         >
           <mat-icon>input</mat-icon>
-          <span>Generate lookup query</span>
+          <span>{{ "dns.tools.button.generate.lookup.query" | translate }}</span>
         </button>
       </div>
     </ng-template>

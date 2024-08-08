@@ -4,20 +4,20 @@
     <mat-form-field appearance="fill"
                     style="width: 100%"
     >
-      <mat-label>Property name:</mat-label>
+      <mat-label>{{ "document.property.dialog.label.property.name" | translate }}</mat-label>
       <input style="width: 100%;padding: 5px"
              matInput
              formControlName="property"/>
       <div
         *ngIf="propertyForm.controls['property'].hasError('notInList')"
         style="color:red; font-size: 70%">
-        The property name already exists!
+        {{ "document.property.dialog.error.property.already.exists" | translate }}
       </div>
     </mat-form-field>
     <mat-form-field
       *ngIf="propertyForm.controls['type'].value !== PropertyValueTypeEnum.BOOLEAN"
       appearance="fill" style="width: 100%">
-      <mat-label>Property value:</mat-label>
+      <mat-label>{{ "document.property.dialog.label.property.value" | translate }}</mat-label>
       <input style="width: 100%;padding: 5px"
              matInput [type]="getInputType(propertyForm.controls['type'].value)"
              formControlName="value"
@@ -30,7 +30,7 @@
       {{ propertyForm.controls['property'].value }}
     </mat-checkbox>
     <mat-form-field appearance="fill" style="width: 100%">
-      <mat-label>Property Description:</mat-label>
+      <mat-label>{{ "document.property.dialog.label.property.description" | translate }}</mat-label>
       <input style="width: 100%;padding: 5px"
              matInput
              formControlName="desc"
@@ -38,7 +38,7 @@
 
     </mat-form-field>
     <mat-form-field appearance="fill" style="width: 100%">
-      <mat-label>Property Type:</mat-label>
+      <mat-label>{{ "document.property.dialog.label.property.type" | translate }}</mat-label>
       <mat-select formControlName="type" style="width: 100%">
         <mat-option *ngFor="let type of propertyTypes" [value]="type">
           {{ propertyValueTypeDescription(type) }}
@@ -54,13 +54,13 @@
           mat-raised-button color="primary" (click)="submitForm()"
           [disabled]="!isDirty || !propertyForm.valid">
     <mat-icon>check_circle</mat-icon>
-    <span>OK</span>
+    <span>{{ "document.property.dialog.button.ok" | translate }}</span>
   </button>
   <button mat-raised-button color="primary" mat-dialog-close>
     <mat-icon>cancel</mat-icon>
-    <span *ngIf="isReadOnly; else notReadOnly">Close</span>
+    <span *ngIf="isReadOnly; else notReadOnly">{{ "document.property.dialog.label.close" | translate }}</span>
     <ng-template #notReadOnly>
-      <span>Cancel</span>
+      <span>{{ "document.property.dialog.button.cancel" | translate }}</span>
     </ng-template>
   </button>
 </mat-dialog-actions>

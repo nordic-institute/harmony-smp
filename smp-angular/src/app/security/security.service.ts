@@ -1,5 +1,5 @@
 ﻿import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from 'rxjs';
+import {lastValueFrom, Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
@@ -9,6 +9,7 @@ import {AlertMessageService} from "../common/alert-message/alert-message.service
 import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {Router} from "@angular/router";
+import {TranslateService} from "@ngx-translate/core";
 
 @Injectable()
 export class SecurityService {
@@ -20,7 +21,9 @@ export class SecurityService {
     private alertService: AlertMessageService,
     private securityEventService: SecurityEventService,
     private dialog: MatDialog,
-    private router: Router) {
+    private router: Router,
+    private translateService: TranslateService
+  ) {
     this.securityEventService.onLogoutSuccessEvent().subscribe(() => { this.dialog.closeAll(); this.router.navigateByUrl('/'); });
     this.securityEventService.onLogoutErrorEvent().subscribe((error) => this.alertService.error(error));
   }
@@ -56,10 +59,11 @@ export class SecurityService {
       .subscribe({
         complete: () => {  }, // completeHandler
         error: (error: any) => {this.alertService.error(error) },    // errorHandler
-        next: () => { this.alertService.success("A confirmation email has been sent to your registered email address for user ["+userid+"]. " +
-          "Please follow the instructions in the email to complete the account reset process. " +
-          "If you did not receive mail try later or contact administrator  ", true, -1);
-          this.router.navigate(['/search']);}
+        next: async () => {
+          this.alertService.success(await lastValueFrom(this.translateService.get("login.success.confirmation.email.sent", {userId: userid})),
+            true, -1);
+          this.router.navigate(['/search']);
+        }
       });
   }
 
@@ -76,7 +80,9 @@ export class SecurityService {
       .subscribe({
         complete: () => { this.router.navigate(['/login']); }, // completeHandler
         error: (error: any) => {this.alertService.error(error);this.router.navigate(['/login']); },    // errorHandler
-        next: () => { this.alertService.success("Password has been reset successfully. Please login with new password", true, -1);}
+        next: async () => {
+          this.alertService.success(await lastValueFrom(this.translateService.get("reset.credentials.success.password.reset")), true, -1);
+        }
       });
   }
 

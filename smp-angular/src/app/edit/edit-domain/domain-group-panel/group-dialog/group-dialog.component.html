@@ -1,16 +1,16 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content style="width:700px">
   <form [formGroup]="groupForm">
-    <b *ngIf="newMode">To create a new group enter unique group name for the domain and click save.</b>
+    <b *ngIf="newMode">{{ "group.dialog.description" | translate }}</b>
     <mat-form-field  style="width: 100%">
-      <mat-label>Group name</mat-label>
+      <mat-label>{{ "group.dialog.label.group.name" | translate }}</mat-label>
       <input id="name_id" type="text" matInput formControlName="name"
              required>
-      <mat-hint >Unique group name for the domain</mat-hint>
+      <mat-hint >{{ "group.dialog.hint.group.name" | translate }}</mat-hint>
     </mat-form-field>
 
     <mat-form-field  style="width: 100%">
-      <mat-label>Group description</mat-label>
+      <mat-label>{{ "group.dialog.label.group.description" | translate }}</mat-label>
       <input id="description_id" type="text" matInput
              formControlName="description"
              >
@@ -18,29 +18,29 @@
 
 
     <mat-form-field style="width:100%">
-      <mat-label>Group visibility</mat-label>
-      <select matNativeControl placeholder="Group visibility"
+      <mat-label>{{ "group.dialog.label.group.visibility" | translate }}</mat-label>
+      <select matNativeControl placeholder="{{ 'group.dialog.placeholder.group.visibility' | translate }}"
                   formControlName="visibility"
-                  matTooltip="Group visibility."
+                  matTooltip="{{ 'group.dialog.tooltip.group.visibility' | translate }}"
                   id="group_id" required>
         <option *ngFor="let visibility of groupVisibilityOptions"
                     [value]="visibility.value">
           {{visibility.key}}
         </option>
       </select>
-      <mat-hint>Choose group visibility</mat-hint>
+      <mat-hint>{{ 'group.dialog.hint.group.visibility' | translate }}</mat-hint>
     </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button id="closeDialogButton" mat-raised-button color="primary" (click)="closeDialog()">
     <mat-icon>cancel</mat-icon>
-    <span>Close</span>
+    <span>{{ "group.dialog.button.close" | translate }}</span>
   </button>
   <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
           [disabled]="!submitButtonEnabled">
     <mat-icon>save</mat-icon>
-    <span>Save</span>
+    <span>{{ "group.dialog.button.save" | translate }}</span>
   </button>
 </mat-dialog-actions>
 

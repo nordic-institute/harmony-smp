@@ -33,6 +33,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.util.UrlPathHelper;
@@ -132,6 +133,10 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // Configure the resource message converter to allow the direct download of locale files from the disk
+        LOG.debug("Register ResourceHttpMessageConverter");
+        converters.add(0, new ResourceHttpMessageConverter());
+
         // Configure Object Mapper with format date as: "2021-12-01T14:52:00Z"
         LOG.debug("Register MappingJackson2HttpMessageConverter");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -147,7 +152,7 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
         dateFormat.setTimeZone(TimeZone.getDefault());
         objectMapper.setDateFormat(dateFormat);
 
-        converters.add(0, converter);
+        converters.add(1, converter);
     }
 
     @Override

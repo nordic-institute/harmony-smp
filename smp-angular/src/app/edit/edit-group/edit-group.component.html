@@ -3,8 +3,8 @@
   <data-panel
 
     id="admin-group-data-panel"
-    title="Edit Group"
-    text="Edit group administration panel is a tool for group administrators to manage group members and resources"
+    title="{{ 'edit.group.title' | translate }}"
+    text="{{ 'edit.group.text' | translate }}"
     [labelColumnContent]="searchGroupPanel">
 
 
@@ -13,7 +13,7 @@
                    style="height: 100%">
       <mat-tab>
         <ng-template mat-tab-label>
-          <smp-label icon="groups" label="Members"></smp-label>
+          <smp-label icon="groups" label="{{ 'edit.group.label.members' | translate }}"></smp-label>
         </ng-template>
         <domain-member-panel #groupMemberPanelComponent
                              [membershipType]="groupMembershipType"
@@ -24,7 +24,7 @@
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <smp-label icon="article" label="Resources"></smp-label>
+          <smp-label icon="article" label="{{ 'edit.group.label.resources' | translate }}"></smp-label>
         </ng-template>
         <group-resource-panel #groupResourcePanel
                               [domainResourceDefs]="_selectedDomainResourceDef"
@@ -38,7 +38,7 @@
                          class="smp-no-data-panel"
                          icon="warning"
                          type="warning"
-                         label="User is not administrator of any of the groups "></smp-warning-panel>
+                         label="{{ 'edit.group.label.user.not.administrator' | translate }}"></smp-warning-panel>
     </ng-template>
   </data-panel>
 
@@ -47,9 +47,9 @@
 <ng-template #searchGroupPanel>
   <div *ngIf="!!domainList &&  domainList.length>0">
     <mat-form-field style="width:100%">
-      <mat-label>Selected domain</mat-label>
-      <mat-select placeholder="Select domain"
-                  matTooltip="Select domain."
+      <mat-label>{{ "edit.group.label.select.domain" | translate }}</mat-label>
+      <mat-select placeholder="{{ 'edit.group.placeholder.select.domain' | translate }}"
+                  matTooltip="{{ 'edit.group.tooltip.select.domain' | translate }}"
                   id="domain_id"
                   [(value)]="selectedDomain"
                   required>
@@ -62,9 +62,9 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field style="width:100%">
-      <mat-label>Selected Group</mat-label>
-      <mat-select placeholder="Select group"
-                  matTooltip="Select group."
+      <mat-label>{{ "edit.group.label.select.group" | translate }}</mat-label>
+      <mat-select placeholder="{{ 'edit.group.placeholder.select.group' | translate }}"
+                  matTooltip="{{ 'edit.group.tooltip.select.group' | translate }}"
                   id="group_id"
                   [(value)]="selectedGroup"
                   required>

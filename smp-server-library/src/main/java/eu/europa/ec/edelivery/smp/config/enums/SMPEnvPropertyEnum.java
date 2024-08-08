@@ -31,6 +31,7 @@ public enum SMPEnvPropertyEnum {
     LOG_CONFIGURATION_FILE("smp.log.configuration.file",null,"The path to custom logback logging configuration file  If configuration file path is blank, the default configuration is used."),
     LOG_FOLDER("smp.log.folder","logs","Configuration property file path."),
     LIBRARY_FOLDER("smp.libraries.folder","libs","Folder for deployment of the DomiSMP extensions."),
+    LOCALE_FOLDER("smp.locale.folder", "locales", "Folder where the application copies the default existing locales and where the user can add extra custom ones"),
 
     DATABASE_JNDI("smp.datasource.jndi",null,"he JNDI name for datasource as example:" +
             "* weblogic datasource JNDI example " +

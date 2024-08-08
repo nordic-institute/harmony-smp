@@ -10,6 +10,8 @@ import {EditResourceService} from "../edit-resource.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -24,7 +26,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       return {key: el, value: VisibilityEnum[el]}
     });
 
-  title: string = "Resources";
+  title = "";
+  visibilityDescription = "";
   private _resource: ResourceRo;
   @Input() private group: GroupRo;
   @Input() domain: DomainRo;
@@ -37,7 +40,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
               private navigationService: NavigationService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
     this.resourceForm = formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
@@ -45,6 +49,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       'resourceTypeIdentifier': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
+    this.translateService.get("resource.details.panel.title").subscribe(value => this.title = value);
+    (async () => await this.updateVisibilityDescription())();
   }
 
   get resource(): ResourceRo {
@@ -71,23 +77,24 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       this.resourceForm.controls['resourceTypeIdentifier'].setValue("");
       this.resourceForm.controls['visibility'].setValue("");
     }
+    (async () => await this.updateVisibilityDescription())();
     this.resourceForm.markAsPristine();
   }
 
-  onShowButtonDocumentClicked() {
+  async onShowButtonDocumentClicked() {
     // set selected resource
     this.editResourceService.selectedResource = this.resource;
 
-    let node: NavigationNode = this.createNew();
+    let node: NavigationNode = await this.createNew();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
   }
 
-  public createNew(): NavigationNode {
+  public async createNew() {
     return {
       code: "resource-document",
       icon: "note",
-      name: "Edit resource document",
+      name: await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.name")),
       routerLink: "resource-document",
       selected: true,
       tooltip: "",
@@ -99,16 +106,15 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     return false;
   }
 
-  get visibilityDescription(): string {
+  async updateVisibilityDescription() {
     if (this.resourceForm.get('visibility').value == VisibilityEnum.Private) {
-      return "The private resource is accessible only to the resource members!"
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private"));
+    } else if (this.group.visibility == VisibilityEnum.Private) {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private.group"));
+    } else if (this.domain.visibility == VisibilityEnum.Private) {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private.domain"));
+    } else {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.public"));
     }
-    if (this.group.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private group. Only the group members and group resource members can access the resource!"
-    }
-    if (this.domain.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private domain. Only the domain members, domain group members and its resource members can access the resource!"
-    }
-    return "The resource is public on the public group and the public domain. The resource data is accessible to all users."
   }
 }

@@ -26,7 +26,6 @@ export class HttpSessionInterceptor implements HttpInterceptor {
   private timerToLogoutId: number;
 
   constructor(public securityService: SecurityService,
-              public alertMessageService: AlertMessageService,
               private dialog: MatDialog) {
   }
 

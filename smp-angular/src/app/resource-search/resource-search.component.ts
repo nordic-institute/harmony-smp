@@ -20,6 +20,8 @@ import {ResourceSearchRo} from "./resource-search-ro.model";
 import {SubresourceSearchRo} from "./subresource-search-ro.model";
 import {ResourceFilterOptionsService} from "../common/services/resource-filter-options.service";
 import {ResourceFilterOptionsRo} from "../common/model/resource-filter-options-ro.model";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   templateUrl: './resource-search.component.html',
@@ -44,7 +46,8 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
               protected alertService: AlertMessageService,
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef,
-              private resourceFilterOptionsService: ResourceFilterOptionsService) {
+              private resourceFilterOptionsService: ResourceFilterOptionsService,
+              private translateService: TranslateService) {
 
     this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_RESOURCE;
   }
@@ -57,14 +60,16 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
 
         this.resourceSearchController = new ResourceSearchController(this.dialog);
       },
-      error: (err) => this.alertService.exception('Error occurred while retrieving the resource metadata', err)
+      error: async (err) => {
+        this.alertService.exception(await lastValueFrom(this.translateService.get("resource.search.error.fetch.resource.metadata")), err);
+      }
     });
   }
 
-  initColumns(): void {
+  async initColumns() {
     this.columnPicker.allColumns = [
       {
-        name: 'Sr. Cnt.',
+        name: await lastValueFrom(this.translateService.get("resource.search.label.column.subresource.count")),
         prop: 'serviceMetadata.length',
         width: 70,
         maxWidth: 70,
@@ -72,7 +77,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         showInitially: true,
       },
       {
-        name: 'Domain',
+        name: await lastValueFrom(this.translateService.get("resource.search.label.column.domain")),
         prop: 'domainCode',
         width: 180,
         maxWidth: 180,
@@ -80,7 +85,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         showInitially: true,
       },
       {
-        name: 'Resource scheme',
+        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.scheme")),
         prop: 'participantScheme',
         width: 250,
         maxWidth: 250,
@@ -88,14 +93,14 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         showInitially: true,
       },
       {
-        name: 'Resource identifier',
+        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.id")),
         prop: 'participantIdentifier',
         width: 450,
         resizable: 'true',
         showInitially: true,
       },
       {
-        name: 'Document type',
+        name: await lastValueFrom(this.translateService.get("resource.search.label.column.document.type")),
         prop: 'documentType',
         width: 450,
         resizable: 'true',
@@ -103,7 +108,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
-        name: 'Resource URL',
+        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.url")),
         width: 120,
         maxWidth: 120,
         resizable: 'false',

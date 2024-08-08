@@ -28,6 +28,8 @@ import {
   SmpEditorComponent
 } from "../../../common/components/smp-editor/smp-editor.component";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   templateUrl: './resource-document-panel.component.html',
@@ -35,7 +37,6 @@ import {EntityStatus} from "../../../common/enums/entity-status.enum";
   encapsulation: ViewEncapsulation.None,
 })
 export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
-  title: string = "Resources";
   private _resource: ResourceRo;
 
   _document: DocumentRo;
@@ -53,7 +54,8 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private navigationService: NavigationService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
     this.resourceForm = formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
@@ -151,11 +153,11 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
     this.navigationService.navigateUp();
   }
 
-  onDocumentResetButtonClicked(): void {
+  async onDocumentResetButtonClicked() {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Cancel changes",
-        description: "Do you want to cancel all changes on the document?"
+        title: await lastValueFrom(this.translateService.get("resource.document.panel.cancel.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("resource.document.panel.cancel.confirmation.dialog.description"))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -178,9 +180,9 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
 
   onSaveButtonClicked(): void {
 
-    this.editResourceService.saveDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
+    this.editResourceService.saveDocumentObservable(this._resource, this.document).subscribe(async (value: DocumentRo) => {
       if (value) {
-        this.alertService.success("Document is saved with current version [" + value.currentResourceVersion + "].")
+        this.alertService.success(await lastValueFrom(this.translateService.get("resource.document.panel.success.save", {currentResourceVersion: value.currentResourceVersion})));
         this.document = value;
       } else {
         this.document = null;
@@ -191,9 +193,9 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
   }
 
   onGenerateButtonClicked(): void {
-    this.editResourceService.generateDocumentObservable(this._resource).subscribe((value: DocumentRo) => {
+    this.editResourceService.generateDocumentObservable(this._resource).subscribe(async (value: DocumentRo) => {
       if (value) {
-        this.alertService.success("Document is generated.")
+        this.alertService.success(await lastValueFrom(this.translateService.get("resource.document.panel.success.generate")))
         this.documentForm.controls['payload'].setValue(value.payload);
         this.documentForm.controls['payload'].markAsDirty();
       } else {
@@ -204,11 +206,11 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
     })
   }
 
-  onShowDocumentWizardDialog() {
+  async onShowDocumentWizardDialog() {
 
     const formRef: MatDialogRef<any> = this.dialog.open(DocumentWizardDialogComponent, {
       data: {
-        title: "Resource wizard",
+        title: await lastValueFrom(this.translateService.get("resource.document.panel.document.wizard.dialog.title")),
         resource: this._resource,
 
       }
@@ -235,8 +237,8 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
   }
 
   validateCurrentDocument(): void {
-    this.editResourceService.validateDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
-      this.alertService.success("Document is Valid.")
+    this.editResourceService.validateDocumentObservable(this._resource, this.document).subscribe(async (value: DocumentRo) => {
+      this.alertService.success(await lastValueFrom(this.translateService.get("resource.document.panel.success.valid")))
     }, (error: any) => {
       this.alertService.error(error.error?.errorDescription)
     });

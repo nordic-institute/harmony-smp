@@ -12,6 +12,7 @@ import {Subscription} from "rxjs";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {UserRo} from "../../common/model/user-ro.model";
 import {UserService} from "../../common/services/user.service";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -31,6 +32,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, BeforeLeaveGuard
     private userService: UserService,
     private securityService: SecurityService,
     private securityEventService: SecurityEventService,
+    private translateService: TranslateService,
     public dialog: MatDialog) {
 
 
@@ -68,7 +70,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, BeforeLeaveGuard
     userData.smpLocale = user.smpLocale;
 
     this.userService.updateUser(userData);
-
+    this.translateService.use(userData.smpLocale);
   }
 
   isDirty(): boolean {

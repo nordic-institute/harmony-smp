@@ -1,22 +1,22 @@
 <div id="domain-properties-panel" class="mat-elevation-z2">
-  <h3>Domain properties</h3>
+  <h3>{{ "domain.properties.panel.title" | translate }}</h3>
 
   <table class="mat-elevation-z2" id="admin-domain-properties-table" mat-table
          [dataSource]="propertyDataSource" matSort>
     <ng-container matColumnDef="systemDefault">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Sys. Def.</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "domain.properties.label.system.default" | translate }}</th>
       <td mat-cell *matCellDef="let row">
         <mat-checkbox checked="{{row.systemDefault}}" disabled></mat-checkbox>
       </td>
     </ng-container>
     <ng-container matColumnDef="property">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Domain property</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "domain.properties.label.domain.property" | translate }}</th>
       <td mat-cell *matCellDef="let row"
           [matTooltip]="row.desc">{{ row.property }}
       </td>
     </ng-container>
     <ng-container matColumnDef="value">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Domain value</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "domain.properties.label.domain.value" | translate }}</th>
       <td mat-cell *matCellDef="let row">{{ getTableRowValue(row) }}</td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -26,7 +26,7 @@
         [ngClass]="getRowClass(row, odd)"
     ></tr>
     <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" colspan="2">No Domain properties found</td>
+      <td class="mat-cell" colspan="2">{{ "domain.properties.label.no.properties.found" | translate }}</td>
     </tr>
   </table>
 
@@ -37,13 +37,13 @@
             color="primary"
             [disabled]="!cancelButtonEnabled">
       <mat-icon>refresh</mat-icon>
-      <span>Reset</span>
+      <span>{{ "domain.properties.button.reset" | translate }}</span>
     </button>
     <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()"
             color="primary"
             [disabled]="!saveButtonEnabled">
       <mat-icon>save</mat-icon>
-      <span>Save</span>
+      <span>{{ "domain.properties.button.save" | translate }}</span>
     </button>
   </mat-toolbar-row>
 </mat-toolbar>

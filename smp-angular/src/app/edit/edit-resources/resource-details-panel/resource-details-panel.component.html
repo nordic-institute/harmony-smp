@@ -4,20 +4,20 @@
 
       <button id="showResource" mat-raised-button
               color="primary"
-              matTooltip="Show resource"
+              matTooltip="{{ 'resource.details.panel.tooltip.show.resource' | translate }}"
               (click)="onShowButtonDocumentClicked()"
               >
         <mat-icon>article</mat-icon>
-        <span>Edit document</span>
+        <span>{{ "resource.details.panel.button.edit" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
   <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
   <form [formGroup]="resourceForm">
     <mat-form-field style="width:100%">
-      <mat-label>Resource type</mat-label>
-      <select matNativeControl placeholder="Resource type for the resource"
-                  matTooltip="Select type for the resource."
+      <mat-label>{{ "resource.details.panel.label.resource.type" | translate }}</mat-label>
+      <select matNativeControl placeholder="{{ 'resource.details.panel.placeholder.resource.type' | translate }}"
+                  matTooltip="{{ 'resource.details.panel.tooltip.resource.type' | translate }}"
                   id="resourceTypeIdentifier"
                   formControlName="resourceTypeIdentifier"
                   required>
@@ -28,22 +28,22 @@
       </select>
     </mat-form-field>
     <mat-form-field  style="width: 100%">
-      <mat-label>Resource identifier</mat-label>
+      <mat-label>{{ "resource.details.panel.label.resource.id" | translate }}</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
              required auto-focus-directive>
     </mat-form-field>
 
     <mat-form-field  style="width: 100%">
-      <mat-label>Resource scheme</mat-label>
+      <mat-label>{{ "resource.details.panel.label.resource.scheme" | translate }}</mat-label>
       <input id="identifierScheme_id" type="text" matInput
              formControlName="identifierScheme"
       >
     </mat-form-field>
     <mat-form-field style="width:100%">
-      <mat-label>Resource visibility</mat-label>
+      <mat-label>{{ "resource.details.panel.label.resource.visibility" | translate }}</mat-label>
       <select matNativeControl formControlName="visibility"
-                  matTooltip="Resource visibility."
+                  matTooltip="{{ 'resource.details.panel.tooltip.resource.visibility' | translate }}"
                   id="visibility_id" required>
         <option *ngFor="let visibility of groupVisibilityOptions"
                     [value]="visibility.value">

@@ -148,6 +148,7 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_USER = CONTEXT_PATH_PUBLIC + "user";
     public static final String CONTEXT_PATH_PUBLIC_TRUSTSTORE = CONTEXT_PATH_PUBLIC + "truststore";
     public static final String CONTEXT_PATH_PUBLIC_DNS_TOOLS = CONTEXT_PATH_PUBLIC + "dns-tools";
+    public static final String CONTEXT_PATH_PUBLIC_LOCALE = CONTEXT_PATH_PUBLIC + "locale";
 
     public static final String CONTEXT_PATH_PUBLIC_SECURITY = CONTEXT_PATH_PUBLIC + "security";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION = CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";

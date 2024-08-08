@@ -164,6 +164,7 @@ import {
 import {
   DocumentPropertyDialogComponent
 } from "./common/dialogs/document-property-dialog/document-property-dialog.component";
+import {NgxTranslateModule} from "./translate/translate.module";
 
 
 @NgModule({
@@ -294,6 +295,7 @@ import {
     routing,
     MatAutocompleteModule,
     ClipboardModule,
+    NgxTranslateModule,
   ],
   providers: [
     AdminDomainService,

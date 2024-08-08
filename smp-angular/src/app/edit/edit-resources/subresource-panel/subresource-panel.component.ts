@@ -15,6 +15,8 @@ import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-
 import {SubresourceDialogComponent} from "./subresource-dialog/subresource-dialog.component";
 import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -25,7 +27,7 @@ import {NavigationNode, NavigationService} from "../../../window/sidenav/navigat
 export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuard {
 
 
-  title: string = "Subresources";
+  title: string = "";
   @Input() group: GroupRo;
   private _resource: ResourceRo;
   @Input() domain: DomainRo;
@@ -41,7 +43,9 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
   constructor(private editResourceService: EditResourceService,
               private navigationService: NavigationService,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
+    this.translateService.get("subresource.panel.title").subscribe(value => this.title = value);
   }
 
   ngAfterViewInit() {
@@ -105,7 +109,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     return !this._resource;
   }
 
-  public onCreateResourceButtonClicked() {
+  public async onCreateResourceButtonClicked() {
     let subResDef = this.getSubresourceDefinitions();
     this.dialog.open(SubresourceDialogComponent, {
       data: {
@@ -113,7 +117,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
         subresourceDefs: subResDef,
         subresource: this.createSubresource(subResDef),
 
-        formTitle: "Create Subresource Dialog"
+        formTitle: await lastValueFrom(this.translateService.get("subresource.panel.subresource.dialog.title"))
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -139,7 +143,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     this.showSubresourceEditPanel(this.selected)
   }
 
-  public showSubresourceEditPanel(subresource: SubresourceRo) {
+  public async showSubresourceEditPanel(subresource: SubresourceRo) {
     if (!this.navigationService.selected) {
       this.navigationService.select(null);
       return;
@@ -147,17 +151,17 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     this.editResourceService.selectedResource = this.resource;
     this.editResourceService.selectedSubresource = subresource;
 
-    let node:NavigationNode = this.createNew();
+    let node: NavigationNode = await this.createNew();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
 
   }
 
-  public createNew():NavigationNode{
+  public async createNew() {
     return {
       code: "subresource-document",
       icon: "description",
-      name: "Edit subresource document",
+      name: await lastValueFrom(this.translateService.get("subresource.panel.label.subresource.name")),
       routerLink: "subresource-document",
       selected: true,
       tooltip: "",
@@ -165,22 +169,24 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     }
   }
 
-  public onDeleteSelectedButtonClicked() {
+  public async onDeleteSelectedButtonClicked() {
     if (!this._resource || !this._resource.resourceId) {
-      this.alertService.error("Can not delete subresource because of invalid resource data. Is resource selected?");
+      this.alertService.error(await lastValueFrom(this.translateService.get("subresource.panel.error.delete.resource.data")));
       return;
     }
 
     if (!this.selected || !this.selected.subresourceId) {
-      this.alertService.error("Can not delete subresource because of invalid subresource data. Is subresource selected?");
+      this.alertService.error(await lastValueFrom(this.translateService.get("subresource.panel.error.delete.subresource.data")));
       return;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete Resource with scheme from DomiSMP",
-        description: "Action will permanently delete subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "]! " +
-          "<br/><br/>Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.description", {
+          identifierScheme: this.selected.identifierScheme,
+          identifierValue: this.selected.identifierValue
+        }))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -198,9 +204,12 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
           this.refresh();
           this.isLoadingResults = false;
         }))
-      .subscribe((result: SubresourceRo) => {
+      .subscribe(async (result: SubresourceRo) => {
           if (result) {
-            this.alertService.success("Subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "] deleted.");
+            this.alertService.success(await lastValueFrom(this.translateService.get("subresource.panel.success.delete", {
+              identifierScheme: this.selected.identifierScheme,
+              identifierValue: this.selected.identifierValue
+            })));
             this.selected = null;
           }
         }, (error) => {
