@@ -4,10 +4,22 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
+/**
+ * Locale enumeration for which DomiSMP is providing existing translations.
+ *
+ * @since 5.1
+ * @author Sebastian-Ion TINCU
+ */
 public enum SMPLocale {
 
+    /**
+     * The default English locale
+     */
     EN_US ("en", "English"),
 
+    /**
+     * The Romanian locale
+     */
     RO_RO ("ro", "Romanian");
 
     private final String code;

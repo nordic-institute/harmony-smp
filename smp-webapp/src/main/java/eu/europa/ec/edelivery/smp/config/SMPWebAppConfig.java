@@ -133,6 +133,10 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // Configure the resource message converter to allow the direct download of locale files from the disk
+        LOG.debug("Register ResourceHttpMessageConverter");
+        converters.add(0, new ResourceHttpMessageConverter());
+
         // Configure Object Mapper with format date as: "2021-12-01T14:52:00Z"
         LOG.debug("Register MappingJackson2HttpMessageConverter");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -148,7 +152,6 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
         dateFormat.setTimeZone(TimeZone.getDefault());
         objectMapper.setDateFormat(dateFormat);
 
-        converters.add(0, new ResourceHttpMessageConverter());
         converters.add(1, converter);
     }
 

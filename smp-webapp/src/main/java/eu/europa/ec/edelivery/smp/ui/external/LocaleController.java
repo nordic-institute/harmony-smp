@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_LOCALE;
 
 /**
- * @since
+ * Provides support for returning locale files required by the ngx-translation Angular library.
+ *
+ * @since 5.1
  * @author Sebastian-Ion TINCU
  */
 @RestController

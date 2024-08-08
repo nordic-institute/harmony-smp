@@ -13,6 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumSet;
 
+/**
+ * Service providing operations for managing locales (e.g. updating locales on the disk).
+ *
+ * @since 5.1
+ * @author Sebastian-Ion TINCU
+ */
 @Service
 public class SMPLocaleService {
 
