@@ -79,6 +79,7 @@
   "password.change.dialog.button.close": "Inchide",
   "password.change.dialog.error.old.password.reused": "Noua parola nu trebuie sa fie egala cu vechea parola actuala!",
   "password.change.dialog.error.passwords.mismatch": "Confirmare parolei noi nu se potriveste cu noua parola!",
+  "password.change.dialog.label.confirm.new.password": "Confirmarea parolei noi",
   "password.change.dialog.label.username": "Schimbati parola pentru Utilizator",
   "password.change.dialog.label.new.password": "Parola noua",
   "password.change.dialog.label.password.admin": "Parola de administrator pentru [{{username}}]",

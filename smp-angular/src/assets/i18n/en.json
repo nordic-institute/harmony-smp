@@ -79,6 +79,7 @@
   "password.change.dialog.button.close": "Close",
   "password.change.dialog.error.old.password.reused": "New password must not be equal than old current password!",
   "password.change.dialog.error.passwords.mismatch": "Confirm password value does not match new password!",
+  "password.change.dialog.label.confirm.new.password": "Confirm New Password",
   "password.change.dialog.label.username": "Change password for Username",
   "password.change.dialog.label.new.password": "New Password",
   "password.change.dialog.label.password.admin": "Admin password for user [{{username}}]",

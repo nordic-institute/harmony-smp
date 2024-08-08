@@ -75,7 +75,7 @@ export class PasswordChangeDialogComponent {
       }
     });
 
-    (async () => await this.updateFormTitle()) ();
+    this.translateService.get("password.change.dialog.title").subscribe(value => this.formTitle = value);
     (async () => await this.updatePasswordTitle()) ();
   }
 
@@ -103,10 +103,6 @@ export class PasswordChangeDialogComponent {
     this.passwordTitle = this.adminUser
       ? await lastValueFrom(this.translateService.get("password.change.dialog.label.password.admin", {username: this.securityService.getCurrentUser().username}))
       : await lastValueFrom(this.translateService.get("password.change.dialog.label.password.user"));
-  }
-
-  async updateFormTitle() {
-    this.formTitle = await lastValueFrom(this.translateService.get("password.change.dialog.title"));
   }
 
   changeCurrentUserPassword() {

@@ -49,12 +49,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       'resourceTypeIdentifier': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
-    (async () => await this.updateTitle())();
+    this.translateService.get("resource.details.panel.title").subscribe(value => this.title = value);
     (async () => await this.updateVisibilityDescription())();
-  }
-
-  async updateTitle() {
-    this.title = await lastValueFrom(this.translateService.get("resource.details.panel.title"));
   }
 
   get resource(): ResourceRo {

@@ -45,11 +45,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
-    (async () => this.updateTitle())();
-  }
-
-  async updateTitle() {
-    this.title = await lastValueFrom(this.translateService.get("subresource.panel.title"));
+    this.translateService.get("subresource.panel.title").subscribe(value => this.title = value);
   }
 
   ngAfterViewInit() {

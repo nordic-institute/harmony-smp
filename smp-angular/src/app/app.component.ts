@@ -36,7 +36,7 @@ export class AppComponent {
     private dialog: MatDialog,
     private lookups: GlobalLookups,
     private themeService: ThemeService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
   ) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
     this.themeService.updateThemeFromLocalStorage();

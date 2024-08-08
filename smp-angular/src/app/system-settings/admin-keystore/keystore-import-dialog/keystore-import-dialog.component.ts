@@ -24,7 +24,7 @@ export class KeystoreImportDialogComponent {
               private fb: UntypedFormBuilder,
               private translateService: TranslateService) {
 
-    (async () => await this.updateFormTitle())();
+    this.translateService.get("keystore.import.dialog.title").subscribe(value => this.formTitle = value);
 
     this.dialogForm = this.fb.group({
       'file': new FormControl({value: '', readonly: false}, [Validators.required]),
@@ -34,10 +34,6 @@ export class KeystoreImportDialogComponent {
     this.dialogForm.controls['keystoreType'].setValue("JKS");
     this.dialogForm.controls['password'].setValue("");
     this.dialogForm.controls['file'].setValue("");
-  }
-
-  async updateFormTitle() {
-    this.formTitle = await lastValueFrom(this.translateService.get("keystore.import.dialog.title"))
   }
 
   keystoreFileSelected(event) {

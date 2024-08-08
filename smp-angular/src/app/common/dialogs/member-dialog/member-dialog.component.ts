@@ -25,7 +25,7 @@ export class MemberDialogComponent implements OnInit {
   message: string;
   messageType: string = "alert-error";
 
-  formTitle = '';
+  formTitle = "";
 
   currentFilter: string;
 

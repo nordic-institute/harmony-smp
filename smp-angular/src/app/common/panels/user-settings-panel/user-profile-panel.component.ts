@@ -24,13 +24,6 @@ export class UserProfilePanelComponent {
   @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
   @Output() onChangeUserPasswordEvent: EventEmitter<UserRo> = new EventEmitter();
 
-  siteLanguage = 'English';
-
-  languageList = [
-    { code: 'en', label: 'English' },
-    { code: 'ro', label: 'Romanian' },
-  ];
-
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
   readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
@@ -59,8 +52,7 @@ export class UserProfilePanelComponent {
     private http: HttpClient,
     private lookups: GlobalLookups,
     private dateAdapter: DateAdapter<Date>,
-    private ngxMatDateAdapter: NgxMatDateAdapter<Date>,
-    private translateService: TranslateService) {
+    private ngxMatDateAdapter: NgxMatDateAdapter<Date>) {
 
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
@@ -163,10 +155,6 @@ export class UserProfilePanelComponent {
 
   onSaveButtonClicked() {
     this.onSaveUserEvent.emit(this.managedUserData);
-
-    // update locale
-    let selectedLocale = this.languageList.map(language => language.code).find(code => code === this.userForm.controls['smpLocale'].value);
-    this.translateService.use(selectedLocale);
   }
 
   onResetButtonClicked() {
