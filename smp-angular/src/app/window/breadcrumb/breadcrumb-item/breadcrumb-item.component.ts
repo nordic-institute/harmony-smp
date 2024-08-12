@@ -1,5 +1,6 @@
-﻿import {Component, EventEmitter, Input, Output} from '@angular/core';
+﻿import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NavigationNode} from "../../sidenav/navigation-model.service";
+import {TranslateService} from "@ngx-translate/core";
 
 
 /**
@@ -14,16 +15,21 @@ import {NavigationNode} from "../../sidenav/navigation-model.service";
   styleUrls: ['./breadcrumb-item.component.scss']
 })
 
-export class BreadcrumbItemComponent {
+export class BreadcrumbItemComponent implements OnInit {
   @Output() onClickEvent: EventEmitter<NavigationNode> = new EventEmitter();
   @Input() value : NavigationNode;
 
-  get icon() {
-    return this.value.icon;
+  name = "";
+
+  constructor(public translationService: TranslateService) {
   }
 
-  get name() {
-    return this.value.name;
+  ngOnInit() {
+    this.translationService.get(this.value.i18n).subscribe(value1 => this.name = value1);
+  }
+
+  get icon() {
+    return this.value.icon;
   }
 
   get description() {

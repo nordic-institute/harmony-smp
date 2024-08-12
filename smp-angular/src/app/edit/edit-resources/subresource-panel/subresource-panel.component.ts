@@ -165,7 +165,8 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
       routerLink: "subresource-document",
       selected: true,
       tooltip: "",
-      transient: true
+      transient: true,
+      i18n: "navigation.label.edit.subresource.document"
     }
   }
 

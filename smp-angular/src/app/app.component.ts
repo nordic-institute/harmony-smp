@@ -61,17 +61,6 @@ export class AppComponent {
     return user ? user.username : "";
   }
 
-  get currentUserRoleDescription(): string {
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      return "System administrator";
-    } else if (this.securityService.isCurrentUserSMPAdmin()) {
-      return "SMP administrator";
-    } else if (this.securityService.isCurrentUserServiceGroupAdmin()) {
-      return "Resource administrator";
-    }
-    return "";
-  }
-
   logout(event: Event): void {
     this.router.navigate(['/search']).then((result) => {
       if (result) {

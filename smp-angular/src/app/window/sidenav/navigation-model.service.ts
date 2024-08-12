@@ -15,22 +15,22 @@ import {filter, map} from "rxjs/operators";
 
 let PUBLIC_NAVIGATION_TREE: NavigationNode = {
   code: "home",
-  name: "Home",
+  i18n: "navigation.label.home",
   icon: "home",
   routerLink: "",
   children: [
     {
       code: "search-tools",
-      name: "Search",
+      i18n: "navigation.label.search",
       icon: "search",
-      tooltip: "Search tools",
+      tooltipI18n: "navigation.tooltip.search.tools",
       routerLink: "public",
       children: [
         {
           code: "search-resources",
-          name: "Resources",
+          i18n: "navigation.label.search.resources",
           icon: "find_in_page",
-          tooltip: "Search registered resources",
+          tooltipI18n: "navigation.tooltip.search.resources",
           routerLink: "search-resources",
         }
       ]
@@ -45,9 +45,9 @@ let PUBLIC_NAVIGATION_TREE: NavigationNode = {
  */
 export interface NavigationNode {
   code: string;
-  name: string;
+  i18n: string;
   icon?: string;
-  tooltip?: string;
+  tooltipI18n?: string;
   routerLink?: string;
   children?: NavigationNode[];
   clickable?: boolean;
@@ -312,7 +312,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   /** Remove node from tree */
   public remove(node: NavigationNode) {
-    const newTreeData = {code: "home", name: "Home", icon: "home", children: this.data};
+    const newTreeData: NavigationNode = {code: "home", i18n: "navigation.label.home", icon: "home", children: this.data};
     this._remove(node, newTreeData);
     this.data = newTreeData.children;
   }
@@ -325,13 +325,13 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   protected _add(newNode: NavigationNode, parent: NavigationNode, tree: NavigationNode) {
     if (tree === parent) {
       console.log(
-        `replacing children array of '${parent.name}', adding ${newNode.name}`
+        `replacing children array of '${parent.i18n}', adding ${newNode.i18n}`
       );
       tree.children = [...tree.children!, newNode];
       return true;
     }
     if (!tree.children) {
-      console.log(`reached leaf node '${tree.name}', backing out`);
+      console.log(`reached leaf node '${tree.i18n}', backing out`);
       return false;
     }
     return this.update(tree, this._add.bind(this, newNode, parent));
@@ -347,7 +347,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
         ...tree.children.slice(0, i),
         ...tree.children.slice(i + 1)
       ];
-      console.log(`found ${node.name}, removing it from`, tree);
+      console.log(`found ${node.i18n}, removing it from`, tree);
       return true;
     }
     return this.update(tree, this._remove.bind(this, node));
@@ -358,7 +358,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
     tree.children!.find((node, i) => {
       if (predicate(node)) {
-        console.log(`creating new node for '${node.name}'`);
+        console.log(`creating new node for '${node.i18n}'`);
         updatedTree = {...node};
         updatedIndex = i;
         return true;
@@ -367,7 +367,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     });
 
     if (updatedTree!) {
-      console.log(`replacing node '${tree.children![updatedIndex!].name}'`);
+      console.log(`replacing node '${tree.children![updatedIndex!].i18n}'`);
       tree.children![updatedIndex!] = updatedTree!;
       return true;
     }
@@ -401,12 +401,12 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     return {
       code: "login",
       icon: "login",
-      name: "Login",
+      i18n: "navigation.label.login",
       routerLink: "login",
       clickable: true,
       selected: true,
-      tooltip: "",
-      transient: true,
+      tooltipI18n: "",
+      transient: true
     }
   }
 

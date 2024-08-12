@@ -69,7 +69,7 @@ class UserControllerIT extends AbstractControllerTest {
 
         assertNotNull(result);
         assertEquals(4, result.getChildren().size());
-        List<String> childrenNames = result.getChildren().stream().map(NavigationTreeNodeRO::getName).collect(Collectors.toList());
+        List<String> childrenNames = result.getChildren().stream().map(NavigationTreeNodeRO::getI18n).collect(Collectors.toList());
         assertEquals(Arrays.asList("Search", "Administration", "System settings", "User Settings"), childrenNames);
     }
 
@@ -87,7 +87,7 @@ class UserControllerIT extends AbstractControllerTest {
 
         assertNotNull(result);
         assertEquals(3, result.getChildren().size());
-        List<String> childrenNames = result.getChildren().stream().map(NavigationTreeNodeRO::getName).collect(Collectors.toList());
+        List<String> childrenNames = result.getChildren().stream().map(NavigationTreeNodeRO::getI18n).collect(Collectors.toList());
         assertEquals(Arrays.asList("Search", "Administration", "User Settings"), childrenNames);
     }
 
