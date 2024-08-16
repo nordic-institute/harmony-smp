@@ -31,26 +31,26 @@ public class NavigationTreeNodeRO extends BaseRO {
     private static final long serialVersionUID = 9008583888835630011L;
 
     private String code;
-    private String name;
+    private String i18n;
     private String icon;
-    private String tooltip;
+    private String tooltipI18n;
     private String routerLink;
     private final List<NavigationTreeNodeRO> children = new ArrayList<>();
 
     public NavigationTreeNodeRO() {
     }
 
-    public NavigationTreeNodeRO(String code, String name, String icon, String routerLink) {
-        this(code, name, icon, routerLink, null);
+    public NavigationTreeNodeRO(String code, String i18n, String icon, String routerLink) {
+        this(code, i18n, icon, routerLink, null);
 
     }
 
-    public NavigationTreeNodeRO(String code, String name, String icon, String routerLink, String tooltip) {
+    public NavigationTreeNodeRO(String code, String i18n, String icon, String routerLink, String tooltipI18n) {
         this.code = code;
-        this.name = name;
+        this.i18n = i18n;
         this.icon = icon;
         this.routerLink = routerLink;
-        this.tooltip = tooltip;
+        this.tooltipI18n = tooltipI18n;
     }
 
     public String getCode() {
@@ -61,12 +61,12 @@ public class NavigationTreeNodeRO extends BaseRO {
         this.code = code;
     }
 
-    public String getName() {
-        return name;
+    public String getI18n() {
+        return i18n;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setI18n(String name) {
+        this.i18n = name;
     }
 
     public String getIcon() {
@@ -77,12 +77,12 @@ public class NavigationTreeNodeRO extends BaseRO {
         this.icon = icon;
     }
 
-    public String getTooltip() {
-        return tooltip;
+    public String getTooltipI18n() {
+        return tooltipI18n;
     }
 
-    public void setTooltip(String tooltip) {
-        this.tooltip = tooltip;
+    public void setTooltipI18n(String tooltip) {
+        this.tooltipI18n = tooltip;
     }
 
     public String getRouterLink() {

@@ -98,7 +98,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       routerLink: "resource-document",
       selected: true,
       tooltip: "",
-      transient: true
+      transient: true,
+      i18n: "navigation.label.edit.resource.document"
     }
   }
 

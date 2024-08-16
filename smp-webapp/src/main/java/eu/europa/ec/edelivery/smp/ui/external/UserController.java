@@ -119,7 +119,7 @@ public class UserController {
         LOG.info("get User Navigation tree for user ID: {}", userId);
         Long entityId = decryptEntityId(userId);
         DBUser user = uiUserService.findUser(entityId);
-        NavigationTreeNodeRO home = new NavigationTreeNodeRO("home", "Home", "home", "");
+        NavigationTreeNodeRO home = new NavigationTreeNodeRO("home", "navigation.label.home", "home", "");
         home.addChild(createPublicNavigationTreeNode());
         // create administration nodes for domains, groups and resources
         NavigationTreeNodeRO adminNodes = createEditNavigationTreeNode();
@@ -296,39 +296,39 @@ public class UserController {
 
 
     protected NavigationTreeNodeRO createPublicNavigationTreeNode() {
-        NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "Search", "search", "public");
-        node.addChild(new NavigationTreeNodeRO("search-resources", "Resources", "find_in_page", "search-resource", "Search registered resources"));
-        node.addChild(new NavigationTreeNodeRO("dns-tools", "DNS tools", "dns", "dns-tools" , "DNS lookup tools"));
+            NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "navigation.label.search", "search", "public");
+        node.addChild(new NavigationTreeNodeRO("search-resources", "navigation.label.search.resources", "find_in_page", "search-resource", "navigation.tooltip.search.resources"));
+        node.addChild(new NavigationTreeNodeRO("dns-tools", "navigation.label.search.dns.tools", "dns", "dns-tools" , "navigation.tooltip.search.dns.tools"));
         return node;
     }
 
     protected NavigationTreeNodeRO createUserProfileNavigationTreeNode() {
-        NavigationTreeNodeRO node = new NavigationTreeNodeRO("user-data", "User Settings", "account_circle", "user-settings");
-        node.addChild(new NavigationTreeNodeRO("user-data-profile", "Profile", "account_circle", "user-profile"));
-        node.addChild(new NavigationTreeNodeRO("user-data-access-token", "Access tokens", "key", "user-access-token"));
-        node.addChild(new NavigationTreeNodeRO("user-data-certificates", "Certificates", "article", "user-certificate"));
-        node.addChild(new NavigationTreeNodeRO("user-data-alert", "Alerts", "notifications", "user-alert"));
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("user-data", "navigation.label.user.settings", "account_circle", "user-settings");
+        node.addChild(new NavigationTreeNodeRO("user-data-profile", "navigation.label.user.settings.profile", "account_circle", "user-profile"));
+        node.addChild(new NavigationTreeNodeRO("user-data-access-token", "navigation.label.user.settings.access.tokens", "key", "user-access-token"));
+        node.addChild(new NavigationTreeNodeRO("user-data-certificates", "navigation.label.user.settings.certificates", "article", "user-certificate"));
+        node.addChild(new NavigationTreeNodeRO("user-data-alert", "navigation.label.user.settings.alerts", "notifications", "user-alert"));
         return node;
     }
 
     protected NavigationTreeNodeRO createSystemAdminNavigationTreeNode() {
-        NavigationTreeNodeRO node = new NavigationTreeNodeRO("system-settings", "System settings", "admin_panel_settings", "system-settings");
-        node.addChild(new NavigationTreeNodeRO("system-admin-user", "Users", "people", "user"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-domain", "Domains", "domain", "domain"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-keystore", "Keystore", "key", "keystore"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-truststore", "Truststore", "article", "truststore"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-extension", "Extensions", "extension", "extension"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-properties", "Properties", "settings", "properties"));
-        // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "Authentication", "shield", "authentication"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-alert", "Alerts", "notifications", "alert"));
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("system-settings", "navigation.label.system.settings", "admin_panel_settings", "system-settings");
+        node.addChild(new NavigationTreeNodeRO("system-admin-user", "navigation.label.system.settings.users", "people", "user"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-domain", "navigation.label.system.settings.domains", "domain", "domain"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-keystore", "navigation.label.system.settings.keystores", "key", "keystore"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-truststore", "navigation.label.system.settings.truststores", "article", "truststore"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-extension", "navigation.label.system.settings.extensions", "extension", "extension"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-properties", "navigation.label.system.settings.properties", "settings", "properties"));
+        // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "navigation.label.system.settings.authentication", "shield", "authentication"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-alert", "navigation.label.system.settings.alerts", "notifications", "alert"));
         return node;
     }
 
     protected NavigationTreeNodeRO createEditNavigationTreeNode() {
-        NavigationTreeNodeRO node = new NavigationTreeNodeRO("edit", "Administration", "tune", "edit");
-        node.addChild(new NavigationTreeNodeRO("edit-domain", "Edit domains", "account_circle", "edit-domain"));
-        node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "group", "edit-group"));
-        node.addChild(new NavigationTreeNodeRO("edit-resource", "Edit resources", "article", "edit-resource"));
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("edit", "navigation.label.edit", "tune", "edit");
+        node.addChild(new NavigationTreeNodeRO("edit-domain", "navigation.label.edit.domains", "account_circle", "edit-domain"));
+        node.addChild(new NavigationTreeNodeRO("edit-group", "navigation.label.edit.groups", "group", "edit-group"));
+        node.addChild(new NavigationTreeNodeRO("edit-resource", "navigation.label.edit.resources", "article", "edit-resource"));
         return node;
     }
 }
