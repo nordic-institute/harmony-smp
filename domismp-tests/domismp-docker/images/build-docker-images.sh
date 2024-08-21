@@ -158,6 +158,7 @@ function pushImageToDockerhub() {
 
   if [[ "V$SMP_IMAGE_PUBLISH" == "Vtrue" ]]; then
     # login to docker
+    echo  "Login to docker registry ${DOCKER_REGISTRY_HOST} with user ${DOCKER_USER}"
     docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
     pushImageIfExisting "${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}"
@@ -169,13 +170,14 @@ function pushImageToDockerhub() {
 }
 
 function pushImageIfExisting() {
-  if [[ "x$(docker images -q "${1}")" != "x" ]]; then
+  local IMAGE_NAME="${IMAGE_TAG:-edeliverytest}/${1}"
+  if [[ "x$(docker images -q "${IMAGE_NAME}")" != "x" ]]; then
     local TAGGED_IMAGE="${DOCKER_REGISTRY_HOST:+$DOCKER_REGISTRY_HOST/}${DOCKER_FOLDER:+$DOCKER_FOLDER/}${1}"
-    docker tag "${IMAGE_TAG:-edeliverytest}/${1}" "${TAGGED_IMAGE}"
+    docker tag "${IMAGE_NAME}" "${TAGGED_IMAGE}"
     echo "Pushing image ${1} as ${TAGGED_IMAGE}"
     docker push "${TAGGED_IMAGE}"
   else
-    echo "Could not find image ${1} to push!"
+    echo "Could not find image ${IMAGE_NAME} to push!"
   fi
   return 0
 }
