@@ -20,11 +20,13 @@ package eu.europa.ec.edelivery.smp.services.mail;
 
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MailDataModel {
+    private static final String DEFAULT_LANGUAGE = "en";
     public enum CommonProperties {
         CURRENT_DATETIME,
         SMP_INSTANCE_NAME,
@@ -46,8 +48,12 @@ public class MailDataModel {
         alert.getProperties().forEach((key, prop) ->  this.model.put(key, prop.getValue()));
     }
 
+    /**
+     * Get language of the mail. If not set, default language "en" is used.
+     * @return language of the mail or "en" if not set
+     */
     public String getLanguage() {
-        return language;
+        return StringUtils.isBlank(language)?DEFAULT_LANGUAGE:language;
     }
 
     public AlertTypeEnum getMailType() {
