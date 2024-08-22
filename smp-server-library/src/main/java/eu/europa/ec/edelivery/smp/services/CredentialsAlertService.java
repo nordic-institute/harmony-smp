@@ -29,6 +29,8 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.mail.MailDataModel;
@@ -165,7 +167,7 @@ public class CredentialsAlertService {
 
     public void alertCredentialVerificationFailed(DBCredential credential) {
         LOG.info("Alert on Login failure [{}]!", credential);
-        Boolean loginFailureEnabled = configurationService.getAlertUserLoginFailureEnabled();
+        boolean loginFailureEnabled = configurationService.getAlertUserLoginFailureEnabled();
         if (!loginFailureEnabled) {
             LOG.warn("Alert Login failure is disabled!");
             return;
@@ -196,7 +198,7 @@ public class CredentialsAlertService {
 
     public void alertCredentialsSuspended(DBCredential credential) {
 
-        Boolean suspensionAlertEnabled = configurationService.getAlertUserSuspendedEnabled();
+        boolean suspensionAlertEnabled = configurationService.getAlertUserSuspendedEnabled();
         if (!suspensionAlertEnabled) {
             LOG.info("Alert suspended is disabled!");
             return;
@@ -384,7 +386,7 @@ public class CredentialsAlertService {
                 resetUrl = smpUrlBuilder.buildSMPUriForApplication().toURL();
                 LOG.warn("Reset URL is not set! Use default SMP URL [{}]", resetUrl);
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e);
             }
         }
         String resetUrlPath = StringUtils.appendIfMissing(resetUrl.toString(), "/", "/") + "ui/#/reset-credential/" + token;
@@ -489,6 +491,7 @@ public class CredentialsAlertService {
         } catch (Throwable exc) {
             LOG.error("Can not send mail [{}] for alert [{}]! Error [{}]",
                     mailTo, alert, ExceptionUtils.getRootCauseMessage(exc));
+            LOG.error("Error sending mail", exc);
             updateAlertStatus(alert, AlertStatusEnum.FAILED, ExceptionUtils.getRootCauseMessage(exc));
         }
 
