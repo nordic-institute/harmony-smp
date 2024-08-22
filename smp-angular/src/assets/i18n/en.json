@@ -473,7 +473,7 @@
 
   "login.button.login": "Login",
   "login.button.password.reset": "Request reset password",
-  "login.button.sso.login": "Request reset password",
+  "login.button.sso.login": "SSO login",
   "login.dialog.password.expiration.dialog.description": "Your password is about to expire on {{expirationDate}}! Please change the password before the expiration date!",
   "login.dialog.password.expiration.dialog.title": "Warning! Your password is about to expire",
   "login.error.generic.error": "Default error ({{errorStatus}}) occurred during login.",

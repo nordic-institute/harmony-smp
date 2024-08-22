@@ -473,7 +473,7 @@
 
   "login.button.login": "Autentifica",
   "login.button.password.reset": "Solicitati resetarea parolei",
-  "login.button.sso.login": "Solicitati resetarea parolei",
+  "login.button.sso.login": "SSO Autentifica",
   "login.dialog.password.expiration.dialog.description": "Parola dvs. este pe cale sa expire la {{expirationDate}}! Va rugam sa va schimbati parola inainte de data expirarii!",
   "login.dialog.password.expiration.dialog.title": "Avertizare! Parola dvs. este pe cale sa expire",
   "login.error.generic.error": "A aparut o eroare generica ({{errorStatus}}) in timpul conectarii.",

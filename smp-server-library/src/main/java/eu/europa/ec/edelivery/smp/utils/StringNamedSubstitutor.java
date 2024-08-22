@@ -18,13 +18,15 @@
  */
 package eu.europa.ec.edelivery.smp.utils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 /**
  * This class is used to substitute named variables in the string with key value pairs from the map.
@@ -56,12 +58,13 @@ public class StringNamedSubstitutor {
         LOG.debug("Using default charset: [{}]", charset);
         return resolve(string, config, charset);
     }
+
     /**
      * Substitute named variables in the string with key value pairs from the map.
      * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
      *
-     * @param string the string to resolve
-     * @param config the config to use
+     * @param string  the string to resolve
+     * @param config  the config to use
      * @param charset the character of the input stream
      * @return the resolved string
      */
@@ -79,7 +82,7 @@ public class StringNamedSubstitutor {
      * The input stream is ready with default charset.
      *
      * @param templateIS the InputStream to resolve
-     * @param config the map of property names and its values
+     * @param config     the map of property names and its values
      * @return the resolved string
      * @throws IOException if an I/O error occurs
      */
@@ -99,10 +102,9 @@ public class StringNamedSubstitutor {
      * @return the resolved string
      */
     public static String resolve(InputStream templateIS, Map<String, Object> config, String charset) throws IOException {
-        Map<String, Object> lowerCaseMap = config.entrySet().stream()
-                .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
+
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            resolve(templateIS, lowerCaseMap, byteArrayOutputStream, charset);
+            resolve(templateIS, config, byteArrayOutputStream, charset);
             return byteArrayOutputStream.toString();
         }
     }
@@ -119,9 +121,7 @@ public class StringNamedSubstitutor {
      */
     public static void resolve(InputStream templateIS, Map<String, Object> config,
                                OutputStream outputStream, String charset) throws IOException {
-        Map<String, Object> lowerCaseMap = config.entrySet().stream()
-                .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
-
+        Map<String, Object> lowerCaseMap = normalizeData(config);
         try (BufferedReader template = new BufferedReader(new InputStreamReader(templateIS, charset));
              Writer writer = new OutputStreamWriter(outputStream, charset)) {
             int read;
@@ -136,7 +136,7 @@ public class StringNamedSubstitutor {
                 if (name == null) {
                     writer.write(START_NAME);
                 } else {
-                    String key = StringUtils.lowerCase(name);
+                    String key = lowerCase(name);
                     Object objValue = lowerCaseMap.get(key);
                     String value = objValue != null ? String.valueOf(lowerCaseMap.get(key)) : null;
 
@@ -150,6 +150,20 @@ public class StringNamedSubstitutor {
                 }
             }
         }
+    }
+
+    /**
+     * Normalize the data model to trim and lower case the keys.
+     *
+     * @param dataModel the data model
+     * @return the normalized data model
+     */
+    private static Map<String, Object> normalizeData(Map<String, Object> dataModel) {
+        Map<String, Object> lowerCaseMap = new HashMap<>();
+        // Note: do not use stream with Collectors.toMap because it throws NPE if value is null
+        dataModel.forEach((key, value) ->
+                lowerCaseMap.put(lowerCase(trim(key)), value));
+        return lowerCaseMap;
     }
 
     private static boolean isStartSequence(BufferedReader reader) throws IOException {
