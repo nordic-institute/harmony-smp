@@ -20,13 +20,15 @@ public class TruststorePage extends CommonCertificatePage {
     public String addCertificateAndReturnAlias(String filePath) {
         uploadInput.sendKeys(filePath);
         String certificateAlias = getAlertMessageAndClose();
-
-        Pattern pattern = Pattern.compile("(?<=alias \\[)(.*?)(?=])");
+        String regex =  "\\[[^\\]]*\\].*\\[([^\\]]+)\\]";
+        Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(certificateAlias);
         if (matcher.find()) {
             return matcher.group(1);
         }
-        return null;
+     else {
+        throw new NullPointerException("No alias found in the message: "+certificateAlias);
+    }
     }
 
 

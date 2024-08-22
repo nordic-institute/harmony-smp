@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * Page object for the Edit resource document page. This contains the locators of the page and the methods for the behaviour of the page
@@ -43,7 +42,7 @@ public class EditResourceDocumentPage extends DomiSMPPage {
     @FindBy(css = "ngx-codemirror[formcontrolname= \"payload\"] div textarea")
     private WebElement codeEditorSendValueElement;
 
-    @FindBy(css = ".CodeMirror-line")
+    @FindBy(css = "div.cm-line")
     private List<WebElement> codeEditorReadValueElement;
 
 
@@ -79,12 +78,7 @@ public class EditResourceDocumentPage extends DomiSMPPage {
     }
 
     public EditResourceDocumentWizardDialog clickOnDocumentWizard() {
-        if (documentNameLbl.getText().contains("1.0")) {
             weToDButton(documentWizardBtn).click();
             return new EditResourceDocumentWizardDialog(driver);
-
-        }
-        LOG.error("Document type {%d} doesn't have wizard", documentNameLbl.getText());
-        throw new NoSuchElementException("Document wizard button is not present");
     }
 }

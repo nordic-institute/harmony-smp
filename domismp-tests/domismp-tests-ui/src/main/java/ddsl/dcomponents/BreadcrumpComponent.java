@@ -13,7 +13,7 @@ public class BreadcrumpComponent extends DomiSMPPage {
      * Component for the Breadcrump of DomiSMP
      */
 
-    @FindBy(xpath = "//smp-breadcrumb/div/smp-breadcrumb-item/a/div[3]/span")
+    @FindBy(css = "smp-breadcrumb smp-breadcrumb-item div span")
     public List<WebElement> BreadcrumpItems;
 
     public BreadcrumpComponent(WebDriver driver) {
@@ -23,7 +23,7 @@ public class BreadcrumpComponent extends DomiSMPPage {
     public String getCurrentPage() {
         int numOflinks = BreadcrumpItems.size();
 
-        return BreadcrumpItems.get(numOflinks - 1).getText();
+        return BreadcrumpItems.get(numOflinks-1).getText();
     }
 
 

@@ -1,10 +1,14 @@
 package utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+    private final static Logger LOG = LoggerFactory.getLogger(Utils.class);
+
     public static <T extends Enum<?>> T randomEnum(T[] values) {
         int x = new Random().nextInt(values.length);
         return values[x];
@@ -15,12 +19,14 @@ public class Utils {
     }
 
     public static String getAliasFromMessage(String message){
-        Pattern pattern = Pattern.compile("(?<= \\[)(.*?)(?=\\])");
+        String regex = "\\[(.*?)]";
+        Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(message);
         if (matcher.find()) {
-            String result = matcher.group(1);
-            return result;
+            return matcher.group(1);
+
         }
-        return null;
+        LOG.error("No alias found in the message: "+message);
+        throw new NullPointerException("No alias found in the message: "+message);
     }
 }

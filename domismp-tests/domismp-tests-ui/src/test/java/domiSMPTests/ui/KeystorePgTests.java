@@ -38,10 +38,14 @@ public class KeystorePgTests extends SeleniumTest {
     }
 
 
-    @Test(description = "KEYS-02 System admin is able to import JKS Keystore", priority = 0)
-    public void systemAdminIsAbleToImportJKS() throws Exception {
+    @Test(description = "KEYS-02 System admin is able to import JKS Keystore")
+    public void systemAdminIsAbleToImportJKS() {
         String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
 
+        if(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", "blue_gw")){
+            keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "blue_gw");
+            keystorePage.deleteandConfirm();
+        }
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
@@ -61,8 +65,8 @@ public class KeystorePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "KEYS-03 System admin is NOT able to import keystore with wrong password", priority = 0)
-    public void systemAdminIsNotAbleToImportWithWrongPassword() throws Exception {
+    @Test(description = "KEYS-03 System admin is NOT able to import keystore with wrong password")
+    public void systemAdminIsNotAbleToImportWithWrongPassword() {
         String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
@@ -75,7 +79,7 @@ public class KeystorePgTests extends SeleniumTest {
     }
 
     @Test(description = "KEYS-04 SSystem admin is able to import duplicated keystore", priority = 1)
-    public void systemAdminIsAbleToImportDuplicatedKeyStores() throws Exception {
+    public void systemAdminIsAbleToImportDuplicatedKeyStores(){
         String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
