@@ -70,6 +70,8 @@ public class ResourceController {
     private static final List<String> SUPPORTED_HEADERS = Arrays.asList(lowerCase(HTTP_PARAM_DOMAIN),
             lowerCase(HTTP_PARAM_OWNER),
             lowerCase(HTTP_PARAM_OWNER_OBSOLETE),
+            lowerCase(HTTP_PARAM_RESOURCE_GROUP),
+            lowerCase(HTTP_PARAM_RESOURCE_VISIBILITY),
             lowerCase(HTTP_PARAM_RESOURCE_TYPE));
     final ResourceService resourceService;
     final DomainGuard domainGuard;

@@ -1,5 +1,8 @@
 eDelivery SMP 5.1
-- Added the HTTP parameter 'Resource-Owner' as alternative to ServiceGroup-Owner
+- added new HTTP headers when creating a new resource:
+    'Resource-Owner' as alternative to ServiceGroup-Owner
+    'Resource-Group': the name of the group: to define to which group in domain the resource belongs to. The group must be in one of the admin's groups. If not given the first group from the list is used.
+    'Resource-Visibility': The visibility of the resource: PUBLIC, PRIVATE. The default value is PUBLIC. Resource visibility can be set only at creation time. To change value of the existing resource it must be done via the UI.
 - added new properties:
     smp.instance.name: The SMP instance name
     smp.credentials.reset_request.url: The URL to reset the user password

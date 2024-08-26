@@ -54,7 +54,8 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     private static final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(IDENTIFIER_SCHEME);
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
     private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
-
+    private static final String HTTP_HEADER_KEY_RESOURCE_GROUP = "Resource-Group";
+    private static final String HTTP_HEADER_KEY_RESOURCE_VISIBILITY = "Resource-Visibility";
     private static final String OTHER_OWNER_NAME = "CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08";
 
     @BeforeEach
@@ -189,5 +190,58 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
                         .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME)
                         .content(SERVICE_GROUP_INPUT_BODY))
                 .andExpect(status().isCreated());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"Null group,,201",
+            "Empty group, '',201",
+            "Existing group:,'domain group',201",
+            "Existing group 2:,'Third group',201",
+            "Not authorized for domain:,'Second group',401",
+            "Not authorized for non existing domain:,'Not exists group',401"})
+    void createResourceForGroup(String testDesc, String groupName, int httpCode) throws Exception {
+
+        LOG.info(testDesc);
+        // create service group by group admin
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME);
+        httpHeaders.add(HTTP_HEADER_KEY_DOMAIN, "domain");
+        if (groupName != null) {
+            httpHeaders.add(HTTP_HEADER_KEY_RESOURCE_GROUP, groupName);
+        }
+
+        mvc.perform(put(URL_PATH)
+                        .with(ADMIN_CREDENTIALS)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .headers(httpHeaders)
+                        .content(SERVICE_GROUP_INPUT_BODY))
+                .andExpect( status().is(httpCode) );
+    }
+
+    @ParameterizedTest
+    @CsvSource({"Null Visibility,,201",
+            "Empty Visibility, '',201",
+            "Public Visibility:,'PUBLIC',201",
+            "Private Visibility:,'PRIVATE',201",
+            "Case insensitive Visibility:,'PRiVaTE',201",
+            "Invalid Visibility:,'NotOKValue',400",
+            })
+    void createResourceWithVisibility(String testDesc, String visibility, int httpCode) throws Exception {
+
+        LOG.info(testDesc);
+        // create service group by group admin
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME);
+        httpHeaders.add(HTTP_HEADER_KEY_DOMAIN, "domain");
+        if (visibility != null) {
+            httpHeaders.add(HTTP_HEADER_KEY_RESOURCE_VISIBILITY, visibility);
+        }
+
+        mvc.perform(put(URL_PATH)
+                        .with(ADMIN_CREDENTIALS)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .headers(httpHeaders)
+                        .content(SERVICE_GROUP_INPUT_BODY))
+                .andExpect( status().is(httpCode) );
     }
 }

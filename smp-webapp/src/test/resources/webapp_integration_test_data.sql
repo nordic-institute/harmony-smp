@@ -86,7 +86,8 @@ insert into SMP_DOMAIN (ID, VISIBILITY, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, 
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'domain group', 'PUBLIC', NOW(),  NOW()),
-(2, 1, 'Second group', 'PUBLIC', NOW(),  NOW());
+(2, 1, 'Second group', 'PUBLIC', NOW(),  NOW()),
+(3, 1, 'Third group', 'PUBLIC', NOW(),  NOW());
 
 -- --------------
 -- configure extension and document types service group and servicemetadata
@@ -127,7 +128,8 @@ insert into SMP_DOMAIN_MEMBER (ID, FK_DOMAIN_ID, FK_USER_ID, MEMBERSHIP_ROLE, CR
 
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 1, 'ADMIN', NOW(),  NOW()),
-(2, 1, 3, 'ADMIN', NOW(),  NOW());
+(2, 3, 1, 'ADMIN', NOW(),  NOW()),
+(3, 1, 3, 'ADMIN', NOW(),  NOW());
 -- set ownership
 insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (-1, -1, 1, 'ADMIN', NOW(),  NOW()),

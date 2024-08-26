@@ -31,6 +31,8 @@ public class WebConstants {
     public static final String HTTP_PARAM_RESOURCE_TYPE = "Resource-Type";
     public static final String HTTP_PARAM_OWNER_OBSOLETE = "ServiceGroup-Owner";
     public static final String HTTP_PARAM_OWNER = "Resource-Owner";
+    public static final String HTTP_PARAM_RESOURCE_GROUP = "Resource-Group";
+    public static final String HTTP_PARAM_RESOURCE_VISIBILITY = "Resource-Visibility";
 
     private WebConstants() {
     }
