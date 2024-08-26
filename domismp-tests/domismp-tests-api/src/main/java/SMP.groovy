@@ -571,7 +571,7 @@ class SMP implements  AutoCloseable
 	}
 	
 //---------------------- Extract response parameters ----------------------
-// To be dpecrecated in the future: use instead "retrieveResponseParameters" function
+// To be deprecated in the future: use instead "retrieveResponseParameters" function
 	def extractResponseParameters(String testType){
 		def headerFound = 0;
 		def urlRefCounter = 0;
@@ -652,7 +652,7 @@ class SMP implements  AutoCloseable
 	}
 	
 //--------------------------- Verify tests results ------------------------
-// To be dpecrecated in the future: use instead "verifyTestResults" function
+// To be deprecated in the future: use instead "verifyTestResults" function
 	def verifyResults(String testType, String expectedResult, String testStepName="false", String redirectURL=null, String redirectCer=null, int nRef=0){
 		// In case of testType = "servicegroup",
 		debugLog("Entering verifyResults method with testType: $testType, expectedResult: $expectedResult, testStepName: $testStepName, redirectURL: $redirectURL, redirectCer: $redirectCer, nRef: $nRef", log)
@@ -749,7 +749,7 @@ class SMP implements  AutoCloseable
 	}
 
 //----------------------- Extract text from request -----------------------
-// To be dpecrecated ?
+// To be deprecated ?
 	def String extractTextFromReq(String testStepName){
 		def fullRequest = context.testCase.getTestStepByName(testStepName);
 		assert (fullRequest != null), locateTest()+"Error in function \"extractTextFromReq\": can't find test step name: \""+testStepName+"\"";
@@ -761,7 +761,7 @@ class SMP implements  AutoCloseable
 	}
 	
 //---------------- Extract subresource metadata from url ------------------
-// To be dpecrecated ?	
+// To be deprecated ?	
 	def extractFromURL(String url){
 		def Table1 = [];
 		def parts = [];
