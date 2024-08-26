@@ -25,7 +25,9 @@ insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, 
 (11, 2, 1, 'CN=blue_gw,O=eDelivery,C=BE:E07B6b956330a19a', null, 'CERTIFICATE', 'REST_API',  NOW(),  NOW()),
 (12, 2, 1, 'CN=red_gw,O=eDelivery,C=BE:9792ce69BC89F14C', null, 'CERTIFICATE', 'REST_API',  NOW(),  NOW()),
 (13, 2, 1, 'CN=SMP_0112992001,O=DIGIT,C=BE', null, 'CERTIFICATE', 'REST_API',  NOW(),  NOW()),
-(14, 2, 1, 'CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE:f71ee8b11cb3b787', null, 'CERTIFICATE', 'REST_API',  NOW(),  NOW());
+(14, 2, 1, 'CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE:f71ee8b11cb3b787', null, 'CERTIFICATE', 'REST_API',  NOW(),  NOW()),
+(15, 4, 1, 'CN=EHEALTH_SMP4_EC,O=European Commission,C=BE:f71ee8b11cb3b878', null, 'CERTIFICATE', 'REST_API',  NOW(),  NOW()),
+(16, 3, 1, 'CN=EHEALTH_SMP3_EC,O=European Commission,C=BE:f71ee8b11cb3b979', null, 'CERTIFICATE', 'REST_API',  NOW(),  NOW());
 
 insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, SUBJECT, ISSUER, SERIALNUMBER,VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values
 (8, 'CN=EHEALTH_SMP_EC,O=European Commission,C=BE:f71ee8b11cb3b787','CN=EHEALTH_SMP_EC,O=European Commission,C=BE','CN=EHEALTH_SMP_EC,O=European Commission,`C=BE','f71ee8b11cb3b787', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
@@ -34,7 +36,9 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, SUBJECT, ISSUER, SERIALNUMBER,V
 (11, 'CN=blue_gw,O=eDelivery,C=BE:E07B6b956330a19a','CN=EHEALTH_SMP_EC,O=European Commission,C=BE','CN=EHEALTH_SMP_EC,O=European Commission,C=BE','E07B6b956330a19a', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
 (12, 'CN=red_gw,O=eDelivery,C=BE:9792ce69BC89F14C','CN=red_gw,O=eDelivery,C=BE','CN=red_gw,O=eDelivery,C=BE','9792ce69BC89F14C', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
 (13, 'CN=SMP_0112992001,O=DIGIT,C=BE','CN=SMP_0112992001,O=DIGIT,C=BE','CN=SMP_0112992001,O=DIGIT,C=BE','', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
-(14, 'CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE:f71ee8b11cb3b787','CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE','CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE','f71ee8b11cb3b787', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW());
+(14, 'CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE:f71ee8b11cb3b787','CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE','CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE','f71ee8b11cb3b787', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
+(15, 'CN=EHEALTH_SMP4_EC,O=European Commission,C=BE:f71ee8b11cb3b878','CN=EHEALTH_SMP4_EC,O=European Commission,C=BE','CN=EHEALTH_SMP4_EC,O=European Commission,`C=BE','f71ee8b11cb3b878', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
+(16, 'CN=EHEALTH_SMP3_EC,O=European Commission,C=BE:f71ee8b11cb3b979','CN=EHEALTH_SMP3_EC,O=European Commission,C=BE','CN=EHEALTH_SMP3_EC,O=European Commission,`C=BE','f71ee8b11cb3b979', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW());
 
 
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_CLIENT_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values

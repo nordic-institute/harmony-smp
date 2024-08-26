@@ -22,6 +22,8 @@ import java.util.Base64
 import java.text.SimpleDateFormat
 import com.eviware.soapui.support.GroovyUtils
 import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
 
 
 
@@ -62,6 +64,12 @@ class SMP implements  AutoCloseable
 	def dbUser=null
 	def dbPassword=null
 
+	static def LOGGED_USER=null
+	static def XSFRTOKEN=null
+	static def USERID=null
+	static def SYSTEM_USER="system"
+	static def SYSTEM_PWD="123456"
+
 	// Constructor of the SMP Class
 	SMP(log,messageExchange,context) {
 		debugLog("Create SMP instance", log)
@@ -86,14 +94,22 @@ class SMP implements  AutoCloseable
 		log.info "Test finished."
 	}
 
-//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-	// Log information wrapper
+//=========================================================================
+//======================== Logging functions ==============================
+//=========================================================================
+
+//------------------------ Log debug informations -------------------------
 	static def void debugLog(logMsg, logObject,  logLevel = DEFAULT_LOG_LEVEL) {
 		if (logLevel.toString()=="1" || logLevel.toString() == "true")
 			logObject.info (logMsg)
 	}
-//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-	// Simply open DB connection (dev or test depending on testEnvironment variable)
+
+
+//=========================================================================
+//======================= Database functions ==============================
+//=========================================================================
+
+//-------------------------- Open DB connection ---------------------------
 	def openConnection(){
 		debugLog("Open DB connections", log)
 		if(testDatabase.toLowerCase()=="true") {
@@ -122,7 +138,8 @@ class SMP implements  AutoCloseable
 		else // testDatabase.toLowerCase()=="false")
 			assert 0, "testDatabase param is set not set to true value - would not try to open DB connection"
 	}
-//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+
+//------------------------- Close DB connection ---------------------------
 	// Close the DB connection opened previously
 	def closeConnection(){
 		debugLog("Close DB connection", log)
@@ -135,7 +152,7 @@ class SMP implements  AutoCloseable
 		debugLog("DB connection closed", log)
 	}
 
-//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+//----------------------- Run list of sql queries -------------------------
 	def executeListOfSqlQueries(String[] sqlQueriesList) {
 		def connectionOpenedInsideMethod = false
 
@@ -162,7 +179,7 @@ class SMP implements  AutoCloseable
 		}
 	}
 
-	//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+//----------- Run list of sql queries and return first row ----------------
 	def executeSqlAndReturnFirstRow(String query) {
 		def connectionOpenedInsideMethod = false
 		def res
@@ -195,42 +212,12 @@ class SMP implements  AutoCloseable
 		return result.domain_code
 	}
 
-//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-//// filterForTestSuite = /PASSING_AUTO_BAMBOO/   // for multiple test suite use more advanced regexp like for example:  /PASSING_AUTO_BAMBOO|PASSING_NOT_FOR_BAMBOO/
-//// filterForTestCases = /SMP001.*/   //for single test case use simple regexp like /SMP001.*/
 
-	def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fieldName, String newValue = null, restMethodName = 'PUT ServiceGroup') {
+//=========================================================================
+//================== Test results assessment functions ====================
+//=========================================================================
 
-		debugLog("START: modyfication of test requests", log)
-		context.testCase.testSuite.project.getTestSuiteList().each { testSuite ->
-			if (testSuite.getLabel() =~ filterForTestSuite) {
-				debugLog("test suite: " + testSuite.getLabel(), log)
-				testSuite.getTestCaseList().each { testCase ->
-					if (testCase.getLabel() =~ filterForTestCases) {
-						debugLog("test label:" + testCase.getLabel(), log)
-						testCase.getTestStepList().each {testStep ->
-							if (testStep instanceof RestTestRequestStep && testStep.getRestMethod().name == restMethodName) {
-
-								def hOld = testStep.getHttpRequest().getRequestHeaders()
-								hOld.remove(fieldName)
-								hOld.remove(fieldName.capitalize())
-								hOld.remove(fieldName.toUpperCase())
-								if (newValue)
-									hOld[fieldName] = [newValue]
-								testStep.getHttpRequest().setRequestHeaders(hOld)
-								debugLog("For testStep:" + testStep.name + "; Header: "  + testStep.getHttpRequest().getRequestHeaders(), log)
-							}
-						}
-					}
-
-				}
-			}
-		}
-		debugLog("END: Modification of requests hedears finished", log)
-	}
-//=================================================================================
-//======================== Initialize the parameters names ========================
-//=================================================================================
+//------------------ Initialize the parameters names ----------------------
 	def initParameters(String testType, String indicator){
 		if(indicator.toLowerCase()=="request"){
 			switch(testType.toLowerCase()){
@@ -277,13 +264,8 @@ class SMP implements  AutoCloseable
 			}
 		}
 	}
-//=================================================================================
 
-
-
-//=================================================================================
-//========================== Extract request parameters ===========================
-//=================================================================================
+//--------------------- Extract request parameters ------------------------
 	def extractRequestParameters(String testType, String testStepName="false"){
 		def requestContent = null;
 
@@ -332,14 +314,264 @@ class SMP implements  AutoCloseable
 				break;
 		}
 	}
-//=================================================================================
+
+//-------------------- Fetch expected results values ----------------------
+	def static fetchExpectedValues(context, log, String testType){
+	
+		def expectedParameters=[:]
+		
+		switch(testType.toLowerCase()){
+			case "sgextension":
+				expectedParameters["extension"]=getExtensionFromString(context, log,getSoapUiCustomProperty(log, context, "PutResourceRequestExtTemplate", "testsuite",false))
+			case "servicegroup":
+			case "resource":
+				expectedParameters["partId"]=getSoapUiCustomProperty(log, context, "ResourceIdentifierValue", "testcase",false)
+				expectedParameters["partScheme"]=getSoapUiCustomProperty(log, context, "ResourceIdentifierScheme", "testcase",true)
+				expectedParameters["version"]=getSoapUiCustomProperty(log, context, "version", "testsuite",false)
+				break;
+			case "subresourcemulti":
+			case "servicemetadatamulti":
+				expectedParameters["metadata"]=getMetadataFromString(context, log, getSoapUiCustomProperty(log, context, "PutSubresourceRequestTemplateMulti", "testsuite",false))
+			case "servicemetadata":
+			case "subresource":
+				expectedParameters["partId"]=getSoapUiCustomProperty(log, context, "ResourceIdentifierValue", "testcase",false)
+				expectedParameters["partScheme"]=getSoapUiCustomProperty(log, context, "ResourceIdentifierScheme", "testcase",true)
+				expectedParameters["version"]=getSoapUiCustomProperty(log, context, "version", "testsuite",false)
+				expectedParameters["serviceId"]=getSoapUiCustomProperty(log, context, "SubresourceIdentifierValue", "testcase",false)
+				expectedParameters["serviceScheme"]=getSoapUiCustomProperty(log, context, "SubresourceIdentifierScheme", "testcase",false)
+				if(expectedParameters["metadata"]==null){
+					expectedParameters["metadata"]=getMetadataFromString(context, log, getSoapUiCustomProperty(log, context, "PutSubresourceRequestTemplate", "testsuite",false))
+				}
+				break;
+			case "redirection":
+				expectedParameters["partId"]=getSoapUiCustomProperty(log, context, "ResourceIdentifierValue", "testcase",false)
+				expectedParameters["partScheme"]=getSoapUiCustomProperty(log, context, "ResourceIdentifierScheme", "testcase",true)
+				expectedParameters["version"]=getSoapUiCustomProperty(log, context, "version", "testsuite",false)
+				expectedParameters["serviceId"]=getSoapUiCustomProperty(log, context, "SubresourceIdentifierValue", "testcase",false)
+				expectedParameters["serviceScheme"]=getSoapUiCustomProperty(log, context, "SubresourceIdentifierScheme", "testcase",false)
+				expectedParameters["redirectUrl"]=getSoapUiCustomProperty(log, context, "redirectUrl", "testcase",false)
+				break;	
+			case "contenttype":
+				expectedParameters["contenttype"]=getSoapUiCustomProperty(log, context, "contenttype", "testcase",false)
+				expectedParameters["charset"]=getSoapUiCustomProperty(log, context, "charset", "testcase",false)
+				break;	
+			case "signature":
+				expectedParameters["smpsignaturemethod"]=getSoapUiCustomProperty(log, context, "smpsignaturemethod", "testsuite",false)
+				expectedParameters["smpsignaturesubj"]=getSoapUiCustomProperty(log, context, "smpsignaturesubj", "testsuite",true)
+				break;				
+			default:
+				assert(0), "Error: -fetchExpectedValues-Unknown operation: "+testType+"."+" Possible operations: resource, servicegroup, subresource, servicemetadata, Redirection, Signature, contentType.";
+				break;
+		}
+		return expectedParameters
+	}
 
 
+//------------------------- Verify tests results --------------------------
+	def static verifyTestResults(context, log, messageExchange, String testType){
+		debugLog("Verifying test results ...", log)
+		def responseParameters=[:]
+		def expectedParameters=[:]
+		responseParameters=retrieveResponseParameters(context, log, messageExchange, testType)		
+		expectedParameters=fetchExpectedValues(context, log, testType)
+		debugLog("responseParameters="+responseParameters, log)
+		debugLog("expectedParameters="+expectedParameters, log)
+		switch(testType.toLowerCase()){
+			case "sgextension":
+				assert(compare2XMLs(log,expectedParameters["extension"], responseParameters["extension"])), " Error: extension in the response does not match the expected value "
+			case "servicegroup":
+			case "resource":
+				assert(expectedParameters["partId"].toLowerCase().equals(responseParameters["partId"].toLowerCase())),"Error: ParticipantID response value: "+responseParameters["partId"]+" does not match expected value: "+expectedParameters["partId"] 
+				assert(expectedParameters["partScheme"].toLowerCase().equals(responseParameters["partScheme"].toLowerCase())),"Error: ParticipantScheme response value: "+responseParameters["partScheme"]+" does not match expected value: "+expectedParameters["partScheme"]
+				assert(expectedParameters["version"].toLowerCase().equals(responseParameters["version"].toLowerCase())),"Error: version response value: "+responseParameters["version"]+" does not match expected value: "+expectedParameters["version"]
+				break;
+			case "subresourcemulti":
+			case "servicemetadatamulti":
+			case "servicemetadata":
+			case "subresource":
+				assert(expectedParameters["partId"].toLowerCase().equals(responseParameters["partId"].toLowerCase())),"Error: ParticipantID response value: "+responseParameters["partId"]+" does not match expected value: "+expectedParameters["partId"] 
+				assert(expectedParameters["partScheme"].toLowerCase().equals(responseParameters["partScheme"].toLowerCase())),"Error: ParticipantScheme response value: "+responseParameters["partScheme"]+" does not match expected value: "+expectedParameters["partScheme"]
+				assert(expectedParameters["version"].toLowerCase().equals(responseParameters["version"].toLowerCase())),"Error: version response value: "+responseParameters["version"]+" does not match expected value: "+expectedParameters["version"]
+				assert(expectedParameters["serviceId"].toLowerCase().equals(responseParameters["serviceId"].toLowerCase())),"Error: serviceId response value: "+responseParameters["serviceId"]+" does not match expected value: "+expectedParameters["serviceId"] 
+				assert(expectedParameters["serviceScheme"].toLowerCase().equals(responseParameters["serviceScheme"].toLowerCase())),"Error: serviceScheme response value: "+responseParameters["serviceScheme"]+" does not match expected value: "+expectedParameters["serviceScheme"]
+				assert(compare2XMLs(log,expectedParameters["metadata"], responseParameters["metadata"])), " Error: metadata in the response does not match the expected value "
+				break;
+			case "redirection":
+				assert(expectedParameters["partId"].toLowerCase().equals(responseParameters["partId"].toLowerCase())),"Error: ParticipantID response value: "+responseParameters["partId"]+" does not match expected value: "+expectedParameters["partId"] 
+				assert(expectedParameters["partScheme"].toLowerCase().equals(responseParameters["partScheme"].toLowerCase())),"Error: ParticipantScheme response value: "+responseParameters["partScheme"]+" does not match expected value: "+expectedParameters["partScheme"]
+				assert(expectedParameters["version"].toLowerCase().equals(responseParameters["version"].toLowerCase())),"Error: version response value: "+responseParameters["version"]+" does not match expected value: "+expectedParameters["version"]
+				assert(expectedParameters["serviceId"].toLowerCase().equals(responseParameters["serviceId"].toLowerCase())),"Error: serviceId response value: "+responseParameters["serviceId"]+" does not match expected value: "+expectedParameters["serviceId"] 
+				assert(expectedParameters["serviceScheme"].toLowerCase().equals(responseParameters["serviceScheme"].toLowerCase())),"Error: serviceScheme response value: "+responseParameters["serviceScheme"]+" does not match expected value: "+expectedParameters["serviceScheme"]
+				assert(expectedParameters["redirectUrl"].toLowerCase().equals(responseParameters["redirectUrl"].toLowerCase())),"Error: redirectUrl response value: "+responseParameters["redirectUrl"]+" does not match expected value: "+expectedParameters["redirectUrl"]
+				break;
+			case  "contenttype":
+				assert(expectedParameters["contenttype"].toLowerCase().equals(responseParameters["contenttype"].toLowerCase())),"Error: Content-Type response value: "+responseParameters["contenttype"]+" does not match expected value: "+expectedParameters["contenttype"] 
+				assert(expectedParameters["charset"].toLowerCase().equals(responseParameters["charset"].toLowerCase())),"Error: Charset response value: "+responseParameters["charset"]+" does not match expected value: "+expectedParameters["charset"] 
+				break;
+			case  "signature":
+				assert(expectedParameters["smpsignaturemethod"].toLowerCase().equals(responseParameters["smpsignaturemethod"].toLowerCase())),"Error: SMP signature method response value: "+responseParameters["smpsignaturemethod"]+" does not match expected value: "+expectedParameters["smpsignaturemethod"] 
+				assert(expectedParameters["smpsignaturesubj"].toLowerCase().equals(responseParameters["smpsignaturesubj"].toLowerCase())),"Error: SMP signature subject response value: "+responseParameters["smpsignaturesubj"]+" does not match expected value: "+expectedParameters["smpsignaturesubj"] 
+				break;
+			default:
+				assert(0), "Error: -verifyTestResults-Unknown operation: "+testType+"."+" Possible operations: resource, servicegroup, subresource, servicemetadata, Redirection, Signature, contentType.";
+				break;
+		}
+		debugLog("Test results verified successfully", log)
+				
+	}
 
+//----------------- Extract and return response parameters ----------------
+	def static retrieveResponseParameters(context, log, messageExchange, String testType){
+		def parametersMap=[:];
+		def ctMap=[];
+		def headers=null;
+		def allNodes=null;
+		// Load the response xml file
+		def responseContent = messageExchange.getResponseContentAsXml();
+		// Extract the Participant Identifier, the references to the signed metadata and the extensions from the Response
+		def ServiceDetails = new XmlSlurper().parseText(responseContent);
+		parametersMap["version"]="1.0"
+		switch(testType.toLowerCase()){
+			case "sgextension":
+				parametersMap["extension"]=getExtensionFromString(context, log, responseContent)							
+			case "servicegroup":
+			case "resource":
+				allNodes = ServiceDetails.depthFirst().each{
+					if(it.name().toLowerCase().equals("participantid")){
+						parametersMap["partId"]=it.text();
+						parametersMap["partScheme"]=it.@schemeID.text();
+					}
+					if(it.name().toLowerCase().equals("participantidentifier")){
+						parametersMap["partId"]=it.text();
+						parametersMap["partScheme"]=it.@scheme.text();
+					}
+					if(it.name().toLowerCase().equals("smpversionid")){
+						parametersMap["version"]=it.text();
+					}
+				}
+				break;
 
-//=================================================================================
-//========================== Extract response parameters ==========================
-//=================================================================================
+			case "subresourcemulti":
+			case "servicemetadatamulti":
+			case "servicemetadata":
+			case "subresource":
+				allNodes = ServiceDetails.depthFirst().each{
+					if(it.name().toLowerCase().equals("participantid")){
+						parametersMap["partId"]=it.text();
+						parametersMap["partScheme"]=it.@schemeID.text();
+					}
+					if(it.name().toLowerCase().equals("participantidentifier")){
+						parametersMap["partId"]=it.text();
+						parametersMap["partScheme"]=it.@scheme.text();
+					}
+					if(it.name().toLowerCase().equals("smpversionid")){
+						parametersMap["version"]=it.text();
+					}
+					if(it.name().toLowerCase().equals("serviceid")){
+						parametersMap["serviceId"]=it.text();
+						parametersMap["serviceScheme"]=it.@schemeID.text();
+					}
+					if(it.name().toLowerCase().equals("documentidentifier")){
+						parametersMap["serviceId"]=it.text();
+						parametersMap["serviceScheme"]=it.@scheme.text();
+					}
+					parametersMap["metadata"]=getMetadataFromString(context, log, responseContent)
+				
+				}
+				
+				break;
+			case "redirection":
+				allNodes = ServiceDetails.depthFirst().each{
+					if(it.name().toLowerCase().equals("participantid")){
+						parametersMap["partId"]=it.text();
+						parametersMap["partScheme"]=it.@schemeID.text();
+					}
+					if(it.name().toLowerCase().equals("participantidentifier")){
+						parametersMap["partId"]=it.text();
+						parametersMap["partScheme"]=it.@scheme.text();
+					}
+					if(it.name().toLowerCase().equals("smpversionid")){
+						parametersMap["version"]=it.text();
+					}
+					if(it.name().toLowerCase().equals("serviceid")){
+						parametersMap["serviceId"]=it.text();
+						parametersMap["serviceScheme"]=it.@schemeID.text();
+					}
+					if(it.name().toLowerCase().equals("documentidentifier")){
+						parametersMap["serviceId"]=it.text();
+						parametersMap["serviceScheme"]=it.@scheme.text();
+					}
+					if((it.name().toLowerCase().equals("publisheruri")) && (it.parent().name().toLowerCase().equals("redirect"))){
+						parametersMap["redirectUrl"]=it.text();
+					}
+					if(it.name().toLowerCase().equals("redirect")){
+						parametersMap["redirectUrl"]=it.@href.text();
+					}
+				}
+				break;
+			case "contenttype":
+				headers=messageExchange.getResponseHeaders()
+				headers.each{ header ->
+					if(header.getKey().equals("Content-Type")){
+						ctMap=header.getValue()[0].split(";")
+						parametersMap["contenttype"]=ctMap[0]
+						parametersMap["charset"]=ctMap[1].split("=")[1]
+					}
+				}
+				break;				
+			case "signature":
+				allNodes = ServiceDetails.depthFirst().each{
+					if(it.name().toLowerCase().equals("signaturemethod")){
+						parametersMap["smpsignaturemethod"]=it.@Algorithm.text();
+					}
+					if(it.name().toLowerCase().equals("x509subjectname")){
+						parametersMap["smpsignaturesubj"]=it.text();
+					}
+				}				
+				break;
+			default:
+				assert(0), "Error: -retrieveResponseParameters-Unknown operation: "+testType+"."+" Possible operations: resource, servicegroup, subresource, servicemetadata, Redirection, Signature, contentType.";
+				break;
+		}
+		return parametersMap
+	}
+	
+//--------------------- Get the Metadata from string ----------------------	
+	def static String getMetadataFromString(context, log, String input){
+		def certValue="";
+		def newCertValue=""
+		def certId="contentbinaryobject";
+		def stringMeta=extractFromXML(removeNamespaces(input),"ProcessMetadata")	
+		def details=null
+		def allNodes=null
+
+		if(stringMeta.length()==0){
+			stringMeta=extractFromXML(removeNamespaces(input),"ProcessList")
+			certId="certificate";
+		}		
+		details = new XmlSlurper().parseText(input);
+		allNodes = details.depthFirst().each{
+					if(it.name().toLowerCase().equals(certId)){
+						certValue=it.text();
+					}
+		}
+		newCertValue=certValue.replaceAll("\\s","")
+		return stringMeta.replace(certValue,newCertValue)
+	}
+
+//-------------------- Get the Extension from string ----------------------	
+	def static String getExtensionFromString(context, log, String input){
+		def stringMeta=extractFromXML(removeNamespaces(input),"SMPExtensions")	
+
+		if(stringMeta.length()==0){
+			stringMeta=extractFromXML(removeNamespaces(input),"Extension")
+		}		
+
+		return stringMeta
+	}
+	
+//---------------------- Extract response parameters ----------------------
+// To be dpecrecated in the future: use instead "retrieveResponseParameters" function
 	def extractResponseParameters(String testType){
 		def headerFound = 0;
 		def urlRefCounter = 0;
@@ -418,13 +650,9 @@ class SMP implements  AutoCloseable
 				break;
 		}
 	}
-//=================================================================================
-
-
-
-//=================================================================================
-//========================== Perform test verifications ===========================
-//=================================================================================
+	
+//--------------------------- Verify tests results ------------------------
+// To be dpecrecated in the future: use instead "verifyTestResults" function
 	def verifyResults(String testType, String expectedResult, String testStepName="false", String redirectURL=null, String redirectCer=null, int nRef=0){
 		// In case of testType = "servicegroup",
 		debugLog("Entering verifyResults method with testType: $testType, expectedResult: $expectedResult, testStepName: $testStepName, redirectURL: $redirectURL, redirectCer: $redirectCer, nRef: $nRef", log)
@@ -519,13 +747,9 @@ class SMP implements  AutoCloseable
 				break;
 		}
 	}
-//=================================================================================
 
-
-
-//=================================================================================
-//=========================== Extract PUT XML contents ============================
-//=================================================================================
+//----------------------- Extract text from request -----------------------
+// To be dpecrecated ?
 	def String extractTextFromReq(String testStepName){
 		def fullRequest = context.testCase.getTestStepByName(testStepName);
 		assert (fullRequest != null), locateTest()+"Error in function \"extractTextFromReq\": can't find test step name: \""+testStepName+"\"";
@@ -535,132 +759,9 @@ class SMP implements  AutoCloseable
 		result = result.replace("%3A",":");
 		return result;
 	}
-//=================================================================================
-
-
-//=================================================================================
-//============================== Extract Node Value ===============================
-//=================================================================================
-	def String extractNodeValue(String nodeName, String input,String parent=null, String attribute=null){
-		def String result = "0";
-		if(nodeName=="Extension"){
-			result="";
-		}
-		def rootNode = new XmlSlurper().parseText(input);
-		def allNodes = rootNode.depthFirst().each{
-			if((it.name()== nodeName)&&((parent==null)||(it.parent().name()==parent))){
-				if(attribute==null){
-					if(nodeName=="Extension"){
-						result=result+it.text();
-					}else{
-						result=it.text();
-					}
-				}
-				else{
-					result=it.@{attribute.toString()}.text();
-				}
-			}
-		}
-		if(result==""){
-			result="0";
-		}
-		return result;
-	}
-
-	// Extensions are extracted in a different way
-	def String extractExtValues(String extInput){
-		def String extResult = "";
-		def String inputTrimmed=extInput.replaceAll("\n","").replaceAll("\r", "").replaceAll(">\\s+<", "><").replaceAll("%23","#").replaceAll("%3A",":");
-		def containerExt = (inputTrimmed =~ /<Extension>((?!<Extension>).)*<\/Extension>/);
-		while(containerExt.find()){
-			extResult = extResult+containerExt.group();
-		}
-		if(extResult==""){
-			extResult="0";
-		}
-		//log.info "<AllExtensionsRoot>"+extResult+"</AllExtensionsRoot>";
-		return "<AllExtensionsRoot>"+extResult+"</AllExtensionsRoot>";
-	}
-
-	// Difference between XMLs
-	def Boolean compareXMLs(String request, String response){
-		def DetailedDiff myDiff = new DetailedDiff(new Diff(request, response));
-		def List allDifferences = myDiff.getAllDifferences();
-
-		if(!myDiff.similar()){
-			// Enable for more logs
-			for (Object object : allDifferences){
-				Difference difference = (Difference)object;
-				log.error(difference);
-				log.error("============================");
-			}
-			return false;
-		}
-		return true;
-	}
-
-//=================================================================================
-
-
-
-//=================================================================================
-//=========================== Remove namespaces in XML ============================
-//=================================================================================
-	def String removeNamespaces(String input){
-		def String result = null;
-		result = input.replaceAll(/<\/.{0,4}:/,"</");
-		result = result.replaceAll(/<.{0,4}:/,"<");
-		result = result.replace("%23","#");
-		result = result.replace("%3A",":");
-		return result;
-	}
-//=================================================================================
-
-
-
-
-//=================================================================================
-//========================= Extract part of XML contents ==========================
-//=================================================================================
-	def String extractPartFromXML(String input, String requestName){
-		def String startTag = null;
-		def String endTag = null;
-		def String result = null;
-
-		//if(requestName.toLowerCase()=="servicegroup"){
-		//	startTag = "<ServiceMetadataReferenceCollection>";
-		//	endTag = "</ServiceGroup>";
-		//}
-		if(requestName.toLowerCase()=="signature"){
-			startTag = "<Signature";
-			endTag = "</SignedServiceMetadata>";
-		}
-		if(requestName.toLowerCase()=="servicemetadata"){
-			startTag = "<ProcessList>";
-			endTag = "</ServiceInformation>";
-		}
-		result = input.substring(input.indexOf(startTag), input.indexOf(endTag));
-		return result;
-	}
-//=================================================================================
-
-
-
-//=================================================================================
-//========================= Return hash value of a string =========================
-//=================================================================================
-	def String returnHash(String input){
-		def String result = MessageDigest.getInstance("MD5").digest(input.toLowerCase(Locale.US).bytes).encodeHex().toString()
-		return result;
-	}
-//=================================================================================
-
-
-
-
-//=================================================================================
-//========================= Extract duplet or quadruplet ==========================
-//=================================================================================
+	
+//---------------- Extract subresource metadata from url ------------------
+// To be dpecrecated ?	
 	def extractFromURL(String url){
 		def Table1 = [];
 		def parts = [];
@@ -710,12 +811,8 @@ class SMP implements  AutoCloseable
 		}
 		debugLog("Leaving extractFromURL", log)
 	}
-//=================================================================================
 
-
-//=================================================================================
-//=============================== Compare 2 Metadata ==============================
-//=================================================================================
+//---------------------------- Compare 2 Metadata -------------------------	
 	def String compareMetadata(String metaData1, String metaData2){
 		def i = 0;
 		def String outcome = "false";
@@ -726,12 +823,8 @@ class SMP implements  AutoCloseable
 		outcome = compareTables(table1,table2);
 		return (outcome);
 	}
-//=================================================================================
 
-
-//=================================================================================
-//====================== Parse Metadata and store hash values =====================
-//=================================================================================
+//---------------------------- Parse Metadata -------------------------
 	def parseMetadata(String metadata){
 		def i = 0;
 		def result = [];
@@ -809,14 +902,1052 @@ class SMP implements  AutoCloseable
 		}
 		result[i]=returnHash(tablebuffer.join(","));
 		return(result);
+	}	
+
+	
+//=========================================================================
+//========== Handle DomiSMP configuration properties functions ============
+//=========================================================================
+//------------- Get the Smp configuration props metadata ------------------
+	def static getSmpConfigPropertyMeta(log, context, propName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getSmpConfigPropertyMeta\".", log)
+		debugLog("  getSmpConfigPropertyMeta  [][]  Property to get: \"$propName\".", log)
+		def jsonSlurper = new JsonSlurper()
+		def commandString=null
+		def commandResult=null 
+		def propMap=null 
+		def propMetadata=null
+		def propMeta=null
+		def urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		def urlExt="/ui/internal/rest/property?"
+
+		try{
+			commandString=["curl", urlToSMP + urlExt + "page=0&pageSize=50&property=$propName",
+                                 "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                 "-H",  "Content-Type: text/xml",
+                                 "-H","X-XSRF-TOKEN: " + returnXsfrToken(log, context, authenticationUser, authenticationPwd),
+                                 "-v"]
+			commandResult=runCommandInShell(log, commandString)
+			assert(commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/),"Error:getSmpConfigPropertyMeta: Error while fetching value of property \"$propName\"."
+            propMetadata=commandResult[0]
+			debugLog("  getSmpConfigPropertyMeta  [][]  Property get result: $propMetadata", log)
+            propMap=jsonSlurper.parseText(propMetadata)
+            assert(propMap != null),"Error:getSmpConfigPropertyMeta: Error while parsing the returned property value: null result found."
+			propMap.serviceEntities.each{ prop ->
+				if(prop.property.toLowerCase().equals(propName.toLowerCase())){
+					propMeta=prop
+				}
+			}
+			debugLog("  getSmpConfigPropertyMeta  [][]  Property \"$propName\" metadata = \"$propMeta\".", log)
+        }finally{
+            XSFRTOKEN=null
+        }
+		return propMeta
 	}
-//=================================================================================
 
+//-------------- Get the Smp configuration property value -----------------
+	def static getSmpConfigPropertyValue(log, context, propName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getSmpConfigPropertyValue\".", log)
+		debugLog("  getSmpConfigPropertyValue  [][]  Property to get: \"$propName\".", log)
+		
+		return getSmpConfigPropertyMeta(log, context, propName, authenticationUser, authenticationPwd).value
+	}
 
+//-------------- Set the Smp configuration property value -----------------
+	def static setSmpConfigProperty(log, context, propName, newValue, waitForApp=false, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"setSmpConfigProperty\".", log)
+		debugLog("  setSmpConfigProperty  [][]  Setting property \"$propName\" to \"$newValue\".", log)
+		def updatedProp=[:]
+		def updatedPropJson=null
+		def updatedPropJsonList=[]
+		def commandString=null
+		def commandResult=null 
+		def urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		def urlExt="/ui/internal/rest/property"
+		
+		// Get the propety Metadata
+		def propMetadata=getSmpConfigPropertyMeta(log, context, propName, authenticationUser, authenticationPwd)
+		
+		propMetadata.each{index, val ->
+			if(!index.equals("desc")){
+				updatedProp[index]=val
+			}			
+		}
+		updatedProp["status"]=1
+		updatedProp["deleted"]=false
+		updatedProp["value"]=newValue
+		
+		updatedPropJsonList<<updatedProp
+		updatedPropJson=JsonOutput.toJson(updatedPropJsonList).toString()
 
-//=================================================================================
-//================================ Compare 2 tables ===============================
-//=================================================================================
+		try{
+			commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + returnXsfrToken(log, context, authenticationUser, authenticationPwd),
+                                         "-X", "PUT",
+                                         "--data", formatJsonForCurl(log,updatedPropJson),
+                                         "-v"]	
+										 
+			commandResult=runCommandInShell(log, commandString)
+        }finally{
+            XSFRTOKEN=null
+        }
+		assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:setSmpConfigProperty: Error while trying to connect to the SMP. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		if(waitForApp){
+			waitFor(log,"1", "min")
+		}
+		debugLog("  setSmpConfigProperty  [][]  Property \"$propName\" update done successfully.", log)		
+	}
+
+	
+//=========================================================================
+//=================== Domain members functions ============================
+//=========================================================================
+//------------------------- add domain member -----------------------------
+	def static addDomainMember(log, context, domainCode, username, roleType="VIEWER", memberOf="DOMAIN", authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"addDomainMember\".", log)
+		debugLog("  addDomainMember  [][]  Adding user \"$username\" to domain \"$domainCode\" with role type \"$roleType\" ...", log)
+		def json=null
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+
+		def exists=domainMemberExists(log, context, domainCode, username, authenticationUser, authenticationPwd)
+		
+		if(!exists){
+			json=ifWindowsEscapeJsonString('{\"memberOf\":\"' + "${memberOf}" + '\", \"roleType\":\"' + "${roleType}" + '\", \"username\":\"' + "${username}" + '\"	}')
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/edit/rest/$userIdent/domain/$domainId/member/put"
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "--data", json,
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:addDomainMember: Error while trying to add user \"$username\" to domain \"$domainCode\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  addDomainMember  [][]  User \"$username\" is now member of domain \"$domainCode\".", log)	
+		}else{
+			debugLog("  addDomainMember  [][]  Domain member \"$username\" already exists (domain \"$domainCode\"). Skip the creation ...", log)
+		}
+	}
+
+//------------------ get domain Members metadata list ---------------------
+	def static getAllDomainMembersMetadata(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getAllDomainMembersMetadata\".", log)
+		debugLog("  getAllDomainMembersMetadata  [][]  Getting the members metadata list for domain \"$domainCode\" ...", log)
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID		
+		domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/edit/rest/$userIdent/domain/$domainId/member?page=0&pageSize=20"
+		
+		commandString=["curl", urlToSMP+urlExt,
+                                    "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                    "-H", "Content-Type: application/json",
+                                    "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                    "-X", "GET",
+                                    "-v"]	
+										 
+		commandResult=runCommandInShell(log, commandString)
+
+		assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:getAllDomainMembersMetadata: Error while trying to get the list of members metadata for domain \"$domainCode\" . CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		debugLog("  getAllDomainMembersMetadata  [][]  Members metadata list for domain \"$domainCode\" retrieved successfully.", log)	
+		return commandResult[0]
+	}
+
+//------------------ get single domain Member Metadata --------------------
+	def static getDomainMemberMetadata(log, context, domainCode, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getDomainMemberMetadata\".", log)
+		debugLog("  getDomainMemberMetadata  [][]  Get metadata for member \"$username\" (domain \"$domainCode\") ...", log)
+		def jsonSlurper = new JsonSlurper()
+		def memberMeta=null
+		
+		def dataMap=jsonSlurper.parseText(getAllDomainMembersMetadata(log, context, domainCode, authenticationUser, authenticationPwd))
+		
+		dataMap.serviceEntities.each{ memb ->
+			if(memb.username.toLowerCase().equals(username.toLowerCase())){
+				debugLog("  getDomainMemberMetadata  [][]  Domain member \"$username\" found.", log)
+				memberMeta=memb
+			}
+		}
+		
+		return memberMeta
+	}
+
+//------------------ get single domain Member Id --------------------
+	def static getDomainMemberId(log, context, domainCode, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getDomainMemberId\".", log)
+		debugLog("  getDomainMemberId  [][]  Get memberId for domain member \"$username\" (domain $domainCode) ...", log)
+		
+		def dataMap=getDomainMemberMetadata(log, context, domainCode, username, authenticationUser, authenticationPwd)
+		
+		assert(dataMap!=null),"Error:getDomainMemberId: Error while trying to retrieve memberId for domain member \"$username\" (domain $domainCode): metadata returned is null"	
+		return dataMap.memberId
+	}
+
+//-------------------- get domain members List ----------------------
+	def static getDomainMembersList(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getDomainMembersList\".", log)
+		debugLog("  getDomainMembersList  [][]  Get all domain members list ...", log)
+		def membersList=[]
+		def jsonSlurper = new JsonSlurper()
+		
+		def dataMap=jsonSlurper.parseText(getAllDomainMembersMetadata(log, context, domainCode, authenticationUser, authenticationPwd))
+		dataMap.serviceEntities.each{ memb ->
+			membersList<<memb.username
+		}		
+		return membersList
+	}
+
+//----------------- check if domain member exists -------------------
+	def static boolean domainMemberExists(log, context, domainCode, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"domainMemberExists\".", log)
+		debugLog("  domainMemberExists  [][]  Check if domain member \"$username\" (domain $domainCode) exists ...", log)
+		
+		def dataMap=getDomainMembersList(log, context, domainCode, authenticationUser, authenticationPwd)
+		if(dataMap*.toLowerCase().contains(username.toLowerCase())){
+			debugLog("  domainMemberExists  [][]  Domain member \"$username\" exists (domain $domainCode).", log)
+			return true
+		}
+		debugLog("  domainMemberExists  [][]  Domain member \"$username\" does not exist (domain $domainCode).", log)
+		return false
+	}
+
+//---------------------- Delete domain member -----------------------
+	def static deleteDomainMember(log, context, domainCode, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"deleteDomainMember\".", log)
+		debugLog("  deleteDomainMember  [][]  Deleting domain member \"$username\" (domain \"$domainCode\") ...", log)
+		def userIdent=null
+		def domainId=null
+		def memberId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=domainMemberExists(log, context, domainCode, username, authenticationUser, authenticationPwd)
+
+		if(exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			memberId=getDomainMemberId(log, context, domainCode, username, authenticationUser, authenticationPwd)		
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/edit/rest/$userIdent/domain/$domainId/member/$memberId/delete"
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "DELETE",
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:deleteDomainMember: Error while trying to delete domain member \"$username\" (domain $domainCode). CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+
+			debugLog("  deleteDomainMember  [][]  Domain member \"$username\" (Domain \"$domainCode\") successfully deleted.", log)	
+		}else{
+			debugLog("  deleteDomainMember  [][]  Domain member \"$username\" (Domain \"$domainCode\") does not exist: skip the deletion ...", log)
+		}
+	}
+	
+	
+//===================================================================
+//========================= Groups functions ========================
+//===================================================================
+//------------------------ add domain group -------------------------
+	def static addGroup(log, context, domainCode, groupName, visibility="PUBLIC", authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"addGroup\".", log)
+		debugLog("  addGroup  [][]  Adding group \"$groupName\" to domain \"$domainCode\" with visibility \"$visibility\" ...", log)
+		def json=null
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=groupExists(log, context, domainCode, groupName, authenticationUser, authenticationPwd)
+		
+		if(!exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			json=ifWindowsEscapeJsonString('{\"visibility\":\"' + "${visibility}" + '\", \"groupName\":\"' + "${groupName}" + '\"}')
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/edit/rest/$userIdent/domain/$domainId/group/create"
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "--data", json,
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:addGroup: Error while trying to link domain \"$domainCode\" to group \"$groupName\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  addGroup  [][]  Domain \"$domainCode\" is now linked to group \"$groupName\".", log)	
+		}else{
+			debugLog("  addGroup  [][]  Group \"$groupName\" already exist (domain \"$domainCode\"). Skip the creation...", log)
+		}
+	}
+
+//-------------------------- Delete Group ---------------------------
+	def static deleteGroup(log, context, domainCode, groupName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"deleteGroup\".", log)
+		debugLog("  deleteGroup  [][]  Deleting group \"$groupName\" (domain \"$domainCode\") ...", log)
+		def userIdent=null
+		def domainId=null
+		def groupId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=groupExists(log, context, domainCode, groupName, authenticationUser, authenticationPwd)
+
+		if(exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			groupId=getGroupId(log, context, domainCode, groupName, authenticationUser, authenticationPwd)		
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/edit/rest/$userIdent/domain/$domainId/group/$groupId/delete"
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "DELETE",
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:deleteGroup: Error while trying to delete group \"groupName\" (domain $domainCode). CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+
+			debugLog("  deleteGroup  [][]  Group \"$groupName\" (Domain \"$domainCode\") successfully deleted.", log)	
+		}else{
+			debugLog("  deleteGroup  [][]  Group \"groupName\" (Domain \"$domainCode\") does not exist: skip the deletion ...", log)
+		}
+	}
+
+//---------------------- get domain groups list ---------------------
+	def static getAllGroupsMetadata(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getAllGroupsMetadata\".", log)
+		debugLog("  getAllGroupsMetadata  [][]  Getting the groups metadata list for domain \"$domainCode\" ...", log)
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=false
+
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID		
+		domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/edit/rest/$userIdent/domain/$domainId/group"
+		
+		commandString=["curl", urlToSMP+urlExt,
+                                    "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                    "-H", "Content-Type: application/json",
+                                    "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                    "-X", "GET",
+                                    "-v"]	
+										 
+		commandResult=runCommandInShell(log, commandString)
+
+		assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:getAllGroupsMetadata: Error while trying to get the list of groups metadata for domain \"$domainCode\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		debugLog("  getAllGroupsMetadata  [][]  Groups metadata list for domain \"$domainCode\" retrieved successfully.", log)	
+		return commandResult[0]
+	}
+
+//--------------------- get single Group Metadata -------------------
+	def static getGroupMetadata(log, context, domainCode, groupName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getGroupMetadata\".", log)
+		debugLog("  getGroupMetadata  [][]  Get metadata for group \"$groupName\" (domain \"$domainCode\") ...", log)
+		def jsonSlurper = new JsonSlurper()
+		def groupMeta=null
+		
+		def dataMap=jsonSlurper.parseText(getAllGroupsMetadata(log, context, domainCode, authenticationUser, authenticationPwd))
+		
+		dataMap.each{ grp ->
+			if(grp.groupName.toLowerCase().equals(groupName.toLowerCase())){
+				debugLog("  getGroupMetadata  [][]  Group \"$groupName\" found.", log)
+				groupMeta=grp
+			}
+		}
+
+		return groupMeta
+	}
+
+//------------------------ get single Group Id ----------------------
+	def static getGroupId(log, context, domainCode, groupName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getGroupId\".", log)
+		debugLog("  getGroupId  [][]  Get groupId for groupName \"$groupName\" (domain \"$domainCode\") ...", log)
+		
+		def dataMap=getGroupMetadata(log, context, domainCode, groupName, authenticationUser, authenticationPwd)
+		
+		assert(dataMap!=null),"Error:getGroupId: Error while trying to retrieve groupID for group \"$groupName\" (domain $domainCode): metadata returned is null"	
+
+		return dataMap.groupId
+	}
+
+//------------------------ get group names List ---------------------
+	def static getGroupNamesList(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getGroupNamesList\".", log)
+		debugLog("  getGroupNamesList  [][]  Get all group names list ...", log)
+		def groupList=[]
+		def jsonSlurper = new JsonSlurper()
+		
+		def dataMap=jsonSlurper.parseText(getAllGroupsMetadata(log, context, domainCode, authenticationUser, authenticationPwd))
+		dataMap.each{ grp ->
+			groupList<<grp.groupName
+		}		
+		return groupList
+	}
+
+//------------------------ check if group exists --------------------
+	def static boolean groupExists(log, context, domainCode, groupName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"groupExists\".", log)
+		debugLog("  groupExists  [][]  Check if group \"$groupName\" (domain $domainCode) exists ...", log)
+		
+		def dataMap=getGroupNamesList(log, context, domainCode, authenticationUser, authenticationPwd)
+		if(dataMap*.toLowerCase().contains(groupName.toLowerCase())){
+			debugLog("  groupExists  [][]  Group \"$groupName\" exists (domain $domainCode).", log)
+			return true
+		}
+		debugLog("  groupExists  [][]  Group \"$groupName\" does not exist (domain $domainCode).", log)
+		return false
+	}
+	
+	
+//=========================================================================
+//==================== Group members functions ============================
+//=========================================================================
+//------------------------- add Group member -----------------------------
+	def static addGroupMember(log, context, domainCode, groupName, username, roleType="VIEWER", memberOf="GROUP", authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"addGroupMember\".", log)
+		debugLog("  addGroupMember  [][]  Adding user \"$username\" to group (domain \"$domainCode\") with role type \"$roleType\" ...", log)
+		def json=null
+		def userIdent=null
+		def domainId=null
+		def groupId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+
+		def exists=groupMemberExists(log, context, domainCode, groupName, username, authenticationUser, authenticationPwd)
+		
+		if(!exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			json=ifWindowsEscapeJsonString('{\"memberOf\":\"' + "${memberOf}" + '\", \"roleType\":\"' + "${roleType}" + '\", \"username\":\"' + "${username}" + '\"	}')
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			groupId=getGroupId(log, context, domainCode, groupName, authenticationUser, authenticationPwd)
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/edit/rest/$userIdent/domain/$domainId/group/$groupId/member/put"
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "--data", json,
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:addGroupMember: Error while trying to add user \"$username\" to group \"$groupName\" (domain \"$domainCode\"). CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  addGroupMember  [][]  User \"$username\" is now member of group \"$groupName\" (domain \"$domainCode\").", log)	
+		}else{
+			debugLog("  addGroupMember  [][]  Group \"$groupName\" member \"$username\" already exists (domain \"$domainCode\"). Skip the creation ...", log)
+		}
+	}
+
+//------------------- get group Members metadata list ---------------------
+	def static getAllGroupMembersMetadata(log, context, domainCode, groupName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getAllGroupMembersMetadata\".", log)
+		debugLog("  getAllGroupMembersMetadata  [][]  Getting the members metadata list for group \"$groupName\" (domain \"$domainCode\") ...", log)
+		def userIdent=null
+		def domainId=null
+		def groupId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID		
+		domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+		groupId=getGroupId(log, context, domainCode, groupName, authenticationUser, authenticationPwd)
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/edit/rest/$userIdent/domain/$domainId/group/$groupId/member?page=0&pageSize=20"
+		
+		commandString=["curl", urlToSMP+urlExt,
+                                    "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                    "-H", "Content-Type: application/json",
+                                    "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                    "-X", "GET",
+                                    "-v"]	
+										 
+		commandResult=runCommandInShell(log, commandString)
+
+		assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:getAllGroupMembersMetadata: Error while trying to get the list of members metadata for group \"$groupName\" (domain \"$domainCode\"). CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		debugLog("  getAllGroupMembersMetadata  [][]  Members metadata list for group \"$groupName\" (domain \"$domainCode\") retrieved successfully.", log)	
+		return commandResult[0]
+	}
+
+//------------------- get single group Member Metadata --------------------
+	def static getGroupMemberMetadata(log, context, domainCode, groupName, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getGroupMemberMetadata\".", log)
+		debugLog("  getGroupMemberMetadata  [][]  Get metadata for member \"$username\" of group \"$groupName\" (domain \"$domainCode\") ...", log)
+		def jsonSlurper = new JsonSlurper()
+		def memberMeta=null
+		
+		def dataMap=jsonSlurper.parseText(getAllGroupMembersMetadata(log, context, domainCode, groupName, authenticationUser, authenticationPwd))
+		
+		dataMap.serviceEntities.each{ memb ->
+			if(memb.username.toLowerCase().equals(username.toLowerCase())){
+				debugLog("  getGroupMemberMetadata  [][]  Group member \"$username\" found.", log)
+				memberMeta=memb
+			}
+		}
+		
+		return memberMeta
+	}
+
+//------------------- get single group Member Id --------------------
+	def static getGroupMemberId(log, context, domainCode, groupName, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getGroupMemberId\".", log)
+		debugLog("  getGroupMemberId  [][]  Get memberId of member \"$username\" for group \"$groupName\" (domain $domainCode) ...", log)
+		
+		def dataMap=getGroupMemberMetadata(log, context, domainCode, groupName, username, authenticationUser, authenticationPwd)
+		
+		assert(dataMap!=null),"Error:getGroupMemberId: Error while trying to retrieve memberId of group member \"$username\" for group \"$groupName\" (domain \"$domainCode\"): metadata returned is null"	
+		return dataMap.memberId
+	}
+
+//--------------------- get group members List ----------------------
+	def static getGroupMembersList(log, context, domainCode, groupName, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getGroupMembersList\".", log)
+		debugLog("  getGroupMembersList  [][]  Get all group members list ...", log)
+		def membersList=[]
+		def jsonSlurper = new JsonSlurper()
+		
+		def dataMap=jsonSlurper.parseText(getAllGroupMembersMetadata(log, context, domainCode, groupName, authenticationUser, authenticationPwd))
+		dataMap.serviceEntities.each{ memb ->
+			membersList<<memb.username
+		}		
+		return membersList
+	}
+
+//------------------ check if group member exists -------------------
+	def static boolean groupMemberExists(log, context, domainCode, groupName, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"groupMemberExists\".", log)
+		debugLog("  groupMemberExists  [][]  Check if group member \"$username\" for group \"$groupName\" (domain $domainCode) exists ...", log)
+		
+		def dataMap=getGroupMembersList(log, context, domainCode, groupName, authenticationUser, authenticationPwd)
+		if(dataMap*.toLowerCase().contains(username.toLowerCase())){
+			debugLog("  groupMemberExists  [][]  Group member \"$username\" exists (group \"$groupName\", domain $domainCode).", log)
+			return true
+		}
+		debugLog("  groupMemberExists  [][]  Group member \"$username\" does not exist (group \"$groupName\", domain $domainCode).", log)
+		return false
+	}
+
+//----------------------- Delete group member -----------------------
+	def static deleteGroupMember(log, context, domainCode, groupName, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"deleteGroupMember\".", log)
+		debugLog("  deleteGroupMember  [][]  Deleting domain member \"$username\" (domain \"$domainCode\") ...", log)
+		def userIdent=null
+		def domainId=null
+		def groupId=null
+		def memberId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=groupMemberExists(log, context, domainCode, groupName, username, authenticationUser, authenticationPwd)
+
+		if(exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			groupId=getGroupId(log, context, domainCode, groupName, authenticationUser, authenticationPwd)
+			memberId=getGroupMemberId(log, context, domainCode, username, authenticationUser, authenticationPwd)		
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/edit/rest/$userIdent/domain/$domainId/group/$groupId/member/$memberId/delete"
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "DELETE",
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:deleteGroupMember: Error while trying to delete group member \"$username\" (group \"$groupName\", domain $domainCode). CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+
+			debugLog("  deleteGroupMember  [][]  Group member \"$username\" (group \"$groupName\", domain $domainCode) successfully deleted.", log)	
+		}else{
+			debugLog("  deleteGroupMember  [][]  Group member \"$username\" (group \"$groupName\", domain $domainCode) does not exist: skip the deletion ...", log)
+		}
+	}
+
+	
+//===================================================================
+//================ Domain configuration functions ===================
+//===================================================================
+//----------- Set the domain supported resources types --------------
+	def static setDomainResourceTypes(log, context, domainCode, resourceTypes=["edelivery-oasis-smp-1.0-servicegroup","edelivery-oasis-smp-2.0-servicegroup"], authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"setDomainResourceTypes\".", log)
+		debugLog("  setDomainResourceTypes  [][]  Setting  resource types \""+resourceTypes+"\" to domain \"$domainCode\" ...", log)
+		def json=null
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=false
+		
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID
+		json=formatJsonForCurl(log,JsonOutput.toJson(resourceTypes).toString())
+		domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/internal/rest/$userIdent/domain/$domainId/update-resource-types"
+		
+		try{
+			commandString=["curl", urlToSMP+urlExt,
+                                        "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                        "-H", "Content-Type: application/json",
+                                        "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                        "-X", "POST",
+                                        "--data", json,
+                                        "-v"]	
+										 
+			commandResult=runCommandInShell(log, commandString)
+		}finally{
+			XSFRTOKEN=null
+		}
+		assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:setDomainResourceTypes: Error while trying to set resource types for domain \"$domainCode\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		debugLog("  setDomainResourceTypes  [][]  Resource types set to \""+resourceTypes+"\" for domain \"$domainCode\".", log)	
+	}
+
+//------------------ Set domain default resource type ---------------------
+	def static setDomainDefResourceType(log, context, domainCode, defResourceType, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"setDomainDefResourceType\".", log)
+		debugLog("  setDomainDefResourceType  [][]  Setting default resource type \"$defResourceType\" for domain \"$domainCode\" ...", log)
+		def json=null
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=false
+		
+		if(!exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/internal/rest/$userIdent/domain/$domainId/update"
+			json=ifWindowsEscapeJsonString('{\"status\":1, \"index\":0, \"domainId\":\"' + "${domainId}" + '\", \"domainCode\":\"' + "${domainCode}" + '\", \"defaultResourceTypeIdentifier\":\"' + "${defResourceType}" + '\"}')
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "POST",
+                                         "--data", json,
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:setDomainDefResourceType: Error while trying to set the default resource type identifier for domain \"$domainCode\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  setDomainDefResourceType  [][]  Default resource type identifier updated to \"$defResourceType\" for domain \"$domainCode\".", log)	
+		}else{
+			debugLog("  setDomainDefResourceType  [][]  Unknown error while trying to update Default Resource Type Identifier for domain \"$domainCode\" ...", log)
+		}
+	}
+
+//---------------------- Add SML integration data -------------------------
+	def static addSMLintegrationData(log, context, domainCode, smlSubdomain, smlSmpId, smlClientKeyAlias, smlClientCertAuth, smlRegistered, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"addSMLintegrationData\".", log)
+		debugLog("  addSMLintegrationData  [][]  Adding SML integration data for domain \"$domainCode\" ...", log)
+		def json=null
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=false
+		
+		if(!exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/internal/rest/$userIdent/domain/$domainId/update-sml-integration-data"
+			json=ifWindowsEscapeJsonString('{\"status\":0, \"index\":0,\"actionMessage\":null,\"domainId\":\"' + "${domainId}" + '\", \"domainCode\":\"' + "${domainCode}" + '\", \"smlSubdomain\":\"' + "${smlSubdomain}" + '\",\"smlSmpId\":\"' + "${smlSmpId}" + '\", \"smlClientKeyAlias\":\"' + "${smlClientKeyAlias}" + '\", \"smlClientCertAuth\":\"' + "${smlClientCertAuth}" + '\",\"smlRegistered\":\"' + "${smlRegistered}" + '\"}')
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "POST",
+                                         "--data", json,
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:addSMLintegrationData: Error while trying to add SML integration data for domain \"$domainCode\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  addSMLintegrationData  [][]  SML integration data added for domain \"$domainCode\".", log)	
+		}else{
+			debugLog("  addSMLintegrationData  [][]  Unknown error while trying to add SML integration data for domain \"$domainCode\" ...", log)
+		}
+	}
+
+//---------------------- Register domain in SML ---------------------------
+	def static registerDomainSML(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"registerDomainSML\".", log)
+		debugLog("  registerDomainSML  [][]  Registering domain \"$domainCode\" in SML ...", log)
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=false
+		
+		if(!exists){
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="ui/internal/rest/domain/$domainId/sml-register/$domainCode"
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:registerDomainSML: Error while trying to register domain \"$domainCode\" in the SML. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  registerDomainSML  [][]  Domain \"$domainCode\" is now registered in the SML.", log)	
+		}else{
+			debugLog("  registerDomainSML  [][]  Unknown error while trying to register domain \"$domainCode\" in the SML ...", log)
+		}
+	}
+	
+	
+//=========================================================================
+//========================== Domains functions ============================
+//=========================================================================
+//--------------------------- Create a domain -----------------------------
+	def static createDomain(log, context, domainCode, signatureKeyAlias, visibility="PUBLIC", smlSmpId="", smlPartIdRegexp="", smlClientKeyAlias="", smlSubdomain="", authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"createDomain\".", log)
+		debugLog("  createDomain  [][]  Creating domain \"$domainCode\" ...", log)
+		def json=null
+		def userIdent=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=domainExists(log, context, domainCode, authenticationUser, authenticationPwd)
+		
+		if(!exists){
+			json=ifWindowsEscapeJsonString('{\"index\":null, \"visibility\":\"' + "${visibility}" + '\", \"domainCode\":\"' + "${domainCode}" + '\",\"smlSubdomain\":\"' + "${smlSubdomain}" + '\",\"smlSmpId\":\"' + "${smlSmpId}" + '\",\"smlParticipantIdentifierRegExp\":\"' + "${smlPartIdRegexp}" + '\",\"smlClientKeyAlias\":\"' + "${smlClientKeyAlias}" + '\",\"signatureKeyAlias\":\"' + "${signatureKeyAlias}" + '\",\"status\":2,\"smlRegistered\":false,\"smlClientCertAuth\":false	}')
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/internal/rest/$userIdent/domain/create"
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "--data", json,
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:createDomain: Error while trying to create domain $domainCode. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  createDomain  [][]  Domain \"$domainCode\" created successfully.", log)	
+		}else{
+			debugLog("  createDomain  [][]  Domain \"$domainCode\" already exists: skip the creation ...", log)
+		}
+	}
+
+//--------------------------- Delete a domain -----------------------------
+	def static deleteDomain(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"deleteDomain\".", log)
+		debugLog("  deleteDomain  [][]  Deleting domain \"$domainCode\" ...", log)
+		def userIdent=null
+		def domainId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=domainExists(log, context, domainCode, authenticationUser, authenticationPwd)
+
+		if(exists){
+			domainId=getDomainId(log, context, domainCode, authenticationUser, authenticationPwd)
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID		
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/internal/rest/$userIdent/domain/$domainId/delete"
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "DELETE",
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:deleteDomain: Error while trying to delete domain $domainCode. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+
+			debugLog("  deleteDomain  [][]  Domain \"$domainCode\" successfully deleted.", log)	
+		}else{
+			debugLog("  deleteDomain  [][]  Domain \"$domainCode\" does not exist: skip the deletion ...", log)
+		}
+	}
+
+//----------------- retrieve metadata for all domains ---------------------
+	def static getAllDomainsMetadata(log, context, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getAllDomainsMetadata\".", log)
+		debugLog("  getAllDomainsMetadata  [][]  Get json list of all domains metadata ...", log)
+		def userIdent=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/internal/rest/$userIdent/domain"
+		
+		commandString=["curl", urlToSMP+urlExt,
+                                    "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                    "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                    "-X", "GET",
+                                    "-v"]	
+										 
+		commandResult=runCommandInShell(log, commandString)
+			
+        assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:getAllDomainsMetadata: Error while trying to retrieve all domains metadata. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		debugLog("  getAllDomainsMetadata  [][]  Domains metadata retrieved successfully.", log)	
+		return commandResult[0]
+	}
+
+//-------------------- get single Domain Metadata -------------------------
+	def static getDomainMetadata(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getDomainMetadata\".", log)
+		debugLog("  getDomainMetadata  [][]  Get metadata for domain $domainCode ...", log)
+		def jsonSlurper = new JsonSlurper()
+		def domMeta=null
+		
+		def dataMap=jsonSlurper.parseText(getAllDomainsMetadata(log, context, authenticationUser, authenticationPwd))
+		
+		dataMap.each{ dom ->
+			if(dom.domainCode.toLowerCase().equals(domainCode.toLowerCase())){
+				debugLog("  getDomainMetadata  [][]  Domain \"$domainCode\" found.", log)
+				domMeta=dom
+			}
+		}
+		
+		return domMeta
+	}
+
+//----------------------- get single Domain Id ----------------------------
+	def static getDomainId(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getDomainId\".", log)
+		debugLog("  getDomainId  [][]  Get domainId for domain \"$domainCode\" ...", log)
+
+		def dataMap=getDomainMetadata(log, context, domainCode, authenticationUser, authenticationPwd)
+		
+		assert(dataMap!=null),"Error:getDomainId: Error while trying to retrieve domainID for domain $domainCode: metadata returned is null"	
+		return dataMap.domainId
+	}
+
+//----------------------- get Domains codes List --------------------------
+	def static getDomainCodesList(log, context, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getDomainCodesList\".", log)
+		debugLog("  getDomainCodesList  [][]  Get all domainCodes list ...", log)
+		def domList=[]
+		def jsonSlurper = new JsonSlurper()
+		
+		def dataMap=jsonSlurper.parseText(getAllDomainsMetadata(log, context, authenticationUser, authenticationPwd))
+		dataMap.each{ dom ->
+			domList<<dom.domainCode
+		}		
+		return domList
+	}
+
+//----------------------- check if domain exists --------------------------
+	def static boolean domainExists(log, context, domainCode, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"domainExists\".", log)
+		debugLog("  domainExists  [][]  Check if domain \"$domainCode\" exists ...", log)
+		
+		def dataMap=getDomainCodesList(log, context, authenticationUser, authenticationPwd)
+		if(dataMap*.toLowerCase().contains(domainCode.toLowerCase())){
+			debugLog("  domainExists  [][]  Domain \"$domainCode\" exists.", log)
+			return true
+		}
+		debugLog("  domainExists  [][]  Domain \"$domainCode\" does not exist.", log)
+		return false
+	}
+	
+	
+//=========================================================================
+//========================= Curl command functions ========================
+//=========================================================================
+//-------------------------- Run curl command -----------------------------
+    static def runCommandInShell(log, inputCommand) {
+        debugLog("Calling \"runCommandInShell\".", log)
+        def outputCatcher = new StringBuffer()
+        def errorCatcher = new StringBuffer()
+		debugLog("  runCommandInShell  [][]  Run curl command: " + inputCommand, log)
+        if (inputCommand) {
+            def proc = inputCommand.execute()
+            if (proc != null) {
+                proc.waitForProcessOutput(outputCatcher, errorCatcher)
+            }
+        }
+		debugLog("  runCommandInShell  [][]  outputCatcher: " + outputCatcher.toString(), log)
+		debugLog("  runCommandInShell  [][]  errorCatcher: " + errorCatcher.toString(), log)
+        return ([outputCatcher.toString(), errorCatcher.toString()])
+    }
+	
+//------------------------ Get returnXsfr Token ---------------------------
+	static String returnXsfrToken(log, context, String userLogin=SYSTEM_USER, passwordLogin=SYSTEM_PWD) {
+		def String output=""
+		if ((XSFRTOKEN == null) || !LOGGED_USER.toLowerCase().equals(userLogin)) {
+			output=fetchCookieHeader(log, context, userLogin, passwordLogin)
+			XSFRTOKEN=output.find("XSRF-TOKEN.*;").replace("XSRF-TOKEN=", "").replace(";", "")
+			USERID=output.find("userId.*,").split(",")[0].replace("\"","").replace("userId:","")
+			LOGGED_USER=userLogin
+		}
+		return XSFRTOKEN
+	}
+
+//-------------------------- Get Cookie Header ----------------------------
+	static String fetchCookieHeader(log, context, String userLogin = SYSTEM_USER, passwordLogin = SYSTEM_PWD) {
+		def json=null
+		json = ifWindowsEscapeJsonString('{\"username\":\"' + "${userLogin}" + '\",\"password\":\"' + "${passwordLogin}" + '\"}')
+		def urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		def urlExt="/ui/public/rest/security/authentication"
+        def commandString = ["curl", urlToSMP+urlExt,
+                             "-i",
+                             "-H",  "Content-Type: application/json",
+                             "--data-binary", json, "-c", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                             "--trace-ascii", "-"]		
+        def commandResult = runCommandInShell(log, commandString)
+        assert(commandResult[0].contains("XSRF-TOKEN")),"Error:Authenticating user: Error while trying to connect to the DomiSMP."
+        return commandResult[0]    
+	}
+
+//---------------------- Format json input for windows --------------------
+    static def ifWindowsEscapeJsonString(json) {
+        if (System.properties['os.name'].toLowerCase().contains('windows'))
+            json = json.replace("\"", "\\\"")
+        return json
+    }
+
+//------------------------ Format json input for curl ---------------------	
+    static def formatJsonForCurl(log, input) {
+        if (System.properties['os.name'].toLowerCase().contains('windows')) {
+            assert(input != null),"Error:formatJsonForCurl: input string is null."
+            assert(input.contains("[") && input.contains("]")),"Error:formatJsonForCurl: input string is corrupted."
+            def intermediate = input.substring(input.indexOf("[") + 1, input.lastIndexOf("]")).replace("\"", "\"\"\"")
+            return "[" + intermediate + "]"
+        }
+        return input
+    }
+	
+//---------------------- url code space char for curl ---------------------	
+    def static urlEncode(log, toEncode,format="UTF-8"){	
+	
+		debugLog("  ====  Calling \"urlEncode\".",log)
+		return java.net.URLEncoder.encode(toEncode, format).replaceAll("\\+", "%20")
+			
+    }
+
+//----------------------------- Compare 2 tables --------------------------
 	def String compareTables(tab1,tab2){
 		def found = 0;
 		if(tab1.size()!=tab2.size()){
@@ -847,24 +1978,16 @@ class SMP implements  AutoCloseable
 		}
 		return "true";
 	}
-//=================================================================================
 
-
-
-//=================================================================================
-//============= Locate the test case for display it in the error logs =============
-//=================================================================================
+//------------------------------- Locate test -----------------------------
+// To be deprecated
 	def String locateTest(){
 		// Returns: "--TestCase--testStep--"
 		return("--"+context.testCase.name+"--"+context.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()+"--  ");
 	}
-//=================================================================================
 
-
-
-//=================================================================================
-//============================== Dump request table ===============================
-//=================================================================================
+//------------------------- Dump request table ----------------------------
+// To be deprecated	
 	def String dumpRequestTable(){
 		def ii = 0;
 		log.info("== Request Table ==");
@@ -874,12 +1997,9 @@ class SMP implements  AutoCloseable
 		}
 		log.info("================================");
 	}
-//=================================================================================
 
-
-//=================================================================================
-//============================== Dump response table ==============================
-//=================================================================================
+//--------------------------- Dump response table -------------------------
+// To be deprecated
 	def String dumpResponseTable(){
 		def ii = 0;
 		log.info("== Response Table ==");
@@ -889,12 +2009,9 @@ class SMP implements  AutoCloseable
 		}
 		log.info("================================");
 	}
-//=================================================================================
 
-
-//=================================================================================
-//================================== Dump table ===================================
-//=================================================================================
+//------------------------------- Dump table ------------------------------
+// To be deprecated
 	def dumpTable(tableToDump, String name, dimension){
 		def ii = 0;
 		if(dimension=='2'){
@@ -913,9 +2030,12 @@ class SMP implements  AutoCloseable
 		}
 		log.info("================================");
 	}
-//=================================================================================
-
-//====================== Signature code ===================================
+	
+	
+//=========================================================================
+//=========================== Signature functions =========================
+//=========================================================================
+//-------------------------- Return Dom document --------------------------
 	def Document returnDOMDocument(String input){
 		def Document doc = null;
 		try {
@@ -931,6 +2051,7 @@ class SMP implements  AutoCloseable
 		return(doc);
 	}
 
+//------------------------ Decode X509 Certificate ------------------------
 	def Certificate decodeX509Certificate(Document doc){
 		def Certificate cert = null;
 		def String certMessage = null;
@@ -947,6 +2068,7 @@ class SMP implements  AutoCloseable
 		return (cert);
 	}
 
+//--------------------------- Validate Signature --------------------------
 	def Boolean validateSignature(Document doc){
 		def Boolean validFlag = true;
 
@@ -970,6 +2092,7 @@ class SMP implements  AutoCloseable
 		return (validFlag);
 	}
 
+//-------------------- Validate Signature Extension -----------------------
 	def Boolean validateSignatureExtension(Document doc){
 		def Boolean validFlag = true;
 
@@ -1001,7 +2124,7 @@ class SMP implements  AutoCloseable
 		return (validFlag);
 	}
 
-
+//----------------------------- Find Element ------------------------------
 
 	def Element findElement(Document doc, String elementName, String target, String nameSpace){
 		def elements =null;
@@ -1029,6 +2152,7 @@ class SMP implements  AutoCloseable
 		}
 	}
 
+//----------------- Print signature valiation errors ----------------------
 	def printErrorSigValDetails(DOMValidateContext valContext, XMLSignature signature){
 		boolean sv = signature.getSignatureValue().validate(valContext);
 		log.info("signature validation status: " + sv);
@@ -1045,10 +2169,312 @@ class SMP implements  AutoCloseable
 		}
 	}
 
+//----------------------- Display signature info --------------------------
 	def displaySignatureInfo(XMLSignature signature,DOMValidateContext valContext){
 		log.info"======== Signature ========";
 		log.info "- Signature Value: "+signature.getSignatureValue().getValue();
 		log.info"===========================";
+	}
+
+
+//=========================================================================
+//========================== Utilities functions ==========================
+//=========================================================================
+//---------------------- Converta Json string to Map ----------------------
+	def static convertJsonStrToMap(log,input=""){	
+
+		def jsonSlurper=new JsonSlurper()
+		def resultMap=null
+		
+		try{
+			resultMap=jsonSlurper.parseText(input)
+		}catch(Exception ex){
+				assert 0,"convertJsonStrToMap: exception occurred while parsing input \"$input\" value as json: " + ex
+		}
+
+		return resultMap
+    }
+
+//-------------------- Sleep for a specific duration ----------------------
+	static def waitFor(log,String duration="0", String unit="min", message=""){
+		def totalDur=0
+		def valueArr=[]
+		def slpMes="$duration $unit $message"
+
+		try{
+			valueArr=duration.split("\\.")
+			if(unit.toLowerCase().equals("sec")){
+				totalDur=(valueArr[0] as Integer)*1000
+			}else{
+				if(valueArr.size()==2){
+					totalDur=( ((valueArr[0] as Integer)*60)+(valueArr[1] as Integer) )*1000
+					slpMes=valueArr[0]+" min and "+valueArr[1]+" sec  $message"
+				}else{
+					totalDur=(duration as Integer)*60*1000
+				}
+			}
+		}catch(NumberFormatException ex){
+			debugLog("waitFor:Error: Please verify the duration format. Must be int (min or sec) or int.int (only min)", log)
+			assert 0,"Exception occurred: " + ex
+		}
+		debugLog("------------ Sleeping for $slpMes ...", log)
+		sleep(totalDur)
+		debugLog("------------ Sleeping for $slpMes DONE", log)
+	}
+
+//-------------------- Extract node value from input ----------------------	
+	def String extractNodeValue(String nodeName, String input,String parent=null, String attribute=null){
+		def String result = "0";
+		if(nodeName=="Extension"){
+			result="";
+		}
+		def rootNode = new XmlSlurper().parseText(input);
+		def allNodes = rootNode.depthFirst().each{
+			if((it.name()== nodeName)&&((parent==null)||(it.parent().name()==parent))){
+				if(attribute==null){
+					if(nodeName=="Extension"){
+						result=result+it.text();
+					}else{
+						result=it.text();
+					}
+				}
+				else{
+					result=it.@{attribute.toString()}.text();
+				}
+			}
+		}
+		if(result==""){
+			result="0";
+		}
+		return result;
+	}
+
+//------------------------ Extract extension values -----------------------	
+// To be deprecated ?
+	// Extensions are extracted in a different way
+	def String extractExtValues(String extInput){
+		def String extResult = "";
+		def String inputTrimmed=extInput.replaceAll("\n","").replaceAll("\r", "").replaceAll(">\\s+<", "><").replaceAll("%23","#").replaceAll("%3A",":");
+		def containerExt = (inputTrimmed =~ /<Extension>((?!<Extension>).)*<\/Extension>/);
+		while(containerExt.find()){
+			extResult = extResult+containerExt.group();
+		}
+		if(extResult==""){
+			extResult="0";
+		}
+		//log.info "<AllExtensionsRoot>"+extResult+"</AllExtensionsRoot>";
+		return "<AllExtensionsRoot>"+extResult+"</AllExtensionsRoot>";
+	}
+
+//----------------------------- Compare 2 XMLs ----------------------------	
+// To be deprecated
+	def Boolean compareXMLs(String request, String response){
+		def DetailedDiff myDiff = new DetailedDiff(new Diff(request, response));
+		def List allDifferences = myDiff.getAllDifferences();
+
+		if(!myDiff.similar()){
+			// Enable for more logs
+			for (Object object : allDifferences){
+				Difference difference = (Difference)object;
+				log.error(difference);
+				log.error("============================");
+			}
+			return false;
+		}
+		return true;
+	}
+
+//----------------------------- Compare 2 XMLs ----------------------------	
+	// Difference between XMLs
+	def static Boolean compare2XMLs(log,String request, String response){
+		XMLUnit.setIgnoreWhitespace(true);
+		def DetailedDiff myDiff = new DetailedDiff(new Diff(request, response));
+		def List allDifferences = myDiff.getAllDifferences();
+
+		if(!myDiff.similar()){
+			// Enable for more logs
+			for (Object object : allDifferences){
+				Difference difference = (Difference)object;
+				log.error(difference);
+				log.error("============================");
+			}
+			return false;
+		}
+		return true;
+	}
+
+//--------------------- Remove namespaces from input ----------------------	
+	def static String removeNamespaces(String input){
+		def String result = null;
+		result = input.replaceAll(/<\/.{0,4}:/,"</");
+		result = result.replaceAll(/<.{0,4}:/,"<");
+		result = result.replace("%23","#");
+		result = result.replace("%3A",":");
+		return result;
+	}
+
+//------------------------- Extract part from XML -------------------------	
+	def String extractPartFromXML(String input, String requestName){
+		def String startTag = null;
+		def String endTag = null;
+		def String result = null;
+
+		//if(requestName.toLowerCase()=="servicegroup"){
+		//	startTag = "<ServiceMetadataReferenceCollection>";
+		//	endTag = "</ServiceGroup>";
+		//}
+		if(requestName.toLowerCase()=="signature"){
+			startTag = "<Signature";
+			endTag = "</SignedServiceMetadata>";
+		}
+		if(requestName.toLowerCase()=="servicemetadata"){
+			startTag = "<ProcessList>";
+			endTag = "</ServiceInformation>";
+		}
+		result = input.substring(input.indexOf(startTag), input.indexOf(endTag));
+		return result;
+	}
+	def static String extractFromXML(String input, String target){
+		def String startTag = "<"+target+">";
+		def String endTag = "</"+target+">";
+		def targetSize=endTag.length()
+		def String result = null;
+
+		if(input.indexOf(startTag)<0){
+			return ""
+		}
+		result = input.substring(input.indexOf(startTag), input.lastIndexOf(endTag)+targetSize);
+		return result;
+	}
+
+//---------------------- Return hash value of input -----------------------	
+	def String returnHash(String input){
+		def String result = MessageDigest.getInstance("MD5").digest(input.toLowerCase(Locale.US).bytes).encodeHex().toString()
+		return result;
+	}
+
+
+//=========================================================================
+//======================= Handle soapui properties ========================
+//=========================================================================
+//---------------- Get the SoapUi custom property value -------------------
+	def static getSoapUiCustomProperty(log, context, String custPropName="", String level="testcase",canBeNull=false){	
+
+		def retPropVal=null
+		
+        switch (level.toLowerCase()) {
+            case  "testcase":
+                retPropVal=context.expand('${#TestCase#'+custPropName+'}')
+                break
+            case "testsuite":
+                retPropVal=context.expand('${#TestSuite#'+custPropName+'}')
+                break
+            case "project":
+                retPropVal=context.expand('${#Project#'+custPropName+'}')
+                break
+            default:
+				debugLog("Warning:getSoapUiCustomProperty: Unknown type of custom property level: \"$level\". Assuming test case level property", log)
+				retPropVal=context.expand('${#TestCase#'+custPropName+'}')
+        }
+		
+		if(!canBeNull){
+			assert(retPropVal!= null),"Error:getSoapUiCustomProperty: Couldn't fetch property \"$custPropName\" value at level \"$level\""
+			assert(retPropVal.trim()!= ""),"Error:getSoapUiCustomProperty: Property \"$custPropName\" at level \"$level\" returned value is empty."		
+		}
+		return retPropVal
+    }
+
+//------------ Get the SoapUi custom property value as a map --------------
+	def static getSoapUiCustomPropAsMap(log, context, String custPropName="", String level="testcase"){	
+
+		def textInput=getSoapUiCustomProperty(log,context, custPropName, level)
+		def resultMap=convertJsonStrToMap(log,textInput)
+
+		return resultMap
+    }
+
+//---------- Get the SoapUi custom property value as a Integer ------------
+	def static getSoapUiCustomPropAsInt(log, context, String custPropName="", String level="testcase"){	
+
+		def resultInt=null
+		
+		resultInt=(getSoapUiCustomProperty(log,context, custPropName, level)  as Integer)
+
+		return resultInt
+    }
+
+//------------ Get the SoapUi custom property value as a Long -------------
+	def static getSoapUiCustomPropAsLong(log, context, String custPropName="", String level="testcase"){	
+
+		def resultInt=null
+		
+		resultInt=(getSoapUiCustomProperty(log,context, custPropName, level)  as Long)
+
+		return resultInt
+    }
+	
+//---------- Get the SoapUi custom property value as a Boolean ------------
+	def static getSoapUiCustomPropAsBoolean(log, context, String custPropName="", String level="testcase"){	
+
+		def resultInt=null
+		
+		resultInt=Boolean.valueOf(getSoapUiCustomProperty(log,context, custPropName, level))
+
+		return resultInt
+    }
+
+//----------------- Set the SoapUi custom property value ------------------
+	def static setSoapUiCustomProperty(log,testRunner, String custPropName="", String custPropValue="", level="testcase"){	
+        switch (level.toLowerCase()) {
+            case  "testcase":
+                testRunner.testCase.setPropertyValue(custPropName,custPropValue)
+                break
+            case "testsuite":
+                testRunner.testCase.testSuite.setPropertyValue(custPropName,custPropValue)
+                break
+            case "project":
+                testRunner.testCase.testSuite.project.setPropertyValue(custPropName,custPropValue)
+                break
+            default:
+				debugLog("Warning:setSoapUiCustomProperty: Unknown type of custom property level: \"$level\". Assuming test case level property", log)
+				testRunner.testCase.setPropertyValue(custPropName,custPropValue)
+        }	
+		debugLog("  ====  \"setSoapUiCustomProperty\" DONE.", log)
+    }
+
+
+// To be deprecated
+//// filterForTestSuite = /PASSING_AUTO_BAMBOO/   // for multiple test suite use more advanced regexp like for example:  /PASSING_AUTO_BAMBOO|PASSING_NOT_FOR_BAMBOO/
+//// filterForTestCases = /SMP001.*/   //for single test case use simple regexp like /SMP001.*/
+
+	def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fieldName, String newValue = null, restMethodName = 'PUT ServiceGroup') {
+
+		debugLog("START: modyfication of test requests", log)
+		context.testCase.testSuite.project.getTestSuiteList().each { testSuite ->
+			if (testSuite.getLabel() =~ filterForTestSuite) {
+				debugLog("test suite: " + testSuite.getLabel(), log)
+				testSuite.getTestCaseList().each { testCase ->
+					if (testCase.getLabel() =~ filterForTestCases) {
+						debugLog("test label:" + testCase.getLabel(), log)
+						testCase.getTestStepList().each {testStep ->
+							if (testStep instanceof RestTestRequestStep && testStep.getRestMethod().name == restMethodName) {
+
+								def hOld = testStep.getHttpRequest().getRequestHeaders()
+								hOld.remove(fieldName)
+								hOld.remove(fieldName.capitalize())
+								hOld.remove(fieldName.toUpperCase())
+								if (newValue)
+									hOld[fieldName] = [newValue]
+								testStep.getHttpRequest().setRequestHeaders(hOld)
+								debugLog("For testStep:" + testStep.name + "; Header: "  + testStep.getHttpRequest().getRequestHeaders(), log)
+							}
+						}
+					}
+
+				}
+			}
+		}
+		debugLog("END: Modification of requests hedears finished", log)
 	}
 
 }
