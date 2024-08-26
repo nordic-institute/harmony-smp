@@ -1,6 +1,7 @@
 package pages.systemSettings.keyStorePage;
 
 import ddsl.CommonCertificatePage;
+import ddsl.dcomponents.ConfirmationDialog;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -15,4 +16,11 @@ public class KeystorePage extends CommonCertificatePage {
         weToDButton(addBtn).click();
         return new KeyStoreImportDialog(driver);
     }
+
+    public void deleteandConfirm(){
+        weToDButton(deleteBtn).click();
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
+        confirmationDialog.confirm();
+    }
+
 }

@@ -14,6 +14,8 @@ public class CommonPageWithTabsAndGrid extends CommonPageWithTabs {
     public WebElement filterInput;
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")
     public WebElement addBtn;
+    @FindBy(css = "data-panel >div >div> mat-toolbar button:last-of-type")
+    public WebElement deleteBtn;
     @FindBy(css = "[class~=smp-column-label]")
     public WebElement rightPanel;
 
@@ -24,6 +26,4 @@ public class CommonPageWithTabsAndGrid extends CommonPageWithTabs {
     public SmallGrid getLeftSideGrid() {
         return new SmallGrid(driver, rightPanel);
     }
-
-
-}
+  }

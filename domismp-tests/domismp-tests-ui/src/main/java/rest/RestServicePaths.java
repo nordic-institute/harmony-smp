@@ -5,7 +5,6 @@ public class RestServicePaths {
     private static final String CONTEXT_PATH_INTERNAL = "/internal/rest/";
     private static final String CONTEXT_PATH_EDIT = "/edit/rest/";
     private static final String CONTEXT_PATH_INTERNAL_USER = CONTEXT_PATH_INTERNAL + "user";
-    private static final String CONTEXT_PATH_INTERNAL_DOMAIN = CONTEXT_PATH_INTERNAL + "domain";
     public static final String LOGIN = CONTEXT_PATH_PUBLIC +"security/authentication";
     public static final String CONNECTED =CONTEXT_PATH_PUBLIC + "security/user";
 
@@ -26,7 +25,7 @@ public class RestServicePaths {
 
     public static String getCreateDomainPath(String currentUserId) {
 
-        return CONTEXT_PATH_INTERNAL_DOMAIN +"/" + currentUserId + "/create";
+        return CONTEXT_PATH_INTERNAL + currentUserId + "/domain/create";
     }
 
     public static String getDomainAddMemberPath(String currentUserId, String domainId) {
@@ -36,8 +35,7 @@ public class RestServicePaths {
 
     public static String getAddResourcePath(String currentUserId, String domainId) {
 
-       return CONTEXT_PATH_INTERNAL_DOMAIN +"/" + currentUserId +"/" +domainId + "/update-resource-types";
-        //return String.format("/internal/rest/domain/%userId/%domainId/update-resource-types", currentUserId, domainId);
+       return CONTEXT_PATH_INTERNAL +"/" + currentUserId +"/domain/" +domainId + "/update-resource-types";
     }
 
 
