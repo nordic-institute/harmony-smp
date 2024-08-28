@@ -6,6 +6,7 @@ import {GlobalLookups} from "../../common/global-lookups";
 
 @Component({
   templateUrl: './dns-tools.component.html',
+  styleUrls: ['./dns-tools.component.css']
 })
 export class DnsToolsComponent {
 

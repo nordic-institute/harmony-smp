@@ -46,14 +46,18 @@ public class IdentifierFormatterService {
     }
 
     /**
-     * Method returns participant identifier formatter for given domain
+     * Method returns participant identifier formatter for given domain. If the
+     * domain code is empty, default resource identifier formatter is returned.
      * @param domainCode domain code to get IdentifierFormatter
+     * @return IdentifierFormatter for given domain code or default resource identifier formatter.
+     * @throws SMPRuntimeException if domain is not found
      */
     @Cacheable(CACHE_NAME_DOMAIN_RESOURCE_IDENTIFIER_FORMATTER)
     public IdentifierFormatter getResourceIdentifierFormatter(String domainCode) {
 
         if (StringUtils.isBlank(domainCode)) {
-            throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,  domainCode);
+            LOG.warn("Domain code is empty. Using default resource identifier formatter!");
+            return getDefaultResourceIdentifierFormatter();
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
                 .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,  domainCode));
@@ -72,9 +76,22 @@ public class IdentifierFormatterService {
     }
 
     /**
-     * Method returns participant identifier formatter for given domain
-     * @param domain
+     * Method returns default resource identifier formatter using the system configuration.
+     * @return default resource identifier formatter
      */
+    private IdentifierFormatter getDefaultResourceIdentifierFormatter() {
+        IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder
+                .create()
+                .addFormatterTypes(new EBCorePartyIdFormatterType())
+                .build();
+
+        identifierFormatter.setCaseSensitiveSchemas(configurationService.getCaseSensitiveParticipantScheme());
+        identifierFormatter.setSchemeMandatory(configurationService.getParticipantSchemeMandatory());
+        identifierFormatter.setSchemeValidationPattern(configurationService.getParticipantIdentifierSchemeRexExp());
+
+        return identifierFormatter;
+    }
+
     /**
      * Method returns participant identifier formatter for given domain
      * @param domainCode domain code to get IdentifierFormatter

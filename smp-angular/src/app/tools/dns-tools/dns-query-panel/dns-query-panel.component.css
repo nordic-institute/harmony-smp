@@ -17,3 +17,9 @@
   /* adjustment */
   position: relative;
 }
+
+.dns-query-result {
+  font-size: 0.8em;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
