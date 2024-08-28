@@ -62,8 +62,8 @@ class GroupEditControllerIT extends AbstractControllerTest {
 
     @ParameterizedTest
     @CsvSource({
-            ", 2",
-            "'', 2",
+            ", 3",
+            "'', 3",
             "group-admin, 1",
             "resource-admin, 1",
             "group-viewer, 0",

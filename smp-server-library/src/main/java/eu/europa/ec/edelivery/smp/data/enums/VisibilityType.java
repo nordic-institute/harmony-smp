@@ -39,5 +39,21 @@ public enum VisibilityType {
     /**
      *  Access to the domain, group or  resource is possible only if you are only direct or un-direct   member of the domain, group or resource
      */
-    PRIVATE
+    PRIVATE;
+
+    /**
+     * Returns the VisibilityType from the string case-insensitive value. If value is blank or null, null is returned.
+     *
+     * @param value the value
+     * @return the VisibilityType
+     * @IllegalArgumentException if the value is not valid.
+     */
+    public static VisibilityType fromString(String value) {
+
+        String sValue = value == null ? null : value.trim();
+        if (sValue == null || sValue.isEmpty()) {
+            return null;
+        }
+        return valueOf(sValue.toUpperCase());
+    }
 }

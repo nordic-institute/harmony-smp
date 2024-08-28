@@ -60,7 +60,8 @@ insert into SMP_DOMAIN_RESOURCE_DEF (ID, FK_RESOURCE_DEF_ID, FK_DOMAIN_ID,CREATE
 (2, 2, 1, NOW(),  NOW());
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'test group', 'PUBLIC', NOW(),  NOW());
+(1, 1, 'Group001', 'PUBLIC', NOW(),  NOW()),
+(2, 1, 'Group002', 'PUBLIC', NOW(),  NOW());
 
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 2, 'ADMIN', NOW(),  NOW()),

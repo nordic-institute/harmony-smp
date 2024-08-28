@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,14 +19,16 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.*;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
@@ -34,6 +36,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.security.ResourceGuard;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -46,8 +49,7 @@ import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SML_INVALID_IDENTIFIER;
 import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.*;
 
 
 /**
@@ -66,6 +68,7 @@ public class ResourceResolverService {
     final ConfigurationService configurationService;
     final IdentifierService identifierService;
     final DomainDao domainDao;
+    final GroupDao groupDao;
     final ResourceDefDao resourceDefinitionDao;
     final DomainResourceDefDao domainResourceDefDao;
     final ResourceDao resourceDao;
@@ -76,6 +79,7 @@ public class ResourceResolverService {
                                    ConfigurationService configurationService,
                                    IdentifierService identifierService,
                                    DomainDao domainDao,
+                                   GroupDao groupDao,
                                    DomainResourceDefDao domainResourceDefDao,
                                    ResourceDefDao resourceDefinitionDao,
                                    ResourceDao resourceDao,
@@ -85,6 +89,7 @@ public class ResourceResolverService {
         this.configurationService = configurationService;
         this.identifierService = identifierService;
         this.domainDao = domainDao;
+        this.groupDao = groupDao;
         this.domainResourceDefDao = domainResourceDefDao;
         this.resourceDefinitionDao = resourceDefinitionDao;
         this.resourceDao = resourceDao;
@@ -134,6 +139,12 @@ public class ResourceResolverService {
                 throw new SMPRuntimeException(ErrorCode.SG_NOT_EXISTS, resourceId.getValue(), resourceId.getScheme());
             }
             resource = createNewResource(resourceId, resourceDef, domain);
+            // determine the group for the resource
+            DBGroup group = resolveResourceGroup(user.getUser(), domain,
+                    trimToNull(resourceRequest.getResourceGroupParameter()));
+
+            resource.setVisibility(resourceRequest.getResourceVisibilityParameter());
+            resource.setGroup(group);
         }
 
         locationVector.setResource(resource);
@@ -280,6 +291,41 @@ public class ResourceResolverService {
         // if domain is null get default domain
         Optional<DBResource> optResource = resourceDao.getResource(resourceIdentifier.getValue(), resourceIdentifier.getScheme(), resourceDef, domain);
         return optResource.orElse(null);
+    }
+
+    /**
+     * Method resolves the group for the given domain, admin user and group name.
+     * If the group name is null/not given, the first group is returned. If the group name is provided
+     * but the user is not admin for the group, the exception is thrown.
+     *
+     * @param user        admin user creating the resource
+     * @param domain      domain where the resource is created
+     * @param domainGroup group name
+     * @return DBGroup for the given domain, user and group name.
+     * @throws SMPRuntimeException if the user is not admin authorized to create the resource for the given group/domain
+     */
+    protected DBGroup resolveResourceGroup(DBUser user, DBDomain domain, String domainGroup) {
+        LOG.debug("Resolve group for domain [{}] and user [{}] and group [{}]", domain.getDomainCode(),
+                user.getUsername(),
+                domainGroup);
+        List<DBGroup> adminListGroup =
+                groupDao.getGroupsByDomainUserIdAndGroupRoles(domain.getId(), user.getId(), MembershipRoleType.ADMIN);
+        if (adminListGroup.isEmpty()) {
+            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
+                    "User [" + user.getUsername() + "] is not admin for any group in domain [" + domain.getDomainCode() + "]");
+        }
+        if (domainGroup == null) {
+            LOG.debug("Set first/default group [{}] for domain [{}]", adminListGroup.get(0).getGroupName(),
+                    domain.getDomainCode());
+            return adminListGroup.get(0);
+        }
+        return groupDao.getGroupsByDomainUserIdAndGroupRoles(domain.getId(), user.getId(), MembershipRoleType.ADMIN)
+                .stream()
+                .filter(group -> equalsIgnoreCase(group.getGroupName(), domainGroup))
+                .findFirst()
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
+                        "User [" + user.getUsername() + "] is not authorized for group ["
+                                + domainGroup + "] in domain [" + domain.getDomainCode() + "]"));
     }
 
     /**

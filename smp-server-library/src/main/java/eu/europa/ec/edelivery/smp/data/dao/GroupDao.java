@@ -49,17 +49,6 @@ import static org.apache.commons.lang3.StringUtils.trim;
 public class GroupDao extends BaseDao<DBGroup> {
 
     /**
-     * Returns domain records from smp_domain table.
-     *
-     * @return the list of domain records from smp_domain table
-     * @throws IllegalStateException if no domain is configured
-     */
-    public List<DBGroup> getAllGroups() {
-        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_ALL, DBGroup.class);
-        return query.getResultList();
-    }
-
-    /**
      * Get group list for domains
      *
      * @param domain
