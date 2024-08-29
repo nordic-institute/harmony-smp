@@ -161,10 +161,8 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     }
 
     if (!this._domain.smlClientKeyAlias ) {
-      console.log("enableSMLRegister 4")
       return false;
     }
-    console.log("enableSMLRegister 5")
     // entity must be first persisted in order to be enabled to register to SML
     return !this._domain.smlRegistered;
   }
@@ -222,10 +220,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   }
 
   smlRegisterDomain(domain: DomainRo) {
-    //this.searchTable.showSpinner = true;
-
-    this.smlIntegrationService.registerDomainToSML$(domain.domainCode).toPromise().then(async (res: SMLResult) => {
-        // this.searchTable.showSpinner = false;
+    this.smlIntegrationService.registerDomainToSML$(domain).toPromise().then(async (res: SMLResult) => {
         if (res) {
           if (res.success) {
             this.alertService.success(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.success.register", {domainCode: domain.domainCode})));
@@ -243,16 +238,14 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           return;
         }
-        //  this.searchTable.showSpinner = false;
         this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register", {domainCode: domain.domainCode})), err);
       }
     )
   }
 
   smlUnregisterDomain(domain: DomainRo) {
-    //  this.searchTable.showSpinner = true;
-    this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).toPromise().then(async (res: SMLResult) => {
-        // this.searchTable.showSpinner = false;
+
+    this.smlIntegrationService.unregisterDomainToSML$(domain).toPromise().then(async (res: SMLResult) => {
         if (res) {
           if (res.success) {
             this.alertService.success(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.success.unregister", {domainCode: domain.domainCode})));
@@ -271,7 +264,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           return;
         }
-        // this.searchTable.showSpinner = false;
         this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})), err);
       }
     )
