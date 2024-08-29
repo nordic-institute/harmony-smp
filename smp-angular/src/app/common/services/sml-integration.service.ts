@@ -6,6 +6,7 @@ import {SmpConstants} from "../../smp.constants";
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
 import {SMLResult} from "../model/sml-result.model";
+import {DomainRo} from "../model/domain-ro.model";
 
 @Injectable()
 export class SmlIntegrationService {
@@ -15,13 +16,17 @@ export class SmlIntegrationService {
     private securityService: SecurityService) {
   }
 
-  registerDomainToSML$(domainCode): Observable<SMLResult> {
+  registerDomainToSML$(domain: DomainRo): Observable<SMLResult> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.put<SMLResult>(`${SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED}/${currentUser.userId}/sml-register/${domainCode}`, {});
+    return this.http.put<SMLResult>(SmpConstants.REST_INTERNAL_DOMAIN_SML_REGISTER
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId), {});
   }
 
-  unregisterDomainToSML$(domainCode): Observable<SMLResult> {
+  unregisterDomainToSML$(domain: DomainRo): Observable<SMLResult> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.put<SMLResult>(`${SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED}/${currentUser.userId}/sml-unregister/${domainCode}`, {});
+    return this.http.put<SMLResult>(SmpConstants.REST_INTERNAL_DOMAIN_SML_UNREGISTER
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId), {});
   }
 }

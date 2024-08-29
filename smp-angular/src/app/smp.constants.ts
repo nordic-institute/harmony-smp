@@ -19,6 +19,8 @@ export class SmpConstants {
   public static readonly PATH_ACTION_UPDATE_RESOURCE_TYPES: string = 'update-resource-types';
   public static readonly PATH_ACTION_UPDATE_SML_INTEGRATION: string = 'update-sml-integration-data';
   public static readonly PATH_ACTION_GENERATE_DNS_QUERY: string = 'generate-dns-query';
+  public static readonly PATH_ACTION_SML_REGISTER: string = 'sml-register';
+  public static readonly PATH_ACTION_SML_UNREGISTER: string = 'sml-unregister';
   /* URL variables */
   public static readonly PATH_PARAM_ENC_USER_ID: string = '{user-id}';
   public static readonly PATH_PARAM_ENC_DOMAIN_ID: string = '{domain-id}';
@@ -187,6 +189,11 @@ export class SmpConstants {
 
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_CREATE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
     + '/' + SmpConstants.PATH_ACTION_CREATE;
+
+  public static readonly REST_INTERNAL_DOMAIN_SML_REGISTER = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
+    + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_SML_REGISTER;
+  public static readonly REST_INTERNAL_DOMAIN_SML_UNREGISTER = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
+    + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_SML_UNREGISTER;
 
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_SML_INTEGRATION = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
     + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE_SML_INTEGRATION;
