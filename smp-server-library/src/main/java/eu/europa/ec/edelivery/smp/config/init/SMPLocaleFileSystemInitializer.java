@@ -21,12 +21,9 @@ public class SMPLocaleFileSystemInitializer {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPLocaleFileSystemInitializer.class);
 
-    private final ConfigurationService configurationService;
-
     private final SMPLocaleService smpLocaleService;
 
-    public SMPLocaleFileSystemInitializer(ConfigurationService configurationService, SMPLocaleService smpLocaleService) {
-        this.configurationService = configurationService;
+    public SMPLocaleFileSystemInitializer(SMPLocaleService smpLocaleService) {
         this.smpLocaleService = smpLocaleService;
     }
 

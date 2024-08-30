@@ -35,12 +35,11 @@ public class LocaleController {
     @ResponseBody
     public Resource getLocale(@PathVariable("code") String code) {
         Path langResourcePath = smpLocaleService.getLocaleFile(SMPLocale.fromCodeDefaultingToEnglish(code));
-        if (langResourcePath.toFile().exists()) {
+        if (langResourcePath != null && langResourcePath.toFile().exists()) {
             LOG.debug("Returning locale file [{}]", langResourcePath.toAbsolutePath());
             return new FileSystemResource(langResourcePath);
         } else {
             LOG.warn("Locale file [{}] does not exist. Return default translation!", langResourcePath.toAbsolutePath());
-
             ClassPathResource defResource = new ClassPathResource(DEFAULT_LOCALE_RESOURCE);
             if (defResource.exists()) {
                 return defResource;

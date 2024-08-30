@@ -844,7 +844,7 @@
   "navigation.label.user.settings.profile": "Profile",
   "navigation.label.user.settings.access.tokens": "Access Tokens",
   "navigation.label.user.settings.certificates": "Certificate",
-  "navigation.label.user.settings.alerts": "Alerts",
+  "navigation.label.user.settings.alerts": "My alerts",
   "navigation.label.user.settings.membership": "Membership",
   "navigation.tooltip.search.resources": "Search registered resources",
   "navigation.tooltip.search.tools": "Search tools",
