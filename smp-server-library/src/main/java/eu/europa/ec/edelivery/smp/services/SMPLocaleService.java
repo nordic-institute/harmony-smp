@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
 import eu.europa.ec.edelivery.smp.i18n.SMPLocale;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.EnumSet;
 
 /**
@@ -32,6 +34,10 @@ public class SMPLocaleService {
 
     public Path getLocaleFile(SMPLocale locale) {
         File localeFolder = configurationService.getLocaleFolder();
+        if (!localeFolder.exists() && !localeFolder.mkdirs()) {
+            LOG.error("Failed to create locale folder [{}]", localeFolder);
+            return null;
+        }
         return new File(localeFolder, locale.getCode() + ".json").toPath().toAbsolutePath();
     }
 
@@ -47,10 +53,16 @@ public class SMPLocaleService {
         Resource resource = getLocaleResource(locale);
         if (resource.exists()) {
             Path localeFile = getLocaleFile(locale);
-
+            if (localeFile == null) {
+                LOG.warn("Can not generate 'locale/language' file [{}]! Check if local folder defined in property [{}] " +
+                        "has writing permissions and the folder exists", localeFile, SMPEnvPropertyEnum.LOCALE_FOLDER.getProperty());
+                return;
+            }
+            if (Files.exists(localeFile)) {
+                LOG.warn("Language file [{}] already exists, and it will be replaced with up-to-date translations", localeFile);
+            }
             try(InputStream inputStream = resource.getInputStream()) {
-                Files.deleteIfExists(localeFile);
-                Files.copy(inputStream, localeFile);
+                Files.copy(inputStream, localeFile, StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
                 LOG.error("An error occurred while updating locale file [{}]", localeFile, e);
             }
