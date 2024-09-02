@@ -13,6 +13,7 @@ import {SecurityEventService} from "../security/security-event.service";
 import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 import {DomainRo} from "./model/domain-ro.model";
+import {Subject} from "rxjs";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -20,6 +21,9 @@ import {DomainRo} from "./model/domain-ro.model";
 
 @Injectable()
 export class GlobalLookups {
+  // global data observers. The components will subscribe to these Subject to get
+  // data updates.
+  private smpInfoUpdateSubject: Subject<SmpInfo> = new Subject<SmpInfo>();
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
@@ -71,15 +75,6 @@ export class GlobalLookups {
     this.refreshDomainLookup(domainUrl);
   }
 
-  public refreshDomainLookupForLoggedUser() {
-    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN;
-    // for authenticated admin use internal url which returns more data!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      domainUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED;
-    }
-    this.refreshDomainLookup(domainUrl);
-  }
-
   public refreshDomainLookup(domainUrl: string) {
     let params: HttpParams = new HttpParams()
       .set('page', '-1')
@@ -96,16 +91,18 @@ export class GlobalLookups {
     });
   }
 
-
   public refreshApplicationInfo() {
 
     this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
-      .subscribe((res: SmpInfo) => {
+      .subscribe({
+        next: (res: SmpInfo): void => {
           this.cachedApplicationInfo = res;
-        }, error => {
-          console.log("getSmpInfo:" + error);
+          this.smpInfoUpdateSubject.next(res);
+        },
+        error: (err: any): void => {
+          console.log("getSmpInfo:" + err);
         }
-      );
+      });
 
   }
 
@@ -116,12 +113,13 @@ export class GlobalLookups {
       console.log("Refresh application configuration is authenticated " + isAuthenticated)
       if (isAuthenticated) {
         this.http.get<SmpConfig>(SmpConstants.REST_PUBLIC_APPLICATION_CONFIG)
-          .subscribe((res: SmpConfig) => {
-              this.cachedApplicationConfig = res;
-            }, error => {
-              console.log("getSmpConfig:" + error);
-            }
-          );
+          .subscribe({next: (res :SmpConfig):void => {
+          this.cachedApplicationConfig = res;
+        },
+        error: (err: any)=> {
+          console.log("getSmpConfig:" + err);
+        }
+      });
       }
     });
   }
@@ -143,7 +141,6 @@ export class GlobalLookups {
       let sub: Subscription = this.userObserver.subscribe((users: SearchTableResult) => {
         this.cachedServiceGroupOwnerList = users.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
-
         });
         sub.unsubscribe();
       }, (error: any) => {
@@ -159,5 +156,9 @@ export class GlobalLookups {
     this.cachedServiceGroupOwnerList = [];
     this.cachedApplicationConfig = null;
     this.cachedDomainList = [];
+  }
+
+  public onSmpInfoUpdateEvent(): Observable<SmpInfo> {
+    return this.smpInfoUpdateSubject.asObservable();
   }
 }

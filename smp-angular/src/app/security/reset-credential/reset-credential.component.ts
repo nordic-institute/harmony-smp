@@ -2,8 +2,11 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormGroup, UntypedFormControl, Validators} from "@angular/forms";
 import {GlobalLookups} from "../../common/global-lookups";
-import {equal} from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
+import {
+  equal
+} from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {SecurityService} from "../security.service";
+import {SmpInfo} from "../../app-info/smp-info.model";
 
 @Component({
   templateUrl: './reset-credential.component.html',
@@ -26,18 +29,38 @@ export class ResetCredentialComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+    this.lookups.onSmpInfoUpdateEvent().subscribe((data: SmpInfo): void => {
+      this.resetPasswordValidator(data);
+    })
     this.resetToken = this.activatedRoute.snapshot.params['resetToken'];
+  }
+
+  /**
+   * Reset password validator from the application info data object
+   * @param data - SmpInfo
+   */
+  private resetPasswordValidator(data: SmpInfo): void {
+    this.resetForm.controls['new-password'].setValidators([Validators.required, Validators.pattern(data.passwordValidationRegExp)]);
   }
 
   private initForm() {
 
-    let newPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
+    let newPasswdFormControl: UntypedFormControl = new UntypedFormControl({
+        value: null,
+        readonly: false
+      },
       [Validators.required, Validators.pattern(this.passwordValidationRegExp)]);
-    let confirmNewPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
+    let confirmNewPasswdFormControl: UntypedFormControl = new UntypedFormControl({
+        value: null,
+        readonly: false
+      },
       [Validators.required, equal(newPasswdFormControl, true)]);
 
     this.resetForm = new FormGroup({
-      'resetUsername': new UntypedFormControl({value: null, readonly: true}, null),
+      'resetUsername': new UntypedFormControl({
+        value: null,
+        readonly: true
+      }, null),
       'new-password': newPasswdFormControl,
       'confirm-new-password': confirmNewPasswdFormControl
     });
