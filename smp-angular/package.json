@@ -6,6 +6,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy-config.json",
+    "start:docker": "ng serve --proxy-config proxy-config-docker.json",
     "start:dev": "ng serve -c dev --proxy-config proxy-config.json",
     "build": "ng build --dev --base-href /smp/",
     "prod": "ng build --configuration production --output-path=./src/main/resources/META-INF/resources/ui/",

@@ -186,7 +186,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     return this.findSiblings(targetNode).length == 0;
   }
 
-  protected findSiblings(node:NavigationNode): NavigationNode[] {
+  protected findSiblings(node: NavigationNode): NavigationNode[] {
     if (!node || !node.children || node.children.length == 0) {
       return [];
     }
@@ -251,21 +251,20 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
    */
   public refreshNavigationTree() {
     this.securityService.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
-      console.log("Refresh application configuration is authenticated " + isAuthenticated)
-      if (!isAuthenticated) {
-        this.reset();
-      } else {
-
+      console.log("Refresh navigation tree [is authenticated: " + isAuthenticated + "]")
+      if (isAuthenticated) {
         const currentUser: User = this.securityService.getCurrentUser();
         // get navigation for user
         let navigationObserver = this.http.get<NavigationNode>(SmpConstants.REST_PUBLIC_USER_NAVIGATION_TREE.replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId));
 
-        navigationObserver.subscribe((userRootNode: NavigationNode) => {
-          this.setNavigationTree(userRootNode)
-        }, (error: any) => {
-          // check if unauthorized
-          // just console try latter
-          console.log("Error occurred while retrieving the navigation model for the user[" + error + "]");
+        navigationObserver.subscribe({
+          next: (userRootNode: NavigationNode) => {
+            this.setNavigationTree(userRootNode)
+          }, error: (error: any) => {
+            // check if unauthorized
+            // just console try latter
+            console.log("Error occurred while retrieving the navigation model for the user[" + error + "]");
+          }
         });
       }
     });
@@ -312,7 +311,12 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   /** Remove node from tree */
   public remove(node: NavigationNode) {
-    const newTreeData: NavigationNode = {code: "home", i18n: "navigation.label.home", icon: "home", children: this.data};
+    const newTreeData: NavigationNode = {
+      code: "home",
+      i18n: "navigation.label.home",
+      icon: "home",
+      children: this.data
+    };
     this._remove(node, newTreeData);
     this.data = newTreeData.children;
   }
@@ -377,7 +381,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   public navigateToLogin(): void {
     this.securityService.clearLocalStorage()
     this.reset();
-    let node: NavigationNode = this.createNew();
+    let node: NavigationNode = this.createLoginNode();
     this.rootNode.children.push(node);
     this.select(node);
   }
@@ -397,7 +401,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     this.setNavigationTreeByPath(['user-settings', 'user-profile'], this.rootNode)
   }
 
-  public createNew(): NavigationNode {
+  public createLoginNode(): NavigationNode {
     return {
       code: "login",
       icon: "login",

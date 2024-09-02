@@ -1,0 +1,54 @@
+{
+  "/rest/**": {
+    "target" : "http://eulogin.protected.smp.local:8982/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/rest": "/smp/ui/rest"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "eulogin.protected.smp.local"
+  },
+  "/public/**": {
+    "target" : "http://eulogin.protected.smp.local:8982/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/public": "/smp/ui/public"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "eulogin.protected.smp.local"
+  },
+  "/edit/**": {
+    "target" : "http://eulogin.protected.smp.local:8982/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/edit": "/smp/ui/edit"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "eulogin.protected.smp.local"
+  },
+  "/internal/**": {
+    "target" : "http://eulogin.protected.smp.local:8982/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/internal": "/smp/ui/internal"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "eulogin.protected.smp.local"
+  }
+}
