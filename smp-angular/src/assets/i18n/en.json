@@ -102,7 +102,7 @@
   "session.expiration.dialog.button.expire": "Extend",
   "session.expiration.dialog.button.logout": "Logout",
   "session.expiration.dialog.title": "Extend session",
-  "session.expiration.dialog.label.session.about.to.expire": "Your session is about to expire in <b>{{data.timeLeft}}</b> seconds!<br />Would you like to logout now or extend it for another <b>{{data.timeout}}</b> seconds?",
+  "session.expiration.dialog.label.session.about.to.expire": "Your session is about to expire in <b>{{timeLeft}}</b> seconds!<br />Would you like to logout now or extend it for another <b>{{timeout}}</b> seconds?",
 
   "alert.panel.title": "Alerts",
   "alert.panel.user.title": "{{value}} (Email: '{{mailTo}}')",

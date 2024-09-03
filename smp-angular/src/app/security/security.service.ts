@@ -5,8 +5,12 @@ import {SecurityEventService} from './security-event.service';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
-import {AlertMessageService} from "../common/alert-message/alert-message.service";
-import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
+import {
+  AlertMessageService
+} from "../common/alert-message/alert-message.service";
+import {
+  PasswordChangeDialogComponent
+} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
@@ -26,7 +30,10 @@ export class SecurityService {
     private translateService: TranslateService,
     private windowSpinnerService: WindowSpinnerService
   ) {
-    this.securityEventService.onLogoutSuccessEvent().subscribe(() => { this.dialog.closeAll(); this.router.navigateByUrl('/'); });
+    this.securityEventService.onLogoutSuccessEvent().subscribe(() => {
+      this.dialog.closeAll();
+      this.router.navigateByUrl('/');
+    });
     this.securityEventService.onLogoutErrorEvent().subscribe((error) => this.alertService.error(error));
   }
 
@@ -145,15 +152,17 @@ export class SecurityService {
   }
 
   logout() {
-    this.http.delete(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
-        this.finalizeLogout(res);
-      },
-      (err) => {
-        if (err instanceof HttpErrorResponse && err.status === 401) {
-          this.finalizeLogout(err);
-        }
-        else {
-          this.securityEventService.notifyLogoutErrorEvent(err);
+    this.http.delete(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION)
+      .subscribe({
+        next: (res: Response) => {
+          this.finalizeLogout(res);
+        },
+        error: (err: any) => {
+          if (err instanceof HttpErrorResponse && err.status === 401) {
+            this.finalizeLogout(err);
+          } else {
+            this.securityEventService.notifyLogoutErrorEvent(err);
+          }
         }
       });
   }
@@ -171,10 +180,12 @@ export class SecurityService {
   private getCurrentUsernameFromServer(): Observable<User> {
     let subject = new ReplaySubject<User>();
     this.http.get<User>(SmpConstants.REST_PUBLIC_SECURITY_USER)
-      .subscribe((res: User) => {
-        subject.next(res);
-      }, (error: any) => {
-        subject.next(null);
+      .subscribe({
+        next: (res: User) => {
+          subject.next(res);
+        }, error: (error: any) => {
+          subject.next(null);
+        }
       });
     return subject.asObservable();
   }

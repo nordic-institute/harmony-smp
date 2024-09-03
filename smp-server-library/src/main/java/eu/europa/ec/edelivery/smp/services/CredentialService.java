@@ -57,6 +57,7 @@ import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static java.util.Locale.US;
 
@@ -365,10 +366,14 @@ public class CredentialService {
             throw UNAUTHORIZED_INVALID_RESET_TOKEN;
         }
         DBCredential dbCredential = optCredential.get();
-
         if (!resetToken.equals(dbCredential.getResetToken())) {
             LOG.warn("User [{}] reset token does not match the active reset token! The request is ignored", username);
             return;
+        }
+
+        Pattern pattern = configurationService.getPasswordPolicyRexExp();
+        if (pattern != null && !pattern.matcher(newPassword).matches()) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
         }
 
         OffsetDateTime now = OffsetDateTime.now();
