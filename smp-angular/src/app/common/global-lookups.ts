@@ -91,6 +91,7 @@ export class GlobalLookups {
     });
   }
 
+
   public refreshApplicationInfo() {
 
     this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
@@ -141,6 +142,7 @@ export class GlobalLookups {
       let sub: Subscription = this.userObserver.subscribe((users: SearchTableResult) => {
         this.cachedServiceGroupOwnerList = users.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
+
         });
         sub.unsubscribe();
       }, (error: any) => {
