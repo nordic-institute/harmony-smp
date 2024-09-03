@@ -37,11 +37,15 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Table(name = "SMP_CREDENTIAL",
         indexes = {
             @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true),
+            @Index(name = "SMP_CRD_USER_NAME_RESET_IDX", columnList = "RESET_TOKEN, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true)
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CREDENTIAL", comment = "Credentials for the users")
 @NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u")
 @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
         "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target")
+@NamedQuery(name = QUERY_CREDENTIALS_BY_TYPE_RESET_TOKEN, query = "SELECT c FROM DBCredential c " +
+        "WHERE c.credentialType = :credential_type and c.credentialTarget = :credential_target and c.resetToken=:reset_token")
+
 @NamedQuery(name = QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
         "WHERE c.user.id = :user_id and c.credentialType = :credential_type and c.credentialTarget = :credential_target order by c.id")
 // case-insensitive search
@@ -64,18 +68,16 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 " AND (c.expireAlertOn IS NULL " +
                 "   OR c.expireAlertOn <= c.expireOn " +
                 "   OR c.expireAlertOn < :lastSendAlertDate )")
+// native queries to validate if user is owner of the credential
+@NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",
+        resultSetMapping = "DBCredentialDeleteValidationMapping",
+        query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
+                "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
+                " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
+                " INNER JOIN SMP_RESOURCE_MEMBER SG ON (S.ID = SG.FK_USER_ID) " +
+                " WHERE S.ID IN (:idList)" +
+                " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID")
 
-
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",
-                resultSetMapping = "DBCredentialDeleteValidationMapping",
-                query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
-                        "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
-                        " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
-                        " INNER JOIN SMP_RESOURCE_MEMBER SG ON (S.ID = SG.FK_USER_ID) " +
-                        " WHERE S.ID IN (:idList)" +
-                        " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID"),
-})
 @SqlResultSetMapping(name = "DBCredentialDeleteValidationMapping", classes = {
         @ConstructorResult(targetClass = DBUserDeleteValidation.class,
                 columns = {@ColumnResult(name = "id", type = Long.class),

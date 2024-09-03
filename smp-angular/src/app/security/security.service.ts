@@ -14,6 +14,7 @@ import {
 import {MatDialog} from "@angular/material/dialog";
 import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
+import {WindowSpinnerService} from "../common/services/window-spinner.service";
 
 @Injectable()
 export class SecurityService {
@@ -26,7 +27,8 @@ export class SecurityService {
     private securityEventService: SecurityEventService,
     private dialog: MatDialog,
     private router: Router,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private windowSpinnerService: WindowSpinnerService
   ) {
     this.securityEventService.onLogoutSuccessEvent().subscribe(() => {
       this.dialog.closeAll();
@@ -56,6 +58,7 @@ export class SecurityService {
   }
 
   requestCredentialReset(userid: string) {
+    this.windowSpinnerService.showSpinner = true;
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_RESET_CREDENTIALS_REQUEST,
       JSON.stringify({
@@ -65,8 +68,10 @@ export class SecurityService {
       {headers})
       .subscribe({
         complete: () => {
+          this.windowSpinnerService.showSpinner = false;
         }, // completeHandler
         error: (error: any) => {
+          this.windowSpinnerService.showSpinner = false;
           this.alertService.error(error)
         },    // errorHandler
         next: async () => {
@@ -77,8 +82,31 @@ export class SecurityService {
       });
   }
 
+  validateCredentialReset(token: string) {
+    let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
+    this.windowSpinnerService.showSpinner = true;
+    return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_RESET_CREDENTIALS_VALIDATE,
+      JSON.stringify({
+        credentialType: 'USERNAME_PASSWORD',
+        resetToken: token,
+      }),
+      {headers})
+      .subscribe({
+        complete: () => {
+          this.windowSpinnerService.showSpinner = false;
+        }, // completeHandler
+        error: (error: any) => {
+          this.windowSpinnerService.showSpinner = false;
+          this.router.navigate(['/search']);
+          this.alertService.error(error);
+        }
+        // errorHandler
+      });
+  }
+
   credentialReset(userid: string, token: string, newPassword: string) {
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
+    this.windowSpinnerService.showSpinner = true;
     return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_RESET_CREDENTIALS,
       JSON.stringify({
         credentialName: userid,
@@ -89,12 +117,14 @@ export class SecurityService {
       {headers})
       .subscribe({
         complete: () => {
+          this.windowSpinnerService.showSpinner = false;
           this.router.navigate(['/login']);
-        }, // completeHandler
+          }, // completeHandler
         error: (error: any) => {
-          this.alertService.error(error);
+          this.windowSpinnerService.showSpinner = false;
           this.router.navigate(['/login']);
-        },    // errorHandler
+          this.alertService.error(error);
+          },    // errorHandler
         next: async () => {
           this.alertService.success(await lastValueFrom(this.translateService.get("reset.credentials.success.password.reset")), true, -1);
         }

@@ -32,6 +32,7 @@ public enum ErrorCode {
     UNAUTHORIZED(401, "SMP:003",ErrorBusinessCode.UNAUTHORIZED, "User not authorized!"),
     UNAUTHORIZED_INVALID_USER_IDENTIFIER(401, "SMP:004",ErrorBusinessCode.UNAUTHORIZED, "Invalid user identifier! User not authorized."),
     UNAUTHORIZED_INVALID_IDENTIFIER(401, "SMP:005",ErrorBusinessCode.UNAUTHORIZED, "Invalid entity identifier!  User not authorized to access the entity data"),
+    UNAUTHORIZED_INVALID_RESET_TOKEN(401, "SMP:006",ErrorBusinessCode.UNAUTHORIZED, "Reset token; Invalid or not active reset token!"),
 
     INVALID_ENCODING (500, "SMP:100",ErrorBusinessCode.TECHNICAL, "Unsupported or invalid encoding for %s!"),
     SML_INVALID_IDENTIFIER (400,"SMP:101",ErrorBusinessCode.FORMAT_ERROR,"Malformed identifier, scheme and id should be delimited by double colon: %s "),
@@ -80,6 +81,7 @@ public enum ErrorCode {
     JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class [%s]!"),
     XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for [%s].  Error: %s!"),
     INVALID_REQUEST(400,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request [%s]. Error: %s!"),
+    INVALID_REQUEST_NO_DETAILS(400,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request"),
     INTERNAL_ERROR (500,"SMP:514",ErrorBusinessCode.TECHNICAL, "Internal error [%s]. Error: %s!"),
     CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error [%s]. Error: %s!"),
     CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: [%s]!"),
@@ -112,6 +114,9 @@ public enum ErrorCode {
         return messageTemplate;
     }
     public String getMessage(Object ... args) {
+        if (args == null || args.length == 0) {
+            return messageTemplate;
+        }
         return String.format(messageTemplate, args);
     }
 

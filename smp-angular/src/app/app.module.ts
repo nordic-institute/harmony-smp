@@ -165,6 +165,7 @@ import {
   DocumentPropertyDialogComponent
 } from "./common/dialogs/document-property-dialog/document-property-dialog.component";
 import {NgxTranslateModule} from "./translate/translate.module";
+import {WindowSpinnerService} from "./common/services/window-spinner.service";
 
 
 @NgModule({
@@ -328,6 +329,7 @@ import {NgxTranslateModule} from "./translate/translate.module";
     ThemeService,
     UserDetailsService,
     UserService,
+    WindowSpinnerService,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,

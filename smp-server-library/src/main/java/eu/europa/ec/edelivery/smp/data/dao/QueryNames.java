@@ -23,6 +23,8 @@ public class QueryNames {
     public static final String QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET = "DBCredential.getUserByCredentialNameTypeAndTarget";
     public static final String QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET = "DBCredential.getUserByUsernameCredentialTypeAndTarget";
     public static final String QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET = "DBCredential.getUserByUserIdCredentialTypeAndTarget";
+    public static final String QUERY_CREDENTIALS_BY_TYPE_RESET_TOKEN = "DBCredential.getCredentialTypeAndResetToken";
+
 
     public static final String QUERY_CREDENTIAL_ALL = "DBCredential.getAll";
     public static final String QUERY_CREDENTIAL_BY_CERTIFICATE_ID = "DBCredential.getCredentialByCertificateId";
@@ -204,10 +206,7 @@ public class QueryNames {
     public static final String PARAM_CREDENTIAL_NAME = "credential_name";
     public static final String PARAM_CREDENTIAL_TYPE = "credential_type";
     public static final String PARAM_CREDENTIAL_TARGET = "credential_target";
-
-
-
-
+    public static final String PARAM_CREDENTIAL_RESET_TOKEN = "reset_token";
 
     private QueryNames() {
     }

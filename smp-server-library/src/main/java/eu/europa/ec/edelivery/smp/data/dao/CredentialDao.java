@@ -23,7 +23,6 @@ import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
-import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -78,15 +77,16 @@ public class CredentialDao extends BaseDao<DBCredential> {
     }
 
     /**
-     * Method finds user by username.If user does not exist
+     * Method finds credentials by username. If credential does not exist
      * Optional  with isPresent - false is returned.
      *
      * @param username
-     * @return returns Optional DBUser for username
+     * @return returns Optional DBCredential for username
      */
     public Optional<DBCredential> findUsernamePasswordCredentialForUsernameAndUI(String username) {
         // check if blank
         if (StringUtils.isBlank(username)) {
+            LOG.debug("Username is blank! Return empty optional");
             return Optional.empty();
         }
         try {
@@ -97,9 +97,38 @@ public class CredentialDao extends BaseDao<DBCredential> {
 
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
+            LOG.debug("No results: Return empty optional");
             return Optional.empty();
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, username);
+        }
+    }
+
+    /**
+     * Method finds credential entity by reset token. If credential does not exist
+     * Optional  with isPresent - false is returned.
+     *
+     * @param resetTokenIdentifier
+     * @return returns Optional DBCredential for reset Token Identifier
+     * @throws SMPRuntimeException if more than one credential is found!
+     */
+    public Optional<DBCredential> findUCredentialForUsernamePasswordTypeAndResetToken(String resetTokenIdentifier) {
+        // check if blank
+        if (StringUtils.isBlank(resetTokenIdentifier)) {
+            return Optional.empty();
+        }
+        try {
+            TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIALS_BY_TYPE_RESET_TOKEN, DBCredential.class);
+            query.setParameter(PARAM_CREDENTIAL_RESET_TOKEN, StringUtils.trim(resetTokenIdentifier));
+            query.setParameter(PARAM_CREDENTIAL_TYPE, CredentialType.USERNAME_PASSWORD);
+            query.setParameter(PARAM_CREDENTIAL_TARGET, CredentialTargetType.UI);
+
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            LOG.debug("No results: Return empty optional for reset token: [{}]", resetTokenIdentifier);
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, resetTokenIdentifier);
         }
     }
 
@@ -114,6 +143,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
     public Optional<DBCredential> findUsernamePasswordCredentialForUserIdAndUI(Long userId) {
         // check if blank
         if (userId == null) {
+            LOG.debug("User ID is null! Return empty optional");
             return Optional.empty();
         }
         List<DBCredential> list = findUserCredentialForByUserIdTypeAndTarget(userId,
@@ -121,6 +151,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
                 CredentialTargetType.UI);
 
         if (list.isEmpty()) {
+            LOG.debug("No results: Return empty optional for user ID: [{}]", userId);
             return Optional.empty();
         } else if (list.size() > 1) {
             throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, userId);
@@ -138,6 +169,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
     public Optional<DBCredential> findAccessTokenCredentialForAPI(String accessToken) {
         // check if blank
         if (StringUtils.isBlank(accessToken)) {
+            LOG.debug("Access token is blank! Return empty optional");
             return Optional.empty();
         }
         try {
@@ -148,6 +180,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
 
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
+            LOG.debug("No results: Return empty optional for access token: [{}]", accessToken);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, accessToken);
@@ -169,29 +202,6 @@ public class CredentialDao extends BaseDao<DBCredential> {
         // check if blank
         TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_ALL, DBCredential.class);
         return query.getResultList();
-    }
-
-    /**
-     * Method finds user by user authentication token identifier. If user identity token not exist
-     * Optional  with isPresent - false is returned.
-     *
-     * @param tokeIdentifier
-     * @return returns Optional DBUser for username
-     */
-    public Optional<DBUser> findUserByAuthenticationToken(String tokeIdentifier) {
-        // check if blank
-        if (StringUtils.isBlank(tokeIdentifier)) {
-            return Optional.empty();
-        }
-        try {
-            TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUserByPatId", DBUser.class);
-            query.setParameter("patId", tokeIdentifier.trim());
-            return Optional.of(query.getSingleResult());
-        } catch (NoResultException e) {
-            return Optional.empty();
-        } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, tokeIdentifier);
-        }
     }
 
     /**
@@ -290,6 +300,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             query.setParameter(PARAM_CERTIFICATE_IDENTIFIER, certificateId);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
+            LOG.debug("No results: Return empty optional for certificate ID: [{}]", certificateId);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY, certificateId);

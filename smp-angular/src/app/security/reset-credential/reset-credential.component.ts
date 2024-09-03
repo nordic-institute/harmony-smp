@@ -33,6 +33,9 @@ export class ResetCredentialComponent implements OnInit {
       this.resetPasswordValidator(data);
     })
     this.resetToken = this.activatedRoute.snapshot.params['resetToken'];
+
+    // check if reset token is valid
+    this.securityService.validateCredentialReset(this.resetToken);
   }
 
   /**
