@@ -71,15 +71,6 @@ export class GlobalLookups {
     this.refreshDomainLookup(domainUrl);
   }
 
-  public refreshDomainLookupForLoggedUser() {
-    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN;
-    // for authenticated admin use internal url which returns more data!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      domainUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED;
-    }
-    this.refreshDomainLookup(domainUrl);
-  }
-
   public refreshDomainLookup(domainUrl: string) {
     let params: HttpParams = new HttpParams()
       .set('page', '-1')
@@ -100,12 +91,13 @@ export class GlobalLookups {
   public refreshApplicationInfo() {
 
     this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
-      .subscribe((res: SmpInfo) => {
+      .subscribe({
+        next: (res: SmpInfo) => {
           this.cachedApplicationInfo = res;
-        }, error => {
+        }, error: (error: any) => {
           console.log("getSmpInfo:" + error);
         }
-      );
+  });
 
   }
 
@@ -116,10 +108,13 @@ export class GlobalLookups {
       console.log("Refresh application configuration is authenticated " + isAuthenticated)
       if (isAuthenticated) {
         this.http.get<SmpConfig>(SmpConstants.REST_PUBLIC_APPLICATION_CONFIG)
-          .subscribe((res: SmpConfig) => {
-              this.cachedApplicationConfig = res;
-            }, error => {
-              console.log("getSmpConfig:" + error);
+          .subscribe({
+              next: (res: SmpConfig) => {
+                this.cachedApplicationConfig = res;
+              }
+              , error: (error: any) => {
+                console.log("getSmpConfig:" + error);
+              }
             }
           );
       }

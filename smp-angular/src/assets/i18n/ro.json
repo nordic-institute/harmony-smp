@@ -102,7 +102,7 @@
   "session.expiration.dialog.button.expire": "Extinde",
   "session.expiration.dialog.button.logout": "Deconectare",
   "session.expiration.dialog.title": "Extindeti sesiunea",
-  "session.expiration.dialog.label.session.about.to.expire": "Sesiunea dvs. este pe cale sa expire in <b>{{data.timeLeft}}</b> secunde!<br />Doriti sa va deconectati acum sau sa o prelungiti pentru inca <b>{{data.timeout}}</b> secunde?",
+  "session.expiration.dialog.label.session.about.to.expire": "Sesiunea dvs. este pe cale sa expire in <b>{{timeLeft}}</b> secunde!<br />Doriti sa va deconectati acum sau sa o prelungiti pentru inca <b>{{timeout}}</b> secunde?",
 
   "alert.panel.title": "Alerte",
   "alert.panel.user.title": "{{value}} (E-mail: '{{mailTo}}')",
