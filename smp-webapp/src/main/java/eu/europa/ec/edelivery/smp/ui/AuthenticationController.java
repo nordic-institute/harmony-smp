@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,11 +28,13 @@ import eu.europa.ec.edelivery.smp.data.ui.CredentialRequestResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.CredentialResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -108,7 +110,7 @@ public class AuthenticationController {
      *
      * @param requestResetRO - the request object containing the credential name and type
      */
-    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL_REQUEST )
+    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL_REQUEST)
     public void requestResetCredentials(@RequestBody CredentialRequestResetRO requestResetRO) {
         LOG.debug("credentialRequestResetRO  [{}]", requestResetRO.getCredentialName());
         if (requestResetRO.getCredentialType() == CredentialType.USERNAME_PASSWORD) {
@@ -116,7 +118,7 @@ public class AuthenticationController {
         } else {
             LOG.warn("Invalid or null credential type [{}] not supported for reset!",
                     requestResetRO.getCredentialType());
-            throw new IllegalArgumentException("Invalid request!");
+            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
 
         }
     }
@@ -126,20 +128,41 @@ public class AuthenticationController {
      *
      * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
      */
-    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL )
+    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL)
     public void resetCredentials(@RequestBody CredentialResetRO resetRO) {
-        LOG.debug("credentialResetRO  [{}]", resetRO.getCredentialName());
-        if (resetRO.getCredentialType() == CredentialType.USERNAME_PASSWORD) {
-
-            authenticationService.resetUsernamePassword(resetRO.getCredentialName(),
-                    resetRO.getResetToken(),
-                    resetRO.getCredentialValue());
-        } else {
-            LOG.warn("Invalid or null credential type [{}] not supported for reset!",
-                    resetRO.getCredentialType());
-            throw new IllegalArgumentException("Invalid request!");
-
+        LOG.debug("resetCredentials [{}]", resetRO);
+        if (resetRO == null
+                || resetRO.getResetToken() == null
+                || StringUtils.isBlank(resetRO.getResetToken())
+                || StringUtils.isBlank(resetRO.getCredentialName())
+                || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
+            LOG.warn("Invalid or incomplete reset token!");
+            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
         }
+        authenticationService.resetUsernamePassword(resetRO.getCredentialName(),
+                resetRO.getResetToken(),
+                resetRO.getCredentialValue());
+
+    }
+
+    /**
+     * Method validates if the reset token is valid (exists and is not expired)
+     * for the given credential type.
+     *
+     * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
+     *                Return 200 if token is valid, 401 if token is invalid
+     */
+    @PostMapping(value = ResourceConstants.PATH_ACTION_VALIDATE_RESET_TOKEN)
+    public void validateResetToken(@RequestBody CredentialResetRO resetRO) {
+        LOG.debug("validateResetToken [{}]", resetRO);
+        if (resetRO == null
+                || StringUtils.isBlank(resetRO.getResetToken())
+                || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
+            LOG.warn("Invalid or null reset token or invalid reset token type!");
+            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+        }
+
+        authenticationService.validateUsernamePasswordResetToken(resetRO.getResetToken());
     }
 
     @DeleteMapping(value = ResourceConstants.PATH_ACTION_AUTHENTICATION)

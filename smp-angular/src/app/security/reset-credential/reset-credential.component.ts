@@ -27,6 +27,9 @@ export class ResetCredentialComponent implements OnInit {
   ngOnInit() {
     this.initForm();
     this.resetToken = this.activatedRoute.snapshot.params['resetToken'];
+
+    // check if reset token is valid
+    this.securityService.validateCredentialReset(this.resetToken);
   }
 
   private initForm() {

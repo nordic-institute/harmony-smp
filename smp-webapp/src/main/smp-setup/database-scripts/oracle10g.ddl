@@ -859,6 +859,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     alter table SMP_CREDENTIAL 
        add constraint SMP_CRD_USER_NAME_TYPE_IDX unique (CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
 
+    alter table SMP_CREDENTIAL 
+       add constraint SMP_CRD_USER_NAME_RESET_IDX unique (RESET_TOKEN, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
+
     alter table SMP_DOCUMENT_PROPERTY 
        add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);
 create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);

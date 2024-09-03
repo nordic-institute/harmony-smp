@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.config.SMPSecurityConstants;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
@@ -89,8 +90,31 @@ public class SMPAuthenticationService {
         LOG.info("resetUsernamePassword  [{}]", username);
         // retrieve user Optional credentials by username
         long startTime = Calendar.getInstance().getTimeInMillis();
-        credentialService.resetUsernamePassword(username, resetToken, newPassword);
+        try {
+            credentialService.resetUsernamePassword(username, resetToken, newPassword);
+        } catch (SMPRuntimeException | AuthenticationException e) {
+            // delay response to prevent timing attack
+            credentialService.delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
+            throw e;
+        }
         credentialService.delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
+    }
+
+    /**
+     * Method validates reset token exists and is valid! If not exception is thrown.
+     * @param resetToken
+     * @throws AuthenticationException if token is not exists or is not valid
+     */
+    public void validateUsernamePasswordResetToken(String resetToken) {
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        try {
+            credentialService.validatePasswordResetToken(resetToken);
+        } catch (SMPRuntimeException | AuthenticationException e) {
+            // delay response to prevent timing attack
+            credentialService.delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
+            throw e;
+        }
+        credentialService.validatePasswordResetToken(resetToken);
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {

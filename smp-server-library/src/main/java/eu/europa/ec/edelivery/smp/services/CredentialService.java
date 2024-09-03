@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
+import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
@@ -70,7 +71,10 @@ import static java.util.Locale.US;
 public class CredentialService {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialService.class);
     protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
+    protected static final BadCredentialsException UNAUTHORIZED_INVALID_RESET_TOKEN = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_RESET_TOKEN.getMessage());
     protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_CREDENTIAL_SUSPENDED.getMessage());
+    protected static final int RESET_TOKEN_LENGTH = 64;
+
     final UserDao userDao;
     final CredentialDao credentialDao;
     final ConversionService conversionService;
@@ -134,7 +138,7 @@ public class CredentialService {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username, credential.getName(), credential.getCredentialType(), credential.getCredentialTarget());
                 loginAttemptFailedAndThrowError(credential, true, startTime);
             }
-            LOG.debug("authenticateByUsernamePassword: reset failed attempts for user token [{}]", username);
+            LOG.debug("authenticateByUsernamePassword: clear failed attempts for user token [{}]", username);
             credential.setSequentialLoginFailureCount(0);
             credential.setLastFailedLoginAttempt(null);
         } catch (IllegalArgumentException ex) {
@@ -343,15 +347,22 @@ public class CredentialService {
         generateResetTokenAndSubmitMail(dbCredential);
     }
 
+    /**
+     * Method validates if the reset token is valid (exists and is not expired)
+     * and updates the password.
+     *
+     * @param username of the user
+     * @param resetToken active reset token
+     * @param newPassword new password
+     * @throws AuthenticationServiceException if the reset token is invalid
+     */
     @Transactional
     public void resetUsernamePassword(String username, String resetToken, String newPassword) {
-        // retrieve user Optional credentials by username
         LOG.debug("resetUsernamePassword [{}]", username);
         // retrieve user Optional credentials by username
         Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, false);
         if (!optCredential.isPresent()) {
-            LOG.info("Skip generating reset token for username [{}]!", username);
-            return;
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
         }
         DBCredential dbCredential = optCredential.get();
 
@@ -362,22 +373,27 @@ public class CredentialService {
 
         OffsetDateTime now = OffsetDateTime.now();
         dbCredential.setValue(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
-        dbCredential.setResetToken(null);
-        dbCredential.setResetExpireOn(null);
+
         dbCredential.setExpireAlertOn(null);
         dbCredential.setSequentialLoginFailureCount(0);
         dbCredential.setLastFailedLoginAttempt(null);
         dbCredential.setChangedOn(now);
         dbCredential.setExpireOn(now.plusDays(configurationService.getPasswordPolicyValidDays()));
+
+        dbCredential.setResetToken(null);
+        dbCredential.setResetExpireOn(null);
+
         // submit mail with reset token
         alertService.alertCredentialChanged(dbCredential);
     }
 
+
     /**
-     * Method gets credentials for active user and validates if not expired reset token exists .
+     * Method gets User password credential entity for active user and validates
+     * resent token exists and if active.
      *
-     * @param username
-     * @return
+     * @param username of the user
+     * @return Optional of DBCredential: if the user has active credentials and active else empty is returned
      */
     private Optional<DBCredential> getActiveCredentialsForUsernameToReset(String username, boolean toGenerateResetToken) {
         // retrieve user Optional credentials by username
@@ -396,19 +412,36 @@ public class CredentialService {
         // When toGenerateResetToken check if the user has already active reset token
         boolean hasValidResetToken = hasValidResetToken(dbCredential);
         if (toGenerateResetToken && hasValidResetToken) {
-            LOG.info("User [{}] has already active reset token. Skip generating new reset token!", username);
-            return Optional.empty();
+            LOG.warn("User [{}] has already active reset token. Generate new reset token!", username);
         }
         // If action is reset then check if the user has active reset token
         if (!toGenerateResetToken && !hasValidResetToken) {
-            LOG.warn("User [{}] does not have active reset token. The reset token is expired or does not exists!", username);
-            throw new AuthenticationServiceException("User [" + username
-                    + "] does not have active reset token. Please request new reset token for the user!");
+            LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_INVALID, dbCredential.getName(), CredentialType.USERNAME_PASSWORD);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
         }
 
         return optCredential;
     }
 
+    public void validatePasswordResetToken(String resetToken){
+        Optional<DBCredential> optCredential = credentialDao.findUCredentialForUsernamePasswordTypeAndResetToken(resetToken);
+        if (!optCredential.isPresent()) {
+            LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_NOT_EXISTS, resetToken, CredentialType.USERNAME_PASSWORD);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+        }
+        DBCredential dbCredential = optCredential.get();
+        if (!hasValidResetToken(dbCredential)) {
+            LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_INVALID, dbCredential.getName(), CredentialType.USERNAME_PASSWORD);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+        }
+    }
+
+    /**
+     * Method validates if the user has valid reset token. The token is valid if it is not empty
+     * and the expiry date is after the current date.
+     * @param dbCredential
+     * @return true if the reset token is valid, else false
+     */
     private boolean hasValidResetToken(DBCredential dbCredential) {
         return StringUtils.isNotBlank(dbCredential.getResetToken())
                 && dbCredential.getResetExpireOn() != null
@@ -422,7 +455,8 @@ public class CredentialService {
      * @param dbCredential credential for which the reset token is generated.
      */
     private void generateResetTokenAndSubmitMail(DBCredential dbCredential) {
-        dbCredential.setResetToken(UUID.randomUUID().toString());
+        boolean isDevMode = SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode();
+        dbCredential.setResetToken(SecurityUtils.generateAuthenticationTokenIdentifier(isDevMode, RESET_TOKEN_LENGTH));
         dbCredential.setResetExpireOn(OffsetDateTime.now().plusMinutes(configurationService.getCredentialsResetPolicyValidMinutes()));
         // submit mail with reset token
         dbCredential.getUser().getEmailAddress();

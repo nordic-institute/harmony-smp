@@ -11,6 +11,7 @@ import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
 import {UserController} from "./common/services/user-controller";
 import {TranslateService} from "@ngx-translate/core";
+import {WindowSpinnerService} from "./common/services/window-spinner.service";
 
 
 @Component({
@@ -31,6 +32,7 @@ export class AppComponent {
   constructor(
     private alertService: AlertMessageService,
     private securityService: SecurityService,
+    private windowSpinnerService: WindowSpinnerService,
     private router: Router,
     private http: HttpClient,
     private dialog: MatDialog,
@@ -95,4 +97,7 @@ export class AppComponent {
     this.alertService.setKeepAfterNavigationChange(scrollTop > 0)
   }
 
+  get showSpinner(): boolean {
+    return this.windowSpinnerService.showSpinner
+  }
 }

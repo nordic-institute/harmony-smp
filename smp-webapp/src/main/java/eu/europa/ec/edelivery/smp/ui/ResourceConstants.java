@@ -73,6 +73,7 @@ public class ResourceConstants {
     public static final String PATH_ACTION_UPDATE_RESOURCE_TYPES = "update-resource-types";
     public static final String PATH_ACTION_UPDATE_SML_DATA = "update-sml-integration-data";
     public static final String PATH_ACTION_RESET_CREDENTIAL_REQUEST = "request-reset-credential";
+    public static final String PATH_ACTION_VALIDATE_RESET_TOKEN = "validate-reset-credential";
     public static final String PATH_ACTION_RESET_CREDENTIAL = "reset-credential";
     public static final String PATH_ACTION_AUTHENTICATION = "authentication";
     public static final String PATH_ACTION_GENERATE_DNS_QUERY = "generate-dns-query";

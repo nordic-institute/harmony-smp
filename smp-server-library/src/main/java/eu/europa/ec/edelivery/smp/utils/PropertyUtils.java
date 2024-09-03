@@ -208,6 +208,10 @@ public class PropertyUtils {
      * @return masked value for sensitive properties. Else it returns value!
      */
     public static String getMaskedData(String property, String value) {
-        return isSensitiveData(property) ? MASKED_VALUE : value;
+        return isSensitiveData(property) ? getMaskedData(value) : value;
+    }
+
+    public static String getMaskedData(String value) {
+        return isNotBlank(value) ? MASKED_VALUE : "Null/Empty/Blank";
     }
 }

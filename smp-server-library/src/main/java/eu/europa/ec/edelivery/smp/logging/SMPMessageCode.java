@@ -70,6 +70,8 @@ public enum SMPMessageCode implements MessageCode {
     SEC_USER_SUSPENDED("SEC-008", "User [{}] is temporarily suspended."),
     SEC_INVALID_TOKEN("SEC-009", "User [{}] has invalid token value for token id: [{}]."),
     SEC_TRUSTSTORE_CERT_INVALID("SEC-010", "Truststore certificate with alias [{}] is invalid: [{}]."),
+    SEC_RESET_TOKEN_NOT_EXISTS("SEC-011", "Reset token [{}] for type [{}] not exists."),
+    SEC_RESET_TOKEN_INVALID("SEC-012", "Reset token for credential [{}] for type [{}] is invalid."),
     ;
 
     String code;
