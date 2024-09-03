@@ -1,17 +1,14 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
-import eu.europa.ec.edelivery.smp.i18n.SMPLocale;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.SMPLocaleService;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
-
+import static eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService.LANGUAGE_FILENAME_UI_PREFIX;
+import static eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService.LANGUAGE_RESOURCE_UI_DEFAULT;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_LOCALE;
 
 /**
@@ -24,29 +21,16 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLI
 @RequestMapping(value = CONTEXT_PATH_PUBLIC_LOCALE)
 public class LocaleController {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(LocaleController.class);
-    private static final String DEFAULT_LOCALE_RESOURCE = "/META-INF/resources/ui/assets/i18n/en.json";
-    private final SMPLocaleService smpLocaleService;
 
-    public LocaleController(SMPLocaleService smpLocaleService) {
+    private final SMPLanguageResourceService smpLocaleService;
+
+    public LocaleController(SMPLanguageResourceService smpLocaleService) {
         this.smpLocaleService = smpLocaleService;
     }
 
     @GetMapping(value = "/{code}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Resource getLocale(@PathVariable("code") String code) {
-        Path langResourcePath = smpLocaleService.getLocaleFile(SMPLocale.fromCodeDefaultingToEnglish(code));
-        if (langResourcePath != null && langResourcePath.toFile().exists()) {
-            LOG.debug("Returning locale file [{}]", langResourcePath.toAbsolutePath());
-            return new FileSystemResource(langResourcePath);
-        } else {
-            LOG.warn("Locale file [{}] does not exist. Return default translation!", langResourcePath.toAbsolutePath());
-            ClassPathResource defResource = new ClassPathResource(DEFAULT_LOCALE_RESOURCE);
-            if (defResource.exists()) {
-                return defResource;
-            } else {
-                LOG.error("Default locale file [{}] does not exist in classpath!", DEFAULT_LOCALE_RESOURCE);
-                return null;
-            }
-        }
+    public Resource getLanguage(@PathVariable("code") String code) {
+        LOG.debug("Requesting locale file for code: [{}]", code);
+        return smpLocaleService.getTranslationResourceFile(LANGUAGE_FILENAME_UI_PREFIX, code, LANGUAGE_RESOURCE_UI_DEFAULT);
     }
 }

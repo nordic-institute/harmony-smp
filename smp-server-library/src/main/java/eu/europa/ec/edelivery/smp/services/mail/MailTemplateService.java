@@ -20,11 +20,11 @@ package eu.europa.ec.edelivery.smp.services.mail;
 
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,15 +39,20 @@ import java.util.Properties;
  * @author Joze Rihtarsic
  * @since 5.1
  */
-@Component
+@Service
 public class MailTemplateService {
-    private static final String DEFAULT_LANGUAGE = "en";
     private static final String MAIL_TEMPLATE = "/mail-messages/mail-template.htm";
-    private static final String MAIL_TEMPLATE_CHARSET= "UTF-8";
+    private static final String MAIL_TEMPLATE_CHARSET = "UTF-8";
     private static final String MAIL_HEADER = "MAIL_HEADER";
     private static final String MAIL_FOOTER = "MAIL_FOOTER";
     private static final String MAIL_TITLE = "MAIL_TITLE";
     private static final String MAIL_CONTENT = "MAIL_CONTENT";
+
+    SMPLanguageResourceService smpLanguageResourceService;
+
+    public MailTemplateService(SMPLanguageResourceService smpLanguageResourceService) {
+        this.smpLanguageResourceService = smpLanguageResourceService;
+    }
 
 
     public String getMailHtmlContent(MailDataModel model) {
@@ -82,34 +87,8 @@ public class MailTemplateService {
 
 
     public String getMailData(MailDataModel model, String key) {
-        Properties translations = getMessageTranslations(model.getLanguage());
+        Properties translations = smpLanguageResourceService.getMailProperties(model.getLanguage());
         String dataTemplate = translations.getProperty(key);
         return StringUtils.isBlank(dataTemplate) ? dataTemplate : StringNamedSubstitutor.resolve(dataTemplate, model.getModel());
-    }
-
-
-    @Cacheable("mail-templates-translations")
-    public Properties getMessageTranslations(String language) {
-
-        Properties translations = loadTranslations(language);
-        if (translations != null) {
-            return translations;
-        }
-        return loadTranslations(DEFAULT_LANGUAGE);
-    }
-
-    protected Properties loadTranslations(String language) {
-        String langResource = "/mail-messages/mail-messages_" + language + ".properties";
-        InputStream isLanguage = MailTemplateService.class.getResourceAsStream(langResource);
-        if (isLanguage != null) {
-            try {
-                Properties translations = new Properties();
-                translations.load(isLanguage);
-                return translations;
-            } catch (IOException e) {
-                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error reading mail template", ExceptionUtils.getRootCauseMessage(e));
-            }
-        }
-        return new Properties();
     }
 }

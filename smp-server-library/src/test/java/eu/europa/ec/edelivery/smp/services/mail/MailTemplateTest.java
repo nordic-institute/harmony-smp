@@ -19,9 +19,20 @@
 package eu.europa.ec.edelivery.smp.services.mail;
 
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +41,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MailTemplateTest {
 
+    File localeFolder = new File("target/locales");
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
 
-    MailTemplateService testInstance = new MailTemplateService();
+    MailTemplateService testInstance = new MailTemplateService(smpLanguageResourceService);
+
+    @BeforeEach
+    void setUp() throws IOException {
+        // clean the folder
+        if (localeFolder.exists() ) {
+            // first delete all files and then empty folders
+            Files.walk(localeFolder.toPath())
+                    .map( Path::toFile )
+                    .sorted( Comparator.comparing( File::isDirectory ) )
+                    .forEach( File::delete );
+        }
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
+    }
 
     @Test
     void getMailContent() {
@@ -51,6 +79,5 @@ class MailTemplateTest {
         assertTrue(result.contains("alert level"));
         assertTrue(result.contains("credential id"));
         assertTrue(result.contains("credential name"));
-
     }
 }
