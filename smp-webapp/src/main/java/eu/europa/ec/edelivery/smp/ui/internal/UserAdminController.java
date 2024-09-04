@@ -172,6 +172,7 @@ public class UserAdminController {
         }
 
         DBUser user = uiUserService.updateUserPassword(authorizedUserId, changeUserId, newPassword.getCurrentPassword(), newPassword.getNewPassword(),!currentUser.isCasAuthenticated());
+
         return authorizationService.sanitize(uiUserService.convertToRo(user));
     }
 

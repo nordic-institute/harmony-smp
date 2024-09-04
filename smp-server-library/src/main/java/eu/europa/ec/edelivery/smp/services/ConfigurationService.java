@@ -448,6 +448,36 @@ public class ConfigurationService {
     }
 
     //-----------------------
+    // user Created
+    public Boolean getAlertUserCreatedEnabled() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_ENABLED);
+    }
+
+    public AlertLevelEnum getAlertUserCreatedLevel() {
+        String level = configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
+    public String getAlertUserCreatedSubject() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_MAIL_SUBJECT);
+    }
+
+    //-----------------------
+    // user updated
+    public Boolean getAlertUserUpdatedEnabled() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_UPDATED_ENABLED);
+    }
+
+    public AlertLevelEnum getAlertUserUpdatedLevel() {
+        String level = configurationDAO.getCachedPropertyValue(ALERT_USER_UPDATED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
+    public String getAlertUserUpdatedSubject() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_UPDATED_MAIL_SUBJECT);
+    }
+
+    //-----------------------
     // user suspended
     public Boolean getAlertUserSuspendedEnabled() {
         return configurationDAO.getCachedPropertyValue(ALERT_USER_SUSPENDED_ENABLED);

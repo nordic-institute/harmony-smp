@@ -311,9 +311,14 @@ public class CredentialsAlertService {
      */
     public void alertUserCreated(DBUser user) {
 
+        boolean userCreatedAlertEnabled = configurationService.getAlertUserCreatedEnabled();
+        if (!userCreatedAlertEnabled) {
+            LOG.debug("Suppress alert: Alert user created is disabled!");
+            return;
+        }
         String mailTo = user.getEmailAddress();
-        String mailSubject = "New user created";
-        AlertLevelEnum alertLevel = AlertLevelEnum.HIGH;
+        String mailSubject = configurationService.getAlertUserCreatedSubject();
+        AlertLevelEnum alertLevel = configurationService.getAlertUserCreatedLevel();
         AlertTypeEnum alertType = AlertTypeEnum.USER_CREATED;
 
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
@@ -335,9 +340,14 @@ public class CredentialsAlertService {
      */
     public void alertUserUpdated(DBUser user) {
 
+        boolean userCreatedAlertEnabled = configurationService.getAlertUserUpdatedEnabled();
+        if (!userCreatedAlertEnabled) {
+            LOG.debug("Suppress alert: Alert user updated is disabled!");
+            return;
+        }
         String mailTo = user.getEmailAddress();
-        String mailSubject = "User data updated";
-        AlertLevelEnum alertLevel = AlertLevelEnum.HIGH;
+        String mailSubject = configurationService.getAlertUserUpdatedSubject();
+        AlertLevelEnum alertLevel = configurationService.getAlertUserUpdatedLevel();
         AlertTypeEnum alertType = AlertTypeEnum.USER_UPDATED;
 
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
