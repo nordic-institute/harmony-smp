@@ -85,8 +85,7 @@ public class SMPLanguageResourceService {
             JsonNode jsonTranslation = mapper.readTree(target);
             Properties properties = new Properties();
             jsonTranslation.fieldNames().forEachRemaining(fieldName ->
-                properties.setProperty(fieldName, jsonTranslation.get(fieldName).asText());
-            );
+                properties.setProperty(fieldName, jsonTranslation.get(fieldName).asText()));
             return properties;
         } catch (IOException e) {
             LOG.error("Error occurred while merging the translation files", e);
