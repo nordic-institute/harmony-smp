@@ -17,12 +17,28 @@
           <input matInput name="ResourceIdentifier"
                  formControlName="resourceIdentifier"
                  id="resource-identifier-id">
+          <div
+            *ngIf="(dnsToolsForm.controls['resourceIdentifier'].touched ) &&  dnsToolsForm.controls['resourceIdentifier'].hasError('required')"
+            style="color:red; font-size: 70%">
+            {{ "dns.tools.resource.id.mandatory" | translate }}
+          </div>
         </mat-form-field>
         <mat-form-field class="smp-data-panel-field">
           <mat-label>{{ "dns.tools.label.resource.scheme" | translate }}</mat-label>
           <input matInput name="ResourceScheme"
                  formControlName="resourceScheme"
                  id="resource-scheme-id">
+          <div
+            *ngIf="(dnsToolsForm.controls['resourceScheme'].touched ) &&  dnsToolsForm.controls['resourceScheme'].hasError('required')"
+            style="color:red; font-size: 70%">
+            {{ "dns.tools.label.resource.scheme.mandatory" | translate }}
+          </div>
+          <div
+            *ngIf="(dnsToolsForm.controls['resourceScheme'].touched ) &&
+               dnsToolsForm.controls['resourceScheme'].hasError('pattern')"
+            style="color:red; font-size: 70%">
+            {{participantSchemeMessage}}
+          </div>
         </mat-form-field>
         <mat-form-field class="smp-data-panel-field">
           <mat-label>{{ "dns.tools.label.resource.top.domain" | translate }}</mat-label>
@@ -38,6 +54,13 @@
         >
           <mat-icon>input</mat-icon>
           <span>{{ "dns.tools.button.generate.lookup.query" | translate }}</span>
+        </button>
+
+        <tool-button-spacer></tool-button-spacer>
+        <button mat-raised-button color="primary" (click)="clearData()"
+                [disabled]="!dnsToolsForm.dirty" id="clearallbutton_id">
+          <mat-icon>cancel</mat-icon>
+          <span>{{ "form.button.clear" | translate }}</span>
         </button>
       </div>
     </ng-template>

@@ -757,6 +757,8 @@
   "dns.tools.label.resource.top.domain": "Top domain",
   "dns.tools.description": "Enter the DNS data to create DNS query",
   "dns.tools.title": "DNS lookup",
+  "dns.tools.resource.id.mandatory": "Resource identifier is required!",
+  "dns.tools.resource.scheme.mandatory": "Resource scheme is required!",
 
   "access.token.panel.button.delete": "Delete",
   "access.token.panel.button.save": "Save",
@@ -848,5 +850,7 @@
   "navigation.label.user.settings.membership": "Membership",
   "navigation.tooltip.search.resources": "Search registered resources",
   "navigation.tooltip.search.tools": "Search tools",
-  "navigation.tooltip.search.dns.tools": "DNS lookup tools"
+  "navigation.tooltip.search.dns.tools": "DNS lookup tools",
+
+  "form.button.clear": "Clear"
 }

@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.IdentifierFormatterService;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,9 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 public class SMPIdentifierServicePropertyUpdateListener implements PropertyUpdateListener {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPIdentifierServicePropertyUpdateListener.class);
 
-    private static final List<String> namedCachesToClear = Arrays.asList("participantIdentifiers", "documentIdentifiers");
+    private static final List<String> namedCachesToClear = Arrays.asList(
+            IdentifierFormatterService.CACHE_NAME_DOMAIN_RESOURCE_IDENTIFIER_FORMATTER,
+            IdentifierFormatterService.CACHE_NAME_DOMAIN_SUBRESOURCE_IDENTIFIER_FORMATTER);
 
 
     private final CacheManager cacheManager;
@@ -66,7 +69,7 @@ public class SMPIdentifierServicePropertyUpdateListener implements PropertyUpdat
         // reset formatter cache on shared property update
         this.cacheManager.getCacheNames().stream()
                 .filter(namedCachesToClear::contains)
-                .map(cacheName -> this.cacheManager.getCache(cacheName))
+                .map(this.cacheManager::getCache)
                 .filter(Objects::nonNull)
                 .forEach(Cache::clear);
     }
