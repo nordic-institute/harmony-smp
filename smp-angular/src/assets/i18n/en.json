@@ -752,11 +752,14 @@
   "dns.query.panel.title": "DNS domain",
 
   "dns.tools.button.generate.lookup.query": "Generate lookup query",
+  "dns.tools.button.clear": "Clear",
   "dns.tools.label.resource.id": "Resource Identifier",
   "dns.tools.label.resource.scheme": "Resource scheme",
   "dns.tools.label.resource.top.domain": "Top domain",
   "dns.tools.description": "Enter the DNS data to create DNS query",
   "dns.tools.title": "DNS lookup",
+  "dns.tools.resource.id.mandatory": "Resource identifier is required!",
+  "dns.tools.resource.scheme.mandatory": "Resource scheme is required!",
 
   "access.token.panel.button.delete": "Delete",
   "access.token.panel.button.save": "Save",
