@@ -752,6 +752,7 @@
   "dns.query.panel.title": "DNS domain",
 
   "dns.tools.button.generate.lookup.query": "Generate lookup query",
+  "dns.tools.button.clear": "Clear",
   "dns.tools.label.resource.id": "Resource Identifier",
   "dns.tools.label.resource.scheme": "Resource scheme",
   "dns.tools.label.resource.top.domain": "Top domain",
@@ -850,7 +851,5 @@
   "navigation.label.user.settings.membership": "Membership",
   "navigation.tooltip.search.resources": "Search registered resources",
   "navigation.tooltip.search.tools": "Search tools",
-  "navigation.tooltip.search.dns.tools": "DNS lookup tools",
-
-  "form.button.clear": "Clear"
+  "navigation.tooltip.search.dns.tools": "DNS lookup tools"
 }
