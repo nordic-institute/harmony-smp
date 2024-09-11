@@ -373,6 +373,12 @@ public class CredentialService {
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
         if (pattern != null && !pattern.matcher(newPassword).matches()) {
+            LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because it does not match password policy!: [{}]", username);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
+        }
+
+        if (StringUtils.isNotBlank(dbCredential.getValue()) && BCrypt.checkpw(newPassword, dbCredential.getValue())) {
+            LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", username);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
         }
 
