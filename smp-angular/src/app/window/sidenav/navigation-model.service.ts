@@ -146,7 +146,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
         // mark the parent of the first leaf in a menu as non-clickable
         let parent = this.findParent(selectedPath[leafIndex]);
-        if (parent && parent.children && parent.children[0] == selectedPath[leafIndex]) {
+        let grandParent = this.findParent(parent);
+        if (parent && parent.children && parent.children[0] == selectedPath[leafIndex] && grandParent == this.rootNode) {
           parent.clickable = false;
         }
 

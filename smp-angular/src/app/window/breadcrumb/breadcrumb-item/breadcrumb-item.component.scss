@@ -8,6 +8,10 @@
   padding: 0 .4em;
 }
 
+.smp-breadcrumb-item.smp-disabled * {
+  background-color: gray !important;
+}
+
 .smp-breadcrumb-content {
   z-index: 1;
   // user parent
