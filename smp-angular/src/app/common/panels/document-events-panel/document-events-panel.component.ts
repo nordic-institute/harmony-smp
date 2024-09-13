@@ -76,7 +76,7 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
               private controlContainer: ControlContainer) {
   }
 
-  get getDateTimeFormat(): string {
+  get dateTimeFormat(): string {
     return this.globalLookups.getDateTimeFormat();
   }
 

@@ -154,13 +154,16 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     let updatedResource: ResourceRo = this.resource;
     this.editResourceService.updateResourceForGroup(updatedResource, this.group, this.domain).subscribe({
       next: (result: ResourceRo): void => {
-        if (!!result) {
-          this.alertService.successForTranslation("resource.details.panel.alert.resource.saved");
-          this.editResourceController.selectedResource = result;
-          this._resource = result;
-          this.resourceForm.markAsPristine();
+        try {
+          if (!!result) {
+            this.alertService.successForTranslation("resource.details.panel.alert.resource.saved");
+            this.editResourceController.selectedResource = result;
+            this._resource = result;
+            this.resourceForm.markAsPristine();
+          }
+        } finally {
+          this.windowSpinnerService.showSpinner = false;
         }
-        this.windowSpinnerService.showSpinner = false;
       }, error: (err: any): void => {
         this.alertService.error(err.error?.errorDescription)
         this.windowSpinnerService.showSpinner = false;

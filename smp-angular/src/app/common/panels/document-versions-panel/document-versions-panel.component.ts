@@ -76,7 +76,7 @@ export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeav
               private controlContainer: ControlContainer) {
   }
 
-  get getDateTimeFormat(): string {
+  get dateTimeFormat(): string {
     return this.globalLookups.getDateTimeFormat();
   }
 
