@@ -68,13 +68,12 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
   private onChangeCallback: (_: any) => void = () => {
   };
   selected?: DocumentPropertyRo = null;
-  dataChanged: boolean = false
-  showPropertyPanel: boolean = true;
+  dataChanged: boolean = false;
   initPropertyList: DocumentPropertyRo[] = [];
   propertyDataSource: MatTableDataSource<DocumentPropertyRo> = new MatTableDataSource();
 
   @ViewChild("DocumentPropertyTable") table: MatTable<DocumentPropertyRo>;
-  @ViewChild(MatPaginator) paginator: MatPaginator
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(public dialog: MatDialog, private controlContainer: ControlContainer) {
@@ -113,10 +112,6 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
 
   get cancelButtonEnabled(): boolean {
     return this.dataChanged;
-  }
-
-  public onToggleButtonClicked(): void {
-    this.showPropertyPanel = !this.showPropertyPanel;
   }
 
   /**

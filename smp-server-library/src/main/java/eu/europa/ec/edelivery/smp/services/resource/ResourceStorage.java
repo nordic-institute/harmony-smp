@@ -22,6 +22,9 @@ package eu.europa.ec.edelivery.smp.services.resource;
 import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
+import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
@@ -51,11 +54,13 @@ public class ResourceStorage {
     final DocumentDao documentDao;
     final ResourceDao resourceDao;
     final SubresourceDao subresourceDao;
+    private final DocumentVersionService documentVersionService;
 
-    public ResourceStorage(DocumentDao documentDao, ResourceDao resourceDao, SubresourceDao subresourceDao) {
+    public ResourceStorage(DocumentDao documentDao, ResourceDao resourceDao, SubresourceDao subresourceDao, DocumentVersionService documentVersionService) {
         this.documentDao = documentDao;
         this.resourceDao = resourceDao;
         this.subresourceDao = subresourceDao;
+        this.documentVersionService = documentVersionService;
     }
 
     public byte[] getDocumentContentForResource(DBResource dbResource) {
@@ -145,6 +150,13 @@ public class ResourceStorage {
             resource.setDocument(new DBDocument());
         }
         DBResource managedResource = resource.getId() != null ? resourceDao.find(resource.getId()) : resourceDao.merge(resource);
+        DBDocument document = managedResource.getDocument();
+
+            // if document is not and alread have published version, retire it
+        document.getDocumentVersions().stream().filter(v -> v.getStatus() == DocumentVersionStatusType.PUBLISHED)
+                .forEach(documentVersion -> documentVersionService.retireDocumentVersion(documentVersion, EventSourceType.REST_API, null));
+
+
         managedResource.getDocument().addNewDocumentVersion(version);
         return managedResource;
     }
@@ -156,6 +168,12 @@ public class ResourceStorage {
             subresource.setDocument(new DBDocument());
         }
         DBSubresource managedResource = subresource.getId() != null ? subresourceDao.find(subresource.getId()) : subresourceDao.merge(subresource);
+        DBDocument document = managedResource.getDocument();
+        // retire existing published version
+        document.getDocumentVersions().stream()
+                .filter(v -> v.getStatus() == DocumentVersionStatusType.PUBLISHED)
+                .forEach(v -> {v.setStatus(DocumentVersionStatusType.RETIRED);
+                    v.getDocumentVersionEvents().add(documentVersionService.createDocumentVersionEvent(DocumentVersionEventType.RETIRE, EventSourceType.REST_API, null));});
         managedResource.getDocument().addNewDocumentVersion(version);
         return managedResource;
     }

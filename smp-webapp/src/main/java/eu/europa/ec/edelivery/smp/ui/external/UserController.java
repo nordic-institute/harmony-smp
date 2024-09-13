@@ -329,6 +329,7 @@ public class UserController {
         node.addChild(new NavigationTreeNodeRO("edit-domain", "navigation.label.edit.domains", "account_circle", "edit-domain"));
         node.addChild(new NavigationTreeNodeRO("edit-group", "navigation.label.edit.groups", "group", "edit-group"));
         node.addChild(new NavigationTreeNodeRO("edit-resource", "navigation.label.edit.resources", "article", "edit-resource"));
+        node.addChild(new NavigationTreeNodeRO("review-tasks", "navigation.label.review.tasks", "task", "review-tasks"));
         return node;
     }
 }

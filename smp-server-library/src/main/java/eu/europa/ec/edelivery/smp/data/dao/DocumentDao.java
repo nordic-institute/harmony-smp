@@ -19,10 +19,8 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
+import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.springframework.stereotype.Repository;
@@ -133,8 +131,19 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * @return document version list
      */
     public List<DBDocumentVersion> getDocumentVersionsForSubresource(DBSubresource subresource) {
-        TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE, DBDocumentVersion.class);
+        TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE,
+                DBDocumentVersion.class);
         query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
         return query.getResultList();
+    }
+
+    public List<DBReviewDocumentVersion> getDocumentReviewListForUser(Long dbUserId) {
+        TypedQuery<DBReviewDocumentVersion> query = memEManager.createNamedQuery(
+                QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER, DBReviewDocumentVersion.class);
+        query.setParameter(PARAM_USER_ID, dbUserId);
+        query.setParameter(PARAM_PERMISSION_CAN_REVIEW, true);
+        query.setParameter(PARAM_STATUS, DocumentVersionStatusType.UNDER_REVIEW.name());
+        return query.getResultList();
+
     }
 }

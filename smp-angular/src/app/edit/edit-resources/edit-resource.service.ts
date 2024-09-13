@@ -44,6 +44,22 @@ export class EditResourceService {
   }
 
   /**
+   * Method allows group admin to update the resource properties
+   * @param resource
+   * @param group
+   * @param domain
+   */
+  updateResourceForGroup(resource: ResourceRo, group: GroupRo, domain: DomainRo): Observable<ResourceRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+
+    return this.http.post<ResourceRo>(SmpConstants.REST_EDIT_RESOURCE_UPDATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group?.groupId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), resource);
+  }
+
+  /**
    * Method return observable of resource list from the server for resource-admin role for selected domain and group filter and paginating data.
    *
    * @param userType user type for which resource list is returned.
@@ -116,6 +132,32 @@ export class EditResourceService {
       .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), document);
   }
 
+  public publishDocumentObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_PUBLISH
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), document);
+  }
+
+  public reviewRequestReviewObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    return this.reviewActionObservable(resource, document, SmpConstants.REST_EDIT_DOCUMENT_REVIEW_REQUEST);
+  }
+
+  public reviewApproveObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    return this.reviewActionObservable(resource, document, SmpConstants.REST_EDIT_DOCUMENT_REVIEW_APPROVE);
+  }
+
+  public reviewRejectObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    return this.reviewActionObservable(resource, document, SmpConstants.REST_EDIT_DOCUMENT_REVIEW_REJECT);
+  }
+
+  public reviewActionObservable(resource: ResourceRo, document:DocumentRo, reviewUrlTemplate: string): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(reviewUrlTemplate
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), document);
+  }
+
   public generateDocumentObservable(resource: ResourceRo): Observable<DocumentRo> {
     const currentUser: User = this.securityService.getCurrentUser();
     return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_GENERATE
@@ -145,7 +187,6 @@ export class EditResourceService {
         .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId),
       subresource);
   }
-
 
   public getSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo, version: number = null): Observable<DocumentRo> {
     let params: HttpParams = null;

@@ -1,7 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {SmpConstants} from "../../../smp.constants";
 import {AccessTokenRo} from "../../model/access-token-ro.model";
 import {CredentialRo} from "../../../security/credential.model";
 import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
@@ -19,7 +18,6 @@ export class CredentialDialogComponent {
   public static CERTIFICATE_TYPE: string = "CERTIFICATE";
   public static ACCESS_TOKEN_TYPE: string = "ACCESS_TOKEN";
 
-  dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
   formTitle: string;
   credentialForm: FormGroup;
   certificateForm: FormGroup;

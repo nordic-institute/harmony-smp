@@ -210,6 +210,7 @@
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         DOCUMENT_CONTENT longblob comment 'Document content',
+        STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Document version status',
         VERSION integer not null,
         FK_DOCUMENT_ID bigint,
         primary key (ID)
@@ -222,10 +223,24 @@
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
         DOCUMENT_CONTENT longblob,
+        STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         VERSION integer,
         FK_DOCUMENT_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_DOCUMENT_VERSION_EVENT (
+       ID bigint not null auto_increment comment 'Unique document version event identifier',
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
+        details varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Details of the event',
+        EVENT_ON datetime comment 'Date time of the event',
+        EVENT_SOURCE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Event source UI, API',
+        EVENT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Document version event type',
+        EVENT_BY_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'username identifier of the user who triggered the event',
+        FK_DOCUMENT_VERSION_ID bigint,
+        primary key (ID)
+    ) comment='Document version Events.' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_DOMAIN (
        ID bigint not null auto_increment comment 'Unique domain id',
@@ -411,7 +426,8 @@
         LAST_UPDATED_ON datetime not null,
         IDENTIFIER_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         IDENTIFIER_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
-        SML_REGISTERED bit not null,
+        REVIEW_ENABLED bit,
+        SML_REGISTERED bit,
         VISIBILITY varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint not null,
         FK_DOREDEF_ID bigint not null,
@@ -427,6 +443,7 @@
         LAST_UPDATED_ON datetime,
         IDENTIFIER_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         IDENTIFIER_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        REVIEW_ENABLED bit,
         SML_REGISTERED bit,
         VISIBILITY varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint,
@@ -469,6 +486,7 @@
        ID bigint not null auto_increment,
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
+        PERMISSION_REVIEW bit comment 'User permission to review the resource document',
         MEMBERSHIP_ROLE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_RESOURCE_ID bigint,
         FK_USER_ID bigint,
@@ -481,6 +499,7 @@
         REVTYPE tinyint,
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
+        PERMISSION_REVIEW bit,
         MEMBERSHIP_ROLE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_RESOURCE_ID bigint,
         FK_USER_ID bigint,
@@ -596,6 +615,7 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_DOCUMENT_VERSION 
        add constraint SMP_DOCVER_UNIQ_VERSION_IDX unique (FK_DOCUMENT_ID, VERSION);
+create index SMP_DOCVEREVNT_DOCVER_IDX on SMP_DOCUMENT_VERSION_EVENT (FK_DOCUMENT_VERSION_ID);
 
     alter table SMP_DOMAIN 
        add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
@@ -716,6 +736,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        add constraint FK4glqiu73939kpyyb6bhw822k3 
        foreign key (REV) 
        references SMP_REV_INFO (id);
+
+    alter table SMP_DOCUMENT_VERSION_EVENT 
+       add constraint FK6es2svpoxyrnt1h05c9junmdn 
+       foreign key (FK_DOCUMENT_VERSION_ID) 
+       references SMP_DOCUMENT_VERSION (ID);
 
     alter table SMP_DOMAIN_AUD 
        add constraint FK35qm8xmi74kfenugeonijodsg 

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -56,12 +56,22 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
     }
 
     public boolean isUserResourceMemberWithRole(Long userId, Long resourceId, MembershipRoleType roleType) {
-        LOG.debug("User id [{}], Domain id [{}], role [{}]", userId, resourceId, roleType);
+        LOG.debug("User id [{}], Resource id [{}], role [{}]", userId, resourceId, roleType);
         TypedQuery<DBResourceMember> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, DBResourceMember.class);
 
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_RESOURCE_ID, resourceId);
         return query.getResultList().stream().anyMatch(member -> member.getRole() == roleType);
+    }
+
+
+    public boolean isUserResourceMemberWithReviewPermission(Long userId, Long resourceId) {
+        LOG.debug("User id [{}], Resource id [{}], with review permission", userId, resourceId);
+        TypedQuery<DBResourceMember> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, DBResourceMember.class);
+
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_RESOURCE_ID, resourceId);
+        return query.getResultList().stream().anyMatch(DBResourceMember::hasPermissionToReview);
     }
 
     public boolean isUserAnyDomainResourceMember(DBUser user, DBDomain domain) {
@@ -151,11 +161,14 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
     }
 
 
-    public DBResourceMember addMemberToResource(DBResource resource, DBUser user, MembershipRoleType role) {
+    public DBResourceMember addMemberToResource(DBResource resource, DBUser user,
+                                                MembershipRoleType role,
+                                                boolean hasPermissionReview) {
         DBResourceMember resourceMember = new DBResourceMember();
         resourceMember.setRole(role);
         resourceMember.setUser(user);
         resourceMember.setResource(resource);
+        resourceMember.setHasPermissionToReview(hasPermissionReview);
         resourceMember = merge(resourceMember);
         return resourceMember;
     }

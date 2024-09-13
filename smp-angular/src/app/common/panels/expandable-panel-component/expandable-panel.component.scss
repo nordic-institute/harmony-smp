@@ -1,0 +1,20 @@
+#expand-panel_id {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 0 1em;
+  min-width: 600px;
+}
+
+.vertical-button-label {
+  font-size: 0.8em;
+  min-height: 100px;
+  writing-mode: vertical-rl;
+}
+
+.button-deselected {
+  margin: 1px 3px !important;
+  background: transparent;
+  border-style: none;
+}
+

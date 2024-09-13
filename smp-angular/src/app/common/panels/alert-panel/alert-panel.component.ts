@@ -2,7 +2,8 @@ import {
   AfterViewChecked,
   AfterViewInit,
   ChangeDetectorRef,
-  Component, Input,
+  Component,
+  Input,
   OnInit,
   TemplateRef,
   ViewChild
@@ -13,11 +14,12 @@ import {MatDialog} from '@angular/material/dialog';
 import {AlertMessageService} from '../../alert-message/alert-message.service';
 import {AlertController} from './alert-controller';
 import {HttpClient} from '@angular/common/http';
-import {SmpConstants} from "../../../smp.constants";
 import {GlobalLookups} from "../../global-lookups";
 import {SearchTableComponent} from "../../search-table/search-table.component";
 import {SecurityService} from "../../../security/security.service";
-import {ObjectPropertiesDialogComponent} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
+import {
+  ObjectPropertiesDialogComponent
+} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
 
 /**
  * This is a generic alert panel component for previewing alert list
@@ -37,14 +39,10 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
   @ViewChild('credentialType') credentialType: TemplateRef<any>;
   @ViewChild('forUser') forUser: TemplateRef<any>;
 
-  readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-  readonly dateFormat: string = SmpConstants.DATE_FORMAT;
-
-  @Input()  baseUrl = null;
+  @Input() baseUrl = null;
   columnPicker: ColumnPicker = new ColumnPicker();
   alertController: AlertController;
   filter: any = {};
-  isSMPIntegrationOn: boolean = false;
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
@@ -141,5 +139,9 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
   // for dirty guard...
   isDirty(): boolean {
     return this.searchTable.isDirty();
+  }
+
+  get dateTimeFormat(): string {
+    return this.lookups.getDateTimeFormat();
   }
 }

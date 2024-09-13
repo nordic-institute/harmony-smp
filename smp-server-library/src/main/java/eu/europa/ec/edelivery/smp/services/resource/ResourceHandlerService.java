@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,7 +20,9 @@ package eu.europa.ec.edelivery.smp.services.resource;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
+import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
@@ -67,16 +69,21 @@ public class ResourceHandlerService extends AbstractResourceHandler {
     final ResourceMemberDao resourceMemberDao;
     final GroupDao groupDao;
     final SMLIntegrationService integrationService;
+    final DocumentVersionService documentVersionService;
+    private final ResourceDao resourceDao;
 
     public ResourceHandlerService(List<ResourceDefinitionSpi> resourceDefinitionSpiList,
                                   ResourceMemberDao resourceMemberDao,
                                   GroupDao groupDao,
                                   ResourceStorage resourceStorage,
-                                  SMLIntegrationService integrationService) {
+                                  SMLIntegrationService integrationService,
+                                  DocumentVersionService documentVersionService, ResourceDao resourceDao) {
         super(resourceDefinitionSpiList, resourceStorage);
         this.resourceMemberDao = resourceMemberDao;
         this.groupDao = groupDao;
         this.integrationService = integrationService;
+        this.documentVersionService = documentVersionService;
+        this.resourceDao = resourceDao;
     }
 
     public void readResource(ResourceRequest resourceRequest,
@@ -164,7 +171,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                     () -> resolvedData.getResourceDef().getMimeType()));
         }
         // create new document version
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
+        DBDocumentVersion documentVersion = documentVersionService.initializeDocumentVersionByGroupAdmin(EventSourceType.REST_API);
         documentVersion.setContent(baos.toByteArray());
         DBResource managedResource = resourceStorage.addDocumentVersionForResource(resource, documentVersion);
 
@@ -236,7 +243,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                     () -> resolvedData.getResourceDef().getMimeType()));
         }
         // create new document version
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
+        DBDocumentVersion documentVersion = documentVersionService.initializeDocumentVersionByGroupAdmin(EventSourceType.REST_API);
         documentVersion.setContent(baos.toByteArray());
         resourceStorage.addDocumentVersionForSubresource(resolvedSubresource, documentVersion);
 

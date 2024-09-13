@@ -30,12 +30,14 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   pageSize: number = 10;
   @Input() membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
 
+
   private _domain: DomainRo;
   private _group: GroupRo;
   private _resource: ResourceRo;
 
 
-  displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
+  _displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
+
   data: MemberRo[] = [];
   selectedMember: MemberRo;
   filter: any = {};
@@ -75,6 +77,17 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   public get membershipCount(): number {
     return this.resultsLength;
+  }
+
+  public get displayedColumns(): string[] {
+    switch (this.membershipType) {
+      case MemberTypeEnum.DOMAIN:
+        return  ['username', 'fullName', 'roleType'];
+      case MemberTypeEnum.GROUP:
+        return ['username', 'fullName', 'roleType'];
+      case MemberTypeEnum.RESOURCE:
+        return ['username', 'fullName', 'roleType', 'hasPermissionToReview'];
+    }
   }
 
   @Input() set domain(value: DomainRo) {

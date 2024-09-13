@@ -14,6 +14,13 @@ import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 import {DomainRo} from "./model/domain-ro.model";
 import {Subject} from "rxjs";
+import {
+  FormatWidth,
+  getLocaleDateFormat,
+  getLocaleDateTimeFormat,
+  getLocaleTimeFormat
+} from "@angular/common";
+import StringUtils from "./utils/string-utils";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -24,6 +31,7 @@ export class GlobalLookups {
   // global data observers. The components will subscribe to these Subject to get
   // data updates.
   private smpInfoUpdateSubject: Subject<SmpInfo> = new Subject<SmpInfo>();
+  private readonly DEFAULT_LOCALE: string = 'fr';
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
@@ -60,8 +68,8 @@ export class GlobalLookups {
       }
     );
     // set default locale
-    dateAdapter.setLocale('fr');
-    ngxMatDateAdapter.setLocale('fr');
+    dateAdapter.setLocale(this.DEFAULT_LOCALE);
+    ngxMatDateAdapter.setLocale(this.DEFAULT_LOCALE);
 
   }
 
@@ -91,6 +99,31 @@ export class GlobalLookups {
     });
   }
 
+  getCurrentLocale(): string {
+    if (this.securityService.getCurrentUser() == null) {
+      return this.DEFAULT_LOCALE;
+    }
+    return this.securityService.getCurrentUser().smpLocale;
+  }
+
+  public getDateTimeFormat(withSeconds: boolean = true): string {
+    let locale = this.getCurrentLocale();
+    locale = locale ? locale : this.DEFAULT_LOCALE;
+    let format: string = getLocaleDateTimeFormat(locale, FormatWidth.Short);
+    let fullTime = getLocaleTimeFormat(locale,withSeconds? FormatWidth.Medium:FormatWidth.Short);
+    let fullDate = getLocaleDateFormat(locale, FormatWidth.Short);
+    let result = StringUtils.format(format, [fullTime, fullDate]);
+    return result;
+  }
+
+  private format(str, opt_values) {
+    if (opt_values) {
+      str = str.replace(/\{([^}]+)}/g, function (match, key) {
+        return (opt_values != null && key in opt_values) ? opt_values[key] : match;
+      });
+    }
+    return str;
+  }
 
   public refreshApplicationInfo() {
 
@@ -114,13 +147,14 @@ export class GlobalLookups {
       console.log("Refresh application configuration is authenticated " + isAuthenticated)
       if (isAuthenticated) {
         this.http.get<SmpConfig>(SmpConstants.REST_PUBLIC_APPLICATION_CONFIG)
-          .subscribe({next: (res :SmpConfig):void => {
-          this.cachedApplicationConfig = res;
-        },
-        error: (err: any)=> {
-          console.log("getSmpConfig:" + err);
-        }
-      });
+          .subscribe({
+            next: (res: SmpConfig): void => {
+              this.cachedApplicationConfig = res;
+            },
+            error: (err: any) => {
+              console.log("getSmpConfig:" + err);
+            }
+          });
       }
     });
   }

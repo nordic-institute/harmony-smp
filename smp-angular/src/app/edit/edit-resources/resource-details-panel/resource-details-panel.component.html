@@ -27,31 +27,49 @@
         </option>
       </select>
     </mat-form-field>
-    <mat-form-field  style="width: 100%">
+    <mat-form-field style="width: 100%">
       <mat-label>{{ "resource.details.panel.label.resource.id" | translate }}</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
              required auto-focus-directive>
     </mat-form-field>
 
-    <mat-form-field  style="width: 100%">
+    <mat-form-field style="width: 100%">
       <mat-label>{{ "resource.details.panel.label.resource.scheme" | translate }}</mat-label>
       <input id="identifierScheme_id" type="text" matInput
              formControlName="identifierScheme"
       >
     </mat-form-field>
+    <mat-checkbox formControlName="reviewEnabled"
+                  matTooltip="{{ 'resource.details.panel.label.resource.review.enabled' | translate }}"
+                  id="reviewEnabled_id">
+      {{ "resource.details.panel.tooltip.resource.review.enabled" | translate }}
+    </mat-checkbox>
     <mat-form-field style="width:100%">
       <mat-label>{{ "resource.details.panel.label.resource.visibility" | translate }}</mat-label>
       <select matNativeControl formControlName="visibility"
-                  matTooltip="{{ 'resource.details.panel.tooltip.resource.visibility' | translate }}"
-                  id="visibility_id" required>
+              matTooltip="{{ 'resource.details.panel.tooltip.resource.visibility' | translate }}"
+              id="visibility_id" required>
         <option *ngFor="let visibility of groupVisibilityOptions"
-                    [value]="visibility.value">
-          {{visibility.key}}
+                [value]="visibility.value">
+          {{ visibility.key }}
         </option>
       </select>
     </mat-form-field>
-
+    <mat-toolbar class ="mat-elevation-z2">
+      <mat-toolbar-row  class="smp-toolbar-row">
+        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+                [disabled]="!resetButtonEnabled">
+          <mat-icon>refresh</mat-icon>
+          <span>{{ "domain.panel.button.reset" | translate }}</span>
+        </button>
+        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+                [disabled]="!submitButtonEnabled">
+          <mat-icon>save</mat-icon>
+          <span>{{ "domain.panel.button.save" | translate }}</span>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
     <smp-warning-panel
       type="desc"
       icon="info"

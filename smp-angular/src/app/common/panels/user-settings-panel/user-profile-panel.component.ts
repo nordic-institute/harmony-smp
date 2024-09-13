@@ -1,5 +1,11 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
-import {SmpConstants} from "../../../smp.constants";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {SecurityService} from "../../../security/security.service";
 import {ThemeService} from "../../theme-service/theme.service";
@@ -11,7 +17,6 @@ import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 import {ApplicationRoleEnum} from "../../enums/application-role.enum";
 import {UserRo} from "../../model/user-ro.model";
 import {UserController} from "../../services/user-controller";
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'user-profile-panel',
@@ -25,9 +30,6 @@ export class UserProfilePanelComponent {
   @Output() onChangeUserPasswordEvent: EventEmitter<UserRo> = new EventEmitter();
 
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
-  readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
-  readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-  readonly nullValue: string = SmpConstants.NULL_VALUE;
 
   readonly applicationRoles = Object.keys(ApplicationRoleEnum).map(el => {
     return {key: el, value: ApplicationRoleEnum[el]}
@@ -62,7 +64,10 @@ export class UserProfilePanelComponent {
       'username': new FormControl({value: '', disabled: true}),
       'role': new FormControl({value: '', disabled: true}),
       'active': new FormControl({value: '', disabled: true}),
-      'emailAddress': new FormControl({value: '', disabled: false}, [Validators.pattern(this.emailPattern),
+      'emailAddress': new FormControl({
+        value: '',
+        disabled: false
+      }, [Validators.pattern(this.emailPattern),
         Validators.maxLength(255)]),
       'fullName': new FormControl({value: '', disabled: false}),
       'smpTheme': new FormControl({value: 'default_theme', disabled: false}),
@@ -73,7 +78,10 @@ export class UserProfilePanelComponent {
     this.userCredentialForm = formBuilder.group({
       'passwordUpdatedOn': new FormControl({value: '', disabled: true}),
       'passwordExpireOn': new FormControl({value: '', disabled: true}),
-      'sequentialLoginFailureCount': new FormControl({value: '0', disabled: true}),
+      'sequentialLoginFailureCount': new FormControl({
+        value: '0',
+        disabled: true
+      }),
       'lastFailedLoginAttempt': new FormControl({value: '', disabled: true}),
       'suspendedUtil': new FormControl({value: '', disabled: true}),
     });
@@ -131,7 +139,6 @@ export class UserProfilePanelComponent {
   }
 
 
-
   private updatePwdCredential(value: UserRo) {
     // form is always disabled
     this.userCredentialForm.disable()
@@ -144,7 +151,7 @@ export class UserProfilePanelComponent {
     } else {
       this.userCredentialForm.controls['passwordUpdatedOn'].setValue(value.passwordUpdatedOn);
       this.userCredentialForm.controls['passwordExpireOn'].setValue(value.passwordExpireOn);
-      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(!(value.sequentialLoginFailureCount)?"---":value.sequentialLoginFailureCount);
+      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(!(value.sequentialLoginFailureCount) ? "---" : value.sequentialLoginFailureCount);
       this.userCredentialForm.controls['lastFailedLoginAttempt'].setValue(value.lastFailedLoginAttempt);
       this.userCredentialForm.controls['suspendedUtil'].setValue(value.suspendedUtil);
     }
@@ -215,11 +222,11 @@ export class UserProfilePanelComponent {
     return !this._managedUserData?.userId;
   }
 
-  get canChangeRole ():boolean {
+  get canChangeRole(): boolean {
     return !this.isUserDataLoggedInUserData
   }
 
-  get isUserDataLoggedInUserData(){
+  get isUserDataLoggedInUserData() {
     return this.securityService.getCurrentUser()?.userId == this._managedUserData?.userId
   }
 

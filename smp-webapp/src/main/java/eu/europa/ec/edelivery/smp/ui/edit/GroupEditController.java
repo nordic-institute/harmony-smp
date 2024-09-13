@@ -40,7 +40,7 @@ import java.util.List;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 /**
- * Purpose of the DomainResource is to provide search method to retrieve configured domains in SMP.
+ * Purpose of the GroupEditController is to provide search method to retrieve configured groups in SMP.
  * base path for the resource includes two variables user who is editing and domain for the group
  * /ui/edit/rest/[user-id]/domain/[domain-id]/group
  *

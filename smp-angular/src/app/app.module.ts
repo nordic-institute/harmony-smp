@@ -166,6 +166,22 @@ import {
 } from "./common/dialogs/document-property-dialog/document-property-dialog.component";
 import {NgxTranslateModule} from "./translate/translate.module";
 import {WindowSpinnerService} from "./common/services/window-spinner.service";
+import {
+  ExpandablePanelComponent
+} from "./common/panels/expandable-panel-component/expandable-panel.component";
+import {
+  ExpandableItemComponent
+} from "./common/panels/expandable-panel-component/expandable-item-component/expandable-item.component";
+import {
+  DocumentEventsPanelComponent
+} from "./common/panels/document-events-panel/document-events-panel.component";
+import {
+  DocumentVersionsPanelComponent
+} from "./common/panels/document-versions-panel/document-versions-panel.component";
+import {ReviewTasksComponent} from "./edit/review-task/review-tasks.component";
+import {
+  ReviewTasksPanelComponent
+} from "./common/panels/review-tasks-panel/review-tasks-panel.component";
 
 
 @NgModule({
@@ -198,8 +214,10 @@ import {WindowSpinnerService} from "./common/services/window-spinner.service";
     DnsToolsComponent,
     DnsQueryPanelComponent,
     DocumentWizardDialogComponent,
+    DocumentEventsPanelComponent,
     DocumentPropertiesPanelComponent,
     DocumentPropertyDialogComponent,
+    DocumentVersionsPanelComponent,
     DomainGroupComponent,
     DomainPanelComponent,
     DomainResourceTypePanelComponent,
@@ -209,6 +227,8 @@ import {WindowSpinnerService} from "./common/services/window-spinner.service";
     EditDomainComponent,
     EditGroupComponent,
     EditResourceComponent,
+    ExpandablePanelComponent,
+    ExpandableItemComponent,
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
     ExtensionPanelComponent,
@@ -236,6 +256,8 @@ import {WindowSpinnerService} from "./common/services/window-spinner.service";
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
+    ReviewTasksComponent,
+    ReviewTasksPanelComponent,
     ResourceSearchComponent,
     SidenavComponent,
     SmpFieldErrorComponent,

@@ -19,10 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
-import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import eu.europa.ec.edelivery.smp.data.enums.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
@@ -410,9 +407,15 @@ public class TestUtilsDao {
 
     @Transactional
     public DBResourceMember createResourceMembership(MembershipRoleType roleType, DBUser user, DBResource resource){
+        return createResourceMembership(roleType, user, resource, false);
+    }
+
+    @Transactional
+    public DBResourceMember createResourceMembership(MembershipRoleType roleType, DBUser user, DBResource resource, boolean hasPermissionToReview){
         DBResourceMember member = new DBResourceMember();
         member.setRole(roleType);
         member.setUser(user);
+        member.setHasPermissionToReview(hasPermissionToReview);
         member.setResource(resource);
         persistFlushDetach(member);
         assertNotNull(member.getId());
@@ -457,9 +460,22 @@ public class TestUtilsDao {
     }
 
     @Transactional
-    public DBResource createResource(String identifier, String schema, VisibilityType visibilityType, DBDomainResourceDef domainResourceDef, DBGroup group) {
+    public DBResource createResource(String identifier, String schema,
+                                     VisibilityType visibilityType,
+                                     DBDomainResourceDef domainResourceDef,
+                                     DBGroup group) {
 
-        DBResource resource = TestDBUtils.createDBResource(identifier, schema);
+        return createResource(identifier, schema, visibilityType, DocumentVersionStatusType.PUBLISHED, domainResourceDef, group);
+    }
+
+    @Transactional
+    public DBResource createResource(String identifier, String schema,
+                                     VisibilityType visibilityType,
+                                     DocumentVersionStatusType status,
+                                     DBDomainResourceDef domainResourceDef,
+                                     DBGroup group) {
+
+        DBResource resource = TestDBUtils.createDBResource(identifier, schema, true, status);
         resource.setVisibility(visibilityType);
         resource.setGroup(group);
         resource.setDomainResourceDef(domainResourceDef);

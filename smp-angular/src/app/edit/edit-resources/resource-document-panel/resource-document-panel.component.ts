@@ -30,6 +30,12 @@ import {
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import {
+  DocumentVersionsStatus
+} from "../../../common/enums/document-versions-status.enum";
+import {
+  HttpErrorHandlerService
+} from "../../../common/error/http-error-handler.service";
 
 @Component({
   templateUrl: './resource-document-panel.component.html',
@@ -37,6 +43,11 @@ import {lastValueFrom} from "rxjs";
   encapsulation: ViewEncapsulation.None,
 })
 export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
+  readonly reviewAllowedStatusList: DocumentVersionsStatus[] =[DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.REJECTED, DocumentVersionsStatus.RETIRED];
+  readonly editableDocStatusList: DocumentVersionsStatus[] =[DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.REJECTED, DocumentVersionsStatus.RETIRED];
+  readonly publishableDocStatusList: DocumentVersionsStatus[] =[DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.APPROVED, DocumentVersionsStatus.RETIRED];
+
+
   private _resource: ResourceRo;
 
   _document: DocumentRo;
@@ -55,7 +66,8 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
               private dialog: MatDialog,
               private navigationService: NavigationService,
               private formBuilder: FormBuilder,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private httpErrorHandlerService: HttpErrorHandlerService) {
     this.resourceForm = formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
@@ -70,6 +82,9 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
       'payloadVersion': new FormControl({value: null}),
       'payload': new FormControl({value: null}),
       'properties': new FormControl({value: null}),
+      'documentVersionStatus': new FormControl({value: null}),
+      'documentVersionEvents': new FormControl({value: null}),
+      'documentVersions': new FormControl({value: null}),
     });
     this.resource = editResourceService.selectedResource
 
@@ -111,6 +126,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
   @Input() set document(value: DocumentRo) {
     this._document = value;
     this.documentForm.disable();
+    console.log("Document with properties: " + value?.properties)
     if (!!value) {
       this.documentEditor.mimeType = value.mimeType;
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
@@ -119,13 +135,16 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
       this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
       this.documentForm.controls['payload'].setValue(value.payload);
-      this.documentForm.controls['payload'].enable();
       this.documentForm.controls['properties'].setValue(value.properties);
+      this.documentForm.controls['documentVersionStatus'].setValue(value.documentVersionStatus);
+      this.documentForm.controls['documentVersionEvents'].setValue(value.documentVersionEvents);
+      this.documentForm.controls['documentVersions'].setValue(value.documentVersions);
       // the method documentVersionsExists already uses the current value to check if versions exists
-      if (!this.documentVersionsExists) {
-        this.documentForm.controls['payloadVersion'].disable();
-      } else {
+      if (this.documentVersionsExists) {
         this.documentForm.controls['payloadVersion'].enable();
+      }
+      if (this.documentEditable) {
+        this.documentForm.controls['payload'].enable();
       }
     } else {
       this.documentForm.controls['name'].setValue("");
@@ -135,13 +154,16 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
       this.documentForm.controls['payloadCreatedOn'].setValue("");
       this.documentForm.controls['payload'].setValue("");
       this.documentForm.controls['properties'].setValue([]);
+      this.documentForm.controls['documentVersionStatus'].setValue("");
+      this.documentForm.controls['documentVersionEvents'].setValue([]);
+      this.documentForm.controls['documentVersions'].setValue([]);
     }
     this.documentForm.markAsPristine();
   }
 
   get document(): DocumentRo {
     let doc: DocumentRo = {...this._document};
-    if(this.documentForm.controls['payload'].dirty){
+    if (this.documentForm.controls['payload'].dirty) {
       doc.payload = this.documentForm.controls['payload'].value;
       doc.payloadStatus = EntityStatus.UPDATED;
     }
@@ -180,20 +202,99 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
 
   onSaveButtonClicked(): void {
 
-    this.editResourceService.saveDocumentObservable(this._resource, this.document).subscribe(async (value: DocumentRo) => {
-      if (value) {
-        this.alertService.success(await lastValueFrom(this.translateService.get("resource.document.panel.success.save", {currentResourceVersion: value.currentResourceVersion})));
-        this.document = value;
-      } else {
-        this.document = null;
-      }
-    }, (error: any) => {
-      this.alertService.error(error.error?.errorDescription)
-    })
+    this.editResourceService.saveDocumentObservable(this._resource, this.document)
+      .subscribe({
+        next: async (doc: DocumentRo) =>{
+          if (!doc) {
+            this.document = null;
+          } else {
+            this.alertService.success(await lastValueFrom(this.translateService.get("resource.document.panel.success.save", {currentResourceVersion: doc.currentResourceVersion})));
+            this.document = doc;
+          }
+        },
+        error: this.handleServerError
+      });
+  }
+
+  onReviewButtonClicked(): void {
+    // request review
+    // create lightweight document object
+    let docRequest: DocumentRo = {
+      documentId: this._document.documentId,
+      payloadVersion: this._document.payloadVersion,
+    } as DocumentRo;
+    this.editResourceService.reviewRequestReviewObservable(this._resource, docRequest).subscribe({
+      next: (doc: DocumentRo) =>{
+        if (!doc) {
+          this.document = null;
+        } else {
+          this.document = doc;
+        }
+      },
+      error: this.handleServerError
+    });
+  }
+
+  onApproveButtonClicked(): void {
+    // create lightweight document object
+    let docRequest: DocumentRo = {
+      documentId: this._document.documentId,
+      payloadVersion: this._document.payloadVersion,
+    } as DocumentRo;
+    this.editResourceService.reviewApproveObservable(this._resource, docRequest).subscribe({
+      next: (doc: DocumentRo) =>{
+        if (!doc) {
+          this.document = null;
+        } else {
+          this.document = doc;
+        }
+      },
+      error: this.handleServerError
+    });
+  }
+
+  onRejectButtonClicked(): void {
+    // create lightweight document object
+    let docRequest: DocumentRo = {
+      documentId: this._document.documentId,
+      payloadVersion: this._document.payloadVersion,
+    } as DocumentRo;
+    this.editResourceService.reviewRejectObservable(this._resource, docRequest).subscribe({
+      next: (doc: DocumentRo) =>{
+        if (!doc) {
+          this.document = null;
+        } else {
+          this.document = doc;
+        }
+      },
+      error: this.handleServerError
+    });
+  }
+  /**
+   * Publish the current document version
+   *
+   */
+  onPublishButtonClicked(): void {
+    // create lightweight document object
+    let docRequest: DocumentRo = {
+      documentId: this._document.documentId,
+      payloadVersion: this._document.payloadVersion,
+    } as DocumentRo;
+    this.editResourceService.publishDocumentObservable(this._resource, docRequest).subscribe({
+      next: (doc: DocumentRo) =>{
+        if (!doc) {
+          this.document = null;
+        } else {
+          this.document = doc;
+        }
+      },
+      error: this.handleServerError
+    });
   }
 
   onGenerateButtonClicked(): void {
-    this.editResourceService.generateDocumentObservable(this._resource).subscribe(async (value: DocumentRo) => {
+    this.editResourceService.generateDocumentObservable(this._resource)
+      .subscribe(async (value: DocumentRo) => {
       if (value) {
         this.alertService.success(await lastValueFrom(this.translateService.get("resource.document.panel.success.generate")))
         this.documentForm.controls['payload'].setValue(value.payload);
@@ -202,7 +303,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
         this.document = null;
       }
     }, (error: any) => {
-      this.alertService.error(error.error?.errorDescription)
+        this.handleServerError(error);
     })
   }
 
@@ -232,7 +333,7 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
         this.document = null;
       }
     }, (error: any) => {
-      this.alertService.error(error.error?.errorDescription)
+      this.handleServerError(error);
     });
   }
 
@@ -240,12 +341,29 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
     this.editResourceService.validateDocumentObservable(this._resource, this.document).subscribe(async (value: DocumentRo) => {
       this.alertService.success(await lastValueFrom(this.translateService.get("resource.document.panel.success.valid")))
     }, (error: any) => {
-      this.alertService.error(error.error?.errorDescription)
+      this.handleServerError(error);
     });
   }
 
   onDocumentValidateButtonClicked(): void {
     this.validateCurrentDocument();
+  }
+
+  onNewDocumentVersionButtonClicked(): void {
+    // create a new version of the document
+    let docRequest: DocumentRo = {
+      documentVersionStatus: DocumentVersionsStatus.DRAFT,
+      payloadStatus: EntityStatus.NEW,
+      status: EntityStatus.UPDATED,
+      payload: this.documentForm.controls['payload'].value,
+      allVersions: this.getDocumentVersions,
+      // set from current document
+      documentVersions: this.documentForm.controls['documentVersions'].value,
+      properties: this.documentForm.controls['properties'].value,
+    } as DocumentRo;
+    // set as current
+    this.document = docRequest;
+    this.documentForm.markAsDirty();
   }
 
   onSelectionDocumentVersionChanged(): void {
@@ -280,6 +398,40 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
     return !this.documentForm.dirty || !this.documentForm.controls['payload']?.value;
   }
 
+  get reviewButtonDisabled(): boolean {
+    return !this.reviewEnabled || !this.documentSubmitReviewAllowed;
+  }
+
+  get reviewActionButtonDisabled(): boolean {
+    return !this.reviewEnabled || this.documentForm.controls['documentVersionStatus']?.value!==DocumentVersionsStatus.UNDER_REVIEW;
+  }
+
+  get publishButtonDisabled(): boolean {
+    // can not publish changed document
+    if (this.isDirty()){
+      return true;
+    }
+    let status =  this.documentForm.controls['documentVersionStatus']?.value
+
+    return this.reviewEnabled?
+      status !== DocumentVersionsStatus.APPROVED :
+      !this.publishableDocStatusList.find(i => i === status)
+  }
+
+  get documentEditable(): boolean {
+    let status =  this.documentForm.controls['documentVersionStatus']?.value
+    return !!this.editableDocStatusList.find(i => i === status)
+  }
+
+  get documentSubmitReviewAllowed(): boolean {
+    let status =  this.documentForm.controls['documentVersionStatus']?.value
+    return !!this.reviewAllowedStatusList.find(i => i === status)
+  }
+
+  get reviewEnabled(): boolean {
+    return this.resource?.reviewEnabled;
+  }
+
   isDirty(): boolean {
     return this.documentForm.dirty
   }
@@ -288,4 +440,16 @@ export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
     // in version DomiSMP 5.0 CR show only the wizard for edelivery-oasis-smp-1.0-servicegroup
     return this._resource?.resourceTypeIdentifier === 'edelivery-oasis-smp-1.0-servicegroup';
   }
+
+  /**
+   * Handle server error: logout on invalid session error or show error message
+   * @param err error object
+   */
+  private handleServerError(err: any) {
+    if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
+      return;
+    }
+    this.alertService.error(err.error?.errorDescription)
+  }
+
 }

@@ -42,6 +42,8 @@ public class ResourceRO extends BaseRO {
 
     private boolean smlRegistered = false;
 
+    private Boolean reviewEnabled;
+
     private VisibilityType visibility = VisibilityType.PUBLIC;
 
     public String getResourceId() {
@@ -82,6 +84,14 @@ public class ResourceRO extends BaseRO {
 
     public void setSmlRegistered(boolean smlRegistered) {
         this.smlRegistered = smlRegistered;
+    }
+
+    public Boolean isReviewEnabled() {
+        return reviewEnabled;
+    }
+
+    public void setReviewEnabled(Boolean reviewEnabled) {
+        this.reviewEnabled = reviewEnabled;
     }
 
     public VisibilityType getVisibility() {

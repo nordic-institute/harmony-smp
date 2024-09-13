@@ -55,6 +55,10 @@
        drop 
        foreign key FK4glqiu73939kpyyb6bhw822k3;
 
+    alter table SMP_DOCUMENT_VERSION_EVENT 
+       drop 
+       foreign key FK6es2svpoxyrnt1h05c9junmdn;
+
     alter table SMP_DOMAIN_AUD 
        drop 
        foreign key FK35qm8xmi74kfenugeonijodsg;
@@ -210,6 +214,8 @@
     drop table if exists SMP_DOCUMENT_VERSION;
 
     drop table if exists SMP_DOCUMENT_VERSION_AUD;
+
+    drop table if exists SMP_DOCUMENT_VERSION_EVENT;
 
     drop table if exists SMP_DOMAIN;
 

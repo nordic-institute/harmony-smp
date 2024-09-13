@@ -144,6 +144,7 @@ export class SmpEditorComponent
 
   @Input() set readOnly(readOnly: boolean) {
     this._readOnly = readOnly;
+    console.log("Document readOnly", readOnly)
     this.codeMirror?.dispatch({
       effects: this.readOnlyDocument.reconfigure(EditorState.readOnly.of(readOnly))
     })

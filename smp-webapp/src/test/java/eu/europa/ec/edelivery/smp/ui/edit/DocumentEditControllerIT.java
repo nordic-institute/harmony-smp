@@ -70,7 +70,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         ResourceRO resourceRO = addResourceToGroup(session, domainRO, groupRO, userRO);
 
         // when
-        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET,
+        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT,
                         userRO.getUserId(), resourceRO.getResourceId())
                         .session(session)
                         .with(csrf())
@@ -79,7 +79,10 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         // then
         DocumentRO documentRo = getObjectFromResponse(result, DocumentRO.class);
         assertNotNull(documentRo);
-        assertTrue(documentRo.getAllVersions().isEmpty()); // was just created without document
+        assertEquals(1, documentRo.getAllVersions().size());
+        assertEquals(1, documentRo.getAllVersions().get(0));
+        assertEquals(1, documentRo.getCurrentResourceVersion());
+        assertNotNull(documentRo.getPayload());
     }
 
     @Test
@@ -99,7 +102,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         ResourceRO resourceRO = resources.get(0);
 
         // when
-        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET,
+        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT,
                         userRO.getUserId(), resourceRO.getResourceId())
                         .session(session)
                         .with(csrf())

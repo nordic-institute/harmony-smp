@@ -2,7 +2,7 @@ import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
-import {firstValueFrom, lastValueFrom, Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {SearchUserRo} from "../../model/search-user-ro.model";
 import {MembershipService} from "../../panels/membership-panel/membership.service";
 import {MemberRo} from "../../model/member-ro.model";
@@ -58,7 +58,8 @@ export class MemberDialogComponent implements OnInit {
       'member-user': new FormControl({value: null}),
       'member-fullName': new FormControl({value: null}),
       'member-memberOf': new FormControl({value: null}),
-      'member-roleType': new FormControl({value: null})
+      'member-roleType': new FormControl({value: null}),
+      'member-can-review': new FormControl({value: null})
     });
     this.member = {
       ...data.member
@@ -79,6 +80,7 @@ export class MemberDialogComponent implements OnInit {
     member.fullName = this.memberForm.get('member-fullName').value;
     member.memberOf = this.memberForm.get('member-memberOf').value;
     member.roleType = this.memberForm.get('member-roleType').value;
+    member.hasPermissionReview = this.memberForm.get('member-can-review').value
     return member;
   }
 
@@ -102,12 +104,14 @@ export class MemberDialogComponent implements OnInit {
       this.memberForm.controls['member-fullName'].setValue(value.fullName);
       this.memberForm.controls['member-memberOf'].setValue(value.memberOf);
       this.memberForm.controls['member-roleType'].setValue(value.roleType);
+      this.memberForm.controls['member-can-review'].setValue(value.hasPermissionReview);
 
     } else {
       this.memberForm.controls['member-user'].setValue("");
       this.memberForm.controls['member-fullName'].setValue("");
       this.memberForm.controls['member-memberOf'].setValue("");
       this.memberForm.controls['member-roleType'].setValue("");
+      this.memberForm.controls['member-can-review'].setValue(false);
     }
     this.memberForm.markAsPristine();
   }
@@ -172,5 +176,9 @@ export class MemberDialogComponent implements OnInit {
       case MemberTypeEnum.RESOURCE:
         return  this.membershipService.addEditMemberToResource(this._currentResource, this._currentGroup,this._currentDomain, this.member)
     }
+  }
+
+  get isResourceMember(): boolean {
+    return this.membershipType === MemberTypeEnum.RESOURCE;
   }
 }

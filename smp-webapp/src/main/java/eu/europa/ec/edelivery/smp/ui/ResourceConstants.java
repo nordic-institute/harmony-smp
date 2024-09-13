@@ -46,6 +46,7 @@ public class ResourceConstants {
     public static final String PATH_RESOURCE_TYPE_SUBRESOURCE = "subresource";
     public static final String PATH_RESOURCE_TYPE_DOCUMENT = "document";
     public static final String PATH_RESOURCE_TYPE_PROPERTY = "property";
+    public static final String PATH_RESOURCE_TYPE_REVIEW = "review-task";
 
     public static final String PATH_RESOURCE_TYPE_RESOURCE_DEFINITION = "res-def";
     /**
@@ -70,6 +71,11 @@ public class ResourceConstants {
     public static final String PATH_ACTION_PUT = "put";
     public static final String PATH_ACTION_VALIDATE = "validate";
     public static final String PATH_ACTION_GENERATE = "generate";
+    public static final String PATH_ACTION_PUBLISH = "publish";
+    public static final String PATH_ACTION_REVIEW_REQUEST = "review-request";
+    public static final String PATH_ACTION_REVIEW_APPROVE = "review-approve";
+    public static final String PATH_ACTION_REVIEW_REJECT = "review-reject";
+    public static final String PATH_ACTION_REVIEW_LIST = "review-list";
     public static final String PATH_ACTION_UPDATE_RESOURCE_TYPES = "update-resource-types";
     public static final String PATH_ACTION_UPDATE_SML_DATA = "update-sml-integration-data";
     public static final String PATH_ACTION_RESET_CREDENTIAL_REQUEST = "request-reset-credential";
@@ -134,9 +140,16 @@ public class ResourceConstants {
     public static final String SUB_CONTEXT_PATH_EDIT_SUBRESOURCE_DELETE =  "{" + PATH_PARAM_ENC_SUBRESOURCE_ID + "}" + URL_PATH_SEPARATOR +  PATH_ACTION_DELETE;
 
     public static final String CONTEXT_PATH_EDIT_DOCUMENT = CONTEXT_PATH_EDIT + URL_PATH_SEPARATOR +PATH_RESOURCE_TYPE_RESOURCE +URL_PATH_SEPARATOR + "{" + PATH_PARAM_ENC_RESOURCE_ID + "}";
-    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET =  PATH_RESOURCE_TYPE_DOCUMENT;
-    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_VALIDATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET +  URL_PATH_SEPARATOR + PATH_ACTION_VALIDATE;
-    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET +  URL_PATH_SEPARATOR + PATH_ACTION_GENERATE;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT =  PATH_RESOURCE_TYPE_DOCUMENT;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_VALIDATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT +  URL_PATH_SEPARATOR + PATH_ACTION_VALIDATE;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT +  URL_PATH_SEPARATOR + PATH_ACTION_GENERATE;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_PUBLISH =  SUB_CONTEXT_PATH_EDIT_DOCUMENT +  URL_PATH_SEPARATOR + PATH_ACTION_PUBLISH;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_REVIEW =  SUB_CONTEXT_PATH_EDIT_DOCUMENT +  URL_PATH_SEPARATOR + PATH_ACTION_REVIEW_REQUEST;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_APPROVE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT +  URL_PATH_SEPARATOR + PATH_ACTION_REVIEW_APPROVE;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_REJECT =  SUB_CONTEXT_PATH_EDIT_DOCUMENT +  URL_PATH_SEPARATOR + PATH_ACTION_REVIEW_REJECT;
+
+    public static final String CONTEXT_PATH_EDIT_REVIEW =  CONTEXT_PATH_EDIT +  URL_PATH_SEPARATOR + PATH_RESOURCE_TYPE_REVIEW;
+
 
     public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET_SUBRESOURCE = PATH_RESOURCE_TYPE_SUBRESOURCE +  URL_PATH_SEPARATOR +  "{" + PATH_PARAM_ENC_SUBRESOURCE_ID + "}" +  URL_PATH_SEPARATOR + PATH_RESOURCE_TYPE_DOCUMENT;
     public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_VALIDATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET_SUBRESOURCE +  URL_PATH_SEPARATOR + PATH_ACTION_VALIDATE;

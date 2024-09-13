@@ -23,6 +23,7 @@ import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.compo
 import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.component";
 import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
 import {DnsToolsComponent} from "./tools/dns-tools/dns-tools.component";
+import {ReviewTasksComponent} from "./edit/review-task/review-tasks.component";
 
 
 const appRoutes: Routes = [
@@ -38,6 +39,7 @@ const appRoutes: Routes = [
     children: [
       {path: 'edit-domain', component: EditDomainComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'edit-group', component: EditGroupComponent, canDeactivate: [dirtyDeactivateGuard]},
+      {path: 'review-tasks', component: ReviewTasksComponent },
       {
         path: 'edit-resource',
         canDeactivate: [dirtyDeactivateGuard],

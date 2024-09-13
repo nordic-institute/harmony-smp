@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.model.doc;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -66,6 +67,7 @@ public class DBDocument extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
+    @OrderBy("id DESC")
     List<DBDocumentVersion> documentVersions;
 
     @Column(name = "CURRENT_VERSION", nullable = false)
@@ -108,15 +110,25 @@ public class DBDocument extends BaseEntity {
         return documentVersions;
     }
 
+    /**
+     * Method add new document version to the document and set the version number.
+     * The version number is set to the highest version number + 1 and set as current version.
+     * Also existing published version is set to retired.
+     *
+     * @param documentVersion document version
+     * @return document version
+     */
     public DBDocumentVersion addNewDocumentVersion(DBDocumentVersion documentVersion) {
         if (documentVersion.getId() != null && getDocumentVersions().contains(documentVersion)) {
             LOG.info("Document version [{}] already exists on document [{}]", documentVersion, this);
             return documentVersion;
-        }
+       }
+
         documentVersion.setVersion(getNextVersionIndex());
-        getDocumentVersions().add(documentVersion);
         documentVersion.setDocument(this);
         setCurrentVersion(documentVersion.getVersion());
+        // ADD TO THE LIST to the first position (latest version)
+        getDocumentVersions().add(0, documentVersion);
         return documentVersion;
     }
 

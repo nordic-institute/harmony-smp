@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.model.user;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
@@ -84,6 +85,10 @@ public class DBResourceMember extends BaseEntity {
     @Column(name = "MEMBERSHIP_ROLE", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
     private MembershipRoleType role = MembershipRoleType.VIEWER;
 
+    @Column(name = "PERMISSION_REVIEW")
+    @ColumnDescription(comment = "User permission to review the resource document")
+    private Boolean hasPermissionToReview = false;
+
     public DBResourceMember() {
         //Need this method for hibernate
         // Caused by: java.lang.NoSuchMethodException: eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain_$$_jvst7ad_2.<init>()
@@ -127,5 +132,13 @@ public class DBResourceMember extends BaseEntity {
 
     public void setRole(MembershipRoleType role) {
         this.role = role;
+    }
+
+    public Boolean hasPermissionToReview() {
+        return hasPermissionToReview;
+    }
+
+    public void setHasPermissionToReview(Boolean permissionReview) {
+        this.hasPermissionToReview = permissionReview;
     }
 }

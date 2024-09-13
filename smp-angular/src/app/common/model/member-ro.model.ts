@@ -10,4 +10,7 @@ export interface MemberRo extends SearchTableEntity {
   memberOf:MemberTypeEnum;
   fullName:string;
   roleType:MembershipRoleEnum;
+
+  // only for resource members
+  hasPermissionReview?:boolean;
 }
