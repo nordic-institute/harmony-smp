@@ -182,6 +182,12 @@ import {ReviewTasksComponent} from "./edit/review-task/review-tasks.component";
 import {
   ReviewTasksPanelComponent
 } from "./common/panels/review-tasks-panel/review-tasks-panel.component";
+import {
+  DocumentEditPanelComponent
+} from "./common/panels/document-edit-panel/document-edit-panel.component";
+import {
+  ReviewDocumentPanelComponent
+} from "./common/panels/review-tasks-panel/review-document-panel/review-document-panel.component";
 
 
 @NgModule({
@@ -214,6 +220,7 @@ import {
     DnsToolsComponent,
     DnsQueryPanelComponent,
     DocumentWizardDialogComponent,
+    DocumentEditPanelComponent,
     DocumentEventsPanelComponent,
     DocumentPropertiesPanelComponent,
     DocumentPropertyDialogComponent,
@@ -256,6 +263,7 @@ import {
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
+    ReviewDocumentPanelComponent,
     ReviewTasksComponent,
     ReviewTasksPanelComponent,
     ResourceSearchComponent,

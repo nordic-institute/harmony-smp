@@ -183,6 +183,7 @@ public class QueryNames {
     public static final String PARAM_RESOURCE_DEF_IDENTIFIER = "resource_def_identifier";
     public static final String PARAM_SUBRESOURCE_DEF_ID = "subresource_def_id";
 
+    public static final String PARAM_REVIEW_ENABLED = "review_enabled";
 
     public static final String PARAM_SUBRESOURCE_DEF_IDENTIFIER = "subresource_def_identifier";
     public static final String PARAM_DOMAIN_ID = "domain_id";

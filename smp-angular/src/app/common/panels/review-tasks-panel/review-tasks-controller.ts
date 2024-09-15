@@ -43,22 +43,13 @@ export class ReviewTasksController implements SearchTableController {
   }
 
   public edit(row: any): MatDialogRef<any> {
-    return this.dialog.open(ObjectPropertiesDialogComponent, {
-      data: {
-        title: "Update Review tasks",
-        object: row,
-      }
-    });
+    return null;
   }
 
   public delete(row: any) {
   }
 
   newDialog(config): MatDialogRef<any> {
-    if (config && config.data && config.data.edit) {
-      return this.edit(config.data);
-    } else {
-      return this.showDetails(config.data);
-    }
+    return null;
   }
 }

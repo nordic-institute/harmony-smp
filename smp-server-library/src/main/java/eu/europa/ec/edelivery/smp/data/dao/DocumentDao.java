@@ -142,6 +142,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
                 QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER, DBReviewDocumentVersion.class);
         query.setParameter(PARAM_USER_ID, dbUserId);
         query.setParameter(PARAM_PERMISSION_CAN_REVIEW, true);
+        query.setParameter(PARAM_REVIEW_ENABLED, true);
         query.setParameter(PARAM_STATUS, DocumentVersionStatusType.UNDER_REVIEW.name());
         return query.getResultList();
 

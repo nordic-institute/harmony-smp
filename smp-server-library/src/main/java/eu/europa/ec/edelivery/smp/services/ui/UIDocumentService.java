@@ -54,6 +54,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
@@ -113,9 +114,27 @@ public class UIDocumentService {
         LOG.info("Publish Document For Resource [{}], version [{}]", resourceId, version);
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
-        if (document.getId() != documentId) {
+        if (!Objects.equals(document.getId() ,documentId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
         }
+        return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+    }
+
+    @Transactional
+    public DocumentRO publishDocumentVersionForSubresource(Long subresourceId, Long resourceId, Long documentId, int version) {
+        LOG.info("Publish Document For subresource [{}], resource [{}], version [{}]", subresourceId, resourceId, version);
+
+        DBSubresource subresource = subresourceDao.find(subresourceId);
+        DBResource resource = resourceDao.find(resourceId);
+        DBDocument document = subresource.getDocument();
+        if (!Objects.equals(document.getId() ,documentId)) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
+        }
+        return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+    }
+
+
+    private DocumentRO publishDocumentVersion(DBDocument document, int version, boolean isReviewEnabled, List<DocumentPropertyRO> initialProperties) {
 
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
@@ -123,12 +142,12 @@ public class UIDocumentService {
         if (documentVersion == null) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
         }
-        if (resource.isReviewEnabled() && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
+        if (isReviewEnabled && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionAlreadyPublished", "Document version has wrong status");
         }
-        if (document.getDocumentVersions() != null && document.getDocumentVersions().equals(version)) {
-            LOG.warn("Document version [{}] is already current version for the document [{}]", version, documentId);
-            return convertWithVersion(document, version, getInitialProperties(resource));
+        if (document.getDocumentVersions() != null && document.getCurrentVersion() == version) {
+            LOG.warn("Document version [{}] is already current version for the document [{}]", version, document.getId());
+            return convertWithVersion(document, version, initialProperties);
         }
         //retire all other versions
         document.getDocumentVersions().stream()
@@ -138,8 +157,7 @@ public class UIDocumentService {
         document.setCurrentVersion(documentVersion.getVersion());
         documentVersionService.publishDocumentVersion(documentVersion, EventSourceType.UI);
         // return the document with the new version
-
-        return convertWithVersion(document, version, getInitialProperties(resource));
+        return convertWithVersion(document, version, initialProperties);
     }
 
     @Transactional
@@ -147,10 +165,26 @@ public class UIDocumentService {
         LOG.info("Request review Document For Resource [{}], version [{}]", resourceId, version);
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
-        if (document.getId() != documentId) {
+        if (!Objects.equals(document.getId() ,documentId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
         }
+        return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+    }
 
+    @Transactional
+    public DocumentRO requestReviewDocumentVersionForSubresource(Long subresourceId, Long resourceId, Long documentId, int version) {
+        LOG.info("Request review Document For subResource [{}], resource [{}],  version [{}]", subresourceId, resourceId, version);
+        DBResource resource = resourceDao.find(resourceId);
+        DBSubresource subresource = subresourceDao.find(subresourceId);
+        DBDocument document = subresource.getDocument();
+        if (!Objects.equals(document.getId(), documentId)) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
+        }
+        return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+    }
+
+
+    private DocumentRO requestReviewDocumentVersion(DBDocument document, int version, boolean isReviewEnabled, List<DocumentPropertyRO> initialProperties) {
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
@@ -158,24 +192,24 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
         }
 
-        if (!resource.isReviewEnabled()) {
+        if (!isReviewEnabled) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewNotEnabled", "Document Review is not enabled for the document");
         }
 
         if (documentVersion.getStatus() == DocumentVersionStatusType.PUBLISHED) {
-            LOG.warn("Document version [{}] request review action for document [{}] is not allowed. Wrong status", version, documentId);
+            LOG.warn("Document version [{}] request review action for document [{}] is not allowed. Wrong status", version, document.getId());
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewNotAllowed", "Document Review is not allowed for the document");
         }
 
         if (documentVersion.getStatus() == DocumentVersionStatusType.UNDER_REVIEW) {
-            LOG.warn("Document version review [{}] for document [{}] is already under review", version, documentId);
-            return convertWithVersion(document, version, getInitialProperties(resource));
+            LOG.warn("Document version review [{}] for document [{}] is already under review", version, document.getId());
+            return convertWithVersion(document, version, initialProperties);
         }
         //retire all other versions
         documentVersionService.requestReviewDocumentVersion(documentVersion, EventSourceType.UI);
         // return the document with the new version
 
-        return convertWithVersion(document, version, getInitialProperties(resource));
+        return convertWithVersion(document, version, initialProperties);
     }
 
     @Transactional
@@ -183,24 +217,44 @@ public class UIDocumentService {
         LOG.info("Approve review Document version For Resource [{}], version [{}]", resourceId, version);
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
-        if (document.getId() != documentId) {
+        if (!Objects.equals(document.getId(), documentId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
         }
+        return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(resource));
+    }
+
+    @Transactional
+    public DocumentRO reviewActionDocumentVersionForSubresource(Long subresourceId, Long resourceId, Long documentId, int version, DocumentVersionEventType action, String message) {
+        LOG.info("Approve review Document version For subResource [{}], resource [{}], version [{}]", subresourceId, resourceId, version);
+        DBResource resource = resourceDao.find(resourceId);
+        DBSubresource subresource = subresourceDao.find(subresourceId);
+        DBDocument document = subresource.getDocument();
+        if (!Objects.equals(document.getId(), documentId)) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the subresource document id");
+        }
+        return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(subresource));
+    }
+
+
+    private DocumentRO reviewActionDocumentVersion(DBDocument document,
+                                                   int version,
+                                                   boolean reviewEnabled,
+                                                   DocumentVersionEventType action,
+                                                   String message,
+                                                   List<DocumentPropertyRO> initialProperties) {
 
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
-                .findFirst().orElse(null);
-        if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
-        }
+                .findFirst()
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found"));
 
-        if (!resource.isReviewEnabled()) {
+        if (!reviewEnabled) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewNotEnabled", "Document Review is not enabled for the document");
         }
 
         if (documentVersion.getStatus() != DocumentVersionStatusType.UNDER_REVIEW
                 && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
-            LOG.warn("Document version [{}]  action for document [{}] not allowed. Wrong status", version, documentId);
+            LOG.warn("Document version [{}]  action for document [{}] not allowed. Wrong status", version, initialProperties);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewActionNotAllowed", "Document Review action is not allowed for the document");
         }
 
@@ -211,10 +265,8 @@ public class UIDocumentService {
         } else {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewActionNotAllowed", "Document Review action is not allowed for the document");
         }
-        documentVersionService.approveDocumentVersion(documentVersion, EventSourceType.UI, message);
         // return the document with the new version
-
-        return convertWithVersion(document, version, getInitialProperties(resource));
+        return convertWithVersion(document, version, initialProperties);
     }
 
     @Transactional
@@ -444,7 +496,7 @@ public class UIDocumentService {
         // to get the current persist time
         documentVersion.prePersist();
         document.getDocumentVersions().add(0, documentVersion);
-        if (!resource.isReviewEnabled()) {
+        if (Boolean.FALSE.equals(resource.isReviewEnabled())) {
             document.setCurrentVersion(documentVersion.getVersion());
         }
         return documentVersion;

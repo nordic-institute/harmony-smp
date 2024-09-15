@@ -1,0 +1,201 @@
+<div id="resource-document-panel">
+
+  <mat-toolbar class="mat-elevation-z2" style="min-height: 50px !important;">
+    <mat-toolbar-row class="smp-toolbar-row"
+                     style="justify-content: space-between;min-height: 50px !important;">
+      <button id="newVersion_id"
+              *ngIf="isNotReviewMode"
+              mat-raised-button
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.version.new' | translate }}"
+              [disabled]="emptyDocument"
+              (click)="onNewDocumentVersionButtonClicked()">
+        <mat-icon>add_circle</mat-icon>
+        <span>{{ "document.edit.panel.button.version.new" | translate }}</span>
+      </button>
+      <button id="validateResource_id" mat-raised-button
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.validate' | translate }}"
+              [disabled]="emptyDocument"
+              (click)="onDocumentValidateButtonClicked()">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ "document.edit.panel.button.validate" | translate }}</span>
+      </button>
+      <button id="GenerateResource_id"
+              *ngIf="isNotReviewMode"
+              mat-raised-button
+              color="primary"
+              [disabled]="!documentEditable"
+              matTooltip="{{ 'document.edit.panel.tooltip.generate' | translate }}"
+              (click)="onGenerateButtonClicked()">
+        <mat-icon>change_circle</mat-icon>
+        <span>{{ "document.edit.panel.button.generate" | translate }}</span>
+      </button>
+      <button id="documentWizard_id" mat-raised-button
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.document.wizard' | translate }}"
+              [disabled]="!documentEditable"
+              *ngIf="showWizardDialog && isNotReviewMode"
+              (click)="onShowDocumentWizardDialog()">
+        <mat-icon>code_block</mat-icon>
+        <span>{{ "document.edit.panel.button.document.wizard" | translate }}</span>
+      </button>
+      <span style="flex: 1 1 auto;"></span>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <div class="panel" [formGroup]="documentForm"
+       style="display: flex;flex-direction: row;flex-grow: 1; ">
+    <div
+      style="display:flex; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;">
+
+      <div style="display: flex;flex-direction: row">
+        <mat-form-field style="min-width: 140px"
+                        subscriptSizing="dynamic"
+                        appearance="fill"
+        >
+          <mat-label>{{ "document.edit.panel.label.selected.version" | translate }}</mat-label>
+          <mat-select
+
+            placeholder="{{ 'document.edit.panel.placeholder.version' | translate }}"
+            matTooltip="{{ 'document.edit.panel.tooltip.version' | translate }}"
+            id="document-version_id"
+            formControlName="payloadVersion"
+            (selectionChange)="onSelectionDocumentVersionChanged()">
+            <mat-option *ngFor="let version of getDocumentVersions"
+                        [value]="version">
+              {{ version }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field style="min-width: 180px"
+                        subscriptSizing="dynamic"
+                        appearance="fill">
+          <mat-label>{{ "document.edit.panel.label.selected.status" | translate }}</mat-label>
+          <input matInput id="status_id"
+                 formControlName="documentVersionStatus"
+                 readonly>
+        </mat-form-field>
+        <mat-form-field style="width:100%"
+                        subscriptSizing="dynamic"
+                        appearance="fill">
+          <mat-label>{{ "document.edit.panel.label.selected.created.on" | translate }}</mat-label>
+          <input id="payloadCreatedOn_id"
+                 matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
+                 formControlName="payloadCreatedOn"
+                 readonly>
+          <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker"
+                                 style="visibility: hidden"></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker #payloadCreatedOnPicker [showSpinners]="true"
+                                   [showSeconds]="false"
+                                   [hideTime]="false"></ngx-mat-datetime-picker>
+        </mat-form-field>
+      </div>
+      <div
+        style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;border: ridge 3px #b0bec5"
+        (click)="onEditPanelClick()">
+        <smp-editor #smpDocumentEditor formControlName="payload"
+                    ngDefaultControl></smp-editor>
+
+      </div>
+      <smp-warning-panel *ngIf="!documentEditable"
+                         icon="info"
+                         type="desc"
+                         [label]="'document.edit.panel.note.editable' | translate: { editableDocStatusList: editableDocStatusList }">
+      </smp-warning-panel>
+    </div>
+    <expandable-panel>
+      <expandable-item icon="settings"
+                       title="{{'document.properties.panel.tab.title' | translate }}"
+                       buttonLabel="{{'document.properties.panel.tab.button.properties' | translate }}">
+        <document-properties-panel formControlName="properties"
+                                   [showEditToolbarButton]="isNotReviewMode"
+                                   ngDefaultControl></document-properties-panel>
+      </expandable-item>
+      <expandable-item icon="list"
+                       *ngIf="isNotReviewMode"
+                       title="{{'document.versions.panel.tab.title' | translate }}"
+                       buttonLabel="{{'document.versions.panel.tab.button.versions' | translate }}">
+        <document-versions-panel
+                              formControlName="documentVersions"
+                                [selectedVersion]="currentDocumentVersion"
+                                 (selectedVersionChange) = "loadDocumentForVersion($event)"
+                                 ngDefaultControl></document-versions-panel>
+      </expandable-item>
+      <expandable-item icon="event"
+                       title="{{'document.events.panel.tab.title' | translate }}"
+                       buttonLabel="{{'document.events.panel.tab.button.events' | translate }}">
+        <document-events-panel formControlName="documentVersionEvents"
+                               ngDefaultControl></document-events-panel>
+      </expandable-item>
+    </expandable-panel>
+  </div>
+
+  <mat-toolbar class="mat-elevation-z2"
+               style="flex-grow: 0;">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button id="back_id" mat-raised-button color="primary"
+              (click)="onBackButtonClicked()">
+        <mat-icon>arrow_circle_left</mat-icon>
+        <span>{{ "document.edit.panel.button.back" | translate }}</span>
+      </button>
+      <button id="cancel_id"
+              *ngIf="isNotReviewMode"
+              mat-raised-button
+              color="primary"
+              [disabled]="cancelButtonDisabled"
+              (click)="onDocumentResetButtonClicked()">
+        <mat-icon>cancel</mat-icon>
+        <span>{{ "document.edit.panel.button.cancel" | translate }}</span>
+      </button>
+      <tool-button-spacer></tool-button-spacer>
+      <button id="saveResource_id"
+              *ngIf="isNotReviewMode"
+              mat-raised-button
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.save' | translate }}"
+              [disabled]="saveButtonDisabled"
+              (click)="onSaveButtonClicked()">
+        <mat-icon>save</mat-icon>
+        <span>{{ "document.edit.panel.button.save" | translate }}</span>
+      </button>
+      <button id="publishResource_id" mat-raised-button
+              *ngIf="isNotReviewMode"
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.version.publish' | translate }}"
+              [disabled]="publishButtonDisabled"
+              (click)="onPublishButtonClicked()">
+        <mat-icon>publish</mat-icon>
+        <span>{{ "document.edit.panel.button.version.publish" | translate }}</span>
+      </button>
+      <tool-button-spacer></tool-button-spacer>
+      <button *ngIf="reviewEnabled && isNotReviewMode" id="reviewResource_id" mat-raised-button
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.version.review' | translate }}"
+              [disabled]="reviewButtonDisabled"
+              (click)="onReviewRequestButtonClicked()">
+        <mat-icon>task</mat-icon>
+        <span>{{ "document.edit.panel.button.version.review" | translate }}</span>
+      </button>
+      <button mat-raised-button
+              *ngIf="!isNotReviewMode || reviewEnabled"
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.version.approve' | translate }}"
+              [disabled]="reviewActionButtonDisabled"
+              (click)="onApproveButtonClicked()">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ "document.edit.panel.button.version.approve" | translate }}</span>
+      </button>
+      <button mat-raised-button
+              *ngIf="!isNotReviewMode || reviewEnabled"
+              color="primary"
+              matTooltip="{{ 'document.edit.panel.tooltip.version.reject' | translate }}"
+              [disabled]="reviewActionButtonDisabled"
+              (click)="onRejectButtonClicked()">
+        <mat-icon>unpublished</mat-icon>
+        <span>{{ "document.edit.panel.button.version.reject" | translate }}</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+</div>

@@ -14,11 +14,17 @@ public class ReviewDocumentVersionRO {
     private String documentId;
     private String documentVersionId;
     private String resourceId;
+    private String subresourceId;
     private int version;
-    private DocumentVersionStatusType status = DocumentVersionStatusType.DRAFT;
-    private String resourceIdentifier;
-    private String resourceScheme;
+    private DocumentVersionStatusType currentStatus = DocumentVersionStatusType.DRAFT;
+    private String resourceIdentifierValue;
+    private String resourceIdentifierScheme;
+    private String subresourceIdentifierValue;
+    private String subresourceIdentifierScheme;
+    private String target;
     private OffsetDateTime lastUpdatedOn;
+
+
 
     public String getDocumentId() {
         return documentId;
@@ -52,28 +58,60 @@ public class ReviewDocumentVersionRO {
         this.version = version;
     }
 
-    public DocumentVersionStatusType getStatus() {
-        return status;
+    public DocumentVersionStatusType getCurrentStatus() {
+        return currentStatus;
     }
 
-    public void setStatus(DocumentVersionStatusType status) {
-        this.status = status;
+    public void setCurrentStatus(DocumentVersionStatusType currentStatus) {
+        this.currentStatus = currentStatus;
     }
 
-    public String getResourceIdentifier() {
-        return resourceIdentifier;
+    public String getSubresourceId() {
+        return subresourceId;
     }
 
-    public void setResourceIdentifier(String resourceIdentifier) {
-        this.resourceIdentifier = resourceIdentifier;
+    public void setSubresourceId(String subresourceId) {
+        this.subresourceId = subresourceId;
     }
 
-    public String getResourceScheme() {
-        return resourceScheme;
+    public String getResourceIdentifierValue() {
+        return resourceIdentifierValue;
     }
 
-    public void setResourceScheme(String resourceScheme) {
-        this.resourceScheme = resourceScheme;
+    public void setResourceIdentifierValue(String resourceIdentifierValue) {
+        this.resourceIdentifierValue = resourceIdentifierValue;
+    }
+
+    public String getResourceIdentifierScheme() {
+        return resourceIdentifierScheme;
+    }
+
+    public void setResourceIdentifierScheme(String resourceIdentifierScheme) {
+        this.resourceIdentifierScheme = resourceIdentifierScheme;
+    }
+
+    public String getSubresourceIdentifierValue() {
+        return subresourceIdentifierValue;
+    }
+
+    public void setSubresourceIdentifierValue(String subresourceIdentifierValue) {
+        this.subresourceIdentifierValue = subresourceIdentifierValue;
+    }
+
+    public String getSubresourceIdentifierScheme() {
+        return subresourceIdentifierScheme;
+    }
+
+    public void setSubresourceIdentifierScheme(String subresourceIdentifierScheme) {
+        this.subresourceIdentifierScheme = subresourceIdentifierScheme;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public OffsetDateTime getLastUpdatedOn() {

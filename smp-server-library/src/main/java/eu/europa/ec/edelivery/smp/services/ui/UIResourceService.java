@@ -182,7 +182,7 @@ public class UIResourceService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Resource does not belong to the group!");
         }
         if (!Objects.equals(resource.getGroup().getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not belong to the given domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Group does not belong to the given domain!");
         }
         DBDomain resourceDomain = resource.getGroup().getDomain();
         if (smlIntegrationService.isSMLIntegrationEnabled() &&
@@ -232,6 +232,8 @@ public class UIResourceService {
         resource.setVisibility(resourceRO.getVisibility());
         resource.setGroup(group);
         resource.setDomainResourceDef(optDoredef.get());
+        resource.setReviewEnabled(resourceRO.isReviewEnabled());
+
         DBDocument document = createDocumentForNewResource(resource);
         resource.setDocument(document);
         resourceDao.persist(resource);

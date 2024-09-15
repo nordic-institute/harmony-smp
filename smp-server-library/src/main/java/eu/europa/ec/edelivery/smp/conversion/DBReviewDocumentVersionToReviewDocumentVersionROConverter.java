@@ -49,6 +49,8 @@ public class DBReviewDocumentVersionToReviewDocumentVersionROConverter implement
             target.setDocumentVersionId(SessionSecurityUtils.encryptedEntityId(source.getDocumentVersionId()));
             target.setDocumentId(SessionSecurityUtils.encryptedEntityId(source.getDocumentId()));
             target.setResourceId(SessionSecurityUtils.encryptedEntityId(source.getResourceId()));
+            target.setSubresourceId(SessionSecurityUtils.encryptedEntityId(source.getSubresourceId()));
+            target.setCurrentStatus(source.getStatus());
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOG.error("Error occurred while converting DBResource", e);
             return null;

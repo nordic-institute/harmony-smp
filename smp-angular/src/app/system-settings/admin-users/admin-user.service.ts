@@ -9,10 +9,8 @@ import {MemberRo} from "../../common/model/member-ro.model";
 import {SmpConstants} from "../../smp.constants";
 import {UserRo} from "../../common/model/user-ro.model";
 
-
 @Injectable()
 export class AdminUserService {
-
 
   constructor(
     private http: HttpClient,

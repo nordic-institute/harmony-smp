@@ -10,19 +10,22 @@ import java.time.OffsetDateTime;
  * Class represents the document version for the review. It is used with query
  * to get all review tasks for the user
  *
- * @since 5.1
  * @author Joze RIHARSIC
+ * @since 5.1
  */
 public class DBReviewDocumentVersion implements Serializable {
-
 
     private Long documentId;
     private Long documentVersionId;
     private Long resourceId;
+    private Long subresourceId;
     private int version;
     private DocumentVersionStatusType status = DocumentVersionStatusType.DRAFT;
-    private String resourceIdentifier;
-    private String resourceScheme;
+    private String resourceIdentifierValue;
+    private String resourceIdentifierScheme;
+    private String subresourceIdentifierValue;
+    private String subresourceIdentifierScheme;
+    private String target;
     private OffsetDateTime lastUpdatedOn;
 
     public DBReviewDocumentVersion() {
@@ -32,18 +35,26 @@ public class DBReviewDocumentVersion implements Serializable {
             Long id,
             Long documentId,
             Long resourceId,
+            Long subresourceId,
             int version,
             String status,
-            String resourceIdentifier,
-            String resourceScheme,
+            String resourceIdentifierValue,
+            String resourceIdentifierScheme,
+            String subresourceIdentifierValue,
+            String subresourceIdentifierScheme,
+            String target,
             OffsetDateTime lastUpdatedOn) {
         this.documentId = documentId;
         this.documentVersionId = id;
         this.resourceId = resourceId;
+        this.subresourceId = subresourceId;
         this.version = version;
         this.status = StringUtils.isNotBlank(status) ? DocumentVersionStatusType.valueOf(status) : null;
-        this.resourceIdentifier = resourceIdentifier;
-        this.resourceScheme = resourceScheme;
+        this.resourceIdentifierValue = resourceIdentifierValue;
+        this.resourceIdentifierScheme = resourceIdentifierScheme;
+        this.subresourceIdentifierValue = subresourceIdentifierValue;
+        this.subresourceIdentifierScheme = subresourceIdentifierScheme;
+        this.target = target;
         this.lastUpdatedOn = lastUpdatedOn;
     }
 
@@ -71,6 +82,14 @@ public class DBReviewDocumentVersion implements Serializable {
         this.resourceId = resourceId;
     }
 
+    public Long getSubresourceId() {
+        return subresourceId;
+    }
+
+    public void setSubresourceId(Long subresourceId) {
+        this.subresourceId = subresourceId;
+    }
+
     public OffsetDateTime getLastUpdatedOn() {
         return lastUpdatedOn;
     }
@@ -95,20 +114,43 @@ public class DBReviewDocumentVersion implements Serializable {
         this.status = status;
     }
 
-    public String getResourceIdentifier() {
-        return resourceIdentifier;
+    public String getResourceIdentifierValue() {
+        return resourceIdentifierValue;
     }
 
-    public void setResourceIdentifier(String resourceIdentifier) {
-        this.resourceIdentifier = resourceIdentifier;
+    public void setResourceIdentifierValue(String resourceIdentifierValue) {
+        this.resourceIdentifierValue = resourceIdentifierValue;
     }
 
-    public String getResourceScheme() {
-        return resourceScheme;
+    public String getResourceIdentifierScheme() {
+        return resourceIdentifierScheme;
     }
 
-    public void setResourceScheme(String resourceScheme) {
-        this.resourceScheme = resourceScheme;
+    public void setResourceIdentifierScheme(String resourceIdentifierScheme) {
+        this.resourceIdentifierScheme = resourceIdentifierScheme;
     }
 
+    public String getSubresourceIdentifierValue() {
+        return subresourceIdentifierValue;
+    }
+
+    public void setSubresourceIdentifierValue(String subresourceIdentifierValue) {
+        this.subresourceIdentifierValue = subresourceIdentifierValue;
+    }
+
+    public String getSubresourceIdentifierScheme() {
+        return subresourceIdentifierScheme;
+    }
+
+    public void setSubresourceIdentifierScheme(String subresourceIdentifierScheme) {
+        this.subresourceIdentifierScheme = subresourceIdentifierScheme;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
 }

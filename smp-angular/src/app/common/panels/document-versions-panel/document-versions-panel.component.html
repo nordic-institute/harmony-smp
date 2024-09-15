@@ -41,6 +41,7 @@
           *matHeaderRowDef="displayedColumns; sticky:true"></tr>
       <tr mat-row
           *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+          (dblclick)="onRowSelect(row)"
           [ngClass]="getRowClass(row, odd)"
       ></tr>
       <tr class="mat-row" *matNoDataRow>

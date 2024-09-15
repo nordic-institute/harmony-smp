@@ -7,8 +7,7 @@ import {AlertMessageService} from "../alert-message/alert-message.service";
 export class HttpErrorHandlerService {
 
   constructor (private navigationService: NavigationService,
-               private alertMessageService: AlertMessageService,) {
-
+               private alertMessageService: AlertMessageService) {
   }
 
   public logoutOnInvalidSessionError(err: any): boolean {
@@ -20,5 +19,21 @@ export class HttpErrorHandlerService {
       }
     }
     return false;
+  }
+
+  public handleHttpError(err: any) {
+    if (err instanceof HttpErrorResponse) {
+      if (this.logoutOnInvalidSessionError(err)) {
+        return;
+      }
+      if (err.status === 0) {
+        this.alertMessageService.error("Server is not reachable. Please try again later.");
+      } else {
+        this.alertMessageService.error(err.error.errorDescription);
+      }
+    } else {
+      this.alertMessageService.error(err.error?.errorDescription);
+    }
+
   }
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {SmpConstants} from "../../smp.constants";
 import {SecurityService} from "../../security/security.service";
 
@@ -9,7 +9,7 @@ import {SecurityService} from "../../security/security.service";
 })
 export class ReviewTasksComponent {
 
-  constructor(private securityService: SecurityService,) {
+  constructor(private securityService: SecurityService) {
   }
 
   get reviewTaskUrl(): string {

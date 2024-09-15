@@ -1,4 +1,11 @@
-import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  Component, EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
 import {lastValueFrom, Observable} from 'rxjs';
 import {AlertMessageService} from '../alert-message/alert-message.service';
@@ -9,12 +16,20 @@ import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
 import {EntityStatus} from '../enums/entity-status.enum';
-import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
-import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
+import {
+  CancelDialogComponent
+} from '../dialogs/cancel-dialog/cancel-dialog.component';
+import {
+  SaveDialogComponent
+} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpParams} from '@angular/common/http';
-import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SearchTableValidationResult} from "./search-table-validation-result.model";
+import {
+  ConfirmationDialogComponent
+} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  SearchTableValidationResult
+} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
 import {Router} from "@angular/router";
 import ObjectUtils from "../utils/object-utils";
@@ -26,6 +41,8 @@ import {TranslateService} from "@ngx-translate/core";
   styleUrls: ['./search-table.component.css']
 })
 export class SearchTableComponent implements OnInit {
+  @Output() onRowDoubleClicked: EventEmitter<SearchTableEntity> = new EventEmitter<SearchTableEntity>();
+
   @ViewChild('searchTable', {static: true}) searchTable: any;
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
@@ -71,18 +88,18 @@ export class SearchTableComponent implements OnInit {
   forceRefresh: boolean = false;
   showSpinner: boolean = false;
   currentResult: SearchTableResult = null;
- // override datatable messages to remove selectedMessage message
- datatableMessages: any =  {
-  // Message to show when array is presented
-  // but contains no values
-  emptyMessage: 'No data to display',
+  // override datatable messages to remove selectedMessage message
+  datatableMessages: any = {
+    // Message to show when array is presented
+    // but contains no values
+    emptyMessage: 'No data to display',
 
-  // Footer total message
-  totalMessage: 'total',
+    // Footer total message
+    totalMessage: 'total',
 
-  // Footer selected message
-  selectedMessage: null
-};
+    // Footer selected message
+    selectedMessage: null
+  };
 
   constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertMessageService,
@@ -121,7 +138,7 @@ export class SearchTableComponent implements OnInit {
   }
 
 
-  tableColumnInit(){
+  tableColumnInit() {
     // Add actions to last column
     if (this.columnPicker) {
       // prepend columns
@@ -242,6 +259,7 @@ export class SearchTableComponent implements OnInit {
 
   onActivate(event) {
     if ("dblclick" === event.type) {
+      this.onRowDoubleClicked.emit(event.row);
       this.editSearchTableEntityRow(event.row);
     }
   }
@@ -256,7 +274,7 @@ export class SearchTableComponent implements OnInit {
 
 
   onNewButtonClicked() {
-        this.fireCreateNewEntityEvent();
+    this.fireCreateNewEntityEvent();
   }
 
   fireCreateNewEntityEvent() {
@@ -277,7 +295,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteButtonClicked() {
-        this.fireDeleteEntityEvent();
+    this.fireDeleteEntityEvent();
   }
 
   fireDeleteEntityEvent() {
@@ -285,11 +303,11 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteRowActionClicked(row: SearchTableEntity) {
-        this.deleteSearchTableEntities([row]);
+    this.deleteSearchTableEntities([row]);
   }
 
   onEditButtonClicked() {
-        this.fireEditEntityEvent();
+    this.fireEditEntityEvent();
   }
 
   fireEditEntityEvent() {
@@ -357,7 +375,8 @@ export class SearchTableComponent implements OnInit {
   getRowsAsString(): number {
     return this.rows.length;
   }
-  getCurrentResult(){
+
+  getCurrentResult() {
     return this.currentResult;
   }
 
@@ -366,7 +385,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   get managementUrl(): string {
-    return (this.manageUrl == null || this.manageUrl.length === 0)? this.url:this.manageUrl;
+    return (this.manageUrl == null || this.manageUrl.length === 0) ? this.url : this.manageUrl;
   }
 
   get deleteButtonEnabled(): boolean {
@@ -402,7 +421,10 @@ export class SearchTableComponent implements OnInit {
           const status = ObjectUtils.isEqual(row.status, EntityStatus.PERSISTED)
             ? EntityStatus.UPDATED
             : row.status;
-          this.rows[rowNumber] = {...formRef.componentInstance.getCurrent(), status};
+          this.rows[rowNumber] = {
+            ...formRef.componentInstance.getCurrent(),
+            status
+          };
           this.rows = [...this.rows];
         }
       }

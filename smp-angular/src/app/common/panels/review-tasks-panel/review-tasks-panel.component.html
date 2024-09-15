@@ -10,6 +10,7 @@
   [allowDeleteItems]="false"
   [allowEditItems]="true"
   [showActionButtons]="false"
+  (onRowDoubleClicked)="onRowDoubleClicked($event)"
 >
   <ng-template #additionalToolButtons>
     <span style="width: 2px">&nbsp;</span>

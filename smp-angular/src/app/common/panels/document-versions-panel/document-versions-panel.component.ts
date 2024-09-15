@@ -19,8 +19,10 @@
 import {
   AfterViewInit,
   Component,
+  EventEmitter,
   forwardRef,
   Input,
+  Output,
   ViewChild,
 } from '@angular/core';
 import {MatTable, MatTableDataSource} from "@angular/material/table";
@@ -58,27 +60,61 @@ import {GlobalLookups} from "../../global-lookups";
   ]
 })
 export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
+  @Output() selectedVersionChange: EventEmitter<number> = new EventEmitter<number>();
 
-
-  displayedColumns: string[] = [ 'version', 'status', 'createdOn', 'lastUpdatedOn'];
+  displayedColumns: string[] = ['version', 'status', 'createdOn', 'lastUpdatedOn'];
   private onChangeCallback: (_: any) => void = () => {
   };
   versionDataSource: MatTableDataSource<DocumentVersionRo> = new MatTableDataSource();
   dataChanged: boolean = false;
   selected: DocumentVersionRo;
+  _currentVersion: number;
+
   @ViewChild("DocumentVersionsTable") table: MatTable<DocumentVersionRo>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private globalLookups: GlobalLookups,
-           public dialog: MatDialog,
-              private controlContainer: ControlContainer) {
+    public dialog: MatDialog,
+    private controlContainer: ControlContainer) {
   }
 
   get dateTimeFormat(): string {
     return this.globalLookups.getDateTimeFormat();
   }
+
+  @Input() set selectedVersion(version: number) {
+    this._currentVersion = version;
+    // find selected version
+    this.updateSelectedVersion();
+  }
+
+  get selectedVersion(): number {
+    return this._currentVersion;
+  }
+
+  /**
+   * Private method to locate selected row for current version
+   * @private
+   */
+  private updateSelectedVersion(): void {
+
+    const selectedVersion :DocumentVersionRo = this.versionDataSource.data.find(v => v.version === this._currentVersion);
+    this.selected = selectedVersion;
+  }
+
+
+
+  /**
+   * Method to handle row selection
+   * @param row
+   */
+  onRowSelect(row: DocumentVersionRo) {
+    this.selected = row;
+    this.selectedVersionChange.emit(row.version);
+  }
+
 
   @ViewChild(FormControlDirective, {static: true})
   formControlDirective: FormControlDirective;
@@ -97,6 +133,7 @@ export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeav
    */
   writeValue(eventList: DocumentVersionRo[]): void {
     this.versionDataSource.data = !eventList?.length ? [] : [...eventList];
+    this.updateSelectedVersion();
     this.dataChanged = false;
   }
 

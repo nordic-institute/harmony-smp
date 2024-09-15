@@ -128,7 +128,7 @@ class ApplicationResourceIT {
         // when
         mvc.perform(get(PATH + "/config")
                         .with(csrf()))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isForbidden())
                 .andReturn()
                 .getResponse();
     }

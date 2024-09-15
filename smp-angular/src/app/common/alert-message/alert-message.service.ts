@@ -142,6 +142,10 @@ export class AlertMessageService {
     this.showMessage(message, 'warning', keepAfterNavigationChange, timeoutInSeconds);
   }
 
+  errorForTranslation(translationCode: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
+    this.showMessageForTranslation(translationCode, 'error', keepAfterNavigationChange, timeoutInSeconds);
+  }
+
   error(message: any, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
     this.showMessage(message, 'error', keepAfterNavigationChange, timeoutInSeconds);
   }

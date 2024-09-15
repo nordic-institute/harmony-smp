@@ -24,6 +24,8 @@ import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -135,6 +137,30 @@ class DocumentDaoTest extends AbstractBaseDao {
 
         List<DBReviewDocumentVersion> dbDocumentVersions =  testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId());
         assertEquals(1, dbDocumentVersions.size());
+
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "UNDER_REVIEW, UNDER_REVIEW, 2",
+            "UNDER_REVIEW, DRAFT, 1",
+            "DRAFT, UNDER_REVIEW, 1",
+            "DRAFT, DRAFT, 0"
+    })
+    void testPersistUnderReviewDocumentSubresource(String resourceStatus, String subresourceStatus, int expectedSize) {
+        testUtilsDao.createResourceDefinitions();
+        DBResource resource = testUtilsDao.createResource("review", "1-1-1", VisibilityType.PUBLIC,
+                DocumentVersionStatusType.valueOf(resourceStatus),
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1());
+
+        DBSubresource subres = testUtilsDao.createSubresource(resource, "1-1-1", "1-1-1",
+                DocumentVersionStatusType.valueOf(subresourceStatus),
+                testUtilsDao.getSubresourceDefSmpMetadata());
+
+        testUtilsDao.createResourceMembership(MembershipRoleType.ADMIN, testUtilsDao.getUser1(), resource, true);
+
+        List<DBReviewDocumentVersion> dbDocumentVersions =  testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId());
+        assertEquals(expectedSize, dbDocumentVersions.size());
 
     }
 }

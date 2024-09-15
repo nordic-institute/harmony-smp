@@ -107,12 +107,12 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     // set selected resource
     this.editResourceService.selectedResource = this.resource;
 
-    let node: NavigationNode = await this.createNew();
+    let node: NavigationNode = await this.createNewDocumentNavigationNode();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
   }
 
-  public async createNew() {
+  public async createNewDocumentNavigationNode() {
     return {
       code: "resource-document",
       icon: "note",

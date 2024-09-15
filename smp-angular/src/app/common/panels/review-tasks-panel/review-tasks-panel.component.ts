@@ -16,12 +16,19 @@ import {HttpClient} from '@angular/common/http';
 import {GlobalLookups} from "../../global-lookups";
 import {SearchTableComponent} from "../../search-table/search-table.component";
 import {SecurityService} from "../../../security/security.service";
-import {
-  ObjectPropertiesDialogComponent
-} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
 import {ReviewTasksController} from "./review-tasks-controller";
 import {lastValueFrom} from "rxjs";
 import {TranslateService} from "@ngx-translate/core";
+import {
+  NavigationNode,
+  NavigationService
+} from "../../../window/sidenav/navigation-model.service";
+import {
+  EditResourceService
+} from "../../../edit/edit-resources/edit-resource.service";
+import {
+  ReviewDocumentVersionRo
+} from "../../model/review-document-version-ro.model";
 
 /**
  * This is a generic alert panel component for previewing alert list
@@ -46,6 +53,7 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
   columnPicker: ColumnPicker = new ColumnPicker();
   reviewTaskController: ReviewTasksController;
   filter: any = {};
+  selected: any;
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
@@ -53,7 +61,9 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
               protected alertService: AlertMessageService,
               private translateService: TranslateService,
               public dialog: MatDialog,
-              private changeDetector: ChangeDetectorRef) {
+              private changeDetector: ChangeDetectorRef,
+              private navigationService: NavigationService,
+              private editResourceService: EditResourceService,) {
   }
 
   ngOnInit() {
@@ -71,31 +81,51 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
         title: "Review date",
         prop: 'lastUpdatedOn',
         showInitially: true,
-        maxWidth: 250,
+        maxWidth: 200,
         cellTemplate: this.dateTimeColumn,
       },
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.scheme")),
-        prop: 'resourceScheme',
+        name: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.target")),
+        prop: 'target',
+        maxWidth: 160,
+        showInitially: true,
+      },
+      {
+        name: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.version")),
+        prop: 'version',
+        maxWidth: 60,
+        showInitially: true,
+      },
+      {
+        name: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.resource.scheme")),
+        prop: 'resourceIdentifierScheme',
         width: 250,
         maxWidth: 250,
         resizable: 'true',
         showInitially: true,
       },
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.id")),
-        prop: 'resourceIdentifier',
+        name: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.resource.value")),
+        prop: 'resourceIdentifierValue',
         resizable: 'true',
         showInitially: true,
       },
       {
-        name: 'Version',
-        title: "Version",
-        prop: 'version',
-        maxWidth: 60,
-        cellTemplate: this.credentialType,
+        name: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.subresource.scheme")),
+        prop: 'subresourceIdentifierScheme',
+        width: 250,
+        maxWidth: 250,
+        resizable: 'true',
         showInitially: true,
-      }
+      },
+      {
+        name: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.subresource.value")),
+        prop: 'subresourceIdentifierValue',
+        resizable: 'true',
+        showInitially: true,
+      },
+
+
 
     ];
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
@@ -108,13 +138,6 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
 
 
   details(row: any) {
-    this.dialog.open(ObjectPropertiesDialogComponent, {
-      data: {
-        title: "Alert details",
-        object: row.alertDetails,
-
-      }
-    });
   }
 
   // for dirty guard...
@@ -125,4 +148,27 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
   get dateTimeFormat(): string {
     return this.lookups.getDateTimeFormat();
   }
+
+  async onRowDoubleClicked(row: ReviewDocumentVersionRo) {
+    // set selected resource
+    this.editResourceService.selectedReviewDocument = row;
+    let node: NavigationNode = await this.createNewReviewDocumentNavigationNode();
+    this.navigationService.selected.children = [node]
+    this.navigationService.select(node);
+
+  }
+
+  public async createNewReviewDocumentNavigationNode() {
+    return {
+      code: "review-document",
+      icon: "note",
+      name: await lastValueFrom(this.translateService.get("review.edit.panel.label.review")),
+      routerLink: "review-document",
+      selected: true,
+      tooltip: "",
+      transient: true,
+      i18n: "navigation.label.edit.document.review"
+    }
+  }
 }
+

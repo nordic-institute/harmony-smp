@@ -106,8 +106,6 @@ public class TestUtilsDao {
     DBResourceMember resourceMemberU1R2_D2G1RD1_Viewer;
 
     DBResource resourcePrivateD1G1RD1;
-   // DBResource resourceInternalD1G1RD1;
-
     DBExtension extension;
 
     boolean searchDataCreated = false;
@@ -149,7 +147,6 @@ public class TestUtilsDao {
         resourceMemberU1R2_D2G1RD1_Viewer = null;
 
         resourcePrivateD1G1RD1 = null;
-        //resourceInternalD1G1RD1 = null;
 
         extension = null;
         searchDataCreated = false;
@@ -479,11 +476,38 @@ public class TestUtilsDao {
         resource.setVisibility(visibilityType);
         resource.setGroup(group);
         resource.setDomainResourceDef(domainResourceDef);
+        resource.setReviewEnabled(true);
 
         persistFlushDetach(resource);
         assertNotNull(resource.getId());
         return resource;
     }
+
+    @Transactional
+    public DBSubresource createSubresource(DBResource resource, String identifier, String schema,
+                                     DocumentVersionStatusType status, DBSubresourceDef subresourceDefSmp) {
+
+        DBSubresource dbSubresource = TestDBUtils.createDBSubresource(
+                resource.getIdentifierValue(),resource.getIdentifierScheme(),
+                identifier, schema);
+
+
+        dbSubresource.setSubresourceDef(subresourceDefSmp);
+
+        DBDocument doc  = createDocument(1, resourceD1G1RD1.getIdentifierValue(), resourceD1G1RD1.getIdentifierScheme(),
+                identifier, schema);
+        doc.getDocumentVersions().get(0).setStatus(status);
+
+        dbSubresource.setDocument(doc);
+        dbSubresource.setResource(resource);
+
+
+        persistFlushDetach(dbSubresource);
+        assertNotNull(dbSubresource.getId());
+        return dbSubresource;
+    }
+
+
 
 
     /**

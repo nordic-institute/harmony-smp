@@ -68,6 +68,7 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
   private onChangeCallback: (_: any) => void = () => {
   };
   selected?: DocumentPropertyRo = null;
+  @Input() showEditToolbarButton: boolean = true;
   dataChanged: boolean = false;
   initPropertyList: DocumentPropertyRo[] = [];
   propertyDataSource: MatTableDataSource<DocumentPropertyRo> = new MatTableDataSource();
@@ -112,6 +113,10 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
 
   get cancelButtonEnabled(): boolean {
     return this.dataChanged;
+  }
+
+  get shotToolbar(): boolean {
+    return this.showEditToolbarButton;
   }
 
   /**
