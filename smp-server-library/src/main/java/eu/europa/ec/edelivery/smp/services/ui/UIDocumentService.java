@@ -338,7 +338,7 @@ public class UIDocumentService {
     }
 
     @Transactional
-    public DocumentRO saveDocumentForResource(Long resourceId, DocumentRO documentRo) {
+    public DocumentRO saveDocumentForResource(Long resourceId, DocumentRO documentRo, Long documentReference) {
 
         final DBResource resource = resourceDao.find(resourceId);
         final DBDocument document = resource.getDocument();
@@ -358,6 +358,32 @@ public class UIDocumentService {
                     .forEach(p -> persistDocumentProperty(p, document));
         }
 
+        if (Boolean.TRUE.equals(documentRo.getSharingEnabled()) && documentReference!=null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentSharingNotAllowed", "Document sharing is not allowed for the document with reference document");
+        }
+        document.setSharingEnabled(documentRo.getSharingEnabled());
+
+        DBDocument documentReferenceEntity = null;
+        if (documentReference != null) {
+            if (Objects.equals(documentReference, document.getId())) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotAllowed", "Document reference cannot be the same as the document id");
+            }
+            documentReferenceEntity = documentDao.find(documentReference);
+            if (documentReferenceEntity == null) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotFound", "Document reference not found");
+            }
+
+            if (documentReferenceEntity.getSharingEnabled() != null) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to not shared document");
+            }
+
+            if (documentReferenceEntity.getReferenceDocument() != null) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to a document that already has a reference");
+            }
+            document.setReferenceDocument(documentReferenceEntity);
+        } else {
+            document.setReferenceDocument(null);
+        }
         return convertWithVersion(document, returnDocVersion, getInitialProperties(resource));
     }
 
@@ -536,8 +562,6 @@ public class UIDocumentService {
     public DocumentRO getDocumentForResource(Long resourceId, int version) {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
-
-
         return convertWithVersion(document, version, getInitialProperties(resource));
     }
 
@@ -625,7 +649,7 @@ public class UIDocumentService {
                 document.getName(), "Document Name", SMPPropertyTypeEnum.STRING, true);
         documentRo.addProperty(DOCUMENT_MIMETYPE.getPropertyName(),
                 document.getMimeType(), "Document Mimetype", SMPPropertyTypeEnum.STRING, true);
-
+        documentRo.setSharingEnabled(document.getSharingEnabled());
         documentRo.getProperties().addAll(initialProperties);
 
         // set list of versions
@@ -635,6 +659,10 @@ public class UIDocumentService {
         });
 
         documentRo.setDocumentId(SessionSecurityUtils.encryptedEntityId(document.getId()));
+        if (document.getReferenceDocument() != null) {
+            documentRo.setReferenceDocumentId(SessionSecurityUtils.encryptedEntityId(document.getReferenceDocument().getId()));
+        }
+
         documentRo.setMimeType(document.getMimeType());
         documentRo.setName(document.getName());
         documentRo.setCurrentResourceVersion(document.getCurrentVersion());

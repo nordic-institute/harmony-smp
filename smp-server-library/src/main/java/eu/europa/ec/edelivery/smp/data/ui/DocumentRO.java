@@ -29,10 +29,12 @@ import java.util.List;
 public class DocumentRO extends BaseRO {
     private static final long serialVersionUID = 9008583888835630038L;
     String documentId;
+    String referenceDocumentId;
     String mimeType;
     Integer currentResourceVersion;
     List<Integer> allVersions;
     String name;
+    Boolean sharingEnabled = Boolean.FALSE;
 
     Integer payloadVersion;
     String payload;
@@ -52,6 +54,14 @@ public class DocumentRO extends BaseRO {
         this.documentId = documentId;
     }
 
+    public String getReferenceDocumentId() {
+        return referenceDocumentId;
+    }
+
+    public void setReferenceDocumentId(String referenceDocumentId) {
+        this.referenceDocumentId = referenceDocumentId;
+    }
+
     public String getMimeType() {
         return mimeType;
     }
@@ -62,6 +72,14 @@ public class DocumentRO extends BaseRO {
 
     public Integer getCurrentResourceVersion() {
         return currentResourceVersion;
+    }
+
+    public Boolean getSharingEnabled() {
+        return sharingEnabled;
+    }
+
+    public void setSharingEnabled(Boolean sharingEnabled) {
+        this.sharingEnabled = sharingEnabled;
     }
 
     public void setCurrentResourceVersion(Integer currentResourceVersion) {

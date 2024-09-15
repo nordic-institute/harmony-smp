@@ -32,8 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_RESOURCE;
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_SUBRESOURCE;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 /**
  * Database optimization: load service metadata xml only when needed and
@@ -47,10 +46,17 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_
 @Audited
 @Table(name = "SMP_DOCUMENT")
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
-@NamedQueries({
-        @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id"),
+
+        @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id")
+        @NamedQuery(name = QUERY_DOCUMENT_BY_RESOURCE_DEF_SHARING, query = "SELECT d FROM DBResource r " +
+                "INNER JOIN r.document d " +
+                "INNER JOIN r.domainResourceDef.resourceDef rdef " +
+                "  WHERE rdef.identifier =:resource_def_identifier and d.sharingEnabled =:sharing_enabled")
         @NamedQuery(name = QUERY_DOCUMENT_FOR_SUBRESOURCE, query = "SELECT d FROM DBSubresource  sr JOIN sr.document d WHERE sr.id =:subresource_id")
-})
+        @NamedQuery(name = QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING, query = "SELECT d FROM DBSubresource rs " +
+                "INNER JOIN rs.document d " +
+                "INNER JOIN rs.subresourceDef rdef " +
+                "  WHERE rdef.identifier =:subresource_def_identifier and d.sharingEnabled =:sharing_enabled")
 public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);
     @Id
@@ -59,6 +65,10 @@ public class DBDocument extends BaseEntity {
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique document id")
     Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FK_REF_DOCUMENT_ID")
+    private DBDocument referenceDocument;
 
     // list of all version with the latest version first!
     @OneToMany(
@@ -80,6 +90,9 @@ public class DBDocument extends BaseEntity {
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "SHARING_ENABLED")
+    private Boolean sharingEnabled = Boolean.FALSE;
+
     @OneToMany(
             mappedBy = "document",
             cascade = CascadeType.ALL,
@@ -97,6 +110,13 @@ public class DBDocument extends BaseEntity {
         this.id = id;
     }
 
+    public DBDocument getReferenceDocument() {
+        return referenceDocument;
+    }
+
+    public void setReferenceDocument(DBDocument referenceDocument) {
+        this.referenceDocument = referenceDocument;
+    }
 
     /**
      * Returns document version ordered from the latest version to first version
@@ -147,7 +167,6 @@ public class DBDocument extends BaseEntity {
                 .reduce(0, Integer::max) + 1;
     }
 
-
     public int getCurrentVersion() {
         return currentVersion;
     }
@@ -165,6 +184,14 @@ public class DBDocument extends BaseEntity {
 
     private void removeTransientProperties() {
         getDocumentProperties().removeIf(DBDocumentProperty::isTransient);
+    }
+
+    public Boolean getSharingEnabled() {
+        return sharingEnabled;
+    }
+
+    public void setSharingEnabled(Boolean sharingEnabled) {
+        this.sharingEnabled = sharingEnabled;
     }
 
     @Override

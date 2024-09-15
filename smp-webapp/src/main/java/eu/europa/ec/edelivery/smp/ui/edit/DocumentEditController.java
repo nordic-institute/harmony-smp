@@ -195,8 +195,7 @@ public class DocumentEditController {
 
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE_APPROVE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and (@smpAuthorizationService.isResourceAdministrator(#resourceEncId)" +
-            "   or @smpAuthorizationService.isResourceReviewer(#resourceEncId))")
+            "and @smpAuthorizationService.isResourceReviewer(#resourceEncId)")
     public DocumentRO approveResourceDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                      @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                                      @RequestBody DocumentRO document) {
@@ -210,8 +209,7 @@ public class DocumentEditController {
 
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_APPROVE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and (@smpAuthorizationService.isResourceAdministrator(#resourceEncId)" +
-            "   or @smpAuthorizationService.isResourceReviewer(#resourceEncId))")
+            "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
     public DocumentRO approveSubresourceDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                         @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                                         @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,
@@ -272,7 +270,11 @@ public class DocumentEditController {
                                               @RequestBody DocumentRO document) {
         logAdminAccess("saveResourceDocument");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
-        return uiDocumentService.saveDocumentForResource(resourceId, document);
+        Long referenceDocumentId = null;
+        if (document.getReferenceDocumentId() != null) {
+            referenceDocumentId = SessionSecurityUtils.decryptEntityId(document.getReferenceDocumentId());
+        }
+        return uiDocumentService.saveDocumentForResource(resourceId, document, referenceDocumentId);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE,

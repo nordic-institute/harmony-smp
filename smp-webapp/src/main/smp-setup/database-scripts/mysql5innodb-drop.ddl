@@ -35,6 +35,10 @@
        drop 
        foreign key FKqjh6vxvb5tg0tvbkvi3k3xhe6;
 
+    alter table SMP_DOCUMENT 
+       drop 
+       foreign key FKbytp2kp8g3pj8qfp1g6a2g7p;
+
     alter table SMP_DOCUMENT_AUD 
        drop 
        foreign key FKh9epnme26i271eixtvrpqejvi;

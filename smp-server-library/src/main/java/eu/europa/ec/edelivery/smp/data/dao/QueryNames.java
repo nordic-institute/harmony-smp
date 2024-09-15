@@ -121,7 +121,9 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION = "DBExtResourceDef.getByIdentifierExtension";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";
+    public static final String QUERY_DOCUMENT_BY_RESOURCE_DEF_SHARING = "DBDocument.getForResourceDEfAndSharingEnabled";
     public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
+    public static final String QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING = "DBDocument.getForSubresourceDEfAndSharingEnabled";
 
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
@@ -194,6 +196,7 @@ public class QueryNames {
 
     public static final String PARAM_DOCUMENT_ID = "document_id";
     public static final String PARAM_DOCUMENT_TYPE = "document_type";
+    public static final String PARAM_SHARING_ENABLED = "sharing_enabled";
     public static final String PARAM_STATUS = "status";
 
     public static final String PARAM_GROUP_ID = "group_id";

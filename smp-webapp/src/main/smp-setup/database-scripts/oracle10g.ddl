@@ -284,6 +284,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0) not null,
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        SHARING_ENABLED number(1,0),
+        FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID)
     );
 
@@ -302,6 +304,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        SHARING_ENABLED number(1,0),
+        FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID, REV)
     );
 
@@ -377,7 +381,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
-        details varchar2(1024 char),
+        DETAILS varchar2(1024 char),
         EVENT_ON timestamp,
         EVENT_SOURCE varchar2(255 char) not null,
         EVENT_TYPE varchar2(255 char) not null,
@@ -392,7 +396,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_DOCUMENT_VERSION_EVENT.ID is
         'Unique document version event identifier';
 
-    comment on column SMP_DOCUMENT_VERSION_EVENT.details is
+    comment on column SMP_DOCUMENT_VERSION_EVENT.DETAILS is
         'Details of the event';
 
     comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_ON is
@@ -1011,6 +1015,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        add constraint FKqjh6vxvb5tg0tvbkvi3k3xhe6 
        foreign key (REV) 
        references SMP_REV_INFO;
+
+    alter table SMP_DOCUMENT 
+       add constraint FKbytp2kp8g3pj8qfp1g6a2g7p 
+       foreign key (FK_REF_DOCUMENT_ID) 
+       references SMP_DOCUMENT;
 
     alter table SMP_DOCUMENT_AUD 
        add constraint FKh9epnme26i271eixtvrpqejvi 

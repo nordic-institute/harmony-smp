@@ -164,6 +164,8 @@
         CURRENT_VERSION integer not null,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SHARING_ENABLED bit,
+        FK_REF_DOCUMENT_ID bigint,
         primary key (ID)
     ) comment='SMP document entity for resources and subresources' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -176,6 +178,8 @@
         CURRENT_VERSION integer,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SHARING_ENABLED bit,
+        FK_REF_DOCUMENT_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -233,7 +237,7 @@
        ID bigint not null auto_increment comment 'Unique document version event identifier',
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
-        details varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Details of the event',
+        DETAILS varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Details of the event',
         EVENT_ON datetime comment 'Date time of the event',
         EVENT_SOURCE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Event source UI, API',
         EVENT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Document version event type',
@@ -711,6 +715,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        add constraint FKqjh6vxvb5tg0tvbkvi3k3xhe6 
        foreign key (REV) 
        references SMP_REV_INFO (id);
+
+    alter table SMP_DOCUMENT 
+       add constraint FKbytp2kp8g3pj8qfp1g6a2g7p 
+       foreign key (FK_REF_DOCUMENT_ID) 
+       references SMP_DOCUMENT (ID);
 
     alter table SMP_DOCUMENT_AUD 
        add constraint FKh9epnme26i271eixtvrpqejvi 

@@ -148,7 +148,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId());
         assertNotNull(testDoc.getPayload());
         //when
-        DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc);
+        DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc, null);
         // then
         assertNotNull(result);
     }

@@ -136,8 +136,6 @@
   "document.properties.panel.label.value": "Value",
   "document.properties.panel.label.no.properties.found": "No Document properties found",
   "document.properties.panel.label.select.page": "Select page of properties",
-  "document.properties.panel.label.expand.collapse": "Expand/Collapse",
-  "document.properties.panel.tooltip.expand.collapse": "Expand/Collapse property panel",
   "document.properties.panel.label.create": "Create",
   "document.properties.panel.tooltip.create": "Create new property",
   "document.properties.panel.label.edit": "Edit",
@@ -383,6 +381,8 @@
   "resource.details.panel.tooltip.resource.review.enabled": "Review process enabled",
   "resource.details.panel.tooltip.show.resource": "Show resource",
   "resource.details.panel.title": "Resources",
+  "resource.details.panel.button.reset": "Reset",
+  "resource.details.panel.button.save": "Save",
 
   "document.edit.panel.button.back": "Back",
   "document.edit.panel.button.cancel": "Cancel",
@@ -854,6 +854,9 @@
   "toolbar.component.button.open.cas.profile": "Open CAS user data",
   "toolbar.component.label.system.administrator.role": "System administrator",
   "toolbar.component.label.user.role": "SMP user",
+
+  "expandable.panel.label.expand.collapse": "Expand/Collapse",
+  "expandable.panel.tooltip.expand.collapse": "Expand/Collapse property panel",
 
   "app.component.button.collapse": "Collapse sidebar",
   "app.component.tooltip.collapse": "Collapse",

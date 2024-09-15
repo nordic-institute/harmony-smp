@@ -74,7 +74,7 @@ public class DBDocumentVersionEvent extends BaseEntity {
     @ColumnDescription(comment = "Event source UI, API")
     private EventSourceType eventSourceType = EventSourceType.OTHER;
 
-    @Column(name = "details", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
+    @Column(name = "DETAILS", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     @ColumnDescription(comment = "Details of the event")
     private String details;
 
