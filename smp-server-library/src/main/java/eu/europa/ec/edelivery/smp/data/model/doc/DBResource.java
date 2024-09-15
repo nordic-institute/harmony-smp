@@ -151,8 +151,11 @@ public class DBResource extends BaseEntity {
     @Column(name = "IDENTIFIER_SCHEME", length = CommonColumnsLengths.MAX_IDENTIFIER_VALUE_SCHEME_LENGTH)
     String identifierScheme;
 
-    @Column(name = "SML_REGISTERED", nullable = false)
+    @Column(name = "SML_REGISTERED")
     private boolean smlRegistered = false;
+
+    @Column(name = "REVIEW_ENABLED")
+    private Boolean reviewEnabled = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "VISIBILITY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
@@ -269,6 +272,14 @@ public class DBResource extends BaseEntity {
 
     public void setSmlRegistered(boolean smlRegistered) {
         this.smlRegistered = smlRegistered;
+    }
+
+    public Boolean isReviewEnabled() {
+        return reviewEnabled == null ? Boolean.FALSE : reviewEnabled;
+    }
+
+    public void setReviewEnabled(Boolean reviewEnabled) {
+        this.reviewEnabled = reviewEnabled;
     }
 
     /**

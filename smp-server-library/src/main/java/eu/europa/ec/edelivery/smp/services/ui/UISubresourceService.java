@@ -18,7 +18,10 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
+import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
@@ -33,10 +36,12 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,26 +58,26 @@ public class UISubresourceService {
     private static final String ACTION_SUBRESOURCE_CREATE = "CreateSubresourceForResource";
     private static final String ACTION_SUBRESOURCE_DELETE = "DeleteSubresourceFromResource";
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UISubresourceService.class);
-
     private final SubresourceDao subresourceDao;
-
     private final ResourceDao resourceDao;
     private final SubresourceDefDao subresourceDefDao;
-
-
     private final IdentifierService identifierService;
-
-
+    private final DocumentVersionService documentVersionService;
+    private final UIDocumentService uiDocumentService;
     private final ConversionService conversionService;
 
     public UISubresourceService(SubresourceDao subresourceDao, ResourceDao resourceDao,SubresourceDefDao subresourceDefDao, IdentifierService identifierService,
-                                ConversionService conversionService) {
+                                ConversionService conversionService,
+                                DocumentVersionService documentVersionService,
+                                UIDocumentService uiDocumentService
+    ) {
         this.subresourceDao = subresourceDao;
         this.resourceDao = resourceDao;
         this.subresourceDefDao = subresourceDefDao;
         this.identifierService = identifierService;
         this.conversionService = conversionService;
+        this.documentVersionService = documentVersionService;
+        this.uiDocumentService = uiDocumentService;
     }
 
 
@@ -125,18 +130,31 @@ public class UISubresourceService {
         subresource.setIdentifierValue(docId.getValue());
         subresource.setResource(resParent);
         subresource.setSubresourceDef(optRedef.get());
-        DBDocument document = createDocumentForSubresourceDef(optRedef.get());
+        DBDocument document = createDocumentForSubresourceDef(optRedef.get(), subresource, resParent);
         subresource.setDocument(document);
         subresourceDao.persist(subresource);
         // create first member as admin user
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
-    public DBDocument createDocumentForSubresourceDef(DBSubresourceDef subresourceDef) {
+    public DBDocument createDocumentForSubresourceDef(DBSubresourceDef subresourceDef, DBSubresource subresource, DBResource resource) {
         DBDocument document = new DBDocument();
         document.setCurrentVersion(1);
         document.setMimeType(subresourceDef.getMimeType());
         document.setName(subresourceDef.getName());
+
+
+        // create first version of the document
+        DBDocumentVersion version = documentVersionService.initializeDocumentVersionByGroupAdmin(EventSourceType.UI);
+
+        version.setStatus(DocumentVersionStatusType.PUBLISHED);
+        version.setDocument(document);
+        version.setVersion(1);
+        // generate document content
+        document.addNewDocumentVersion(version);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        uiDocumentService.generateDocumentForSubresource(resource,subresource, baos);
+        version.setContent(baos.toByteArray());
         return document;
     }
 }

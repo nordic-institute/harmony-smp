@@ -18,10 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.testutil;
 
-import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import eu.europa.ec.edelivery.smp.data.enums.*;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
@@ -170,20 +167,24 @@ public class TestDBUtils {
         return createDBResource(id, sch, true);
     }
 
-
-    public static DBResource createDBResource(String id, String sch, boolean withExtension) {
+    public static DBResource createDBResource(String id, String sch, boolean withExtension,
+                                              DocumentVersionStatusType statusType) {
         DBResource resource = new DBResource();
         resource.setIdentifierValue(id);
         resource.setIdentifierScheme(sch);
         resource.setVisibility(VisibilityType.PUBLIC);
         if (withExtension) {
             DBDocument document = createDBDocument();
-            DBDocumentVersion documentVersion = createDBDocumentVersion(id, sch);
-            createDBDocumentVersion(id, sch).setContent(generateExtension());
+            DBDocumentVersion documentVersion = createDBDocumentVersion(id, sch, statusType);
             document.addNewDocumentVersion(documentVersion);
             resource.setDocument(document);
         }
         return resource;
+    }
+
+
+    public static DBResource createDBResource(String id, String sch, boolean withExtension) {
+        return createDBResource(id, sch, withExtension, DocumentVersionStatusType.DRAFT);
     }
 
     public static DBDocument createDBDocument() {
@@ -194,7 +195,12 @@ public class TestDBUtils {
     }
 
     public static DBDocumentVersion createDBDocumentVersion(String id, String sch) {
+        return createDBDocumentVersion(id, sch, DocumentVersionStatusType.DRAFT);
+    }
+
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch, DocumentVersionStatusType status) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
+        docuVersion.setStatus(status);
         docuVersion.setContent(("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
                 "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
                 "<ServiceMetadataReferenceCollection />" +

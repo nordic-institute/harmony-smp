@@ -25,4 +25,5 @@ export interface SearchTableController {
    * @param row the row for which the row expander should be disabled or not
    */
   isRowExpanderDisabled(row: SearchTableEntity): boolean;
+
 }

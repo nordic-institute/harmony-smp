@@ -19,7 +19,7 @@
       <mat-label>{{ "resource.dialog.label.resource.id" | translate }}</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
-             required auto-focus-directive
+             auto-focus-directive
              maxlength="255" required>
       <div
         *ngIf="(newMode && resourceForm.controls['identifierValue'].touched ) &&  resourceForm.controls['identifierValue'].hasError('required')"
@@ -51,7 +51,11 @@
         {{participantSchemeMessage}}
       </div>
     </mat-form-field>
-
+    <mat-checkbox formControlName="reviewEnabled"
+                  matTooltip="{{ 'resource.dialog.label.resource.review.enabled' | translate }}"
+                  id="reviewEnabled_id">
+      {{ "resource.dialog.tooltip.resource.review.enabled" | translate }}
+    </mat-checkbox>
 
     <mat-form-field style="width:100%">
       <mat-label>{{ "resource.dialog.label.resource.visibility" | translate }}</mat-label>

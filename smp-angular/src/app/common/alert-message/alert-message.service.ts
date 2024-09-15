@@ -1,7 +1,8 @@
 ﻿import {Injectable} from '@angular/core';
 import {NavigationEnd, NavigationStart, Router} from '@angular/router';
-import {Observable, Subject} from 'rxjs';
+import {lastValueFrom, Observable, Subject} from 'rxjs';
 import {HttpErrorResponse} from "@angular/common/http";
+import {TranslateService} from "@ngx-translate/core";
 
 /**
  * AlertMessageRO is the object that will be used to display the message in the SMP alert component in overlay.
@@ -25,7 +26,8 @@ export class AlertMessageService {
   private keepAfterNavigationChange:boolean = false;
   private message: AlertMessageRO;
 
-  constructor(private router: Router) {
+  constructor(private router: Router,
+              private translateService: TranslateService) {
     // clear alert message on route change
     router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -80,7 +82,6 @@ export class AlertMessageService {
    * @param messageObject
    */
   getObjectMessage(messageObject: any): string {
-    let message = 'An error occurred';
     if (typeof messageObject === 'string') {
       return messageObject;
     }
@@ -124,12 +125,25 @@ export class AlertMessageService {
     this.displayCurrentMessage();
   }
 
+  async showMessageForTranslation(translationCode: string,type: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) : Promise<void> {
+      let message = await lastValueFrom(this.translateService.get(translationCode))
+      this.showMessage(message, type, keepAfterNavigationChange, timeoutInSeconds);
+  }
+
+  successForTranslation(translationCode: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
+    this.showMessageForTranslation(translationCode, 'success', keepAfterNavigationChange, timeoutInSeconds);
+  }
+
   success(message: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
     this.showMessage(message, 'success', keepAfterNavigationChange, timeoutInSeconds);
   }
 
   warning(message: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
     this.showMessage(message, 'warning', keepAfterNavigationChange, timeoutInSeconds);
+  }
+
+  errorForTranslation(translationCode: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
+    this.showMessageForTranslation(translationCode, 'error', keepAfterNavigationChange, timeoutInSeconds);
   }
 
   error(message: any, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {

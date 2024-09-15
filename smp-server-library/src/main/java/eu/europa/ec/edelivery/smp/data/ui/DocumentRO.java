@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
 import java.time.OffsetDateTime;
@@ -26,18 +27,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DocumentRO extends BaseRO {
-
+    private static final long serialVersionUID = 9008583888835630038L;
     String documentId;
+    String referenceDocumentId;
     String mimeType;
     Integer currentResourceVersion;
     List<Integer> allVersions;
     String name;
+    Boolean sharingEnabled = Boolean.FALSE;
+
     Integer payloadVersion;
     String payload;
     private int payloadStatus = EntityROStatus.PERSISTED.getStatusNumber();
     OffsetDateTime payloadCreatedOn;
+    DocumentVersionStatusType documentVersionStatus;
 
     List<DocumentPropertyRO> properties = new ArrayList<>();
+    List<DocumentVersionEventRO> documentVersionEvents = new ArrayList<>();
+    List<DocumentVersionRO> documentVersions = new ArrayList<>();
 
     public String getDocumentId() {
         return documentId;
@@ -45,6 +52,14 @@ public class DocumentRO extends BaseRO {
 
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
+    }
+
+    public String getReferenceDocumentId() {
+        return referenceDocumentId;
+    }
+
+    public void setReferenceDocumentId(String referenceDocumentId) {
+        this.referenceDocumentId = referenceDocumentId;
     }
 
     public String getMimeType() {
@@ -57,6 +72,14 @@ public class DocumentRO extends BaseRO {
 
     public Integer getCurrentResourceVersion() {
         return currentResourceVersion;
+    }
+
+    public Boolean getSharingEnabled() {
+        return sharingEnabled;
+    }
+
+    public void setSharingEnabled(Boolean sharingEnabled) {
+        this.sharingEnabled = sharingEnabled;
     }
 
     public void setCurrentResourceVersion(Integer currentResourceVersion) {
@@ -84,6 +107,14 @@ public class DocumentRO extends BaseRO {
 
     public void setPayloadVersion(Integer payloadVersion) {
         this.payloadVersion = payloadVersion;
+    }
+
+    public DocumentVersionStatusType getDocumentVersionStatus() {
+        return documentVersionStatus;
+    }
+
+    public void setDocumentVersionStatus(DocumentVersionStatusType documentVersionStatus) {
+        this.documentVersionStatus = documentVersionStatus;
     }
 
     public String getPayload() {
@@ -119,5 +150,21 @@ public class DocumentRO extends BaseRO {
         propertyRO.setType(type);
 
         this.properties.add(propertyRO);
+    }
+
+    public List<DocumentVersionRO> getDocumentVersions() {
+        return documentVersions;
+    }
+
+    public void setDocumentVersions(List<DocumentVersionRO> documentVersions) {
+        this.documentVersions = documentVersions;
+    }
+
+    public List<DocumentVersionEventRO> getDocumentVersionEvents() {
+        return documentVersionEvents;
+    }
+
+    public void addDocumentVersionEvent(DocumentVersionEventRO event) {
+        this.documentVersionEvents.add(event);
     }
 }

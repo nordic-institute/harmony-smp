@@ -28,6 +28,9 @@ public class MemberRO {
     MemberOfType memberOf;
     String fullName;
     MembershipRoleType roleType;
+    // Resource specific fields
+    Boolean hasPermissionReview;
+
 
     public String getMemberId() {
         return memberId;
@@ -63,6 +66,14 @@ public class MemberRO {
 
     public MembershipRoleType getRoleType() {
         return roleType;
+    }
+
+    public Boolean getHasPermissionReview() {
+        return hasPermissionReview == null ? Boolean.FALSE : hasPermissionReview;
+    }
+
+    public void setHasPermissionReview(Boolean hasPermissionReview) {
+        this.hasPermissionReview = hasPermissionReview;
     }
 
     public void setRoleType(MembershipRoleType roleType) {

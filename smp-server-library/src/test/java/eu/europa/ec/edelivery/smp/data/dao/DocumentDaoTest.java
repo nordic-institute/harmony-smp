@@ -18,11 +18,14 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentProperty;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -39,6 +42,7 @@ class DocumentDaoTest extends AbstractBaseDao {
     @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
+        testUtilsDao.createResourceMemberships();
         testUtilsDao.createSubresources();
     }
 
@@ -79,7 +83,8 @@ class DocumentDaoTest extends AbstractBaseDao {
         assertTrue(result.isPresent());
         // the default setup  createResources  sets two versions (0 and 1 ) with current version 1
         assertEquals(2, result.get().getVersion());
-        assertEquals(testUtilsDao.getDocumentD1G1RD1().getDocumentVersions().get(1), result.get());
+        // note that the versions are ordered by version desc
+        assertEquals(testUtilsDao.getDocumentD1G1RD1().getDocumentVersions().get(0), result.get());
     }
 
 
@@ -98,7 +103,8 @@ class DocumentDaoTest extends AbstractBaseDao {
         assertTrue(result.isPresent());
         // the default setup  createResources  sets two versions (1 and 2 ) with current version 2
         assertEquals(2, result.get().getVersion());
-        assertEquals(testUtilsDao.getDocumentD1G1RD1_S1().getDocumentVersions().get(1), result.get());
+        // note that the versions are ordered by version desc
+        assertEquals(testUtilsDao.getDocumentD1G1RD1_S1().getDocumentVersions().get(0), result.get());
     }
 
     @Test
@@ -119,5 +125,42 @@ class DocumentDaoTest extends AbstractBaseDao {
         assertNotSame(document, result);
         assertEquals(2, result.getDocumentProperties().size());
         assertEquals(property1, result.getDocumentProperties().get(0));
+    }
+
+    @Test
+    void testPersistUnderReviewDocument() {
+        DBResource createResourceWithStatusReview = testUtilsDao.createResource("review", "1-1-1", VisibilityType.PUBLIC,
+                DocumentVersionStatusType.UNDER_REVIEW,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1());
+
+        testUtilsDao.createResourceMembership(MembershipRoleType.ADMIN, testUtilsDao.getUser1(), createResourceWithStatusReview, true);
+
+        List<DBReviewDocumentVersion> dbDocumentVersions =  testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId());
+        assertEquals(1, dbDocumentVersions.size());
+
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "UNDER_REVIEW, UNDER_REVIEW, 2",
+            "UNDER_REVIEW, DRAFT, 1",
+            "DRAFT, UNDER_REVIEW, 1",
+            "DRAFT, DRAFT, 0"
+    })
+    void testPersistUnderReviewDocumentSubresource(String resourceStatus, String subresourceStatus, int expectedSize) {
+        testUtilsDao.createResourceDefinitions();
+        DBResource resource = testUtilsDao.createResource("review", "1-1-1", VisibilityType.PUBLIC,
+                DocumentVersionStatusType.valueOf(resourceStatus),
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1());
+
+        DBSubresource subres = testUtilsDao.createSubresource(resource, "1-1-1", "1-1-1",
+                DocumentVersionStatusType.valueOf(subresourceStatus),
+                testUtilsDao.getSubresourceDefSmpMetadata());
+
+        testUtilsDao.createResourceMembership(MembershipRoleType.ADMIN, testUtilsDao.getUser1(), resource, true);
+
+        List<DBReviewDocumentVersion> dbDocumentVersions =  testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId());
+        assertEquals(expectedSize, dbDocumentVersions.size());
+
     }
 }

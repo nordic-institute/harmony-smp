@@ -45,13 +45,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class DocumentEditControllerIT extends AbstractControllerTest {
-    private static final String PATH = CONTEXT_PATH_EDIT_DOCUMENT;
+    private static final String PATH = CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE;
 
     @Autowired
     protected UIDocumentService documentService;
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setupData() throws IOException {
         super.setup();
     }
 
@@ -70,7 +70,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         ResourceRO resourceRO = addResourceToGroup(session, domainRO, groupRO, userRO);
 
         // when
-        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET,
+        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE,
                         userRO.getUserId(), resourceRO.getResourceId())
                         .session(session)
                         .with(csrf())
@@ -79,7 +79,10 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         // then
         DocumentRO documentRo = getObjectFromResponse(result, DocumentRO.class);
         assertNotNull(documentRo);
-        assertTrue(documentRo.getAllVersions().isEmpty()); // was just created without document
+        assertEquals(1, documentRo.getAllVersions().size());
+        assertEquals(1, documentRo.getAllVersions().get(0));
+        assertEquals(1, documentRo.getCurrentResourceVersion());
+        assertNotNull(documentRo.getPayload());
     }
 
     @Test
@@ -99,7 +102,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         ResourceRO resourceRO = resources.get(0);
 
         // when
-        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET,
+        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE,
                         userRO.getUserId(), resourceRO.getResourceId())
                         .session(session)
                         .with(csrf())
@@ -133,7 +136,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         documentRo.setPayload(TestROUtils.createSMP10ServiceGroupPayload(resourceRO.getIdentifierValue(), resourceRO.getIdentifierScheme()));
 
         // when
-        mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_VALIDATE,
+        mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE_VALIDATE,
                         userRO.getUserId(), resourceRO.getResourceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getObjectMapper().writeValueAsBytes(documentRo))
@@ -164,7 +167,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         documentRo.setPayload("invalid payload");
 
         // when
-        MvcResult result = mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_VALIDATE,
+        MvcResult result = mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE_VALIDATE,
                         userRO.getUserId(), resourceRO.getResourceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getObjectMapper().writeValueAsBytes(documentRo))
@@ -196,7 +199,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         ResourceRO resourceRO = resources.get(0);
 
         // when
-        MvcResult response = mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE,
+        MvcResult response = mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE_GENERATE,
                         userRO.getUserId(), resourceRO.getResourceId())
                         .session(session)
                         .with(csrf())

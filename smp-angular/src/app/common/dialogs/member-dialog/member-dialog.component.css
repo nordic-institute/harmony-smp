@@ -1,7 +1,10 @@
+.form-field-full-width {
+  width: 100%;
+}
+
 .empty-field-label {
   color: gray;
 }
-
 
 #custom-file-upload {
   display: none;
@@ -10,4 +13,7 @@
 .custom-file-upload {
   display: inline-block;
   cursor: pointer;
+}
+#member-user-can-review {
+  max-height: 1.5em
 }

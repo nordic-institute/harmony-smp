@@ -1,6 +1,36 @@
-<div style="display: flex;flex-direction: row;height: 100%">
-  <div *ngIf="showPropertyPanel" id="document-properties-panel">
-    <div style="display:flex; flex-grow: 1; flex-direction: column">
+<div style="display:flex; flex-grow: 1; flex-direction: column">
+      <mat-toolbar *ngIf="shotToolbar"
+        class="mat-elevation-z2"
+                   style="flex-grow: 0;">
+        <mat-toolbar-row class="smp-toolbar-row">
+          <button id="createButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.create' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.create' | translate }}"
+                  (click)="onCreateProperty()">
+            <mat-icon>add</mat-icon>
+          </button>
+          <button id="editButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.edit' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.edit' | translate }}"
+                  (click)="onEditSelectedProperty()"
+                  [disabled]="editButtonDisabled">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button id="deleteButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.delete.remove' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.delete.remove' | translate }}"
+                  (click)="onDeleteSelectedProperty()"
+                  [disabled]="deleteButtonDisabled"
+          >
+            <mat-icon>remove</mat-icon>
+          </button>
+          <tool-button-spacer></tool-button-spacer>
+          <button id="resetButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.reset' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.reset' | translate }}"
+                  (click)="onResetButtonClicked()"
+                  color="primary"
+                  [disabled]="!cancelButtonEnabled">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </mat-toolbar-row>
+      </mat-toolbar>
       <mat-form-field style="width: 100%">
         <mat-label>{{ "document.properties.panel.label.filter" | translate }}</mat-label>
         <input matInput (keyup)="applyFilter($event)" #input>
@@ -39,41 +69,3 @@
                      attr.aria-label="{{ 'document.properties.panel.label.select.page' | translate }}"></mat-paginator>
 
     </div>
-  </div>
-  <!-- table Toolbar -->
-  <div style="width: 42px">
-    <button mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.expand.collapse' | translate }}"
-            matTooltip="{{ 'document.properties.panel.tooltip.expand.collapse' | translate }}"
-            (click)="onToggleButtonClicked()">
-      <mat-icon *ngIf="showPropertyPanel">chevron_left</mat-icon>
-      <mat-icon *ngIf="!showPropertyPanel">chevron_right</mat-icon>
-    </button>
-    <tool-button-spacer [vertical]="false"></tool-button-spacer>
-    <button id="createButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.create' | translate }}"
-            matTooltip="{{ 'document.properties.panel.tooltip.create' | translate }}"
-            (click)="onCreateProperty()">
-      <mat-icon>add</mat-icon>
-    </button>
-    <button id="editButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.edit' | translate }}"
-            matTooltip="{{ 'document.properties.panel.tooltip.edit' | translate }}"
-            (click)="onEditSelectedProperty()"
-            [disabled]="editButtonDisabled">
-      <mat-icon>edit</mat-icon>
-    </button>
-    <button id="deleteButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.delete.remove' | translate }}"
-            matTooltip="{{ 'document.properties.panel.tooltip.delete.remove' | translate }}"
-            (click)="onDeleteSelectedProperty()"
-            [disabled]="deleteButtonDisabled"
-    >
-      <mat-icon>remove</mat-icon>
-    </button>
-    <tool-button-spacer [vertical]="false"></tool-button-spacer>
-    <button id="resetButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.reset' | translate }}"
-            matTooltip="{{ 'document.properties.panel.tooltip.reset' | translate }}"
-            (click)="onResetButtonClicked()"
-            color="primary"
-            [disabled]="!cancelButtonEnabled">
-      <mat-icon>refresh</mat-icon>
-    </button>
-  </div>
-</div>

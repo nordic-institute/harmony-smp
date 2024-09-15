@@ -1,0 +1,58 @@
+<div style="display:flex; flex-grow: 1; flex-direction: column">
+  <mat-form-field style="width: 100%">
+    <mat-label>{{ "document.events.panel.label.filter" | translate }}</mat-label>
+    <input matInput (keyup)="applyFilter($event)" #input>
+  </mat-form-field>
+  <div id="events-table-container">
+    <table #DocumentEventTable mat-table class="mat-elevation-z1"
+           style="max-height: 100%;flex-grow: 1;"
+           id="document-events-table"
+           [dataSource]="eventDataSource" matSort>
+
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header>{{ "document.events.panel.label.date" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let row;">
+          {{ row.eventOn | date: dateTimeFormat }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="eventType">
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header>{{ "document.events.panel.label.type" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.eventType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header>{{ "document.events.panel.label.username" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.username }}</td>
+      </ng-container>
+      <ng-container matColumnDef="eventSource">
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header>{{ "document.events.panel.label.source" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.eventSourceType }}</td>
+      </ng-container>
+
+      <tr mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+      <tr mat-row
+          *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+          [ngClass]="getRowClass(row, odd)"
+      ></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell"
+            colspan="2">{{ "document.events.panel.label.no.properties.found" | translate }}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons
+                 [pageSize]="10" [length]="eventDataSource.data?.length"
+                 attr.aria-label="{{ 'document.events.panel.label.select.page' | translate }}"></mat-paginator>
+
+</div>
+

@@ -45,6 +45,7 @@ public class DBResourceToResourceROConverter implements Converter<DBResource, Re
             BeanUtils.copyProperties(target, source);
             target.setResourceTypeIdentifier(source.getDomainResourceDef().getResourceDef().getIdentifier());
             target.setResourceId(SessionSecurityUtils.encryptedEntityId(source.getId()));
+            target.setReviewEnabled(source.isReviewEnabled());
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOG.error("Error occurred while converting DBResource", e);
             return null;

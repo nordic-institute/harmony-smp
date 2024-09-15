@@ -58,6 +58,11 @@
           <td mat-cell *matCellDef="let row">{{row.roleType}}</td>
         </ng-container>
 
+        <ng-container matColumnDef="hasPermissionToReview">
+          <th mat-header-cell *matHeaderCellDef>{{ "membership.panel.label.permission.review" | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{row.hasPermissionReview}}</td>
+        </ng-container>
+
         <ng-container matColumnDef="memberOf">
           <th mat-header-cell *matHeaderCellDef>{{ "membership.panel.label.member.of" | translate }}</th>
           <td mat-cell *matCellDef="let row">{{row.memberOf}}</td>

@@ -12,6 +12,7 @@ export interface ResourceRo extends SearchTableEntity {
 
   smlRegistered: boolean;
 
+  reviewEnabled?: boolean;
 
   visibility: VisibilityEnum;
 }

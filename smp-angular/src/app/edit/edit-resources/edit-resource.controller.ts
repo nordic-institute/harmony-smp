@@ -88,12 +88,12 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
   refreshDomains() {
     this.isLoadingResults = true;
     this.domainService.getDomainsForResourceAdminUserObservable()
-      .subscribe((result: DomainRo[]) => {
+      .subscribe({next: (result: DomainRo[]) => {
         this.updateDomainList(result)
-      }, (error: any) => {
-        this.alertService.error(error.error?.errorDescription)
+      }, error: (err: any) => {
+        this.alertService.error(err.error?.errorDescription)
         this.isLoadingResults = false;
-      });
+      }});
   }
 
   refreshGroups() {

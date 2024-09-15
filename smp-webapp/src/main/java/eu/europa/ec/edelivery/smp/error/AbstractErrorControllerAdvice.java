@@ -52,7 +52,7 @@ abstract class AbstractErrorControllerAdvice {
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
         }else if (runtimeException instanceof AccessDeniedException){
             AccessDeniedException ex = (AccessDeniedException)runtimeException;
-            response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
+            response = buildAndLog(FORBIDDEN, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
         }else if (runtimeException instanceof BadRequestException){
             BadRequestException ex = (BadRequestException)runtimeException;
             response = buildAndLog(UNPROCESSABLE_ENTITY, ex.getErrorBusinessCode(), ex.getMessage(), ex);

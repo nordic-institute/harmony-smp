@@ -121,7 +121,9 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION = "DBExtResourceDef.getByIdentifierExtension";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";
+    public static final String QUERY_DOCUMENT_BY_RESOURCE_DEF_SHARING = "DBDocument.getForResourceDEfAndSharingEnabled";
     public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
+    public static final String QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING = "DBDocument.getForSubresourceDEfAndSharingEnabled";
 
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
@@ -129,6 +131,7 @@ public class QueryNames {
 
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE = "DBDocumentVersion.forCurrentForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE = "DBDocumentVersion.getAllForSubresource";
+    public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER = "DBDocumentVersion.getAllReviewTasksForUser";
 
     public static final String QUERY_GROUP_MEMBER_ALL = "DBGroupMember.getAll";
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS_COUNT = "DBGroupMember.getByUserAndGroupsCount";
@@ -182,6 +185,7 @@ public class QueryNames {
     public static final String PARAM_RESOURCE_DEF_IDENTIFIER = "resource_def_identifier";
     public static final String PARAM_SUBRESOURCE_DEF_ID = "subresource_def_id";
 
+    public static final String PARAM_REVIEW_ENABLED = "review_enabled";
 
     public static final String PARAM_SUBRESOURCE_DEF_IDENTIFIER = "subresource_def_identifier";
     public static final String PARAM_DOMAIN_ID = "domain_id";
@@ -192,10 +196,13 @@ public class QueryNames {
 
     public static final String PARAM_DOCUMENT_ID = "document_id";
     public static final String PARAM_DOCUMENT_TYPE = "document_type";
+    public static final String PARAM_SHARING_ENABLED = "sharing_enabled";
+    public static final String PARAM_STATUS = "status";
 
     public static final String PARAM_GROUP_ID = "group_id";
     public static final String PARAM_GROUP_IDS = "group_ids";
     public static final String PARAM_MEMBERSHIP_ROLE = "membership_role";
+    public static final String PARAM_PERMISSION_CAN_REVIEW = "permission_can_review";
 
     public static final String PARAM_MEMBERSHIP_ROLES = "membership_roles";
     public static final String PARAM_USER_USERNAME = "username";

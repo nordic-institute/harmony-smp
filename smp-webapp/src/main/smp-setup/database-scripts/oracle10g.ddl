@@ -8,6 +8,7 @@ create sequence SMP_CREDENTIAL_SEQ start with 1 increment by  1;
 create sequence SMP_DOC_PROP_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_VERSION_SEQ start with 1 increment by  1;
+create sequence SMP_DOCVER_EVENT_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_CONF_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_MEMBER_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_RESOURCE_DEF_SEQ start with 1 increment by  1;
@@ -283,6 +284,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0) not null,
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        SHARING_ENABLED number(1,0),
+        FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID)
     );
 
@@ -301,6 +304,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        SHARING_ENABLED number(1,0),
+        FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID, REV)
     );
 
@@ -341,6 +346,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
         DOCUMENT_CONTENT blob,
+        STATUS varchar2(255 char) not null,
         VERSION number(10,0) not null,
         FK_DOCUMENT_ID number(19,0),
         primary key (ID)
@@ -355,6 +361,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_DOCUMENT_VERSION.DOCUMENT_CONTENT is
         'Document content';
 
+    comment on column SMP_DOCUMENT_VERSION.STATUS is
+        'Document version status';
+
     create table SMP_DOCUMENT_VERSION_AUD (
        ID number(19,0) not null,
         REV number(19,0) not null,
@@ -362,10 +371,45 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
         DOCUMENT_CONTENT blob,
+        STATUS varchar2(255 char),
         VERSION number(10,0),
         FK_DOCUMENT_ID number(19,0),
         primary key (ID, REV)
     );
+
+    create table SMP_DOCUMENT_VERSION_EVENT (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
+        DETAILS varchar2(1024 char),
+        EVENT_ON timestamp,
+        EVENT_SOURCE varchar2(255 char) not null,
+        EVENT_TYPE varchar2(255 char) not null,
+        EVENT_BY_USERNAME varchar2(64 char),
+        FK_DOCUMENT_VERSION_ID number(19,0),
+        primary key (ID)
+    );
+
+    comment on table SMP_DOCUMENT_VERSION_EVENT is
+        'Document version Events.';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.ID is
+        'Unique document version event identifier';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.DETAILS is
+        'Details of the event';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_ON is
+        'Date time of the event';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_SOURCE is
+        'Event source UI, API';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_TYPE is
+        'Document version event type';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_BY_USERNAME is
+        'username identifier of the user who triggered the event';
 
     create table SMP_DOMAIN (
        ID number(19,0) not null,
@@ -626,7 +670,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp not null,
         IDENTIFIER_SCHEME varchar2(256 char),
         IDENTIFIER_VALUE varchar2(256 char) not null,
-        SML_REGISTERED number(1,0) not null,
+        REVIEW_ENABLED number(1,0),
+        SML_REGISTERED number(1,0),
         VISIBILITY varchar2(128 char),
         FK_DOCUMENT_ID number(19,0) not null,
         FK_DOREDEF_ID number(19,0) not null,
@@ -648,6 +693,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp,
         IDENTIFIER_SCHEME varchar2(256 char),
         IDENTIFIER_VALUE varchar2(256 char),
+        REVIEW_ENABLED number(1,0),
         SML_REGISTERED number(1,0),
         VISIBILITY varchar2(128 char),
         FK_DOCUMENT_ID number(19,0),
@@ -699,11 +745,15 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
+        PERMISSION_REVIEW number(1,0),
         MEMBERSHIP_ROLE varchar2(64 char),
         FK_RESOURCE_ID number(19,0),
         FK_USER_ID number(19,0),
         primary key (ID)
     );
+
+    comment on column SMP_RESOURCE_MEMBER.PERMISSION_REVIEW is
+        'User permission to review the resource document';
 
     create table SMP_RESOURCE_MEMBER_AUD (
        ID number(19,0) not null,
@@ -711,6 +761,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         REVTYPE number(3,0),
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
+        PERMISSION_REVIEW number(1,0),
         MEMBERSHIP_ROLE varchar2(64 char),
         FK_RESOURCE_ID number(19,0),
         FK_USER_ID number(19,0),
@@ -868,6 +919,7 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_DOCUMENT_VERSION 
        add constraint SMP_DOCVER_UNIQ_VERSION_IDX unique (FK_DOCUMENT_ID, VERSION);
+create index SMP_DOCVEREVNT_DOCVER_IDX on SMP_DOCUMENT_VERSION_EVENT (FK_DOCUMENT_VERSION_ID);
 
     alter table SMP_DOMAIN 
        add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
@@ -964,6 +1016,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        foreign key (REV) 
        references SMP_REV_INFO;
 
+    alter table SMP_DOCUMENT 
+       add constraint FKbytp2kp8g3pj8qfp1g6a2g7p 
+       foreign key (FK_REF_DOCUMENT_ID) 
+       references SMP_DOCUMENT;
+
     alter table SMP_DOCUMENT_AUD 
        add constraint FKh9epnme26i271eixtvrpqejvi 
        foreign key (REV) 
@@ -988,6 +1045,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        add constraint FK4glqiu73939kpyyb6bhw822k3 
        foreign key (REV) 
        references SMP_REV_INFO;
+
+    alter table SMP_DOCUMENT_VERSION_EVENT 
+       add constraint FK6es2svpoxyrnt1h05c9junmdn 
+       foreign key (FK_DOCUMENT_VERSION_ID) 
+       references SMP_DOCUMENT_VERSION;
 
     alter table SMP_DOMAIN_AUD 
        add constraint FK35qm8xmi74kfenugeonijodsg 

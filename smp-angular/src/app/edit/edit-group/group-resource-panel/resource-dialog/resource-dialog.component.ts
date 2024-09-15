@@ -1,14 +1,21 @@
 import {Component, ElementRef, Inject, Input, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {AlertMessageService} from "../../../../common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "../../../../common/alert-message/alert-message.service";
 import {VisibilityEnum} from "../../../../common/enums/visibility.enum";
 import {GroupRo} from "../../../../common/model/group-ro.model";
 import {ResourceRo} from "../../../../common/model/resource-ro.model";
 import {DomainRo} from "../../../../common/model/domain-ro.model";
-import {ResourceDefinitionRo} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditGroupService} from "../../edit-group.service";
 import {GlobalLookups} from "../../../../common/global-lookups";
+import {
+  EditResourceService
+} from "../../../edit-resources/edit-resource.service";
 
 
 @Component({
@@ -18,7 +25,7 @@ import {GlobalLookups} from "../../../../common/global-lookups";
 export class ResourceDialogComponent {
 
   readonly groupVisibilityOptions = Object.keys(VisibilityEnum)
-   .map(el => {
+    .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
 
@@ -28,18 +35,20 @@ export class ResourceDialogComponent {
   messageType: string = "alert-error";
   group: GroupRo;
   _resource: ResourceRo
-  domain:DomainRo;
-  domainResourceDefs:ResourceDefinitionRo[];
+  domain: DomainRo;
+  domainResourceDefs: ResourceDefinitionRo[];
 
   participantSchemePattern = '^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$';
-  participantSchemeMessage:string;
-  submitInProgress:boolean = false;
+  participantSchemeMessage: string;
+  submitInProgress: boolean = false;
 
   @ViewChild('identifierValue', {static: false}) identifierValue: ElementRef;
+
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               public lookups: GlobalLookups,
               public dialogRef: MatDialogRef<ResourceDialogComponent>,
               private editGroupService: EditGroupService,
+              private editResourceService: EditResourceService,
               private alertService: AlertMessageService,
               private formBuilder: FormBuilder
   ) {
@@ -56,9 +65,10 @@ export class ResourceDialogComponent {
 
 
     this.resourceForm = formBuilder.group({
-      'identifierValue': new FormControl({value: null}, ),
-      'identifierScheme': new FormControl({value: null},[Validators.pattern(this.participantSchemePattern)]),
+      'identifierValue': new FormControl({value: null},),
+      'identifierScheme': new FormControl({value: null}, [Validators.pattern(this.participantSchemePattern)]),
       'visibility': new FormControl({value: null}),
+      'reviewEnabled': new FormControl({value: null}),
       'resourceTypeIdentifier': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
@@ -106,6 +116,7 @@ export class ResourceDialogComponent {
       }
 
       this.resourceForm.controls['visibility'].setValue(value.visibility);
+      this.resourceForm.controls['reviewEnabled'].setValue(value.reviewEnabled);
 
     } else {
       this.resourceForm.disable();
@@ -144,22 +155,8 @@ export class ResourceDialogComponent {
 
   public createResource(resource: ResourceRo) {
 
-        this.submitInProgress = true;
-        this.editGroupService.createResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
-          if (!!result) {
-            this.closeDialog();
-          }
-          this.submitInProgress = false;
-        }, (error) => {
-          this.alertService.error(error.error?.errorDescription)
-          this.submitInProgress = false;
-        });
-
-  }
-
-  public saveResource(resource: ResourceRo) {
     this.submitInProgress = true;
-    this.editGroupService.updateResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
+    this.editGroupService.createResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
       if (!!result) {
         this.closeDialog();
       }
@@ -167,6 +164,22 @@ export class ResourceDialogComponent {
     }, (error) => {
       this.alertService.error(error.error?.errorDescription)
       this.submitInProgress = false;
+    });
+
+  }
+
+  public saveResource(resource: ResourceRo): void {
+    this.submitInProgress = true;
+    this.editResourceService.updateResourceForGroup(resource, this.group, this.domain).subscribe({
+      next: (result: ResourceRo): void => {
+        if (!!result) {
+          this.closeDialog();
+        }
+        this.submitInProgress = false;
+      }, error: (err: any): void => {
+        this.alertService.error(err.error?.errorDescription)
+        this.submitInProgress = false;
+      }
     });
   }
 

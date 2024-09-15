@@ -111,10 +111,10 @@ insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_
 (-2, 1, 'application/xml', 'service-group', NOW(),  NOW()),
 (-3, 1, 'application/xml', 'service-metadata', NOW(),  NOW());
 
-insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
-(-1, -1, 1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
-(-2, -2, 1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
-(-3, -3, 1, FILE_READ('classpath:/input/ServiceMetadata.xml') , NOW(),  NOW());
+insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, STATUS, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
+(-1, -1, 1, 'PUBLISHED', '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
+(-2, -2, 1, 'PUBLISHED', '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
+(-3, -3, 1, 'PUBLISHED', FILE_READ('classpath:/input/ServiceMetadata.xml') , NOW(),  NOW());
 
 insert into SMP_RESOURCE ( ID, FK_GROUP_ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (-1, 1, -1, 1, 'ehealth-actorid-qns', 'urn:australia:ncpb', 0, 'PUBLIC', NOW(),  NOW()),
