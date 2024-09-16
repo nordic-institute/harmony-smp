@@ -106,6 +106,12 @@
       </smp-warning-panel>
     </div>
     <expandable-panel>
+      <expandable-item icon="description"
+                       title="{{'document.metadata.panel.tab.title' | translate }}"
+                       buttonLabel="{{'document.metadata.panel.tab.button.properties' | translate }}">
+        <document-metadata-panel formControlName="documentMetadata"
+                                 ngDefaultControl></document-metadata-panel>
+      </expandable-item>
       <expandable-item icon="settings"
                        title="{{'document.properties.panel.tab.title' | translate }}"
                        buttonLabel="{{'document.properties.panel.tab.button.properties' | translate }}">

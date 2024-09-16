@@ -27,6 +27,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIDocumentService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -271,8 +272,9 @@ public class DocumentEditController {
         logAdminAccess("saveResourceDocument");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         Long referenceDocumentId = null;
-        if (document.getReferenceDocumentId() != null) {
-            referenceDocumentId = SessionSecurityUtils.decryptEntityId(document.getReferenceDocumentId());
+        String referenceDocumentEncId = document.getMetadata()!=null? document.getMetadata().getReferenceDocumentId():null;
+        if (StringUtils.isNotBlank(referenceDocumentEncId)) {
+            referenceDocumentId = SessionSecurityUtils.decryptEntityId(referenceDocumentEncId);
         }
         return uiDocumentService.saveDocumentForResource(resourceId, document, referenceDocumentId);
     }

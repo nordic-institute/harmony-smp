@@ -6,6 +6,7 @@ import {
 } from "./document-version-ro.model";
 import {DocumentVersionEventRo} from "./document-version-event-ro.model";
 import {DocumentVersionsStatus} from "../enums/document-versions-status.enum";
+import {DocumentMetadataRo} from "./document-metadata-ro.model";
 
 export interface DocumentRo extends SearchTableEntity  {
   mimeType?: string;
@@ -21,5 +22,6 @@ export interface DocumentRo extends SearchTableEntity  {
   documentVersionStatus?: DocumentVersionsStatus;
   documentVersionEvents?: DocumentVersionEventRo[];
   documentVersions?: DocumentVersionRo[];
+  metadata?: DocumentMetadataRo;
 }
 

@@ -104,8 +104,6 @@ export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeav
     this.selected = selectedVersion;
   }
 
-
-
   /**
    * Method to handle row selection
    * @param row

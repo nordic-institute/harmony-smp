@@ -29,13 +29,10 @@ import java.util.List;
 public class DocumentRO extends BaseRO {
     private static final long serialVersionUID = 9008583888835630038L;
     String documentId;
-    String referenceDocumentId;
     String mimeType;
     Integer currentResourceVersion;
     List<Integer> allVersions;
     String name;
-    Boolean sharingEnabled = Boolean.FALSE;
-
     Integer payloadVersion;
     String payload;
     private int payloadStatus = EntityROStatus.PERSISTED.getStatusNumber();
@@ -45,6 +42,7 @@ public class DocumentRO extends BaseRO {
     List<DocumentPropertyRO> properties = new ArrayList<>();
     List<DocumentVersionEventRO> documentVersionEvents = new ArrayList<>();
     List<DocumentVersionRO> documentVersions = new ArrayList<>();
+    DocumentMetadataRO metadata;
 
     public String getDocumentId() {
         return documentId;
@@ -54,12 +52,12 @@ public class DocumentRO extends BaseRO {
         this.documentId = documentId;
     }
 
-    public String getReferenceDocumentId() {
-        return referenceDocumentId;
+    public DocumentMetadataRO getMetadata() {
+        return metadata;
     }
 
-    public void setReferenceDocumentId(String referenceDocumentId) {
-        this.referenceDocumentId = referenceDocumentId;
+    public void setMetadata(DocumentMetadataRO metadata) {
+        this.metadata = metadata;
     }
 
     public String getMimeType() {
@@ -72,14 +70,6 @@ public class DocumentRO extends BaseRO {
 
     public Integer getCurrentResourceVersion() {
         return currentResourceVersion;
-    }
-
-    public Boolean getSharingEnabled() {
-        return sharingEnabled;
-    }
-
-    public void setSharingEnabled(Boolean sharingEnabled) {
-        this.sharingEnabled = sharingEnabled;
     }
 
     public void setCurrentResourceVersion(Integer currentResourceVersion) {

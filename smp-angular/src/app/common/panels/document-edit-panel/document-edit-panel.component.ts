@@ -210,6 +210,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       'documentVersionStatus': new FormControl({value: null}),
       'documentVersionEvents': new FormControl({value: null}),
       'documentVersions': new FormControl({value: null}),
+      'documentMetadata': new FormControl({value: null}),
     });
 
     this.resource = editResourceService.selectedResource;
@@ -247,14 +248,13 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     } else {
       this.isResourceDocument = false;
     }
-
-
   }
-
 
   ngOnInit(): void {
     if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
       this.initFromDocumentReview();
+    } else {
+      this.isResourceDocument = this.editorMode === SmpDocumentEditorType.RESOURCE_EDITOR;
     }
 
     if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR && !this.reviewDocument
@@ -274,7 +274,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   @Input() set document(value: DocumentRo) {
     this._document = value;
     this.documentForm.disable();
-    console.log("Document with properties: " + value?.properties)
     if (!!value) {
       this.documentEditor.mimeType = value.mimeType;
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
@@ -287,7 +286,9 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['documentVersionStatus'].setValue(value.documentVersionStatus);
       this.documentForm.controls['documentVersionEvents'].setValue(value.documentVersionEvents);
       this.documentForm.controls['documentVersions'].setValue(value.documentVersions);
+      this.documentForm.controls['documentMetadata'].setValue(value.metadata);
       // the method documentVersionsExists already uses the current value to check if versions exists
+
       if (this.documentVersionsExists && this.isNotReviewMode) {
         this.documentForm.controls['payloadVersion'].enable();
       }
@@ -296,7 +297,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       }
     } else {
       this.documentForm.controls['name'].setValue("");
-      this.documentForm.controls['payload'].setValue("");
       this.documentForm.controls['currentResourceVersion'].setValue("");
       this.documentForm.controls['payloadVersion'].setValue("");
       this.documentForm.controls['payloadCreatedOn'].setValue("");
@@ -305,6 +305,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['documentVersionStatus'].setValue("");
       this.documentForm.controls['documentVersionEvents'].setValue([]);
       this.documentForm.controls['documentVersions'].setValue([]);
+      this.documentForm.controls['documentMetadata'].setValue(null);
     }
     this.documentForm.markAsPristine();
   }
@@ -314,8 +315,13 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     if (this.documentForm.controls['payload'].dirty) {
       doc.payload = this.documentForm.controls['payload'].value;
       doc.payloadStatus = EntityStatus.UPDATED;
+    } else {
+      // no need to send payload if not changed
+      doc.payload = null;
     }
+    // set new properties
     doc.properties = this.documentForm.controls['properties'].value;
+    doc.metadata = this.documentForm.controls['documentMetadata'].value;
     return doc;
   }
 
@@ -520,10 +526,12 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       // set from current document
       documentVersions: this.documentForm.controls['documentVersions'].value,
       properties: this.documentForm.controls['properties'].value,
+      metadata: this.documentForm.controls['documentMetadata'].value,
     } as DocumentRo;
     // set as current
     this.document = docRequest;
     this.documentForm.markAsDirty();
+    this.documentForm.controls['payload'].markAsDirty();
   }
 
   onSelectionDocumentVersionChanged(): void {

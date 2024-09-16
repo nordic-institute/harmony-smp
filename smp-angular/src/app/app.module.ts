@@ -188,6 +188,9 @@ import {
 import {
   ReviewDocumentPanelComponent
 } from "./common/panels/review-tasks-panel/review-document-panel/review-document-panel.component";
+import {
+  DocumentMetadataPanelComponent
+} from "./common/panels/document-edit-panel/document-metadata-panel/document-metadata-panel.component";
 
 
 @NgModule({
@@ -224,6 +227,7 @@ import {
     DocumentEventsPanelComponent,
     DocumentPropertiesPanelComponent,
     DocumentPropertyDialogComponent,
+    DocumentMetadataPanelComponent,
     DocumentVersionsPanelComponent,
     DomainGroupComponent,
     DomainPanelComponent,

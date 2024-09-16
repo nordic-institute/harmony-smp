@@ -279,6 +279,7 @@ public class UIDocumentService {
 
         String genDoc = bos.toString();
         DocumentRO result = new DocumentRO();
+        result.setMetadata(new DocumentMetadataRO());
         result.setPayload(genDoc);
         return result;
     }
@@ -337,55 +338,6 @@ public class UIDocumentService {
         }
     }
 
-    @Transactional
-    public DocumentRO saveDocumentForResource(Long resourceId, DocumentRO documentRo, Long documentReference) {
-
-        final DBResource resource = resourceDao.find(resourceId);
-        final DBDocument document = resource.getDocument();
-
-        int returnDocVersion = document.getCurrentVersion();
-        boolean isPayloadChanged = documentRo.getPayloadStatus() != EntityROStatus.PERSISTED.getStatusNumber();
-        if (isPayloadChanged) {
-            LOG.debug("Store resource payload for resource [{}]", resource.getIdentifierValue());
-            DBDocumentVersion docVersion = storeResourcePayload(resource, document, documentRo);
-            returnDocVersion = docVersion.getVersion();
-        }
-
-        if (isDocumentPropertiesChanged(documentRo)) {
-            // persist non-transient properties
-            documentRo.getProperties().stream().filter(p ->
-                            TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
-                    .forEach(p -> persistDocumentProperty(p, document));
-        }
-
-        if (Boolean.TRUE.equals(documentRo.getSharingEnabled()) && documentReference!=null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentSharingNotAllowed", "Document sharing is not allowed for the document with reference document");
-        }
-        document.setSharingEnabled(documentRo.getSharingEnabled());
-
-        DBDocument documentReferenceEntity = null;
-        if (documentReference != null) {
-            if (Objects.equals(documentReference, document.getId())) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotAllowed", "Document reference cannot be the same as the document id");
-            }
-            documentReferenceEntity = documentDao.find(documentReference);
-            if (documentReferenceEntity == null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotFound", "Document reference not found");
-            }
-
-            if (documentReferenceEntity.getSharingEnabled() != null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to not shared document");
-            }
-
-            if (documentReferenceEntity.getReferenceDocument() != null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to a document that already has a reference");
-            }
-            document.setReferenceDocument(documentReferenceEntity);
-        } else {
-            document.setReferenceDocument(null);
-        }
-        return convertWithVersion(document, returnDocVersion, getInitialProperties(resource));
-    }
 
 
     /**
@@ -495,7 +447,7 @@ public class UIDocumentService {
         }
         DBDocumentVersion documentVersion = null;
         if (documentRo.getPayloadVersion() == null) {
-            documentVersion = createNewDocumentVersionForResource(resource, document, baos.toByteArray());
+            documentVersion = createNewDocumentVersion(resource.isReviewEnabled(), document, baos.toByteArray());
         } else {
             documentVersion = document.getDocumentVersions().stream()
                     .filter(dv -> dv.getVersion() == documentRo.getPayloadVersion())
@@ -509,7 +461,39 @@ public class UIDocumentService {
 
     }
 
-    public DBDocumentVersion createNewDocumentVersionForResource(DBResource resource, DBDocument document, byte[] payload) {
+    private DBDocumentVersion storeSubresourcePayload(DBSubresource subresource, DBResource parentResource, DBDocument document, DocumentRO documentRo) {
+
+        DBSubresourceDef subresourceDef = subresource.getSubresourceDef();
+
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
+        RequestData data = resourceHandlerService.buildRequestDataForSubResource(
+                parentResource.getDomainResourceDef().getDomain(), parentResource,
+                subresource, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ResponseData responseData = new SpiResponseData(baos);
+        try {
+            resourceHandler.storeResource(data, responseData);
+        } catch (ResourceException e) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreSubresourceValidation", ExceptionUtils.getRootCauseMessage(e));
+        }
+
+        DBDocumentVersion documentVersion = null;
+        if (documentRo.getPayloadVersion() == null) {
+            documentVersion = createNewDocumentVersion(parentResource.isReviewEnabled(), document, baos.toByteArray());
+        } else {
+            documentVersion = document.getDocumentVersions().stream()
+                    .filter(dv -> dv.getVersion() == documentRo.getPayloadVersion())
+                    .findFirst().orElse(null);
+            if (documentVersion == null) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
+            }
+            documentVersion.setContent(baos.toByteArray());
+        }
+        return documentVersion;
+
+    }
+
+    public DBDocumentVersion createNewDocumentVersion(boolean isReviewEnabled, DBDocument document, byte[] payload) {
         // create new version to document
         int version = document.getDocumentVersions().stream().mapToInt(DBDocumentVersion::getVersion)
                 .max().orElse(0);
@@ -522,10 +506,68 @@ public class UIDocumentService {
         // to get the current persist time
         documentVersion.prePersist();
         document.getDocumentVersions().add(0, documentVersion);
-        if (Boolean.FALSE.equals(resource.isReviewEnabled())) {
+        if (Boolean.FALSE.equals(isReviewEnabled)) {
             document.setCurrentVersion(documentVersion.getVersion());
         }
         return documentVersion;
+    }
+
+
+
+    @Transactional
+    public DocumentRO saveDocumentForResource(Long resourceId, DocumentRO documentRo, Long documentReference) {
+
+        final DBResource resource = resourceDao.find(resourceId);
+        final DBDocument document = resource.getDocument();
+        // check if the document is new or existing document. If payload version is not null then
+        // return the current payload version otherwise return the current version
+        int returnDocVersion = documentRo.getPayloadVersion()!=null?
+                documentRo.getPayloadVersion():
+                document.getCurrentVersion();
+
+        boolean isPayloadChanged = documentRo.getPayloadStatus() != EntityROStatus.PERSISTED.getStatusNumber();
+        if (isPayloadChanged) {
+            LOG.debug("Store resource payload for resource [{}]", resource.getIdentifierValue());
+            DBDocumentVersion docVersion = storeResourcePayload(resource, document, documentRo);
+            returnDocVersion = docVersion.getVersion();
+        }
+
+
+        if (isDocumentPropertiesChanged(documentRo)) {
+            // persist non-transient properties
+            documentRo.getProperties().stream().filter(p ->
+                            TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
+                    .forEach(p -> persistDocumentProperty(p, document));
+        }
+
+        DocumentMetadataRO documentMetadataRO =documentRo.getMetadata();
+        if (Boolean.TRUE.equals(documentMetadataRO.getSharingEnabled()) && documentReference!=null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentSharingNotAllowed", "Document sharing is not allowed for the document with reference document");
+        }
+        document.setSharingEnabled(documentMetadataRO.getSharingEnabled());
+
+        DBDocument documentReferenceEntity = null;
+        if (documentReference != null) {
+            if (Objects.equals(documentReference, document.getId())) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotAllowed", "Document reference cannot be the same as the document id");
+            }
+            documentReferenceEntity = documentDao.find(documentReference);
+            if (documentReferenceEntity == null) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotFound", "Document reference not found");
+            }
+
+            if (documentReferenceEntity.getSharingEnabled() != null) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to not shared document");
+            }
+
+            if (documentReferenceEntity.getReferenceDocument() != null) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to a document that already has a reference");
+            }
+            document.setReferenceDocument(documentReferenceEntity);
+        } else {
+            document.setReferenceDocument(null);
+        }
+        return convertWithVersion(document, returnDocVersion, getInitialProperties(resource));
     }
 
     @Transactional
@@ -533,21 +575,22 @@ public class UIDocumentService {
 
         DBResource parentResource = resourceDao.find(resourceId);
         DBSubresource entity = subresourceDao.find(subresource);
+        DBDocument document = entity.getDocument();
         DBSubresourceDef subresourceDef = entity.getSubresourceDef();
-        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
-        RequestData data = resourceHandlerService.buildRequestDataForSubResource(
-                parentResource.getDomainResourceDef().getDomain(), parentResource,
-                entity, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ResponseData responseData = new SpiResponseData(bos);
-        try {
-            resourceHandler.storeResource(data, responseData);
-        } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreSubresourceValidation", ExceptionUtils.getRootCauseMessage(e));
+        // check if the document is new or existing document. If payload version is not null then
+        // return the current payload version otherwise return the current version
+        int returnDocVersion = documentRo.getPayloadVersion()!=null?
+                documentRo.getPayloadVersion():
+                document.getCurrentVersion();
+
+        boolean isPayloadChanged = documentRo.getPayloadStatus() != EntityROStatus.PERSISTED.getStatusNumber();
+        if (isPayloadChanged) {
+            LOG.debug("Store  subresource payload for resource [{}]", entity.getIdentifierValue());
+            DBDocumentVersion docVersion = storeSubresourcePayload(entity, parentResource, document, documentRo);
+            returnDocVersion = docVersion.getVersion();
         }
 
-        DBDocument document = entity.getDocument();
-        return createNewVersionAndConvert(document, bos, getInitialProperties(entity));
+        return convertWithVersion(document, returnDocVersion, getInitialProperties(entity));
     }
 
     /**
@@ -591,31 +634,6 @@ public class UIDocumentService {
     }
 
 
-    /**
-     * return Create new Document version and convert DBDocument  to DocumentRo
-     *
-     * @param document to convert to DocumentRo
-     * @param baos     to write document content
-     * @return DocumentRo
-     */
-    private DocumentRO createNewVersionAndConvert(DBDocument document, ByteArrayOutputStream baos, List<DocumentPropertyRO> initialProperties) {
-
-        // get max version
-        int version = document.getDocumentVersions().stream().mapToInt(DBDocumentVersion::getVersion)
-                .max().orElse(0);
-
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
-        documentVersion.setVersion(version + 1);
-        documentVersion.setDocument(document);
-        documentVersion.setContent(baos.toByteArray());
-        // to get the current persist time
-        documentVersion.prePersist();
-
-        document.getDocumentVersions().add(0, documentVersion);
-        document.setCurrentVersion(documentVersion.getVersion());
-        return convert(document, documentVersion, initialProperties);
-    }
-
     public DocumentRO convertWithVersion(DBDocument document, int version, List<DocumentPropertyRO> initialProperties) {
         DBDocumentVersion currentVersion = null;
         DBDocumentVersion documentVersion = null;
@@ -649,23 +667,33 @@ public class UIDocumentService {
                 document.getName(), "Document Name", SMPPropertyTypeEnum.STRING, true);
         documentRo.addProperty(DOCUMENT_MIMETYPE.getPropertyName(),
                 document.getMimeType(), "Document Mimetype", SMPPropertyTypeEnum.STRING, true);
-        documentRo.setSharingEnabled(document.getSharingEnabled());
         documentRo.getProperties().addAll(initialProperties);
 
+
+        DocumentMetadataRO metadataRo = new DocumentMetadataRO();
+        documentRo.setDocumentId(SessionSecurityUtils.encryptedEntityId(document.getId()));
+        if (document.getReferenceDocument() != null) {
+            metadataRo.setReferenceDocumentId(SessionSecurityUtils.encryptedEntityId(document.getReferenceDocument().getId()));
+        }
+        metadataRo.setSharingEnabled(document.getSharingEnabled());
+        metadataRo.setMimeType(document.getMimeType());
+        metadataRo.setPublishedVersion(document.getCurrentVersion());
+        metadataRo.setName(document.getName());
         // set list of versions
+        document.getDocumentVersions().forEach(dv -> {
+            metadataRo.getAllVersions().add(dv.getVersion());
+        });
+        documentRo.setMetadata(metadataRo);
+
+        // TODO remove duplicate properties use only metadataRo
         document.getDocumentVersions().forEach(dv -> {
             documentRo.getAllVersions().add(dv.getVersion());
             documentRo.getDocumentVersions().add(conversionService.convert(dv, DocumentVersionRO.class));
         });
-
-        documentRo.setDocumentId(SessionSecurityUtils.encryptedEntityId(document.getId()));
-        if (document.getReferenceDocument() != null) {
-            documentRo.setReferenceDocumentId(SessionSecurityUtils.encryptedEntityId(document.getReferenceDocument().getId()));
-        }
-
         documentRo.setMimeType(document.getMimeType());
         documentRo.setName(document.getName());
         documentRo.setCurrentResourceVersion(document.getCurrentVersion());
+        // set list of versions
         document.getDocumentProperties().stream()
                 .forEach(p -> {
                     documentRo.addProperty(p.getProperty(),
@@ -675,6 +703,7 @@ public class UIDocumentService {
                     LOG.info("Document property [{}] added to document [{}]", p);
                 });
 
+        metadataRo.setMimeType(document.getMimeType());
 
         if (version != null) {
             documentRo.setPayloadCreatedOn(version.getCreatedOn());

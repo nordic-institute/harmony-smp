@@ -419,6 +419,15 @@
   "document.edit.panel.tooltip.version.reject": "Submit selected document version for the review",
   "document.edit.panel.note.editable": "Note: Only documents in following status can be edited: [{{editableDocStatusList}}]",
 
+  "document.metadata.panel.tab.title": "Document metadata",
+  "document.metadata.panel.tab.button.metadata": "Metadata",
+
+  "document.metadata.panel.label.name": "Name",
+  "document.metadata.panel.label.mimetype": "Mimetype",
+  "document.metadata.panel.label.published.version": "Published version",
+  "document.metadata.panel.label.sharing.enabled": "Document sharing enabled",
+  "document.metadata.panel.label.reference.document": "Referenced document",
+
   "review.edit.panel.label.review": "Review",
   "review.edit.panel.label.column.date": "Review date",
   "review.edit.panel.label.column.version": "Version",
