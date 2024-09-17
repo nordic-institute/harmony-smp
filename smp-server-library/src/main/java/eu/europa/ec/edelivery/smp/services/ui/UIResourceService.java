@@ -85,6 +85,7 @@ public class UIResourceService {
     private final DocumentVersionService documentVersionService;
 
 
+
     public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao,
                              DomainResourceDefDao domainResourceDefDao, UserDao userDao, GroupDao groupDao,
                              IdentifierService identifierService,
@@ -230,6 +231,7 @@ public class UIResourceService {
         resource.setIdentifierScheme(resourceIdentifier.getScheme());
         resource.setIdentifierValue(resourceIdentifier.getValue());
         resource.setVisibility(resourceRO.getVisibility());
+        resource.setReviewEnabled(resourceRO.isReviewEnabled());
         resource.setGroup(group);
         resource.setDomainResourceDef(optDoredef.get());
         resource.setReviewEnabled(resourceRO.isReviewEnabled());
@@ -389,7 +391,6 @@ public class UIResourceService {
         DBResourceDef domainResourceDef = resource.getDomainResourceDef().getResourceDef();
         DBDocument document = new DBDocument();
 
-        document.setCurrentVersion(1);
         document.setMimeType(domainResourceDef.getMimeType());
         document.setName(domainResourceDef.getName());
         // create first version of the document
@@ -398,6 +399,7 @@ public class UIResourceService {
         version.setStatus(DocumentVersionStatusType.PUBLISHED);
         version.setDocument(document);
         version.setVersion(1);
+        document.setCurrentVersion(1);
         // generate document content
         document.addNewDocumentVersion(version);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -405,5 +407,4 @@ public class UIResourceService {
         version.setContent(baos.toByteArray());
         return document;
     }
-
 }

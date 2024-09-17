@@ -121,7 +121,8 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION = "DBExtResourceDef.getByIdentifierExtension";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";
-    public static final String QUERY_DOCUMENT_BY_RESOURCE_DEF_SHARING = "DBDocument.getForResourceDEfAndSharingEnabled";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES = "DBDocument.getDocumentReferences";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT = "DBDocument.getDocumentReferencesCount";
     public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
     public static final String QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING = "DBDocument.getForSubresourceDEfAndSharingEnabled";
 
@@ -132,6 +133,7 @@ public class QueryNames {
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE = "DBDocumentVersion.forCurrentForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE = "DBDocumentVersion.getAllForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER = "DBDocumentVersion.getAllReviewTasksForUser";
+    public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER_COUNT = "DBDocumentVersion.getAllReviewTasksForUserCount";
 
     public static final String QUERY_GROUP_MEMBER_ALL = "DBGroupMember.getAll";
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS_COUNT = "DBGroupMember.getByUserAndGroupsCount";
@@ -172,6 +174,7 @@ public class QueryNames {
 
     public static final String PARAM_RESOURCE_ID = "resource_id";
     public static final String PARAM_RESOURCE_IDS = "resource_ids";
+    public static final String PARAM_RESOURCE_VISIBILITY = "resource_visibility";
     public static final String PARAM_SUBRESOURCE_ID = "subresource_id";
     // resource identifier value
     public static final String PARAM_RESOURCE_IDENTIFIER = "resource_identifier";
@@ -189,6 +192,7 @@ public class QueryNames {
 
     public static final String PARAM_SUBRESOURCE_DEF_IDENTIFIER = "subresource_def_identifier";
     public static final String PARAM_DOMAIN_ID = "domain_id";
+    public static final String PARAM_DOMAIN_VISIBILITY = "domain_visibility";
     public static final String PARAM_DOMAIN_CODE = "domain_code";
     public static final String PARAM_DOMAIN_SML_SMP_ID = "sml_smp_id";
 
@@ -199,6 +203,7 @@ public class QueryNames {
     public static final String PARAM_SHARING_ENABLED = "sharing_enabled";
     public static final String PARAM_STATUS = "status";
 
+    public static final String PARAM_GROUP_VISIBILITY = "group_visibility";
     public static final String PARAM_GROUP_ID = "group_id";
     public static final String PARAM_GROUP_IDS = "group_ids";
     public static final String PARAM_MEMBERSHIP_ROLE = "membership_role";

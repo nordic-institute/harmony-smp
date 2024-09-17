@@ -19,8 +19,8 @@
 import {
   AfterViewInit,
   Component,
-  ContentChildren,
-  Input,
+  ContentChildren, EventEmitter,
+  Input, Output,
   QueryList,
 } from '@angular/core';
 import {
@@ -38,8 +38,9 @@ import {
   styleUrls: ['./expandable-panel.component.scss'],
 })
 export class ExpandablePanelComponent implements AfterViewInit {
-
   @ContentChildren(ExpandableItemComponent) private _expandableItems: QueryList<ExpandableItemComponent>;
+
+  @Output() onButtonDoubleClickEvent: EventEmitter<number> = new EventEmitter();
   @Input() showButtonLabel: boolean = false;
   expandPanel: boolean = true;
   selectedIndex: number = 0;
@@ -79,4 +80,8 @@ export class ExpandablePanelComponent implements AfterViewInit {
     return index === this.selectedIndex ? 'mat-raised-button' : 'mat-raised-button button-deselected';
   }
 
+  onDoubleClick(item: ExpandableItemComponent, index: number) {
+    this.onButtonDoubleClickEvent.emit(index);
+    this.onToggleExpandButtonClicked();
+  }
 }

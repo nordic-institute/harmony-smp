@@ -23,7 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.ReviewDocumentVersionRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ui.UIDocumentService;
+import eu.europa.ec.edelivery.smp.services.ui.UIReviewService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,10 +45,10 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 public class ReviewEditController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ReviewEditController.class);
-    private final UIDocumentService uiDocumentService;
+    private final UIReviewService reviewService;
 
-    public ReviewEditController(UIDocumentService uiDocumentService) {
-        this.uiDocumentService = uiDocumentService;
+    public ReviewEditController(UIReviewService reviewService) {
+        this.reviewService = reviewService;
     }
 
     /**
@@ -75,7 +75,7 @@ public class ReviewEditController {
         LOG.info("Search for page: {}, page size: {}", page, pageSize);
         Long userId = SessionSecurityUtils.decryptEntityId(encUserId);
         // set filter to current user
-        return uiDocumentService.getDocumentReviewListForUser(userId, page, pageSize, orderBy, orderType, filter);
+        return reviewService.getDocumentReviewListForUser(userId, page, pageSize, orderBy, orderType, filter);
     }
 }
 

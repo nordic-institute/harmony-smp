@@ -1,0 +1,113 @@
+<h2 mat-dialog-title>{{ dialogTitle }}</h2>
+<mat-dialog-content style="width:1200px;height: 800px">
+  <form [formGroup]="filterForm">
+    <div class="panel" style="flex-direction: column">
+      <div style="display: flex;flex-direction: row;width: 100%">
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>{{ "reference.document.dialog.label.resource.value" | translate }}</mat-label>
+          <input matInput id="resource-value_id"
+                 formControlName="resourceValue">
+        </mat-form-field>
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>{{ "reference.document.dialog.label.resource.scheme" | translate }}</mat-label>
+          <input matInput id="resource-scheme_id"
+                 formControlName="resourceValue">
+        </mat-form-field>
+
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>{{ "reference.document.dialog.label.subresource.value" | translate }}</mat-label>
+          <input matInput id="subresource-value_id"
+                 formControlName="subresourceValue">
+        </mat-form-field>
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>{{ "reference.document.dialog.label.subresource.scheme" | translate }}</mat-label>
+          <input matInput id="subresource-scheme_id"
+                 formControlName="resourceValue">
+        </mat-form-field>
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>{{ "reference.document.dialog.label.domain" | translate }}</mat-label>
+          <mat-select class="mat-select"
+                      placeholder="{{ 'reference.document.dialog.label.domain' | translate }}"
+                      matTooltip="{{ 'reference.document.dialog.tooltip.domain' | translate }}"
+                      id="domain_id"
+                      formControlName="domainCode">
+            <mat-option *ngFor="let domainCode of domainList"
+                        [value]="domainCode">
+              {{ domainCode }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-toolbar-row class="smp-toolbar-row">
+        <button mat-raised-button color="primary" id="searchbutton_id"
+                (click)="onSearchButtonClicked()"
+        >
+          <mat-icon>search</mat-icon>
+          <span>{{ "reference.document.dialog.button.search" | translate }}</span>
+        </button>
+        <button mat-raised-button  id="resetbutton_id"
+                [disabled]="filterForm"
+                (click)="onResetButtonClicked()"
+        >
+          <mat-icon>reset</mat-icon>
+          <span>{{ "reference.document.dialog.button.reset" | translate }}</span>
+        </button>
+      </mat-toolbar-row>
+    </div>
+    <table mat-table style="width: 100%" [dataSource]="dataSource">
+      <!-- Name Column -->
+      <ng-container matColumnDef="resourceValue">
+        <th mat-header-cell
+            *matHeaderCellDef>{{ "reference.document.dialog.column.resource.value" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.resourceValue }}</td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="resourceScheme">
+        <th mat-header-cell
+            *matHeaderCellDef>{{ "reference.document.dialog.column.resource.value" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.resourceScheme }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="subresourceValue">
+        <th mat-header-cell
+            *matHeaderCellDef>{{ "reference.document.dialog.column.subresource.value" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.subresourceValue }}</td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="subresourceScheme">
+        <th mat-header-cell
+            *matHeaderCellDef>{{ "reference.document.dialog.column.subresource.value" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element[1] }}</td>
+        <td mat-cell *matCellDef="let row">{{ row.subresourceScheme }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator class="mat-elevation-z2" id="tokens-paginator"
+                   [hidePageSize]="true"
+                   [pageSize]="10"
+                   attr.aria-label="{{ 'reference.document.dialog.label.select.page' | translate }}"></mat-paginator>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button id="closeDialogButton" mat-raised-button color="primary"
+          (click)="closeDialog()">
+    <mat-icon>cancel</mat-icon>
+    <span>{{ "reference.document.dialog.button.close" | translate }}</span>
+  </button>
+  <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()"
+          color="primary"
+          [disabled]="!submitButtonEnabled">
+    <mat-icon>save</mat-icon>
+    <span>{{ "reference.document.dialog.button.save" | translate }}</span>
+  </button>
+</mat-dialog-actions>
+

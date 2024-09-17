@@ -15,6 +15,10 @@ td , th {
   max-width: 200px;
 }
 
+.form-field-full-width {
+  width: 100%;
+}
+
 .smp-data-panel-field {
   width: 100% !important;
 }

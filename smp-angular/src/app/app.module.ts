@@ -101,7 +101,6 @@ import {NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,NGX_MAT_MOMENT_FORMATS, NgxMatMoment
 import {MembershipPanelComponent} from "./common/panels/membership-panel/membership-panel.component";
 import {MemberDialogComponent} from "./common/dialogs/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {MembershipService} from "./common/panels/membership-panel/membership.service";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
 import {UserProfilePanelComponent} from "./common/panels/user-settings-panel/user-profile-panel.component";
@@ -192,6 +191,10 @@ import {
   DocumentMetadataPanelComponent
 } from "./common/panels/document-edit-panel/document-metadata-panel/document-metadata-panel.component";
 
+import {MembershipService} from "./common/services/membership.service";
+import {
+  ReferenceDocumentDialogComponent
+} from "./common/dialogs/reference-document-dialog/reference-document-dialog.component";
 
 @NgModule({
   declarations: [
@@ -225,9 +228,9 @@ import {
     DocumentWizardDialogComponent,
     DocumentEditPanelComponent,
     DocumentEventsPanelComponent,
+    DocumentMetadataPanelComponent,
     DocumentPropertiesPanelComponent,
     DocumentPropertyDialogComponent,
-    DocumentMetadataPanelComponent,
     DocumentVersionsPanelComponent,
     DomainGroupComponent,
     DomainPanelComponent,
@@ -267,6 +270,7 @@ import {
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
+    ReferenceDocumentDialogComponent,
     ReviewDocumentPanelComponent,
     ReviewTasksComponent,
     ReviewTasksPanelComponent,

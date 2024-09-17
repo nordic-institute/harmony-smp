@@ -21,6 +21,7 @@ import {
   Component,
   forwardRef,
   Input,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import {
@@ -36,12 +37,13 @@ import {MatDialog} from "@angular/material/dialog";
 import {
   BeforeLeaveGuard
 } from "../../../../window/sidenav/navigation-on-leave-guard";
-import {GlobalLookups} from "../../../global-lookups";
-import {TranslateService} from "@ngx-translate/core";
-import {
-  HttpErrorHandlerService
-} from "../../../error/http-error-handler.service";
 import {DocumentMetadataRo} from "../../../model/document-metadata-ro.model";
+import {
+  MemberDialogComponent
+} from "../../../dialogs/member-dialog/member-dialog.component";
+import {
+  ReferenceDocumentDialogComponent
+} from "../../../dialogs/reference-document-dialog/reference-document-dialog.component";
 
 /**
  * Component to display the properties of a document in a table. The properties can be edited and saved.
@@ -60,41 +62,46 @@ import {DocumentMetadataRo} from "../../../model/document-metadata-ro.model";
     }
   ]
 })
-export class DocumentMetadataPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
+export class DocumentMetadataPanelComponent implements OnInit, AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
 
-  dataChanged = false;
   private onChangeCallback: (_: any) => void = () => {
   };
 
   _documentMetadata: DocumentMetadataRo;
   documentMetadataForm: FormGroup;
+  @ViewChild(FormControlDirective, {static: true})
+  formControlDirective: FormControlDirective;
+  @Input() formControl: FormControl;
+  @Input() formControlName: string;
 
   constructor(
-    private globalLookups: GlobalLookups,
     public dialog: MatDialog,
     private controlContainer: ControlContainer,
-    private formBuilder: FormBuilder,
-    private translateService: TranslateService,
-    private httpErrorHandlerService: HttpErrorHandlerService) {
+    private formBuilder: FormBuilder) {
 
-    this.documentMetadataForm = formBuilder.group({
+    this.documentMetadataForm = this.formBuilder.group({
       'name': new FormControl({value: null}),
       'mimeType': new FormControl({value: null}),
       'publishedVersion': new FormControl({value: null}),
       'sharingEnabled': new FormControl({value: null}),
       'allVersions': new FormControl({value: null}),
       'referenceDocumentId': new FormControl({value: null}),
+      'referenceDocumentName': new FormControl({value: null}),
+      'referenceResourceValue': new FormControl({value: null}),
+      'referenceResourceScheme': new FormControl({value: null}),
+      'referenceSubesourceValue': new FormControl({value: null}),
+      'referenceSubesourceScheme': new FormControl({value: null}),
+    });
+  }
+
+  ngOnInit(): void {
+    // subscribe to form changes and propagate them to the parent
+    this.documentMetadataForm.valueChanges.subscribe(() => {
+      this.onChangeCallback(this.documentMetadata);
     });
   }
 
 
-  @ViewChild(FormControlDirective, {static: true})
-  formControlDirective: FormControlDirective;
-  @Input()
-  formControl: FormControl;
-
-  @Input()
-  formControlName: string;  /* get hold of FormControl instance no matter formControl or    formControlName is given. If formControlName is given, then this.controlContainer.control is the parent FormGroup (or FormArray) instance. */
   get control() {
     return this.formControl || this.controlContainer.control.get(this.formControlName);
   }
@@ -139,16 +146,32 @@ export class DocumentMetadataPanelComponent implements AfterViewInit, BeforeLeav
       this.documentMetadataForm.controls['mimeType'].setValue(value.mimeType);
       this.documentMetadataForm.controls['publishedVersion'].setValue(value.publishedVersion);
       this.documentMetadataForm.controls['allVersions'].setValue(value.allVersions);
-      this.documentMetadataForm.controls['referenceDocumentId'].setValue(value.referenceDocumentId);
       this.documentMetadataForm.controls['sharingEnabled'].setValue(value.sharingEnabled);
+
+      this.documentMetadataForm.controls['referenceDocumentId'].setValue(value.referenceDocumentId);
+      this.documentMetadataForm.controls['referenceDocumentName'].setValue(value.referenceDocumentName);
+      this.documentMetadataForm.controls['referenceResourceValue'].setValue(value.referenceResourceValue);
+      this.documentMetadataForm.controls['referenceResourceScheme'].setValue(value.referenceResourceScheme);
+      this.documentMetadataForm.controls['referenceSubesourceValue'].setValue(value.referenceSubesourceValue);
+      this.documentMetadataForm.controls['referenceSubesourceScheme'].setValue(value.referenceSubesourceScheme);
+
+
+        // enable form
+      this.documentMetadataForm.controls['sharingEnabled'].enable();
     } else {
       this.documentMetadataForm.controls['name'].setValue("");
       this.documentMetadataForm.controls['mimeType'].setValue("");
       this.documentMetadataForm.controls['publishedVersion'].setValue("");
       this.documentMetadataForm.controls['allVersions'].setValue([]);
-      this.documentMetadataForm.controls['referenceDocumentId'].setValue("");
       this.documentMetadataForm.controls['sharingEnabled'].setValue(false);
-      this.documentMetadataForm.controls['properties'].setValue([]);
+      this.documentMetadataForm.controls['referenceDocumentId'].setValue("");
+
+      this.documentMetadataForm.controls['referenceDocumentId'].setValue("");
+      this.documentMetadataForm.controls['referenceDocumentName'].setValue("");
+      this.documentMetadataForm.controls['referenceResourceValue'].setValue("");
+      this.documentMetadataForm.controls['referenceResourceScheme'].setValue("");
+      this.documentMetadataForm.controls['referenceSubesourceValue'].setValue("");
+      this.documentMetadataForm.controls['referenceSubesourceScheme'].setValue("");
     }
     this.documentMetadataForm.markAsPristine();
   }
@@ -162,4 +185,29 @@ export class DocumentMetadataPanelComponent implements AfterViewInit, BeforeLeav
     docMetadata.referenceDocumentId = this.documentMetadataForm.controls['referenceDocumentId'].value;
     return docMetadata;
   }
+
+  get hasReferenceDocument(): boolean {
+    return !!this.documentMetadataForm.controls['referenceDocumentId']?.value;
+  }
+
+  onShowSearchDialogClicked() {
+    this.dialog.open(ReferenceDocumentDialogComponent, {
+      data: {
+        targetType:"resource",
+        targetDocDef: "documentType",
+      }
+    }).afterClosed().subscribe(value => {
+      if (!!value) {
+        this.documentMetadataForm.controls['referenceDocumentId'].setValue(value.id);
+        this.documentMetadataForm.controls['referenceDocumentName'].setValue(value.name);
+        this.documentMetadataForm.controls['referenceResourceValue'].setValue(value.resourceValue);
+        this.documentMetadataForm.controls['referenceResourceScheme'].setValue(value.resourceScheme);
+        this.documentMetadataForm.controls['referenceSubesourceValue'].setValue(value.subresourceValue);
+        this.documentMetadataForm.controls['referenceSubesourceScheme'].setValue(value.subresourceScheme);
+      }
+    });
+  }
+
+  onClearReferenceDocument(): void {}
+
 }

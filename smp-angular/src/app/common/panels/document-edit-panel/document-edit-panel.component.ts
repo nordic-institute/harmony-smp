@@ -612,6 +612,12 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     return this.editorMode !== SmpDocumentEditorType.REVIEW_EDITOR;
   }
 
+  get hasReviewPermission(): boolean {
+    return this.resource?.hasCurrentUserReviewPermission;
+  }
+
+
+
   isDirty(): boolean {
     return this.documentForm.dirty
   }

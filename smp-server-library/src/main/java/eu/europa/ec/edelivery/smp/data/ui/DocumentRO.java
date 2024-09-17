@@ -28,21 +28,20 @@ import java.util.List;
 
 public class DocumentRO extends BaseRO {
     private static final long serialVersionUID = 9008583888835630038L;
-    String documentId;
-    String mimeType;
-    Integer currentResourceVersion;
-    List<Integer> allVersions;
-    String name;
-    Integer payloadVersion;
-    String payload;
+    private String documentId;
+    private String mimeType;
+    private Integer currentResourceVersion;
+    private List<Integer> allVersions;
+    private String name;
+    private Integer payloadVersion;
+    private String payload;
     private int payloadStatus = EntityROStatus.PERSISTED.getStatusNumber();
-    OffsetDateTime payloadCreatedOn;
-    DocumentVersionStatusType documentVersionStatus;
-
-    List<DocumentPropertyRO> properties = new ArrayList<>();
-    List<DocumentVersionEventRO> documentVersionEvents = new ArrayList<>();
-    List<DocumentVersionRO> documentVersions = new ArrayList<>();
-    DocumentMetadataRO metadata;
+    private OffsetDateTime payloadCreatedOn;
+    private DocumentVersionStatusType documentVersionStatus;
+    private List<DocumentPropertyRO> properties = new ArrayList<>();
+    private List<DocumentVersionEventRO> documentVersionEvents = new ArrayList<>();
+    private List<DocumentVersionRO> documentVersions = new ArrayList<>();
+    private DocumentMetadataRO metadata;
 
     public String getDocumentId() {
         return documentId;
@@ -157,4 +156,5 @@ public class DocumentRO extends BaseRO {
     public void addDocumentVersionEvent(DocumentVersionEventRO event) {
         this.documentVersionEvents.add(event);
     }
+
 }

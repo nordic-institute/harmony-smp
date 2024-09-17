@@ -52,7 +52,7 @@ public class DocumentVersionService {
         dbDocumentVersion.setStatus(DocumentVersionStatusType.DRAFT);
         if (publish) {
             LOG.debug("Creating And Publish event for document version");
-            publishDocumentVersion(dbDocumentVersion, eventSourceType);
+            publishDocumentVersion(dbDocumentVersion, eventSourceType, false);
         }
         return dbDocumentVersion;
     }
@@ -75,10 +75,12 @@ public class DocumentVersionService {
      *
      * @param dbDocumentVersion document version to be published
      * @param eventSourceType   event source type
+     * @param addFirstPublishEvent if true, the event will be added to fist place in the list of events (because the list is in reverse order it is
+     *                             necessary to add it to the first place when adding single event, but when adding multiple events, the order should be reversed)
      */
-    public void publishDocumentVersion(DBDocumentVersion dbDocumentVersion, EventSourceType eventSourceType) {
+    public void publishDocumentVersion(DBDocumentVersion dbDocumentVersion, EventSourceType eventSourceType, boolean addFirstPublishEvent) {
         DBDocumentVersionEvent dbEvent = createDocumentVersionEvent(DocumentVersionEventType.PUBLISH, eventSourceType, null);
-        dbDocumentVersion.addNewDocumentVersionEvent(dbEvent);
+        dbDocumentVersion.addNewDocumentVersionEvent(dbEvent, addFirstPublishEvent);
         dbDocumentVersion.setStatus(DocumentVersionStatusType.PUBLISHED);
     }
 

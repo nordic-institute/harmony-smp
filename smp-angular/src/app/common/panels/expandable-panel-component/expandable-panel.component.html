@@ -11,15 +11,16 @@
       <mat-icon *ngIf="expandPanel">chevron_left</mat-icon>
       <mat-icon *ngIf="!expandPanel">chevron_right</mat-icon>
     </button>
-    <tool-button-spacer [vertical]="false"></tool-button-spacer>
-    <button *ngFor="let item of expandableItems; let i = index;"
-            [class]="getButtonClass(i)"
+    <ng-container *ngFor="let item of expandableItems; let i = index;">
+      <tool-button-spacer *ngIf="item.showButtonSpacer" [vertical]="false"></tool-button-spacer>
+      <button [class]="getButtonClass(i)"
             (click)="selectItem(item, i)"
-            [matTooltip]="item.title"
-    >
+            (dblclick)="onDoubleClick(item, i)"
+            [matTooltip]="item.title">
       <mat-icon *ngIf="item.icon">{{ item.icon }}</mat-icon>
       <span *ngIf="showButtonLabel"
-            class="vertical-button-label">{{item.buttonLabel}}</span>
+            class="vertical-button-label">{{ item.buttonLabel }}</span>
     </button>
+    </ng-container>
   </div>
 </div>

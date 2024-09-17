@@ -294,6 +294,8 @@ public class DocumentEditController {
         return uiDocumentService.saveSubresourceDocumentForResource(subresourceId, resourceId, document);
     }
 
+
+
     protected void logAdminAccess(String action) {
         LOG.info(SMPLogger.SECURITY_MARKER, "Admin Domain action [{}] by user [{}], ", action, SessionSecurityUtils.getSessionUserDetails());
     }

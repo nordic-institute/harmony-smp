@@ -16,7 +16,13 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-import {Component, Input, ViewChild,} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 
 
 /**
@@ -31,6 +37,8 @@ import {Component, Input, ViewChild,} from '@angular/core';
 })
 export class ExpandableItemComponent {
 
+  //
+  @Input() showButtonSpacer: boolean = false;
   @Input() title: string;
   @Input() buttonLabel: string;
   @Input() icon: string;
@@ -45,6 +53,4 @@ export class ExpandableItemComponent {
   showItem(show: boolean) {
     this.expandableItem.nativeElement.style.display = show ? 'block' : 'none';
   }
-
-
 }

@@ -1,17 +1,18 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {SearchTableResult} from "../../search-table/search-table-result.model";
-import {User} from "../../../security/user.model";
 import {HttpClient, HttpParams} from "@angular/common/http";
-import {SmpConstants} from "../../../smp.constants";
-import {SecurityService} from "../../../security/security.service";
-import {AlertMessageService} from "../../alert-message/alert-message.service";
-import {MemberRo} from "../../model/member-ro.model";
-import {TableResult} from "../../model/table-result.model";
-import {SearchUserRo} from "../../model/search-user-ro.model";
-import {ResourceRo} from "../../model/resource-ro.model";
-import {GroupRo} from "../../model/group-ro.model";
-import {DomainRo} from "../../model/domain-ro.model";
+import {SecurityService} from "../../security/security.service";
+import {AlertMessageService} from "../alert-message/alert-message.service";
+import {SearchTableResult} from "../search-table/search-table-result.model";
+import {User} from "../../security/user.model";
+import {SmpConstants} from "../../smp.constants";
+import {MemberRo} from "../model/member-ro.model";
+import {TableResult} from "../model/table-result.model";
+import {ResourceRo} from "../model/resource-ro.model";
+import {GroupRo} from "../model/group-ro.model";
+import {DomainRo} from "../model/domain-ro.model";
+import {SearchUserRo} from "../model/search-user-ro.model";
+
 
 
 @Injectable()
@@ -140,7 +141,6 @@ export class MembershipService {
 
   deleteMemberFromResource(resource:ResourceRo, group:GroupRo, domain: DomainRo, member: MemberRo): Observable<MemberRo> {
     const currentUser: User = this.securityService.getCurrentUser();
-
     return this.http.delete<MemberRo>(SmpConstants.REST_EDIT_RESOURCE_MEMBER_DELETE
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId)

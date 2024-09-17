@@ -9,7 +9,6 @@ import {MemberRo} from "../../model/member-ro.model";
 import {finalize} from "rxjs/operators";
 import {TableResult} from "../../model/table-result.model";
 import {MemberDialogComponent} from "../../dialogs/member-dialog/member-dialog.component";
-import {MembershipService} from "./membership.service";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {GroupRo} from "../../model/group-ro.model";
@@ -18,6 +17,7 @@ import {SearchTableResult} from "../../search-table/search-table-result.model";
 import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {ResourceRo} from "../../model/resource-ro.model";
 import {TranslateService} from "@ngx-translate/core";
+import {MembershipService} from "../../services/membership.service";
 
 
 @Component({

@@ -135,7 +135,7 @@ public class DBResourceMember extends BaseEntity {
     }
 
     public Boolean hasPermissionToReview() {
-        return hasPermissionToReview;
+        return hasPermissionToReview==null?Boolean.FALSE:hasPermissionToReview;
     }
 
     public void setHasPermissionToReview(Boolean permissionReview) {

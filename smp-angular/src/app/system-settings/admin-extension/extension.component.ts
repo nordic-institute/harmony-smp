@@ -20,7 +20,6 @@ export class ExtensionComponent implements OnInit, AfterViewInit, BeforeLeaveGua
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(extensionService: ExtensionService) {
-
     extensionService.onExtensionsUpdatesEvent().subscribe(updatedExtensions => {
         this.updateExtensions(updatedExtensions);
       }

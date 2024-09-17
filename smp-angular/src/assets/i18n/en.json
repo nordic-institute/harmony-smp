@@ -1,19 +1,14 @@
 {
-
   "column.selection.link.all": "All",
   "column.selection.link.none": "None",
   "column.selection.link.show": "Show columns",
   "column.selection.link.hide": "Hide columns",
-
   "cancel.dialog.text": "Do you want to cancel all unsaved operations?",
   "cancel.dialog.title": "Unsaved data",
-
   "certificate.dialog.button.close": "Close",
   "certificate.dialog.title": "Certificate details",
-
   "confirmation.dialog.button.no": "No",
   "confirmation.dialog.button.yes": "Yes",
-
   "credentials.dialog.button.close": "Close",
   "credentials.dialog.button.copy.access.token": "Copy Access token value",
   "credentials.dialog.button.import": "Import",
@@ -36,12 +31,10 @@
   "credentials.dialog.placeholder.expire.on": "Expire On",
   "credentials.dialog.placeholder.start.date": "Start date",
   "credentials.dialog.placeholder.valid.from": "Valid from",
-
   "dialog.button.close": "Close",
   "dialog.button.no": "No",
   "dialog.button.ok": "OK",
   "dialog.button.yes": "Yes",
-
   "document.property.dialog.button.ok": "OK",
   "document.property.dialog.button.cancel": "Cancel",
   "document.property.dialog.error.property.already.exists": "The property name already exists!",
@@ -52,14 +45,11 @@
   "document.property.dialog.label.property.value": "Property value:",
   "document.property.dialog.title.new.mode": "Create Document Property",
   "document.property.dialog.title.edit.mode": "Edit Document Property",
-
   "expired.password.dialog.text": "Your password is more than three months old. Please change it as soon as possible!",
   "expired.password.dialog.title": "Password about to expire",
-
   "manage.members.dialog.button.close": "Close",
   "manage.members.dialog.title.invite.mode": "Invite {{membershipType}} member",
   "manage.members.dialog.title.edit.mode": "Edit {{membershipType}} member",
-
   "member.dialog.button.close": "Close",
   "member.dialog.button.save": "Save",
   "member.dialog.hint.choose.role": "Choose member role",
@@ -74,11 +64,9 @@
   "manage.dialog.title.edit.mode": "Edit {{membershipType}} member",
   "member.dialog.tooltip.role.type": "Role type for the member.",
   "member.dialog.tooltip.permission.review": "Can review document.",
-
   "object.properties.dialog.button.close": "Close",
   "object.properties.dialog.header.key": "Key",
   "object.properties.dialog.header.value": "Value",
-
   "password.change.dialog.button.confirm": "Set/change password",
   "password.change.dialog.button.close": "Close",
   "password.change.dialog.error.old.password.reused": "New password must not be equal than old current password!",
@@ -92,7 +80,6 @@
   "password.change.dialog.title": "Set/Change password dialog",
   "password.change.dialog.success.password.change.admin": "Password has been successfully set/changed.",
   "password.change.dialog.success.password.change.user": "Password has been successfully set/changed. Login again to the application with the new password!",
-
   "property.details.dialog.button.ok": "OK",
   "property.details.dialog.button.cancel": "Cancel",
   "property.details.dialog.error.invalid.property": "Invalid property",
@@ -102,15 +89,12 @@
   "property.details.dialog.legend.description": "Description:",
   "property.details.dialog.title.edit.mode": "{{type}} Property Edit",
   "property.details.dialog.title.new.mode": "New {{type}} Property",
-
   "session.expiration.dialog.button.expire": "Extend",
   "session.expiration.dialog.button.logout": "Logout",
   "session.expiration.dialog.title": "Extend session",
   "session.expiration.dialog.label.session.about.to.expire": "Your session is about to expire in <b>{{timeLeft}}</b> seconds!<br />Would you like to logout now or extend it for another <b>{{timeout}}</b> seconds?",
-
   "alert.panel.title": "Alerts",
   "alert.panel.user.title": "{{value}} (Email: '{{mailTo}}')",
-
   "certificate.panel.title": "Selected certificate data",
   "certificate.panel.label.alias": "Alias",
   "certificate.panel.label.crl": "Certificate revocation list URL",
@@ -130,7 +114,6 @@
   "certificate.panel.placeholder.subject.name": "Subject Name",
   "certificate.panel.placeholder.valid.from": "Valid from date",
   "certificate.panel.placeholder.valid.to": "Valid to date",
-
   "document.properties.panel.label.filter": "Filter",
   "document.properties.panel.label.property": "Property",
   "document.properties.panel.label.value": "Value",
@@ -146,7 +129,6 @@
   "document.properties.panel.tooltip.reset": "Reset changes",
   "document.properties.panel.tab.title": "Document properties",
   "document.properties.panel.tab.button.properties": "Properties",
-
   "document.events.panel.tab.title": "Current Document version events",
   "document.events.panel.tab.button.events": "Events",
   "document.events.panel.label.filter": "Filter",
@@ -156,7 +138,6 @@
   "document.events.panel.label.source": "Event Source",
   "document.events.panel.label.no.properties.found": "No DocumentVersion events found",
   "document.events.panel.label.select.page": "Select page of events",
-
   "document.versions.panel.tab.title": "All Document Versions",
   "document.versions.panel.tab.button.versions": "Versions",
   "document.versions.panel.label.filter": "Filter",
@@ -166,7 +147,6 @@
   "document.versions.panel.label.created": "Created",
   "document.versions.panel.label.updated": "Last updated",
   "document.versions.panel.label.status": "status",
-
   "membership.panel.button.invite.member": "Invite member",
   "membership.panel.button.edit.membership": "Edit",
   "membership.panel.button.delete.membership": "Remove",
@@ -181,14 +161,12 @@
   "membership.panel.label.username": "Username",
   "membership.panel.label.permission.review": "Can review",
   "membership.panel.placeholder.filter": "Member filter",
-
   "membership.panel.title.domain": "Direct Domain members {{value}}",
   "membership.panel.title.group": "Direct Group members {{value}}",
   "membership.panel.title.resource": "Resource direct members",
   "membership.panel.tooltip.invite.member": "Invite new member",
   "membership.panel.tooltip.edit.membership": "Edit membership of selected user",
   "membership.panel.tooltip.delete.membership": "Delete selected membership",
-
   "user.profile.panel.button.reset": "Reset",
   "user.profile.panel.button.save": "Save",
   "user.profile.panel.button.update.password": "Set/change password",
@@ -243,9 +221,7 @@
   "user.profile.panel.tooltip.application.role": "application role for the user.",
   "user.profile.panel.tooltip.password.expiration.date": "Default password set by system admin! User must change password immediately!",
   "user.profile.panel.value.password.expiration.date": "Default or null password",
-
   "row.limiter.placeholder": "Rows",
-
   "search.table.button.cancel": "Cancel",
   "search.table.button.delete": "Delete",
   "search.table.button.edit": "Edit",
@@ -259,7 +235,6 @@
   "search.table.tooltip.edit": "Edit",
   "search.table.tooltip.delete": "Delete",
   "search.table.success.update": "The operation 'update' completed successfully",
-
   "group.dialog.button.close": "Close",
   "group.dialog.button.save": "Save",
   "group.dialog.description": "To create a new group enter unique group name for the domain and click save.",
@@ -270,7 +245,6 @@
   "group.dialog.label.group.visibility": "Group visibility",
   "group.dialog.placeholder.group.visibility": "Group visibility",
   "group.dialog.tooltip.group.visibility": "Group visibility.",
-
   "domain.group.button.create": "Create",
   "domain.group.button.delete": "Delete",
   "domain.group.button.edit": "Edit data",
@@ -295,7 +269,6 @@
   "domain.group.tooltip.edit": "Edit selected group",
   "domain.group.tooltip.filter": "Member filter",
   "domain.group.tooltip.group.members": "Group members",
-
   "edit.domain.label.configuration": "Configuration",
   "edit.domain.label.domain.code": "Domain code",
   "edit.domain.label.domain.members": "Domain Members",
@@ -306,7 +279,6 @@
   "edit.domain.placeholder.domain.code": "Domain code",
   "edit.domain.text": "Edit Domains administration panel is a tool for domain administrators to manage domain members and domain groups",
   "edit.domain.title": "Edit Domains",
-
   "resource.dialog.button.close": "Close",
   "resource.dialog.button.save": "Save",
   "resource.dialog.description": "To create a new resource enter unique identifier and scheme and click save.",
@@ -322,7 +294,6 @@
   "resource.dialog.tooltip.resource.type": "Select type for the resource.",
   "resource.dialog.tooltip.resource.visibility": "Resource visibility.",
   "resource.dialog.tooltip.resource.review.enabled": "Review process enabled",
-
   "group.resource.panel.button.create": "Create",
   "group.resource.panel.button.delete": "Delete",
   "group.resource.panel.button.edit": "Edit",
@@ -346,7 +317,6 @@
   "group.resource.panel.tooltip.delete": "Delete selected resource",
   "group.resource.panel.tooltip.edit": "Edit data",
   "group.resource.panel.tooltip.members": "Group members",
-
   "edit.group.label.resources": "Resources",
   "edit.group.label.members": "Members",
   "edit.group.label.user.not.administrator": "User is not administrator of any of the groups",
@@ -358,11 +328,9 @@
   "edit.group.title": "Edit Group",
   "edit.group.tooltip.select.domain": "Selected domain.",
   "edit.group.tooltip.select.group": "Select group.",
-
   "document.wizard.dialog.button.cancel": "Cancel",
   "document.wizard.dialog.button.ok": "OK",
   "document.wizard.dialog.title": "Resource Extension Wizard",
-
   "resource.details.panel.alert.resource.saved": "Resource data are persisted.",
   "resource.details.panel.label.resource.id": "Resource identifier",
   "resource.details.panel.label.resource.name": "Edit resource document",
@@ -383,7 +351,6 @@
   "resource.details.panel.title": "Resources",
   "resource.details.panel.button.reset": "Reset",
   "resource.details.panel.button.save": "Save",
-
   "document.edit.panel.button.back": "Back",
   "document.edit.panel.button.cancel": "Cancel",
   "document.edit.panel.button.document.wizard": "Document wizard",
@@ -391,9 +358,9 @@
   "document.edit.panel.button.validate": "Validate",
   "document.edit.panel.button.version.new": "New version",
   "document.edit.panel.button.version.publish": "Publish",
-  "document.edit.panel.button.version.review": "Review",
-  "document.edit.panel.button.version.approve": "Approve",
-  "document.edit.panel.button.version.reject": "Reject",
+  "document.edit.panel.button.version.review.request": "Request review",
+  "document.edit.panel.button.version.review.approve": "Approve",
+  "document.edit.panel.button.version.review.reject": "Reject",
   "document.edit.panel.button.save": "Save",
   "document.edit.panel.cancel.confirmation.dialog.description": "Do you want to cancel all changes on the document?",
   "document.edit.panel.cancel.confirmation.dialog.title": "Cancel changes",
@@ -413,20 +380,42 @@
   "document.edit.panel.tooltip.validate": "Validate resource",
   "document.edit.panel.tooltip.version": "Select version to display.",
   "document.edit.panel.tooltip.version.new": "Create new document version for the resource",
-  "document.edit.panel.tooltip.version.publish": "Publish selected document version for the resource",
-  "document.edit.panel.tooltip.version.review": "Submit selected document version for the review",
-  "document.edit.panel.tooltip.version.approve": "Submit selected document version for the review",
-  "document.edit.panel.tooltip.version.reject": "Submit selected document version for the review",
-  "document.edit.panel.note.editable": "Note: Only documents in following status can be edited: [{{editableDocStatusList}}]",
-
+  "document.edit.panel.tooltip.version.publish": "Publish selected document version",
+  "document.edit.panel.tooltip.version.request.review": "Submit selected document version for the review",
+  "document.edit.panel.tooltip.version.review.approve": "Approve  document version",
+  "document.edit.panel.tooltip.version.review.reject": "Reject document version",
+  "document.edit.panel.note.editable": "Note: Only document payloads in following status can be edited: [{{editableDocStatusList}}]",
   "document.metadata.panel.tab.title": "Document metadata",
   "document.metadata.panel.tab.button.metadata": "Metadata",
-
   "document.metadata.panel.label.name": "Name",
   "document.metadata.panel.label.mimetype": "Mimetype",
   "document.metadata.panel.label.published.version": "Published version",
   "document.metadata.panel.label.sharing.enabled": "Document sharing enabled",
   "document.metadata.panel.label.reference.document": "Referenced document",
+  "document.metadata.panel.button.reference.select": "Select reference",
+  "document.metadata.panel.button.reference.clear": "Clear reference",
+  "document.metadata.panel.label.reference.document.name": "Document name",
+  "document.metadata.panel.label.reference.resource.scheme": "Resource scheme",
+  "document.metadata.panel.label.reference.resource.value": "Resource value",
+  "document.metadata.panel.label.reference.subresource.scheme": "Subresource. scheme",
+  "document.metadata.panel.label.reference.subresource.value": "Subresource. value",
+  "document.metadata.panel.label.reference.document.not.selected": "No reference document",
+  "reference.document.dialog.title": "Select reference document",
+  "reference.document.dialog.label.resource.value": "Resource value",
+  "reference.document.dialog.label.resource.scheme": "Resource scheme",
+  "reference.document.dialog.label.subresource.value": "Subresource value",
+  "reference.document.dialog.label.subresource.scheme": "Subresource scheme",
+  "reference.document.dialog.label.domain": "Domain",
+  "reference.document.dialog.tooltip.domain": "Select domain",
+  "reference.document.dialog.button.search": "Search",
+  "reference.document.dialog.column.resource.value": "Res. value",
+  "reference.document.dialog.column.resource.scheme": "Res. scheme",
+  "reference.document.dialog.column.subresource.value": "Subr. value",
+  "reference.document.dialog.column.subresource.scheme": "Subr. scheme",
+  "reference.document.dialog.button.close": "Close",
+  "reference.document.dialog.button.select": "Set selected document as reference",
+  "reference.document.dialog.label.select.page": "Page",
+  "reference.document.dialog.button.reset": "Reset",
 
   "review.edit.panel.label.review": "Review",
   "review.edit.panel.label.column.date": "Review date",
@@ -436,8 +425,6 @@
   "review.edit.panel.label.column.resource.value": "Res. value",
   "review.edit.panel.label.column.subresource.scheme": "Subr. scheme",
   "review.edit.panel.label.column.subresource.value": "Subr. value",
-
-
 
   "subresource.document.wizard.button.cancel": "Cancel",
   "subresource.document.wizard.button.ok": "OK",

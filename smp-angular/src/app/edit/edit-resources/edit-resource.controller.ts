@@ -158,11 +158,27 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
   }
 
   updateResourceList(list: ResourceRo[]) {
+    console.log('updateResourceList selected resource:' +  this._selectedResource)
+    // find current resource from list by resource id
+
+
+    let currR: ResourceRo = this.selectedResource;
+    this.selectedResource = null;
     this.data = list;
-    // select first resource by default
-    if (!!list && list.length > 0) {
+
+    if (!!currR) {
+      console.log('selected resource :'  + currR)
+      this.selectedResource = list.find(r =>
+        r.identifierScheme == currR.identifierScheme &&
+        r.identifierValue == currR.identifierValue);
+      console.log('selected resource found :' + this._selectedResource)
+    }
+
+    if (!this.selectedResource && !!list && list.length > 0) {
       this.selectedResource = list[0];
     }
+
+
   }
 
   applyResourceFilter(event: Event) {

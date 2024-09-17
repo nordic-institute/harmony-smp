@@ -90,8 +90,23 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 "    AND r.REVIEW_ENABLED = :review_enabled" +
                 "    AND rmu.FK_USER_ID = :user_id" +
                 "    AND rmu.PERMISSION_REVIEW = :permission_can_review",
-
         resultSetMapping = "DBReviewDocumentVersionsMapping")
+
+@NamedNativeQuery(name = QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER_COUNT,
+        query = "SELECT " +
+                "    count(dv.ID) AS CNT" +
+                " FROM " +
+                "    SMP_DOCUMENT_VERSION dv" +
+                "    INNER JOIN SMP_DOCUMENT d ON dv.FK_DOCUMENT_ID = d.ID" +
+                "    LEFT JOIN SMP_SUBRESOURCE sr ON d.ID = sr.FK_DOCUMENT_ID" +
+                "    LEFT JOIN SMP_RESOURCE r ON d.ID = r.FK_DOCUMENT_ID OR r.ID = sr.FK_RESOURCE_ID" +
+                "    INNER JOIN SMP_RESOURCE_MEMBER rmu ON r.ID = rmu.FK_RESOURCE_ID" +
+                " WHERE " +
+                "    dv.STATUS = :status" +
+                "    AND r.REVIEW_ENABLED = :review_enabled" +
+                "    AND rmu.FK_USER_ID = :user_id" +
+                "    AND rmu.PERMISSION_REVIEW = :permission_can_review",
+        resultSetMapping = "DBReviewDocumentVersionsCountMapping")
 
 @SqlResultSetMapping(name = "DBReviewDocumentVersionsMapping",
         classes = {
@@ -109,6 +124,14 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                                 @ColumnResult(name = "SRIDENTIFIER_SCHEME", type = String.class),
                                 @ColumnResult(name = "TARGET", type = String.class),
                                 @ColumnResult(name = "LAST_UPDATED_ON", type = OffsetDateTime.class),
+                        })
+        })
+
+@SqlResultSetMapping(name = "DBReviewDocumentVersionsCountMapping",
+        classes = {
+                @ConstructorResult(targetClass = Long.class,
+                        columns = {
+                                @ColumnResult(name = "CNT", type = Long.class),
                         })
         })
 public class DBDocumentVersion extends BaseEntity {
@@ -201,15 +224,30 @@ public class DBDocumentVersion extends BaseEntity {
     }
 
     /**
-     * Add new document version event. Beause of the order of the events,
+     * Add new document version event. Because of the order of the events,
      * the new event is added to the beginning of the list.*
      *
      * @param event event to be added
      * @return added event
      */
     public DBDocumentVersionEvent addNewDocumentVersionEvent(DBDocumentVersionEvent event) {
+        return addNewDocumentVersionEvent(event, true);
+    }
+
+    /**
+     * Add new document version event.
+     *
+     * @param event    event to be added
+     * @param addFirst if true event is added to the beginning of the list
+     * @return added event
+     */
+    public DBDocumentVersionEvent addNewDocumentVersionEvent(DBDocumentVersionEvent event, boolean addFirst) {
         event.setDocumentVersion(this);
-        getDocumentVersionEvents().add(0, event);
+        if (addFirst) {
+            getDocumentVersionEvents().add(0, event);
+        } else {
+            getDocumentVersionEvents().add(event);
+        }
         return event;
     }
 

@@ -4,7 +4,6 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {lastValueFrom, Observable} from "rxjs";
 import {SearchUserRo} from "../../model/search-user-ro.model";
-import {MembershipService} from "../../panels/membership-panel/membership.service";
 import {MemberRo} from "../../model/member-ro.model";
 import {DomainRo} from "../../model/domain-ro.model";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
@@ -12,6 +11,7 @@ import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {GroupRo} from "../../model/group-ro.model";
 import {ResourceRo} from "../../model/resource-ro.model";
 import {TranslateService} from "@ngx-translate/core";
+import {MembershipService} from "../../services/membership.service";
 
 
 @Component({
@@ -98,11 +98,9 @@ export class ManageMembersDialogComponent implements OnInit {
       } else {
         this.memberForm.controls['member-user'].disable();
       }
-
       this.memberForm.controls['member-fullName'].setValue(value.fullName);
       this.memberForm.controls['member-memberOf'].setValue(value.memberOf);
       this.memberForm.controls['member-roleType'].setValue(value.roleType);
-
     } else {
       this.memberForm.controls['member-user'].setValue("");
       this.memberForm.controls['member-fullName'].setValue("");

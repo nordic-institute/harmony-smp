@@ -47,16 +47,38 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Table(name = "SMP_DOCUMENT")
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
 
-        @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id")
-        @NamedQuery(name = QUERY_DOCUMENT_BY_RESOURCE_DEF_SHARING, query = "SELECT d FROM DBResource r " +
-                "INNER JOIN r.document d " +
-                "INNER JOIN r.domainResourceDef.resourceDef rdef " +
-                "  WHERE rdef.identifier =:resource_def_identifier and d.sharingEnabled =:sharing_enabled")
-        @NamedQuery(name = QUERY_DOCUMENT_FOR_SUBRESOURCE, query = "SELECT d FROM DBSubresource  sr JOIN sr.document d WHERE sr.id =:subresource_id")
-        @NamedQuery(name = QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING, query = "SELECT d FROM DBSubresource rs " +
-                "INNER JOIN rs.document d " +
-                "INNER JOIN rs.subresourceDef rdef " +
-                "  WHERE rdef.identifier =:subresource_def_identifier and d.sharingEnabled =:sharing_enabled")
+@NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id")
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES, query = "SELECT r FROM DBResource r " +
+        " INNER JOIN r.document d " +
+        " INNER JOIN r.group gr" +
+        " INNER JOIN r.domainResourceDef.domain dom" +
+        " INNER JOIN r.domainResourceDef.resourceDef rdef " +
+        "  WHERE rdef.identifier =:resource_def_identifier " +
+        "   AND r.id !=:resource_id " +
+        "   AND d.sharingEnabled =:sharing_enabled " +
+        "   AND r.visibility =:resource_visibility " +
+        "   AND (:resource_identifier IS NULL OR  r.identifierValue =:resource_identifier)" +
+        "   AND (:resource_scheme IS NULL OR  r.identifierScheme =:resource_scheme)" +
+        "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
+        "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)")
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT, query = "SELECT count(d.id) FROM DBResource r " +
+        " INNER JOIN r.document d " +
+        " INNER JOIN r.group gr" +
+        " INNER JOIN r.domainResourceDef.domain dom" +
+        " INNER JOIN r.domainResourceDef.resourceDef rdef " +
+        "  WHERE rdef.identifier =:resource_def_identifier " +
+        "   AND r.id !=:resource_id " +
+        "   AND d.sharingEnabled =:sharing_enabled " +
+        "   AND r.visibility =:resource_visibility " +
+        "   AND (:resource_identifier IS NULL OR  r.identifierValue =:resource_identifier)" +
+        "   AND (:resource_scheme IS NULL OR  r.identifierScheme =:resource_scheme)" +
+        "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
+        "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)")
+@NamedQuery(name = QUERY_DOCUMENT_FOR_SUBRESOURCE, query = "SELECT d FROM DBSubresource  sr JOIN sr.document d WHERE sr.id =:subresource_id")
+@NamedQuery(name = QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING, query = "SELECT d FROM DBSubresource rs " +
+        "INNER JOIN rs.document d " +
+        "INNER JOIN rs.subresourceDef rdef " +
+        "  WHERE rdef.identifier =:subresource_def_identifier and d.sharingEnabled =:sharing_enabled")
 public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);
     @Id
@@ -142,11 +164,15 @@ public class DBDocument extends BaseEntity {
         if (documentVersion.getId() != null && getDocumentVersions().contains(documentVersion)) {
             LOG.info("Document version [{}] already exists on document [{}]", documentVersion, this);
             return documentVersion;
-       }
+        }
 
         documentVersion.setVersion(getNextVersionIndex());
         documentVersion.setDocument(this);
-        setCurrentVersion(documentVersion.getVersion());
+
+        if (getCurrentVersion() <= 0 || documentVersion.getStatus() == DocumentVersionStatusType.PUBLISHED) {
+            setCurrentVersion(documentVersion.getVersion());
+        }
+
         // ADD TO THE LIST to the first position (latest version)
         getDocumentVersions().add(0, documentVersion);
         return documentVersion;

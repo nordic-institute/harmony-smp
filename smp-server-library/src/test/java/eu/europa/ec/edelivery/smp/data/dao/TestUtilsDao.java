@@ -108,7 +108,19 @@ public class TestUtilsDao {
     DBResource resourcePrivateD1G1RD1;
     DBExtension extension;
 
+
     boolean searchDataCreated = false;
+    DBResource searchPubPubPubRes = null;
+    DBResource searchPubPubPrivRes = null;
+    DBResource searchPubPrivPubRes = null;
+    DBResource searchPubPrivPrivRes = null;
+
+    DBResource searchPrivPubPubRes = null;
+    DBResource searchPrivPubPrivRes = null;
+    DBResource searchPrivPrivPubRes = null;
+    DBResource searchPrivPrivPrivRes = null;
+
+
 
     /**
      * Database can be cleaned by script before the next test; clean also the objects
@@ -150,6 +162,16 @@ public class TestUtilsDao {
 
         extension = null;
         searchDataCreated = false;
+        searchPubPubPubRes = null;
+        searchPubPubPrivRes = null;
+        searchPubPrivPubRes = null;
+        searchPubPrivPrivRes = null;
+
+        searchPrivPubPubRes = null;
+        searchPrivPubPrivRes = null;
+        searchPrivPrivPubRes = null;
+        searchPrivPrivPrivRes = null;
+
 
     }
 
@@ -347,35 +369,35 @@ public class TestUtilsDao {
 
         createGroupMembership(MembershipRoleType.VIEWER, user4, privPrivGroup);
 
-        DBResource pubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPubGroup);
-        DBResource pubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPubGroup);
-        DBResource pubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPrivGroup);
-        DBResource pubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPrivGroup);
+        searchPubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPubGroup);
+        searchPubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPubGroup);
+        searchPubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPrivGroup);
+        searchPubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPrivGroup);
 
-        DBResource privPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, privateDomainResourceDef,  privPubGroup);
-        DBResource privPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, privateDomainResourceDef,  privPubGroup);
-        DBResource privPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, privateDomainResourceDef,  privPrivGroup);
-        DBResource privPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, privateDomainResourceDef,  privPrivGroup);
+        searchPrivPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, privateDomainResourceDef,  privPubGroup);
+        searchPrivPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, privateDomainResourceDef,  privPubGroup);
+        searchPrivPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, privateDomainResourceDef,  privPrivGroup);
+        searchPrivPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, privateDomainResourceDef,  privPrivGroup);
 
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPubPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPubPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPubPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPubPrivRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPrivPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPrivPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPrivPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPrivPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPubPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPubPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPubPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPubPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPrivPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPrivPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPrivPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPrivPrivRes);
 
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPubPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPubPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPubPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPubPrivRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPrivPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPrivPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPrivPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPrivPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPubPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPubPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPubPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPubPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPrivPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPrivPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPrivPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPrivPrivRes);
 
-        createResourceMembership(MembershipRoleType.VIEWER, user5, privPrivPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user5, searchPrivPrivPrivRes);
 
         searchDataCreated = true;
     }
@@ -561,8 +583,8 @@ public class TestUtilsDao {
         for (int i= 0; i< versions; i++ ) {
             assertNotNull(document.getDocumentVersions().get(i).getId());
         }
-        // current version is the last version
-        assertEquals(versions, document.getCurrentVersion());
+        // current version is first version all others are draft
+        assertEquals(1, document.getCurrentVersion());
 
         return document;
     }
@@ -849,5 +871,38 @@ public class TestUtilsDao {
 
     public DBGroupMember getGroupMemberU1D2G1Viewer() {
         return groupMemberU1D2G1Viewer;
+    }
+
+
+    public DBResource getResourceSearchPubPubPub() {
+        return searchPubPubPubRes;
+    }
+
+    public DBResource getResourceSearchPubPubPriv() {
+        return searchPubPubPrivRes;
+    }
+
+    public DBResource getResourceSearchPubPrivPub() {
+        return searchPubPrivPubRes;
+    }
+
+    public DBResource getResourceSearchPubPrivPriv() {
+        return searchPubPrivPrivRes;
+    }
+
+    public DBResource getResourceSearchPrivPubPub() {
+        return searchPrivPubPubRes;
+    }
+
+    public DBResource getResourceSearchPrivPubPriv() {
+        return searchPrivPubPrivRes;
+    }
+
+    public DBResource getResourceSearchPrivPrivPub() {
+        return searchPrivPrivPubRes;
+    }
+
+    public DBResource getResourceSearchPrivPrivPriv() {
+        return searchPrivPrivPrivRes;
     }
 }

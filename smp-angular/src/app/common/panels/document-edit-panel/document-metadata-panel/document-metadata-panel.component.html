@@ -1,7 +1,7 @@
 <div id="document-metadata-panel"
      [formGroup]="documentMetadataForm">
 
-  <mat-form-field style="min-width: 180px"
+  <mat-form-field class="form-field-full-width"
                   subscriptSizing="dynamic"
                   appearance="fill">
     <mat-label>{{ "document.metadata.panel.label.name" | translate }}</mat-label>
@@ -9,7 +9,7 @@
            formControlName="name"
            readonly>
   </mat-form-field>
-  <mat-form-field style="min-width: 180px"
+  <mat-form-field class="form-field-full-width"
                   subscriptSizing="dynamic"
                   appearance="fill">
     <mat-label>{{ "document.metadata.panel.label.mimetype" | translate }}</mat-label>
@@ -18,7 +18,7 @@
            readonly>
   </mat-form-field>
 
-  <mat-form-field style="min-width: 180px"
+  <mat-form-field class="form-field-full-width"
                   subscriptSizing="dynamic"
                   appearance="fill">
     <mat-label>{{ "document.metadata.panel.label.published.version" | translate }}</mat-label>
@@ -26,10 +26,75 @@
            formControlName="publishedVersion"
            readonly>
   </mat-form-field>
-  <mat-checkbox formControlName="sharingEnabled"
-                matTooltip="{{ 'document.metadata.panel.label.sharing.enabled' | translate }}"
-                id="sharingEnabled_id">
-    {{ "document.metadata.panel.label.sharing.enabled" | translate }}
-  </mat-checkbox>
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button mat-raised-button
+              mat-flat-button color="primary"
+              [disabled]="hasReferenceDocument"
+              (click)="onShowSearchDialogClicked()"
+      >{{ "document.metadata.panel.button.reference.select" | translate }}
+      </button>
+
+      <button mat-raised-button
+              color="primary"
+              [disabled]="!hasReferenceDocument"
+              (click)="onClearReferenceDocument()">
+        <mat-icon>delete</mat-icon>
+        <span>{{ "document.metadata.panel.button.reference.clear" | translate }}</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <div class="panel" *ngIf="hasReferenceDocument;else noDataFound">
+    <mat-form-field class="form-field-full-width"
+                    subscriptSizing="dynamic"
+                    appearance="fill">
+      <mat-label>{{ "document.metadata.panel.label.reference.document.name" | translate }}</mat-label>
+      <input matInput id="reference-document-name_id"
+             formControlName="referenceDocumentName"
+             readonly>
+    </mat-form-field>
+    <mat-form-field class="form-field-full-width"
+                    subscriptSizing="dynamic"
+                    appearance="fill">
+      <mat-label>{{ "document.metadata.panel.label.reference.resource.value" | translate }}</mat-label>
+      <input matInput id="reference-resource-value_id"
+             formControlName="referenceResourceValue"
+             readonly>
+    </mat-form-field>
+    <mat-form-field class="form-field-full-width"
+                    subscriptSizing="dynamic"
+                    appearance="fill">
+      <mat-label>{{ "document.metadata.panel.label.reference.resource.scheme" | translate }}</mat-label>
+      <input matInput
+             id="reference-resource-scheme_id"
+             formControlName="referenceResourceScheme"
+             readonly>
+    </mat-form-field>
+
+
+    <mat-form-field class="form-field-full-width"
+                    subscriptSizing="dynamic"
+                    appearance="fill">
+      <mat-label>{{ "document.metadata.panel.label.reference.subresource.value" | translate }}</mat-label>
+      <input matInput id="reference-subresource-value_id"
+             formControlName="referenceSubesourceValue"
+             readonly>
+    </mat-form-field>
+    <mat-form-field class="form-field-full-width"
+                    subscriptSizing="dynamic"
+                    appearance="fill">
+      <mat-label>{{ "document.metadata.panel.label.reference.subresource.scheme" | translate }}</mat-label>
+      <input matInput
+             id="reference-subresource-scheme_id"
+             formControlName="referenceSubesourceScheme"
+             readonly>
+    </mat-form-field>
+  </div>
+  <ng-template #noDataFound>
+    <div id="no_document-reference_id" style="padding: 1em 0.4px ">
+      {{ "document.metadata.panel.label.reference.document.not.selected" | translate }}
+    </div>
+  </ng-template>
 </div>
 
