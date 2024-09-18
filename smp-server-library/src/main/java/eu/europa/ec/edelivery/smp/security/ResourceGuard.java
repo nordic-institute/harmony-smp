@@ -36,13 +36,17 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 /**
  * Service implements logic if user can activate action on the resource
  */
 
 @Service
 public class ResourceGuard {
+
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceGuard.class);
+    private static final String LOG_NOT_LOGGED_IN = "Anonymous users are not permitted to execute action [{}]!";
     DomainMemberDao domainMemberDao;
     GroupMemberDao groupMemberDao;
     ResourceMemberDao resourceMemberDao;
@@ -97,12 +101,23 @@ public class ResourceGuard {
         DBDomain domain = group.getDomain();
         DBUser dbuser = user == null ? null : user.getUser();
         // if domain is internal check if user is member of domain, or any internal resources, groups
+
+        if (resource.getVisibility() == VisibilityType.PRIVATE ) {
+            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to read private resource [{}]", user, resource);
+            return dbuser!=null && resourceMemberDao.isUserResourceMember(dbuser, resource);
+        }
+
+        if (group.getVisibility() == VisibilityType.PRIVATE) {
+            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to read public resource in a private group [{}]", user, group);
+            return dbuser!=null &&  (groupMemberDao.isUserGroupMember(dbuser, Collections.singletonList(group)) ||
+                    resourceMemberDao.isUserAnyGroupResourceMember(dbuser, group));
+        }
+
         if ((resource.getVisibility() == null || domain.getVisibility() == VisibilityType.PRIVATE)
                 && (dbuser == null ||
                 !(domainMemberDao.isUserDomainMember(dbuser, domain)
                         || groupMemberDao.isUserAnyDomainGroupResourceMember(dbuser, domain)
-                        || resourceMemberDao.isUserAnyDomainResourceMember(dbuser, domain)))
-        ) {
+                        || resourceMemberDao.isUserAnyDomainResourceMember(dbuser, domain)))) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read internal domain [{}] resources", user, domain);
             return false;
         }
@@ -131,7 +146,7 @@ public class ResourceGuard {
     public boolean canUpdate(SMPUserDetails user, DBResource resource) {
         LOG.info(SMPLogger.SECURITY_MARKER, "User [{}] is trying to update resource [{}]", user, resource);
         if (user == null || user.getUser() == null) {
-            LOG.warn("Not user is logged in!");
+            LOG.warn(LOG_NOT_LOGGED_IN, "UPDATE");
             return false;
         }
         // only resource member with admin rights can update resource
@@ -147,7 +162,7 @@ public class ResourceGuard {
     public boolean canCreate(SMPUserDetails user, DBResource resource, DBDomain domain) {
         LOG.info(SMPLogger.SECURITY_MARKER, "User [{}] is trying to create resource [{}]", user, resource);
         if (user == null || user.getUser() == null) {
-            LOG.warn("Not user is logged in!");
+            LOG.warn(LOG_NOT_LOGGED_IN, "CREATE");
             return false;
         }
         return groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(user.getUser(),
@@ -160,20 +175,20 @@ public class ResourceGuard {
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete resource [{}]", user, resource);
         // same as for create
         if (user == null || user.getUser() == null) {
-            LOG.warn("Not user is logged in!");
+            LOG.warn(LOG_NOT_LOGGED_IN, "DELETE");
             return false;
         }
         return canCreate(user, resource, domain);
     }
 
     public boolean canDelete(SMPUserDetails user, DBSubresource subresource) {
-        LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete resource [{}]", user, subresource);
+        LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete subresource [{}]", user, subresource);
         // Subresource can be created by the resource admin, the same as for update
         return canUpdate(user, subresource);
     }
 
     public boolean canCreateUpdate(SMPUserDetails user, DBSubresource subresource) {
-        LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete resource [{}]", user, subresource);
+        LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to create/update subresource [{}]", user, subresource);
         // Subresource can be created by the resource admin, the same as for update
         return canUpdate(user, subresource);
     }

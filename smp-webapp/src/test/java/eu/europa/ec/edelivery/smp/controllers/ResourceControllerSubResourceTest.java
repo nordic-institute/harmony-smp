@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.servlet.WebConstants;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,9 +50,57 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
 
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setupController() throws IOException {
         super.setup();
     }
+
+
+    /**
+     * Test get permissions for resource with different creation parameters. The user data match
+     * the data in the database: webapp_integration_test_data.sql
+     */
+    @ParameterizedTest
+    @CsvSource({"'Get with same user as resource admin: OK', 200, pat_smp_admin, 123456, pat_smp_admin, 123456, ''",
+            "'Non resource memeber is trying to get it ', 401, pat_smp_admin, 123456, test_pat_hashed_pass, 123456,''",
+            "'Resource member with bad password, bad credentials: Fail', 401, pat_smp_admin, 123456, pat_smp_admin, 000000,''",
+            "'Set same Owner as admin user: OK', 200, pat_smp_admin, 123456, pat_smp_admin, 123456,'pat_smp_admin'",
+            "'Set resource owner user: OK', 200, test_pat_hashed_pass, 123456, test_pat_hashed_pass, 123456,'test_user_hashed_pass'",
+            "'Legacy: Set owner user, but default admin owner deletes: OK', 200, test_pat_hashed_pass, 123456, pat_smp_admin, 123456, 'test_pat_hashed_pass'",
+    })
+    void getPrivateSubResourcePermissions(String desc, int expectedStatus,
+                                      String resourceAdminCreateATId, String resourceCreateATSecret,
+                                      String getUserATId, String getUserPassword,
+                                      String resourceOwnerId) throws Exception {
+        LOG.info(desc);
+
+        String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
+        // owner headers
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(WebConstants.HTTP_PARAM_RESOURCE_VISIBILITY, VisibilityType.PRIVATE.name());
+        if (StringUtils.isNotBlank(resourceOwnerId)) {
+            httpHeaders.add(WebConstants.HTTP_PARAM_OWNER, resourceOwnerId);
+        }
+        // crate service group
+        mvc.perform(put(URL_PATH)
+                        .with(ADMIN_CREDENTIALS)
+                        .headers(httpHeaders)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .content(xmlSG))
+                .andExpect(status().isCreated());
+        // add subresource/service-metadata with appropriate owner
+        mvc.perform(put(URL_DOC_PATH)
+                        .with(httpBasic(resourceAdminCreateATId, resourceCreateATSecret))
+                        .contentType(APPLICATION_XML_VALUE)
+                        .content(xmlMD))
+                .andExpect(status().isCreated());
+
+        // get subresource/service-metadata with test owner
+        mvc.perform(get(URL_DOC_PATH)
+                        .with(httpBasic(getUserATId, getUserPassword)))
+                .andExpect(status().is(expectedStatus));
+    }
+
 
     /**
      * Test update permissions for resource with different creation parameters. The user data match
