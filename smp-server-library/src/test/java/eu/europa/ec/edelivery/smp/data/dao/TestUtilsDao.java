@@ -120,6 +120,15 @@ public class TestUtilsDao {
     DBResource searchPrivPrivPubRes = null;
     DBResource searchPrivPrivPrivRes = null;
 
+    DBSubresource searchPubPubPubSubRes = null;
+    DBSubresource searchPubPubPrivSubRes = null;
+    DBSubresource searchPubPrivPubSubRes = null;
+    DBSubresource searchPubPrivPrivSubRes = null;
+
+    DBSubresource searchPrivPubPubSubRes = null;
+    DBSubresource searchPrivPubPrivSubRes = null;
+    DBSubresource searchPrivPrivPubSubRes = null;
+    DBSubresource searchPrivPrivPrivSubRes = null;
 
 
     /**
@@ -171,6 +180,16 @@ public class TestUtilsDao {
         searchPrivPubPrivRes = null;
         searchPrivPrivPubRes = null;
         searchPrivPrivPrivRes = null;
+
+        searchPubPubPubSubRes = null;
+        searchPubPubPrivSubRes = null;
+        searchPubPrivPubSubRes = null;
+        searchPubPrivPrivSubRes = null;
+
+        searchPrivPubPubSubRes = null;
+        searchPrivPubPrivSubRes = null;
+        searchPrivPrivPubSubRes = null;
+        searchPrivPrivPrivSubRes = null;
 
 
     }
@@ -370,14 +389,23 @@ public class TestUtilsDao {
         createGroupMembership(MembershipRoleType.VIEWER, user4, privPrivGroup);
 
         searchPubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPubGroup);
+        searchPubPubPubSubRes = createSubresource(searchPubPubPubRes, "subres-pubPubPub", "s-1-1-1", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
         searchPubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPubGroup);
+        searchPubPubPrivSubRes = createSubresource(searchPubPubPrivRes, "subres-pubPubPriv", "s-2-2-2", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
         searchPubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPrivGroup);
+        searchPubPrivPubSubRes = createSubresource(searchPubPrivPubRes, "subres-pubPrivPub", "s-3-3-3", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
         searchPubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPrivGroup);
+        searchPubPrivPrivSubRes = createSubresource(searchPubPrivPrivRes, "subres-pubPrivPriv", "s-4-4-4", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
 
         searchPrivPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, privateDomainResourceDef,  privPubGroup);
+        searchPrivPubPubSubRes = createSubresource(searchPrivPubPubRes, "subres-privPubPub", "s-5-5-5", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
         searchPrivPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, privateDomainResourceDef,  privPubGroup);
+        searchPrivPubPrivSubRes = createSubresource(searchPrivPubPrivRes, "subres-privPubPriv", "s-6-6-6", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
         searchPrivPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, privateDomainResourceDef,  privPrivGroup);
+        searchPrivPrivPubSubRes = createSubresource(searchPrivPrivPubRes, "subres-privPrivPub", "s-7-7-7", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
         searchPrivPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, privateDomainResourceDef,  privPrivGroup);
+        searchPrivPrivPrivSubRes = createSubresource(searchPrivPrivPrivRes, "subres-privPrivPriv", "s-8-8-8", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+
 
         createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPubPubRes);
         createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPubPubRes);
@@ -516,10 +544,10 @@ public class TestUtilsDao {
 
         dbSubresource.setSubresourceDef(subresourceDefSmp);
 
-        DBDocument doc  = createDocument(1, resourceD1G1RD1.getIdentifierValue(), resourceD1G1RD1.getIdentifierScheme(),
+        DBDocument doc  = createDocument(1, resource.getIdentifierValue(), resource.getIdentifierScheme(),
                 identifier, schema);
         doc.getDocumentVersions().get(0).setStatus(status);
-
+        doc.setSharingEnabled(Boolean.TRUE);
         dbSubresource.setDocument(doc);
         dbSubresource.setResource(resource);
 
@@ -904,5 +932,37 @@ public class TestUtilsDao {
 
     public DBResource getResourceSearchPrivPrivPriv() {
         return searchPrivPrivPrivRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPubPub() {
+        return searchPubPubPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPubPriv() {
+        return searchPubPubPrivSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPrivPub() {
+        return searchPubPrivPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPrivPriv() {
+        return searchPubPrivPrivSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPubPub() {
+        return searchPrivPubPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPubPriv() {
+        return searchPrivPubPrivSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPrivPub() {
+        return searchPrivPrivPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPrivPriv() {
+        return searchPrivPrivPrivSubRes;
     }
 }

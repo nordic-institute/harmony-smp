@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBReviewDocumentVersion;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBReviewDocumentVersionMapping;
 import eu.europa.ec.edelivery.smp.data.ui.ReviewDocumentVersionRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import org.springframework.core.convert.ConversionService;
@@ -56,7 +56,7 @@ public class UIReviewService {
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
-            List<DBReviewDocumentVersion> listTask = documentDao.getDocumentReviewListForUser(userId, page, pageSize);
+            List<DBReviewDocumentVersionMapping> listTask = documentDao.getDocumentReviewListForUser(userId, page, pageSize);
             List<ReviewDocumentVersionRO> result = listTask.stream().map(resource -> conversionService.convert(resource, ReviewDocumentVersionRO.class))
                     .collect(Collectors.toList());
             sg.getServiceEntities().addAll(result);

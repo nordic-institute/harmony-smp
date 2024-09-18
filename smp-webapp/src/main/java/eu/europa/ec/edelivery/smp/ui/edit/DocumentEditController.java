@@ -22,12 +22,13 @@ package eu.europa.ec.edelivery.smp.ui.edit;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
 import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
+import eu.europa.ec.edelivery.smp.data.ui.SearchReferenceDocumentRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIDocumentService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -260,7 +261,6 @@ public class DocumentEditController {
                 document.getActionMessage());
     }
 
-
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE,
             consumes = MimeTypeUtils.APPLICATION_JSON_VALUE,
             produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -271,12 +271,7 @@ public class DocumentEditController {
                                               @RequestBody DocumentRO document) {
         logAdminAccess("saveResourceDocument");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
-        Long referenceDocumentId = null;
-        String referenceDocumentEncId = document.getMetadata()!=null? document.getMetadata().getReferenceDocumentId():null;
-        if (StringUtils.isNotBlank(referenceDocumentEncId)) {
-            referenceDocumentId = SessionSecurityUtils.decryptEntityId(referenceDocumentEncId);
-        }
-        return uiDocumentService.saveDocumentForResource(resourceId, document, referenceDocumentId);
+        return uiDocumentService.saveDocumentForResource(resourceId, document);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE,
@@ -294,6 +289,41 @@ public class DocumentEditController {
         return uiDocumentService.saveSubresourceDocumentForResource(subresourceId, resourceId, document);
     }
 
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE_SEARCH_REFERENCES, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and" +
+            "@smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
+    public ServiceResult<SearchReferenceDocumentRO> getDocumentReferenceList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                                             @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                                                             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+                                                                             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+                                                                             @RequestBody(required = false) SearchReferenceDocumentRO filter) {
+
+        LOG.info("Search for document reference for resource with paging: [{}/{}], user: {}", page, pageSize, userEncId);
+        Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
+        String identifier = filter != null ? filter.getResourceValue() : null;
+        String scheme = filter != null ? filter.getResourceScheme() : null;
+        return uiDocumentService.getSearchReferenceDocumentListForResource(resourceId, page, pageSize, identifier, scheme);
+    }
+
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_SEARCH_REFERENCES, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and" +
+            "@smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
+    public ServiceResult<SearchReferenceDocumentRO> getDocumentReferenceListForSubresource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                                                           @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                                                                           @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,
+                                                                                           @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+                                                                                           @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+                                                                                           @RequestBody(required = false) SearchReferenceDocumentRO filter) {
+
+        LOG.info("Search for document reference for subresource with paging: [{}/{}], user: {}", page, pageSize, userEncId);
+        Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
+        Long subresourceId = SessionSecurityUtils.decryptEntityId(subresourceEncId);
+        String resourceValue = filter != null ? filter.getResourceValue() : null;
+        String resourceScheme = filter != null ? filter.getResourceScheme() : null;
+        String subresourceValue = filter != null ? filter.getSubresourceValue() : null;
+        String subresourceScheme = filter != null ? filter.getSubresourceScheme() : null;
+        return uiDocumentService.getSearchReferenceDocumentListForSubresource(subresourceId, resourceId, page, pageSize, resourceValue, resourceScheme, subresourceValue, subresourceScheme);
+    }
 
 
     protected void logAdminAccess(String action) {

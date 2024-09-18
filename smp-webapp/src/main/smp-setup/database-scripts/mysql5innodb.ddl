@@ -164,6 +164,7 @@
         CURRENT_VERSION integer not null,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        REF_DOCUMENT_URL varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         SHARING_ENABLED bit,
         FK_REF_DOCUMENT_ID bigint,
         primary key (ID)
@@ -178,6 +179,7 @@
         CURRENT_VERSION integer,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        REF_DOCUMENT_URL varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         SHARING_ENABLED bit,
         FK_REF_DOCUMENT_ID bigint,
         primary key (ID, REV)

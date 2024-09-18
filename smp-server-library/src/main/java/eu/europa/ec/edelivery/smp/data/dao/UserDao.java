@@ -21,7 +21,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -210,9 +210,9 @@ public class UserDao extends BaseDao<DBUser> {
      * @param userIds
      * @return
      */
-    public List<DBUserDeleteValidation> validateUsersForDelete(List<Long> userIds) {
-        TypedQuery<DBUserDeleteValidation> query = memEManager.createNamedQuery("DBUserDeleteValidation.validateUsersForOwnership",
-                DBUserDeleteValidation.class);
+    public List<DBUserDeleteValidationMapping> validateUsersForDelete(List<Long> userIds) {
+        TypedQuery<DBUserDeleteValidationMapping> query = memEManager.createNamedQuery("DBUserDeleteValidation.validateUsersForOwnership",
+                DBUserDeleteValidationMapping.class);
         query.setParameter("idList", userIds);
         return query.getResultList();
     }

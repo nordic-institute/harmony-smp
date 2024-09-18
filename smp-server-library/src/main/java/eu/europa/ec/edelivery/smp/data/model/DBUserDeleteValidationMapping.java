@@ -19,17 +19,17 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 
-public class DBUserDeleteValidation {
+public class DBUserDeleteValidationMapping {
 
     Long id;
     String username;
     String certificateId;
     Integer count;
 
-    public DBUserDeleteValidation() {
+    public DBUserDeleteValidationMapping() {
     }
 
-    public DBUserDeleteValidation(Long id, String username, String certificateId, Integer count) {
+    public DBUserDeleteValidationMapping(Long id, String username, String certificateId, Integer count) {
         this.id = id;
         this.username = username;
         this.certificateId = certificateId;

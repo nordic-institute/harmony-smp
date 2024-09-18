@@ -124,11 +124,13 @@ public class QueryNames {
     public static final String QUERY_SEARCH_DOCUMENT_REFERENCES = "DBDocument.getDocumentReferences";
     public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT = "DBDocument.getDocumentReferencesCount";
     public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
-    public static final String QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING = "DBDocument.getForSubresourceDEfAndSharingEnabled";
-
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES = "DBDocument.getDocumentReferencesForSubresources";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT = "DBDocument.getDocumentReferencesForSubresourcesCount";
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
 
+
+    public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT = "DBDocumentVersion.forCurrentForDocument";
 
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE = "DBDocumentVersion.forCurrentForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE = "DBDocumentVersion.getAllForSubresource";
@@ -186,10 +188,9 @@ public class QueryNames {
     public static final String PARAM_RESOURCE_FILTER = "resource_filter";
     public static final String PARAM_RESOURCE_DEF_ID = "resource_def_id";
     public static final String PARAM_RESOURCE_DEF_IDENTIFIER = "resource_def_identifier";
-    public static final String PARAM_SUBRESOURCE_DEF_ID = "subresource_def_id";
-
     public static final String PARAM_REVIEW_ENABLED = "review_enabled";
 
+    public static final String PARAM_SUBRESOURCE_DEF_ID = "subresource_def_id";
     public static final String PARAM_SUBRESOURCE_DEF_IDENTIFIER = "subresource_def_identifier";
     public static final String PARAM_DOMAIN_ID = "domain_id";
     public static final String PARAM_DOMAIN_VISIBILITY = "domain_visibility";

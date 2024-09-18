@@ -284,6 +284,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0) not null,
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        REF_DOCUMENT_URL varchar2(1024 char),
         SHARING_ENABLED number(1,0),
         FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID)
@@ -304,6 +305,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        REF_DOCUMENT_URL varchar2(1024 char),
         SHARING_ENABLED number(1,0),
         FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID, REV)

@@ -50,7 +50,13 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT_VERSION", comment = "Document content for the document version.")
-@NamedQuery(name = QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE, query = "SELECT dv FROM DBResource r join r.document d join d.documentVersions dv " +
+@NamedQuery(name = QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT, query = "SELECT dv FROM DBDocument d " +
+        "  join d.documentVersions dv " +
+        " WHERE dv.version = d.currentVersion " +
+        " AND d.id= :document_id ")
+@NamedQuery(name = QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE, query = "SELECT dv FROM DBResource r " +
+        "  join r.document d " +
+        "  join d.documentVersions dv " +
         " WHERE dv.version = d.currentVersion " +
         " AND r.id= :resource_id ")
 @NamedQuery(name = QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE, query = "SELECT dv FROM DBResource r join r.document.documentVersions dv " +
@@ -110,7 +116,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @SqlResultSetMapping(name = "DBReviewDocumentVersionsMapping",
         classes = {
-                @ConstructorResult(targetClass = DBReviewDocumentVersion.class,
+                @ConstructorResult(targetClass = DBReviewDocumentVersionMapping.class,
                         columns = {
                                 @ColumnResult(name = "ID", type = Long.class),
                                 @ColumnResult(name = "DOCUMENT_ID", type = Long.class),

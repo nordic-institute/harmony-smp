@@ -138,7 +138,7 @@ class DocumentDaoTest extends AbstractBaseDao {
                 testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1());
 
         testUtilsDao.createResourceMembership(MembershipRoleType.ADMIN, testUtilsDao.getUser1(), createResourceWithStatusReview, true);
-        List<DBReviewDocumentVersion> result = testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId(), -1, -1);
+        List<DBReviewDocumentVersionMapping> result = testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId(), -1, -1);
         Long resultCount = testInstance.getDocumentReviewListForUserCount(testUtilsDao.getUser1().getId());
         assertEquals(1, result.size());
         assertEquals(1, resultCount.intValue());
@@ -163,7 +163,7 @@ class DocumentDaoTest extends AbstractBaseDao {
 
         testUtilsDao.createResourceMembership(MembershipRoleType.ADMIN, testUtilsDao.getUser1(), resource, true);
 
-        List<DBReviewDocumentVersion> dbDocumentVersions = testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId(), -1, -1);
+        List<DBReviewDocumentVersionMapping> dbDocumentVersions = testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId(), -1, -1);
         assertEquals(expectedSize, dbDocumentVersions.size());
     }
 
@@ -196,7 +196,7 @@ class DocumentDaoTest extends AbstractBaseDao {
             testUtilsDao.createResourceMembership(MembershipRoleType.ADMIN, testUtilsDao.getUser1(), resource, true);
         }
         // then
-        List<DBReviewDocumentVersion> dbDocumentVersions
+        List<DBReviewDocumentVersionMapping> dbDocumentVersions
                 = testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId(), page, pageSize);
         assertEquals(expectedSize, dbDocumentVersions.size());
     }

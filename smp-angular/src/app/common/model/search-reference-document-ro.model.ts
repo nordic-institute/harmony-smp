@@ -1,12 +1,16 @@
 import {SearchTableEntity} from "../search-table/search-table-entity.model";
+import {DocumentReferenceType} from "../enums/documetn-reference-type.enum";
 
 export interface SearchReferenceDocument extends SearchTableEntity  {
-  referenceDocumentId?: string;
-  referenceDocumentName?: string;
+  documentId?: string;
+  documentName?: string;
 
-  referenceResourceValue?: string;
-  referenceResourceScheme?: string;
-  referenceSubesourceValue?: string;
-  referenceSubesourceScheme?: string;
+  referenceType?: DocumentReferenceType;
+  resourceValue?: string;
+  resourceScheme?: string;
+  subesourceValue?: string;
+  subesourceScheme?: string;
+
+  referenceUrl?: string;
 }
 

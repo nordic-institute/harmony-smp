@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.doc.DBReviewDocumentVersion;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBReviewDocumentVersionMapping;
 import eu.europa.ec.edelivery.smp.data.ui.ReviewDocumentVersionRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -37,11 +37,11 @@ import java.lang.reflect.InvocationTargetException;
  * @since 5.1
  */
 @Component
-public class DBReviewDocumentVersionToReviewDocumentVersionROConverter implements Converter<DBReviewDocumentVersion, ReviewDocumentVersionRO> {
+public class DBReviewDocumentVersionToReviewDocumentVersionROConverter implements Converter<DBReviewDocumentVersionMapping, ReviewDocumentVersionRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBReviewDocumentVersionToReviewDocumentVersionROConverter.class);
 
     @Override
-    public ReviewDocumentVersionRO convert(DBReviewDocumentVersion source) {
+    public ReviewDocumentVersionRO convert(DBReviewDocumentVersionMapping source) {
 
         ReviewDocumentVersionRO target = new ReviewDocumentVersionRO();
         try {

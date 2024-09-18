@@ -26,7 +26,7 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -558,7 +558,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      */
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
         List<Long> idList = dev.getListIds().stream().map(SessionSecurityUtils::decryptEntityId).collect(Collectors.toList());
-        List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(idList);
+        List<DBUserDeleteValidationMapping> lstMessages = userDao.validateUsersForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         StringWriter sw = new StringWriter();
         sw.write("Could not delete user with ownerships! ");

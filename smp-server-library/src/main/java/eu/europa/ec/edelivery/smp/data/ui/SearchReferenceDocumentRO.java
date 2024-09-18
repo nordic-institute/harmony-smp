@@ -1,5 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import eu.europa.ec.edelivery.smp.data.enums.DocumentReferenceType;
+
 /**
  *
  *
@@ -10,59 +12,96 @@ public class SearchReferenceDocumentRO extends BaseRO {
 
     private static final long serialVersionUID = 9008583888835630041L;
 
-    private String referenceDocumentId;
-    private String referenceDocumentName;
+    private String documentId;
+    private String resourceId;
+    private String subresourceId;
 
-    private String referenceResourceValue;
-    private String referenceResourceScheme;
-    private String referenceSubresourceValue;
-    private String referenceSubresourceScheme;
+    private DocumentReferenceType referenceType;
+    private String referenceUrl;
+    private String documentName;
+    private String resourceValue;
+    private String resourceScheme;
+    private String subresourceValue;
+    private String subresourceScheme;
 
-    public String getReferenceDocumentId() {
-        return referenceDocumentId;
+    public String getDocumentId() {
+        return documentId;
     }
 
-    public void setReferenceDocumentId(String referenceDocumentId) {
-        this.referenceDocumentId = referenceDocumentId;
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
-    public String getReferenceDocumentName() {
-        return referenceDocumentName;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setReferenceDocumentName(String referenceDocumentName) {
-        this.referenceDocumentName = referenceDocumentName;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
-    public String getReferenceResourceValue() {
-        return referenceResourceValue;
+    public String getSubresourceId() {
+        return subresourceId;
     }
 
-    public void setReferenceResourceValue(String referenceResourceValue) {
-        this.referenceResourceValue = referenceResourceValue;
+    public void setSubresourceId(String subresourceId) {
+        this.subresourceId = subresourceId;
     }
 
-    public String getReferenceResourceScheme() {
-        return referenceResourceScheme;
+
+    public String getReferenceUrl() {
+        return referenceUrl;
     }
 
-    public void setReferenceResourceScheme(String referenceResourceScheme) {
-        this.referenceResourceScheme = referenceResourceScheme;
+    public void setReferenceUrl(String referenceUrl) {
+        this.referenceUrl = referenceUrl;
     }
 
-    public String getReferenceSubresourceValue() {
-        return referenceSubresourceValue;
+    public DocumentReferenceType getReferenceType() {
+        return referenceType;
     }
 
-    public void setReferenceSubresourceValue(String referenceSubresourceValue) {
-        this.referenceSubresourceValue = referenceSubresourceValue;
+    public void setReferenceType(DocumentReferenceType referenceType) {
+        this.referenceType = referenceType;
     }
 
-    public String getReferenceSubresourceScheme() {
-        return referenceSubresourceScheme;
+    public String getDocumentName() {
+        return documentName;
     }
 
-    public void setReferenceSubresourceScheme(String referenceSubresourceScheme) {
-        this.referenceSubresourceScheme = referenceSubresourceScheme;
+    public void setDocumentName(String documentName) {
+        this.documentName = documentName;
+    }
+
+    public String getResourceValue() {
+        return resourceValue;
+    }
+
+    public void setResourceValue(String resourceValue) {
+        this.resourceValue = resourceValue;
+    }
+
+    public String getResourceScheme() {
+        return resourceScheme;
+    }
+
+    public void setResourceScheme(String resourceScheme) {
+        this.resourceScheme = resourceScheme;
+    }
+
+    public String getSubresourceValue() {
+        return subresourceValue;
+    }
+
+    public void setSubresourceValue(String subresourceValue) {
+        this.subresourceValue = subresourceValue;
+    }
+
+    public String getSubresourceScheme() {
+        return subresourceScheme;
+    }
+
+    public void setSubresourceScheme(String subresourceScheme) {
+        this.subresourceScheme = subresourceScheme;
     }
 }

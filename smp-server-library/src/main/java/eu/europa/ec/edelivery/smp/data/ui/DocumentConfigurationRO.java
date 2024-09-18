@@ -27,23 +27,19 @@ import java.util.List;
  * @author Joze RIHTARSIC
  * @since 5.1
  */
-public class DocumentMetadataRO extends BaseRO {
+public class DocumentConfigurationRO extends BaseRO {
     private static final long serialVersionUID = 9008583888835630040L;
 
     String name;
     String mimeType;
-    String referenceDocumentId;
     Integer publishedVersion;
     List<Integer> allVersions;
     Boolean sharingEnabled = Boolean.FALSE;
+    String referenceDocumentId;
+    String referenceDocumentName;
+    String referenceDocumentUrl;
+    boolean referenceDocumentAccessible = true;
 
-    public String getReferenceDocumentId() {
-        return referenceDocumentId;
-    }
-
-    public void setReferenceDocumentId(String referenceDocumentId) {
-        this.referenceDocumentId = referenceDocumentId;
-    }
 
     public String getMimeType() {
         return mimeType;
@@ -83,4 +79,37 @@ public class DocumentMetadataRO extends BaseRO {
     public void setSharingEnabled(Boolean sharingEnabled) {
         this.sharingEnabled = sharingEnabled;
     }
+
+    public String getReferenceDocumentId() {
+        return referenceDocumentId;
+    }
+
+    public void setReferenceDocumentId(String referenceDocumentId) {
+        this.referenceDocumentId = referenceDocumentId;
+    }
+
+    public String getReferenceDocumentName() {
+        return referenceDocumentName;
+    }
+
+    public void setReferenceDocumentName(String referenceDocumentName) {
+        this.referenceDocumentName = referenceDocumentName;
+    }
+
+    public String getReferenceDocumentUrl() {
+        return referenceDocumentUrl;
+    }
+
+    public void setReferenceDocumentUrl(String referenceDocumentUrl) {
+        this.referenceDocumentUrl = referenceDocumentUrl;
+    }
+
+    public boolean isReferenceDocumentAccessible() {
+        return referenceDocumentAccessible;
+    }
+
+    public void setReferenceDocumentAccessible(boolean referenceDocumentAccessible) {
+        this.referenceDocumentAccessible = referenceDocumentAccessible;
+    }
 }
+

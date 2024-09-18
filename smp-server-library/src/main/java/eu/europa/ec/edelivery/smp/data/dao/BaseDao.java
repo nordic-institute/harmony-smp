@@ -40,6 +40,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+
 /**
  * Database abstract resource file. Class implements all common methods for all resources.
  *
@@ -377,6 +380,31 @@ public abstract class BaseDao<E extends BaseEntity> {
                 null,
                 null);
         return memEManager.createQuery(cqCount).getSingleResult();
+    }
+
+    /**
+     * Method sets pagination to the query
+     * @param query query to set pagination
+     * @param iPage page number
+     * @param iPageSize page size
+     */
+    protected void setPaginationParametersToQuery(TypedQuery<?> query, int iPage, int iPageSize) {
+        if (iPageSize > -1 && iPage > -1) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize > 0) {
+            query.setMaxResults(iPageSize);
+        }
+    }
+
+    /**
+     * Method prepare like parameter for query. If parameter is blank, than null is returned, otherwise
+     * parameter is converted to lower case and % is added to the beginning and end of the parameter.
+     * @param param parameter to prepare
+     * @return prepared parameter
+     */
+    protected String likeParam(String param) {
+        return trimToNull(param) == null? null: "%" + lowerCase(param) + "%";
     }
 
 

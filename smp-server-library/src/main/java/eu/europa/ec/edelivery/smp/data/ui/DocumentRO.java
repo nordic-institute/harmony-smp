@@ -35,13 +35,14 @@ public class DocumentRO extends BaseRO {
     private String name;
     private Integer payloadVersion;
     private String payload;
+    private String referencePayload;
     private int payloadStatus = EntityROStatus.PERSISTED.getStatusNumber();
     private OffsetDateTime payloadCreatedOn;
     private DocumentVersionStatusType documentVersionStatus;
     private List<DocumentPropertyRO> properties = new ArrayList<>();
     private List<DocumentVersionEventRO> documentVersionEvents = new ArrayList<>();
     private List<DocumentVersionRO> documentVersions = new ArrayList<>();
-    private DocumentMetadataRO metadata;
+    private DocumentConfigurationRO documentConfiguration;
 
     public String getDocumentId() {
         return documentId;
@@ -51,12 +52,12 @@ public class DocumentRO extends BaseRO {
         this.documentId = documentId;
     }
 
-    public DocumentMetadataRO getMetadata() {
-        return metadata;
+    public DocumentConfigurationRO getDocumentConfiguration() {
+        return documentConfiguration;
     }
 
-    public void setMetadata(DocumentMetadataRO metadata) {
-        this.metadata = metadata;
+    public void setDocumentConfiguration(DocumentConfigurationRO documentConfiguration) {
+        this.documentConfiguration = documentConfiguration;
     }
 
     public String getMimeType() {
@@ -94,9 +95,18 @@ public class DocumentRO extends BaseRO {
         return payloadVersion;
     }
 
+    public String getReferencePayload() {
+        return referencePayload;
+    }
+
+    public void setReferencePayload(String referencePayload) {
+        this.referencePayload = referencePayload;
+    }
+
     public void setPayloadVersion(Integer payloadVersion) {
         this.payloadVersion = payloadVersion;
     }
+
 
     public DocumentVersionStatusType getDocumentVersionStatus() {
         return documentVersionStatus;

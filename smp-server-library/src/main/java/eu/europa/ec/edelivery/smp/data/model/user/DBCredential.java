@@ -23,7 +23,7 @@ import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
-import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
@@ -79,7 +79,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID")
 
 @SqlResultSetMapping(name = "DBCredentialDeleteValidationMapping", classes = {
-        @ConstructorResult(targetClass = DBUserDeleteValidation.class,
+        @ConstructorResult(targetClass = DBUserDeleteValidationMapping.class,
                 columns = {@ColumnResult(name = "id", type = Long.class),
                         @ColumnResult(name = "username", type = String.class),
                         @ColumnResult(name = "certificateId", type = String.class),

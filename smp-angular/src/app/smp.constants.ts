@@ -17,6 +17,7 @@ export class SmpConstants {
   public static readonly PATH_ACTION_REVIEW_APPROVE: string = 'review-approve';
   public static readonly PATH_ACTION_REVIEW_REJECT: string = 'review-reject';
   public static readonly PATH_ACTION_VALIDATE: string = 'validate';
+  public static readonly PATH_ACTION_SEARCH_REFERENCE_DOCUMENTS: string  = "reference-documents";
   public static readonly PATH_ACTION_PUT: string = 'put';
   public static readonly PATH_ACTION_RETRIEVE: string = 'retrieve';
   public static readonly PATH_ACTION_SEARCH: string = 'search';
@@ -72,6 +73,7 @@ export class SmpConstants {
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_REVIEW_REQUEST = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REQUEST;
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_REVIEW_APPROVE = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_APPROVE;
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_REVIEW_REJECT = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REJECT;
+  public static readonly REST_EDIT_DOCUMENT_RESOURCE_SEARCH_REFERENCES = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_SEARCH_REFERENCE_DOCUMENTS;
 
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE = SmpConstants.REST_EDIT_RESOURCE_SHORT + '/' + SmpConstants.PATH_RESOURCE_TYPE_SUBRESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID
     + '/' + SmpConstants.PATH_RESOURCE_TYPE_DOCUMENT;
@@ -81,15 +83,14 @@ export class SmpConstants {
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_REVIEW_REQUEST = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REQUEST;
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_REVIEW_APPROVE = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_APPROVE;
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_REVIEW_REJECT = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REJECT;
+  public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_SEARCH_REFERENCES = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_SEARCH_REFERENCE_DOCUMENTS;
 
   public static readonly REST_EDIT_SUBRESOURCE = SmpConstants.REST_EDIT_RESOURCE_SHORT + '/' + SmpConstants.PATH_RESOURCE_TYPE_SUBRESOURCE;
   public static readonly REST_EDIT_SUBRESOURCE_DELETE = SmpConstants.REST_EDIT_SUBRESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID
     + '/' + SmpConstants.PATH_ACTION_DELETE;
   public static readonly REST_EDIT_SUBRESOURCE_CREATE = SmpConstants.REST_EDIT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_CREATE;
 
-
   public static readonly REST_EDIT_REVIEW_TASK = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_REVIEW +  '/'
-
 
   /* Public services */
   public static readonly REST_PUBLIC_SEARCH_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;

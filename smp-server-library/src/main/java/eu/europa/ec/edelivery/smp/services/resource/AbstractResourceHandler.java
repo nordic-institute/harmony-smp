@@ -110,6 +110,7 @@ public class AbstractResourceHandler {
      * @return data handler request data
      */
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
+
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
         if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());

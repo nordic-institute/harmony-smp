@@ -8,7 +8,7 @@
               mat-raised-button
               color="primary"
               matTooltip="{{ 'document.edit.panel.tooltip.version.new' | translate }}"
-              [disabled]="emptyDocument"
+              [disabled]="newVersionButtonDisabled"
               (click)="onNewDocumentVersionButtonClicked()">
         <mat-icon>add_circle</mat-icon>
         <span>{{ "document.edit.panel.button.version.new" | translate }}</span>
@@ -48,55 +48,81 @@
        style="display: flex;flex-direction: row;flex-grow: 1; ">
     <div
       style="display:flex; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;">
+      <ng-container *ngIf="hasDocumentReference; else selectedDocumentVersionDataTemplate" >
+        <div style="display:flex;  flex-direction: row;align-items: center;">
+        <mat-slide-toggle  (toggleChange)="toggleShowReference()" [checked]="showReference" style="display: inline-block;">Show reference</mat-slide-toggle>
+        <ng-container *ngIf="showReference; else selectedDocumentVersionDataTemplate" >
+          <div style="padding: 0 1em;display: flex;flex-direction: row;align-items: center;">
+          <mat-form-field style="min-width: 250px"
+                          subscriptSizing="dynamic"
+                          appearance="fill">
+            <mat-label>{{ "document.edit.panel.label.reference.name" | translate }}</mat-label>
+            <input matInput id="reference-name_id"
+                   formControlName="documentReferenceName"
+                   readonly>
+          </mat-form-field>
+          <a *ngIf="hasReferenceDocumentUrl"
+             target="_blank"
+             href="{{getReferencePartialURL()}}">{{ "document.configuration.panel.label.reference.document.open.url" | translate }}</a>
+          </div>
+        </ng-container>
+        </div>
+      </ng-container>
 
-      <div style="display: flex;flex-direction: row">
-        <mat-form-field style="min-width: 140px"
-                        subscriptSizing="dynamic"
-                        appearance="fill"
-        >
-          <mat-label>{{ "document.edit.panel.label.selected.version" | translate }}</mat-label>
-          <mat-select
+      <ng-template #selectedDocumentVersionDataTemplate>
+        <div style="display: flex;flex-direction: row">
+          <mat-form-field style="min-width: 140px"
+                          subscriptSizing="dynamic"
+                          appearance="fill"
+          >
+            <mat-label>{{ "document.edit.panel.label.selected.version" | translate }}</mat-label>
+            <mat-select
 
-            placeholder="{{ 'document.edit.panel.placeholder.version' | translate }}"
-            matTooltip="{{ 'document.edit.panel.tooltip.version' | translate }}"
-            id="document-version_id"
-            formControlName="payloadVersion"
-            (selectionChange)="onSelectionDocumentVersionChanged()">
-            <mat-option *ngFor="let version of getDocumentVersions"
-                        [value]="version">
-              {{ version }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+              placeholder="{{ 'document.edit.panel.placeholder.version' | translate }}"
+              matTooltip="{{ 'document.edit.panel.tooltip.version' | translate }}"
+              id="document-version_id"
+              formControlName="payloadVersion"
+              (selectionChange)="onSelectionDocumentVersionChanged()">
+              <mat-option *ngFor="let version of getDocumentVersions"
+                          [value]="version">
+                {{ version }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-        <mat-form-field style="min-width: 180px"
-                        subscriptSizing="dynamic"
-                        appearance="fill">
-          <mat-label>{{ "document.edit.panel.label.selected.status" | translate }}</mat-label>
-          <input matInput id="status_id"
-                 formControlName="documentVersionStatus"
-                 readonly>
-        </mat-form-field>
-        <mat-form-field style="width:100%"
-                        subscriptSizing="dynamic"
-                        appearance="fill">
-          <mat-label>{{ "document.edit.panel.label.selected.created.on" | translate }}</mat-label>
-          <input id="payloadCreatedOn_id"
-                 matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
-                 formControlName="payloadCreatedOn"
-                 readonly>
-          <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker"
-                                 style="visibility: hidden"></mat-datepicker-toggle>
-          <ngx-mat-datetime-picker #payloadCreatedOnPicker [showSpinners]="true"
-                                   [showSeconds]="false"
-                                   [hideTime]="false"></ngx-mat-datetime-picker>
-        </mat-form-field>
-      </div>
+          <mat-form-field style="min-width: 180px"
+                          subscriptSizing="dynamic"
+                          appearance="fill">
+            <mat-label>{{ "document.edit.panel.label.selected.status" | translate }}</mat-label>
+            <input matInput id="status_id"
+                   formControlName="documentVersionStatus"
+                   readonly>
+          </mat-form-field>
+          <mat-form-field style="width:100%"
+                          subscriptSizing="dynamic"
+                          appearance="fill">
+            <mat-label>{{ "document.edit.panel.label.selected.created.on" | translate }}</mat-label>
+            <input id="payloadCreatedOn_id"
+                   matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
+                   formControlName="payloadCreatedOn"
+                   readonly>
+            <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker"
+                                   style="visibility: hidden"></mat-datepicker-toggle>
+            <ngx-mat-datetime-picker #payloadCreatedOnPicker [showSpinners]="true"
+                                     [showSeconds]="false"
+                                     [hideTime]="false"></ngx-mat-datetime-picker>
+          </mat-form-field>
+        </div>
+      </ng-template>
+
+
       <div
         style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;border: ridge 3px #b0bec5"
         (click)="onEditPanelClick()">
-        <smp-editor #smpDocumentEditor formControlName="payload"
+        <smp-editor #smpDocumentEditor
+                    formControlName="editorText"
                     ngDefaultControl></smp-editor>
+
 
       </div>
       <smp-warning-panel *ngIf="!documentEditable"
@@ -115,14 +141,16 @@
                                ngDefaultControl></document-events-panel>
       </expandable-item>
       <!-- The document panels -->
-      <expandable-item icon="description"
-                       showButtonSpacer="true"
-                       title="{{'document.metadata.panel.tab.title' | translate }}"
-                       buttonLabel="{{'document.metadata.panel.tab.button.properties' | translate }}">
-        <document-metadata-panel formControlName="documentMetadata"
-                                 ngDefaultControl></document-metadata-panel>
-      </expandable-item>
       <expandable-item icon="settings"
+                       showButtonSpacer="true"
+                       title="{{'document.configuration.panel.tab.title' | translate }}"
+                       buttonLabel="{{'document.configuration.panel.tab.button.properties' | translate }}">
+        <document-configuration-panel formControlName="documentConfiguration"
+                                 [resource]="resource"
+                                 [subresource]="subresource"
+                                 ngDefaultControl></document-configuration-panel>
+      </expandable-item>
+      <expandable-item icon="description"
                        title="{{'document.properties.panel.tab.title' | translate }}"
                        buttonLabel="{{'document.properties.panel.tab.button.properties' | translate }}">
         <document-properties-panel formControlName="properties"
