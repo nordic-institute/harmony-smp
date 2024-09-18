@@ -69,18 +69,29 @@ public class DBSearchReferenceDocumentVersionToSearchReferenceDocumentROConverte
         return target;
     }
 
+
+    /**
+     * Method returns  partial reference URL for given reference document
+     * @param source reference document
+     * @return partial reference URL
+     */
     private String getReferenceUrl(DBSearchReferenceDocumentMapping source) {
 
         String ctx = URL_SEPARATOR + getUrlPart(source.getDomainCode()) + getUrlPart(source.getResourceDefUrlSegment());
-        ctx += identifierService.urlEncodedFormatParticipant(source.getDomainCode(), new Identifier(source.getResourceScheme(), source.getResourceValue()));
+        ctx += identifierService.urlEncodedFormatParticipant(source.getDomainCode(), new Identifier(source.getResourceValue(), source.getResourceScheme()));
 
         if (source.getReferenceType() == DocumentReferenceType.SUBRESOURCE) {
             ctx += URL_SEPARATOR + getUrlPart(source.getSubresourceDefUrlSegment())
-                    + identifierService.urlEncodedFormatDocument(source.getDomainCode(), new Identifier(source.getSubresourceScheme(), source.getSubresourceValue()));
+                    + identifierService.urlEncodedFormatDocument(source.getDomainCode(), new Identifier(source.getSubresourceValue(), source.getSubresourceScheme()));
         }
         return ctx;
     }
 
+    /**
+     * Method returns URL part for given value
+     * @param value the part of URL
+     * @return trimmed value which ends with URL_SEPARATOR or empty string
+     */
     private String getUrlPart(String value) {
         return StringUtils.isBlank(value) ? "" : value + URL_SEPARATOR;
     }

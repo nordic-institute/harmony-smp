@@ -99,11 +99,12 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   readonly reviewAllowedStatusList: DocumentVersionsStatus[] = [DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.REJECTED, DocumentVersionsStatus.RETIRED];
   readonly editableDocStatusList: DocumentVersionsStatus[] = [DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.REJECTED, DocumentVersionsStatus.RETIRED];
   readonly publishableDocStatusList: DocumentVersionsStatus[] = [DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.APPROVED, DocumentVersionsStatus.RETIRED];
+
   protected resource: ResourceRo;
   protected subresource: SubresourceRo;
   private reviewDocument: ReviewDocumentVersionRo;
-  private isResourceDocument:boolean = true;
-  protected toggleShowReferenceValue:boolean = true;
+
+  private isResourceDocument: boolean = true;
   private resetVersionOnNewDocument: number;
   _contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
 
@@ -183,7 +184,9 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       } else {
         this.alertService.success(await lastValueFrom(this.translateService.get("document.edit.panel.success.generate")))
         this.documentForm.controls['payload'].setValue(doc.payload);
+        this.updateTextToEditor()
         this.documentForm.controls['payload'].markAsDirty();
+        this.documentForm.controls['editorText'].markAsDirty();
       }
     },
     error: (err: any) => {
@@ -216,7 +219,9 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       'documentVersions': new FormControl({value: null}),
       'documentConfiguration': new FormControl({value: null}),
       "documentReferenceName": new FormControl({value: null}),
+      // additional fields
       "editorText": new FormControl({value: null}),
+      "toggleReferenceDocument": new FormControl({value: null}),
 
     });
 
@@ -278,6 +283,15 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     } else {
       this.loadDocumentForVersion();
     }
+
+    this.documentForm.controls['editorText'].valueChanges.subscribe(() => {
+      // disable change back option
+      if(this.documentEditable && this.documentForm.controls['editorText'].dirty){
+        this.documentForm.controls['toggleReferenceDocument'].disable();
+      } else {
+        this.documentForm.controls['toggleReferenceDocument'].enable();
+      }
+    });
   }
 
 
@@ -305,32 +319,39 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       if (this.documentVersionsExists && this.isNotReviewMode) {
         this.documentForm.controls['payloadVersion'].enable();
       }
-      this.updateEditorText()
+      this.updateTextToEditor()
+      if (this.isNewDocumentVersion) {
+        this.documentForm.markAsPristine();
+      }
     } else {
       this.documentForm.controls['name'].setValue("");
       this.documentForm.controls['currentResourceVersion'].setValue("");
       this.documentForm.controls['payloadVersion'].setValue("");
       this.documentForm.controls['payloadCreatedOn'].setValue("");
       this.documentForm.controls['payload'].setValue("");
+      this.documentForm.controls['editorText'].setValue("");
       this.documentForm.controls['referencePayload'].setValue("");
       this.documentForm.controls['properties'].setValue([]);
       this.documentForm.controls['documentVersionStatus'].setValue("");
       this.documentForm.controls['documentVersionEvents'].setValue([]);
       this.documentForm.controls['documentVersions'].setValue([]);
       this.documentForm.controls['documentConfiguration'].setValue(null);
+      this.documentForm.markAsPristine();
     }
-    this.documentForm.markAsPristine();
+
   }
 
   get document(): DocumentRo {
     let doc: DocumentRo = {...this._document};
-    if (this.documentForm.controls['payload'].dirty) {
-      doc.payload = this.documentForm.controls['payload'].value;
-      doc.payloadStatus = EntityStatus.UPDATED;
-    } else {
-      // no need to send payload if not changed
-      doc.payload = null;
-    }
+    if (this.showReference)
+      if (this.showReference && this.documentForm.controls['payload'].dirty) {
+        doc.payload = this.documentForm.controls['editorText'].value;
+        doc.payloadStatus = EntityStatus.UPDATED;
+
+      } else {
+        // no need to send payload if not changed
+        doc.payload = null;
+      }
 
     // set new properties
     doc.properties = this.documentForm.controls['properties'].value;
@@ -338,24 +359,27 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     return doc;
   }
 
-  updateEditorText() {
-    if (this.showReference){
-      // set payload to editorText
+  /**
+   * When document is changed the method updates the editor text. If it contains a referemce and
+   * is showing then, reference payload is shown in the editor, otherwise the payload is shown.
+   */
+  updateTextToEditor() {
+    if (this.showReference) {
       this.documentForm.controls['payload'].setValue(this.documentForm.controls['editorText'].value);
       this.documentForm.controls['editorText'].setValue(this.documentForm.controls['referencePayload'].value);
       this.documentForm.controls['editorText'].disable();
-
       this.documentForm.controls['editorText'].markAsPristine();
     } else {
       this.documentForm.controls['editorText'].setValue(this.documentForm.controls['payload'].value);
       this.documentForm.controls['editorText'].markAsPristine();
       if (this.documentEditable) {
-        this.documentForm.controls['payload'].enable();
+        this.documentForm.controls['editorText'].enable();
       } else {
-        this.documentForm.controls['payload'].disable();
+        this.documentForm.controls['editorText'].disable();
       }
     }
   }
+
 
   onBackButtonClicked(): void {
     this.navigationService.navigateUp();
@@ -376,17 +400,18 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
 
   resetChanges() {
     let currentVersion = this.isNewDocumentVersion ?
-      this.resetVersionOnNewDocument :  this._document?.payloadVersion;
+      this.resetVersionOnNewDocument : this._document?.payloadVersion;
     if (!currentVersion) {
       this.documentForm.controls['payload'].setValue("");
       this.documentForm.markAsPristine();
+      this.updateTextToEditor()
     } else {
       this.loadDocumentForVersion(currentVersion);
     }
   }
 
   get currentDocumentVersion(): number {
-    return this.isNotReviewMode? this.documentForm.controls['payloadVersion']?.value:
+    return this.isNotReviewMode ? this.documentForm.controls['payloadVersion']?.value :
       this.reviewDocument?.version;
   }
 
@@ -484,6 +509,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       if (result) {
         let val = formRef.componentInstance.getExtensionXML();
         this.documentForm.controls['payload'].setValue(val);
+        this.updateTextToEditor()
         this.documentForm.controls['payload'].markAsDirty();
       }
     });
@@ -517,6 +543,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
         let smw: SubresourceWizardRo = formRef.componentInstance.getCurrent();
         this.documentForm.controls['payload'].setValue(smw.contentXML);
         this.documentForm.controls['payload'].markAsDirty();
+        this.updateTextToEditor();
       }
     });
   }
@@ -571,6 +598,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     this.document = docRequest;
     this.documentForm.markAsDirty();
     this.documentForm.controls['payload'].markAsDirty();
+    this.documentForm.controls['editorText'].markAsDirty();
   }
 
   onSelectionDocumentVersionChanged(): void {
@@ -640,9 +668,10 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   get isNewDocumentVersion(): boolean {
     return this._document?.payloadStatus === EntityStatus.NEW
   }
+
   get documentEditable(): boolean {
     let status = this.documentForm.controls['documentVersionStatus']?.value
-    return !!this.editableDocStatusList.find(i => i === status)
+    return !!this.editableDocStatusList.find(i => i === status) && !this.showReference;
   }
 
   get documentSubmitReviewAllowed(): boolean {
@@ -663,8 +692,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   toggleShowReference() {
-    this.toggleShowReferenceValue = !this.toggleShowReferenceValue;
-    this.updateEditorText();
+    this.updateTextToEditor();
   }
 
   get hasDocumentReference(): boolean {
@@ -672,7 +700,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   get showReference(): boolean {
-    return this.hasDocumentReference && this.toggleShowReferenceValue;
+    return this.hasDocumentReference && this.documentForm.controls['toggleReferenceDocument'].value;
   }
 
 

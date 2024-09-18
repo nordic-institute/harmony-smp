@@ -8,7 +8,7 @@
               mat-raised-button
               color="primary"
               matTooltip="{{ 'document.edit.panel.tooltip.version.new' | translate }}"
-              [disabled]="newVersionButtonDisabled"
+              [disabled]="newVersionButtonDisabled || showReference"
               (click)="onNewDocumentVersionButtonClicked()">
         <mat-icon>add_circle</mat-icon>
         <span>{{ "document.edit.panel.button.version.new" | translate }}</span>
@@ -50,7 +50,9 @@
       style="display:flex; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;">
       <ng-container *ngIf="hasDocumentReference; else selectedDocumentVersionDataTemplate" >
         <div style="display:flex;  flex-direction: row;align-items: center;">
-        <mat-slide-toggle  (toggleChange)="toggleShowReference()" [checked]="showReference" style="display: inline-block;">Show reference</mat-slide-toggle>
+        <mat-slide-toggle
+          formControlName="toggleReferenceDocument"
+          (toggleChange)="toggleShowReference()" [checked]="showReference" style="display: inline-block;">Show reference</mat-slide-toggle>
         <ng-container *ngIf="showReference; else selectedDocumentVersionDataTemplate" >
           <div style="padding: 0 1em;display: flex;flex-direction: row;align-items: center;">
           <mat-form-field style="min-width: 250px"
@@ -58,8 +60,7 @@
                           appearance="fill">
             <mat-label>{{ "document.edit.panel.label.reference.name" | translate }}</mat-label>
             <input matInput id="reference-name_id"
-                   formControlName="documentReferenceName"
-                   readonly>
+                   formControlName="documentReferenceName">
           </mat-form-field>
           <a *ngIf="hasReferenceDocumentUrl"
              target="_blank"

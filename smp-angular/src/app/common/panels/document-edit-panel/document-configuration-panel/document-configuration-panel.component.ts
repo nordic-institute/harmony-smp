@@ -120,6 +120,7 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
    */
   writeValue(data: DocumentConfigurationRo): void {
     this.documentConfiguration = data;
+    this.updateShareCheckboxStatus();
   }
 
   ngAfterViewInit() {
@@ -189,16 +190,9 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
     return docConf;
   }
 
-  get disableShowReferenceDialogButton(): boolean {
-    return this.hasReferenceDocument  || this.documentConfigurationForm.controls['sharingEnabled'].value;
-  }
-
-  get disableShareDocument(): boolean {
-    return this.hasReferenceDocument && !this.documentConfigurationForm.controls['sharingEnabled'].value;
-  }
-
   get hasReferenceDocument(): boolean {
-    return !!this.documentConfigurationForm.controls['referenceDocumentId']?.value;
+    let val = this.documentConfigurationForm.controls['referenceDocumentId']?.value;
+    return !!val && val.length > 0;
   }
 
   get hasReferenceDocumentUrl(): boolean {
@@ -226,14 +220,26 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
         this.documentConfigurationForm.controls['referenceDocumentName'].setValue(value.documentName);
         this.documentConfigurationForm.controls['referenceDocumentUrl'].setValue(value.referenceUrl);
         this.onChangeCallback(this.documentConfiguration);
+        this.updateShareCheckboxStatus();
       }
     });
+  }
+
+  updateShareCheckboxStatus() {
+    if (this.hasReferenceDocument) {
+      this.documentConfigurationForm.controls['sharingEnabled'].setValue(false);
+      this.documentConfigurationForm.controls['sharingEnabled'].disable();
+    } else
+    {
+      this.documentConfigurationForm.controls['sharingEnabled'].enable();
+    }
   }
 
   onClearReferenceDocument(): void {
     this.documentConfigurationForm.controls['referenceDocumentId'].setValue("");
     this.documentConfigurationForm.controls['referenceDocumentName'].setValue("");
     this.documentConfigurationForm.controls['referenceDocumentUrl'].setValue("");
+    this.updateShareCheckboxStatus()
   }
 
 }
