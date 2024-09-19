@@ -26,6 +26,7 @@ import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
 import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
@@ -75,6 +76,8 @@ public class CredentialService {
     protected static final BadCredentialsException UNAUTHORIZED_INVALID_RESET_TOKEN = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_RESET_TOKEN.getMessage());
     protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_CREDENTIAL_SUSPENDED.getMessage());
     protected static final int RESET_TOKEN_LENGTH = 64;
+
+    private static final String USER_ID_REQUEST_TYPE = "UserId";
 
     final UserDao userDao;
     final CredentialDao credentialDao;
@@ -341,7 +344,7 @@ public class CredentialService {
         // retrieve user Optional credentials by username
         Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, true);
         if (!optCredential.isPresent()) {
-            LOG.info("Skip generating reset token for username [{}]!", username);
+            LOG.info("Skip generating reset token for username [{}]. User is not active!", username);
             return;
         }
         DBCredential dbCredential = optCredential.get();
@@ -407,13 +410,22 @@ public class CredentialService {
      * @return Optional of DBCredential: if the user has active credentials and active else empty is returned
      */
     private Optional<DBCredential> getActiveCredentialsForUsernameToReset(String username, boolean toGenerateResetToken) {
-        // retrieve user Optional credentials by username
+
         Optional<DBCredential> optCredential = credentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
+        DBCredential dbCredential;
         if (!optCredential.isPresent()) {
-            LOG.warn("There is not credentials for User [{}]!", username);
-            return optCredential;
+            DBUser user = userDao.findUserByUsername(username).orElseThrow(() -> {
+                LOG.warn("There is no user with username [{}]!", username);
+                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD, "User not found!");
+            });
+            LOG.info("User [{}] does not have username/password credentials. Create new credentials!", username);
+            dbCredential = createCredentialsForUser(user.getId(),
+                    CredentialType.USERNAME_PASSWORD,
+                    CredentialTargetType.UI);
+            optCredential = Optional.of(dbCredential);
+        } else {
+            dbCredential = optCredential.get();
         }
-        DBCredential dbCredential = optCredential.get();
 
         if (!dbCredential.getUser().isActive() || !dbCredential.isActive()) {
             LOG.info("User [{}] or credentials are not active. Skip reset password request!", username);
@@ -433,6 +445,31 @@ public class CredentialService {
 
         return optCredential;
     }
+
+
+    /**
+     * Method creates Username/passwords credentials for the user with given userId.
+     * The method must be called inside active transactions.
+     *
+     * @param userID               to change/create username-password credentials
+     * @param credentialType       the credential type
+     * @param credentialTargetType the credential target
+     */
+    public DBCredential createCredentialsForUser(Long userID, CredentialType credentialType, CredentialTargetType credentialTargetType) {
+
+        DBUser dbUserToUpdate = userDao.find(userID);
+        if (dbUserToUpdate == null) {
+            LOG.error("Can not create user password credentials, because user [{}] does not exist!", userID);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id to update!");
+        }
+        DBCredential credential = new DBCredential();
+        credential.setUser(dbUserToUpdate);
+        credential.setName(dbUserToUpdate.getUsername());
+        credential.setCredentialType(credentialType);
+        credential.setCredentialTarget(credentialTargetType);
+        return credential;
+    }
+
 
     public void validatePasswordResetToken(String resetToken){
         Optional<DBCredential> optCredential = credentialDao.findUCredentialForUsernamePasswordTypeAndResetToken(resetToken);
