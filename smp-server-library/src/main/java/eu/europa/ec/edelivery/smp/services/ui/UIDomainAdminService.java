@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainAdminService.class);
+    public static final String DOMAIN_DOES_NOT_EXIST_IN_DATABASE = "Domain does not exist in database!";
 
     private final DomainDao domainDao;
     private final DomainConfigurationDao domainConfigurationDao;
@@ -65,7 +66,6 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     private final ResourceDefDao resourceDefDao;
     private final DomainResourceDefDao domainResourceDefDao;
     private final ConversionService conversionService;
-    private final GroupDao groupDao;
     private final GroupMemberDao groupMemberDao;
     private final SMLIntegrationService smlIntegrationService;
 
@@ -76,7 +76,6 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
                                 ResourceDao resourceDao,
                                 ResourceDefDao resourceDefDao,
                                 DomainResourceDefDao domainResourceDefDao,
-                                GroupDao groupDao,
                                 GroupMemberDao groupMemberDao,
                                 SMLIntegrationService smlIntegrationService) {
         this.conversionService = conversionService;
@@ -86,7 +85,6 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         this.resourceDefDao = resourceDefDao;
         this.domainResourceDefDao = domainResourceDefDao;
         this.domainMemberDao = domainMemberDao;
-        this.groupDao = groupDao;
         this.groupMemberDao = groupMemberDao;
         this.smlIntegrationService = smlIntegrationService;
     }
@@ -146,14 +144,13 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
      *
      * @param domainId
      * @param data
-     * @return
      */
     @Transactional
     public void updateBasicDomainData(Long domainId, DomainRO data) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not update domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         domain.setDomainCode(data.getDomainCode());
         domain.setDefaultResourceTypeIdentifier(data.getDefaultResourceTypeIdentifier());
@@ -165,7 +162,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public void updateDomainSmlIntegrationData(Long domainId, DomainRO data) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         if (domain.isSmlRegistered() && !StringUtils.equals(data.getSmlSmpId(), domain.getSmlSmpId())) {
             String msg = "SMP-SML identifier must not change for registered domain [" + domain.getDomainCode() + "]!";
@@ -196,7 +193,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         LOG.info("add resources: [{}]", resourceDefIds);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND,DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
 
         //filter and validate resources to be removed
@@ -239,7 +236,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public List<DomainPropertyRO> getDomainProperties(Long domainId) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND,DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         return domainConfigurationDao.getDomainPropertiesForRole(domain, SMPRole.SYSTEM_ADMIN).stream()
                 .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
@@ -250,7 +247,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public List<DomainPropertyRO> updateDomainProperties(Long domainId, List<DomainPropertyRO> domainProperties) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         return domainConfigurationDao.updateDomainPropertiesForRole(domain, domainProperties, SMPRole.SYSTEM_ADMIN)
         .stream()
@@ -275,7 +272,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         if (domain.isSmlRegistered()) {
             LOG.info("Can not delete domain for ID [{}], is registered to SML!", domainId);
@@ -294,10 +291,10 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
             domainMemberDao.remove(member);
         }
         // delete all groups
-        List<DBGroup> groupList = domain.getDomainGroups();
+        List<DBGroup> groupList = Collections.unmodifiableList(domain.getDomainGroups());
         for (DBGroup group : groupList) {
             // all groups should be without resources see the check above:  getResourceCountForDomain
-            deleteDomainGroup(group);
+            deleteGroupMembers(group);
         }
         // finally remove the domain
         domainDao.remove(domain);
@@ -306,11 +303,10 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         return domainRO;
     }
 
-    private void deleteDomainGroup(DBGroup group) {
+    private void deleteGroupMembers(DBGroup group) {
         List<DBGroupMember> memberList = groupMemberDao.getGroupMembers(group.getId(), -1, -1, null);
         for (DBGroupMember member : memberList) {
             groupMemberDao.remove(member);
         }
-        groupDao.remove(group);
     }
 }
