@@ -10,6 +10,8 @@ export class SessionExpirationDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               public dialogRef: MatDialogRef<SessionExpirationDialogComponent>,
               public securityService: SecurityService) {
+    // Disable the ability to close the dialog by clicking outside of it
+    dialogRef.disableClose = true;
   }
 
   public onExtendSessionClicked() {
