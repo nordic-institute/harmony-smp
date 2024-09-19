@@ -33,7 +33,6 @@ import {EditResourceController} from "../edit-resource.controller";
   styleUrls: ['./resource-details-panel.component.scss']
 })
 export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
-
   readonly groupVisibilityOptions = Object.keys(VisibilityEnum)
     .map(el => {
       return {key: el, value: VisibilityEnum[el]}
@@ -157,8 +156,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
         try {
           if (!!result) {
             this.alertService.successForTranslation("resource.details.panel.alert.resource.saved");
-            this.editResourceController.selectedResource = result;
-            this._resource = result;
+            this.editResourceController.selectedResourceUpdated(result);
+            this.resource = result;
             this.resourceForm.markAsPristine();
           }
         } finally {

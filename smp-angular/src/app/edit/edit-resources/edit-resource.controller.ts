@@ -3,11 +3,15 @@ import {GroupRo} from "../../common/model/group-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {TableResult} from "../../common/model/table-result.model";
 import {DomainRo} from "../../common/model/domain-ro.model";
-import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditResourceService} from "./edit-resource.service";
 import {EditDomainService} from "../edit-domain/edit-domain.service";
 import {EditGroupService} from "../edit-group/edit-group.service";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "../../common/alert-message/alert-message.service";
 import {MatTableDataSource} from "@angular/material/table";
 
 /**
@@ -18,7 +22,7 @@ import {MatTableDataSource} from "@angular/material/table";
  * @since 5.1
  */
 @Injectable()
-export class EditResourceController extends MatTableDataSource<ResourceRo>{
+export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
@@ -77,6 +81,20 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
     return this._selectedResource;
   };
 
+  selectedResourceUpdated(resource: ResourceRo) {
+    // find current resource from list by resource id
+    if (resource.resourceId == this._selectedResource.resourceId) {
+      this._selectedResource.resourceTypeIdentifier = resource.resourceTypeIdentifier;
+      this._selectedResource.identifierScheme = resource.identifierScheme;
+      this._selectedResource.identifierValue = resource.identifierValue;
+      this._selectedResource.visibility = resource.visibility;
+      this._selectedResource.reviewEnabled = resource.reviewEnabled
+    } else {
+      console.log('selected resource not found')
+      this.selectedResource = resource;
+    }
+  }
+
   @Input() set selectedResource(resource: ResourceRo) {
     this._selectedResource = resource;
   };
@@ -88,12 +106,14 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
   refreshDomains() {
     this.isLoadingResults = true;
     this.domainService.getDomainsForResourceAdminUserObservable()
-      .subscribe({next: (result: DomainRo[]) => {
-        this.updateDomainList(result)
-      }, error: (err: any) => {
-        this.alertService.error(err.error?.errorDescription)
-        this.isLoadingResults = false;
-      }});
+      .subscribe({
+        next: (result: DomainRo[]) => {
+          this.updateDomainList(result)
+        }, error: (err: any) => {
+          this.alertService.error(err.error?.errorDescription)
+          this.isLoadingResults = false;
+        }
+      });
   }
 
   refreshGroups() {
@@ -104,11 +124,13 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
     }
     this.isLoadingResults = true;
     this.groupService.getDomainGroupsForResourceAdminObservable(this.selectedDomain)
-      .subscribe((result: GroupRo[]) => {
-        this.updateGroupList(result)
-      }, (error: any) => {
-        this.isLoadingResults = false;
-        this.alertService.error(error.error?.errorDescription)
+      .subscribe({
+        next: (result: GroupRo[]) => {
+          this.updateGroupList(result)
+        }, error: (error: any) => {
+          this.isLoadingResults = false;
+          this.alertService.error(error.error?.errorDescription)
+        }
       });
   }
 
@@ -121,21 +143,25 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
     this.isLoadingResults = true;
     this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
       this.resourcesFilter, this.pageIndex, this.pageSize)
-      .subscribe((result: TableResult<ResourceRo>) => {
-        this.updateResourceList(result.serviceEntities)
-        this.isLoadingResults = false;
-      }, (error: any) => {
-        this.isLoadingResults = false;
-        this.alertService.error(error.error?.errorDescription)
+      .subscribe({
+        next: (result: TableResult<ResourceRo>) => {
+          this.updateResourceList(result.serviceEntities)
+          this.isLoadingResults = false;
+        }, error: (error: any) => {
+          this.isLoadingResults = false;
+          this.alertService.error(error.error?.errorDescription)
+        }
       });
   }
 
   refreshDomainsResourceDefinitions() {
     this.domainService.getDomainResourceDefinitionsObservable(this.selectedDomain)
-      .subscribe((result: ResourceDefinitionRo[]) => {
-        this._selectedDomainResourceDefs = result
-      }, (error: any) => {
-        this.alertService.error(error.error?.errorDescription)
+      .subscribe({
+        next: (result: ResourceDefinitionRo[]) => {
+          this._selectedDomainResourceDefs = result
+        }, error: (error: any) => {
+          this.alertService.error(error.error?.errorDescription)
+        }
       });
   }
 
@@ -158,20 +184,14 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
   }
 
   updateResourceList(list: ResourceRo[]) {
-    console.log('updateResourceList selected resource:' +  this._selectedResource)
-    // find current resource from list by resource id
-
-
     let currR: ResourceRo = this.selectedResource;
     this.selectedResource = null;
     this.data = list;
 
     if (!!currR) {
-      console.log('selected resource :'  + currR)
       this.selectedResource = list.find(r =>
         r.identifierScheme == currR.identifierScheme &&
         r.identifierValue == currR.identifierValue);
-      console.log('selected resource found :' + this._selectedResource)
     }
 
     if (!this.selectedResource && !!list && list.length > 0) {
