@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -32,6 +33,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +53,7 @@ import java.util.stream.Collectors;
 public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainEditService.class);
+    public static final String DOMAIN_DOES_NOT_EXIST_IN_DATABASE = "Domain does not exist in database!";
     private final DomainDao domainDao;
     private final DomainConfigurationDao domainConfigurationDao;
     private final DomainMemberDao domainMemberDao;
@@ -89,6 +92,35 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
                                                       String sortOrder, Object filter) {
         LOG.debug("Query for public domain data: page: [{}], page size [{}], sort: [{}], filter: [{}].", page, pageSize, sortField, filter);
         return super.getTableList(page, pageSize, sortField, sortOrder, filter);
+    }
+
+
+    /**
+     * Method returns only domains  current users have access to.
+     *
+     * @param page      - page number
+     * @param pageSize  - page size
+     * @return ServiceResult<DomainPublicRO> - list of domain resource objects
+     */
+    public ServiceResult<DomainPublicRO> getUserPermittedDomains(int page, int pageSize) {
+        LOG.debug("Query for public domain data: page: [{}], page size [{}].", page, pageSize);
+        SMPUserDetails userDetails = SessionSecurityUtils.getSessionUserDetails();
+        DBUser user = userDetails!=null?userDetails.getUser():null;
+
+        ServiceResult<DomainPublicRO> result = new ServiceResult<>();
+        result.setPage(page);
+        result.setPageSize(pageSize);
+        Long count = domainDao.getAllDomainsForUserCount(user);
+        if (count < 1) {
+            result.setCount(0L);
+            return result;
+        }
+        result.setCount(count);
+        List<DomainPublicRO> refList = domainDao.getAllDomainsForUser(user, page, pageSize).stream()
+                .map(doc -> conversionService.convert(doc, DomainPublicRO.class))
+                .collect(Collectors.toList());
+        result.getServiceEntities().addAll(refList);
+        return result;
     }
 
     @Transactional
@@ -171,7 +203,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not get domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
 
         //filter and validate resources to be removed
@@ -189,7 +221,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
     public List<DomainPropertyRO> getDomainEditProperties(Long domainId) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         return domainConfigurationDao.getDomainPropertiesForRole(domain, SMPRole.USER).stream()
                 .map(property -> conversionService.convert(property, DomainPropertyRO.class))
@@ -207,7 +239,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
     public List<DomainPropertyRO> updateDomainEditProperties(Long domainId, List<DomainPropertyRO> domainProperties) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         return domainConfigurationDao.updateDomainPropertiesForRole(domain, domainProperties, SMPRole.USER).stream()
                 .map(property -> conversionService.convert(property, DomainPropertyRO.class))

@@ -20,7 +20,9 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
@@ -77,17 +79,6 @@ public class DomainDao extends BaseDao<DBDomain> {
 
         return query.getResultList();
     }
-
-    /**
-     * Returns domain code records from smp_domain table.
-     *
-     * @return the list of domain codes from smp_domain table
-     */
-    public List<String> getAllDomainCodes() {
-        TypedQuery<String> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL_CODES, String.class);
-        return query.getResultList();
-    }
-
 
     public Optional<DBDomain> getFirstDomain() {
         TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
@@ -197,8 +188,9 @@ public class DomainDao extends BaseDao<DBDomain> {
      * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.
      * If code is null or blank - then null is returned.
      *
-     * @param domainCode
-     * @return
+     * @param domainCode  - domain code to be validated
+     * @return DBDomain - domain if exists
+     * @throws SMPRuntimeException if domain does not exist
      */
     public DBDomain validateDomainCode(String domainCode) {
         DBDomain domain = null;
@@ -227,5 +219,37 @@ public class DomainDao extends BaseDao<DBDomain> {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Method returns all public domains with all domains where user is direct or indirect member.
+     * and have some resources assigned. See the EDELIVERY-13793
+     * If user is null then only public domains are returned.
+     *
+     * @param user - user to search for
+     *             if null only public domains are returned
+     * @return list of domains
+     * @Param page - page number
+     * @Param pageSize - page size
+     */
+    public List<DBDomain> getAllDomainsForUser(DBUser user, int page, int pageSize) {
+        TypedQuery<DBDomain> query = createAllDomainsForUserQuery(DBDomain.class, user);
+        setPaginationParametersToQuery(query, page, pageSize);
+        return query.getResultList();
+    }
+
+    public long getAllDomainsForUserCount(DBUser user) {
+        TypedQuery<Long> query = createAllDomainsForUserQuery(Long.class, user);
+        return query.getSingleResult();
+    }
+
+    private <T> TypedQuery<T> createAllDomainsForUserQuery(Class<T> resultClass, DBUser user) {
+        String queryName = resultClass == Long.class ? QUERY_DOMAIN_FOR_USER_COUNT :
+                QUERY_DOMAIN_FOR_USER;
+        LOG.debug("Create search query [{}] for all users domain", queryName);
+        TypedQuery<T> query = memEManager.createNamedQuery(queryName, resultClass);
+        query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
+        query.setParameter(PARAM_DOMAIN_VISIBILITY, VisibilityType.PUBLIC);
+        return query;
     }
 }

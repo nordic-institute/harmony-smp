@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,7 +18,12 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.data.dao.*;
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDefDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -30,7 +35,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,18 +50,12 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
 
     private final ResourceDao resourceDao;
 
-    private final UserDao userDao;
-
     private final ResourceDefDao resourceDefDao;
 
-    private final ConversionService conversionService;
-
-    public UIResourceSearchService(DomainDao domainDao, ResourceDao resourceDao, UserDao userDao, ResourceDefDao resourceDefDao, ConversionService conversionService) {
+    public UIResourceSearchService(DomainDao domainDao, ResourceDao resourceDao, ResourceDefDao resourceDefDao) {
         this.domainDao = domainDao;
         this.resourceDao = resourceDao;
-        this.userDao = userDao;
         this.resourceDefDao = resourceDefDao;
-        this.conversionService = conversionService;
     }
 
 
@@ -77,16 +75,16 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
      * @return
      */
     @Transactional
-    public ServiceResult<ServiceGroupSearchRO> getTableList(int page, int pageSize,
-                                                            String sortField,
-                                                            String sortOrder, ResourceFilter filter) {
-
+    public ServiceResult<ServiceGroupSearchRO> getTableList(int page, int pageSize, String sortField, String sortOrder, ResourceFilter filter) {
+        LOG.debug("Get table list for page: [{}], page size: [{}], sort field: [{}], sort order: [{}], filter: [{}]", page, pageSize, sortField, sortOrder, filter);
         ServiceResult<ServiceGroupSearchRO> sg = new ServiceResult<>();
         sg.setPage(page < 0 ? 0 : page);
         sg.setPageSize(pageSize);
-        DBUser user = SessionSecurityUtils.getSessionUserDetails() != null ? SessionSecurityUtils.getSessionUserDetails().getUser() : null;
+        DBUser user = SessionSecurityUtils.getSessionUserDetails() != null ?
+                SessionSecurityUtils.getSessionUserDetails().getUser() : null;
 
-        long iCnt = resourceDao.getPublicResourcesSearchCount(user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike(), filter.getDomainCode(), filter.getDocumentType());
+        long iCnt = resourceDao.getPublicResourcesSearchCount(user, filter.getIdentifierSchemeLike(),
+                filter.getIdentifierValueLike(), filter.getDomainCode(), filter.getDocumentType());
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
@@ -111,7 +109,7 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
     /**
      * Convert Database object to Rest object for UI
      *
-     * @param resource     - database entity wrapper
+     * @param resource - database entity wrapper
      * @return ServiceGroupRO
      */
     private ServiceGroupSearchRO convert(ResourceDao.DBResourceWrapper resource) {
@@ -136,8 +134,12 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
     }
 
     public ResourceFilterOptionsResult getResourceMetadata() {
-        List<String> domainCodes = domainDao.getAllDomainCodes();
-        List<String> documentTypes = resourceDefDao.getAllResourceDef().stream().map(DBResourceDef::getName).collect(Collectors.toList());
+        SMPUserDetails userDetails = SessionSecurityUtils.getSessionUserDetails();
+        DBUser user = userDetails != null ? userDetails.getUser() : null;
+        List<String> domainCodes = domainDao.getAllDomainsForUser(user, -1, -1)
+                .stream().map(DBDomain::getDomainCode).collect(Collectors.toList());
+        List<String> documentTypes = resourceDefDao.getAllResourceDefsForUser(user, -1, -1)
+                .stream().map(DBResourceDef::getName).collect(Collectors.toList());
         return new ResourceFilterOptionsResult(domainCodes, documentTypes);
     }
 }

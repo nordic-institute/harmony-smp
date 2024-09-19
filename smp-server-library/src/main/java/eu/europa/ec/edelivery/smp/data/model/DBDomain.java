@@ -72,15 +72,33 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " JOIN DBResource r ON  g.id = r.group.id " +
         " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
         " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
-
-
 @NamedQuery(name = QUERY_DOMAIN_BY_USER_RESOURCE_ROLES, query = "SELECT distinct d FROM DBDomain d " +
         " JOIN DBGroup g ON d.id = g.domain.id " +
         " JOIN DBResource r ON  g.id = r.group.id " +
         " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
         " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
 
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
+@NamedQuery(name = QUERY_DOMAIN_FOR_USER, query = "SELECT distinct d FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " WHERE d.visibility = :domain_visibility " +
+        "   or (:user_id IS NOT NULL " +
+        "         AND  (" +
+        "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
+        "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
+        "   ) " )
+@NamedQuery(name = QUERY_DOMAIN_FOR_USER_COUNT, query = "SELECT distinct COUNT( distinct d.id) FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " WHERE d.visibility = :domain_visibility " +
+        "   or (:user_id IS NOT NULL " +
+        "         AND  (" +
+        "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
+        "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
+        "   ) " )
+        @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
     private static final long serialVersionUID = 1008583888835630004L;

@@ -376,8 +376,10 @@ public class TestUtilsDao {
         DBDomain publicDomain = createDomain("publicDomain", VisibilityType.PUBLIC);
         DBDomain privateDomain = createDomain("privateDomain", VisibilityType.PRIVATE);
 
+
         DBDomainResourceDef publicDomainResourceDef = registerDomainResourceDefinition(publicDomain, resourceDefSmp);
         DBDomainResourceDef privateDomainResourceDef= registerDomainResourceDefinition(privateDomain, resourceDefSmp);
+        DBDomainResourceDef privateDomainResourceDef2= registerDomainResourceDefinition(privateDomain, resourceDefCpp);
         // membership of the domain
         createDomainMembership(MembershipRoleType.VIEWER, user3, privateDomain);
 

@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 
 /**
- * Domain resource object containing only public data
+ * Domain resource object containing only public data. Mainly used for search filtering.
  *
  * @author Joze Rihtarsic
  * @since 5.0

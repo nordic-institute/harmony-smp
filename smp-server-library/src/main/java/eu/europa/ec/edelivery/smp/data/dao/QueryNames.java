@@ -39,6 +39,8 @@ public class QueryNames {
 
     public static final String QUERY_DOMAIN_BY_USER_ROLES_COUNT = "DBDomain.getByUserAndRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAndRoles";
+    public static final String QUERY_DOMAIN_FOR_USER = "DBDomain.getAllDomainsForUser";
+    public static final String QUERY_DOMAIN_FOR_USER_COUNT = "DBDomain.getAllDomainsForUserCount";
 
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT = "DBDomain.getByUserAndGroupRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES = "DBDomain.getByUserAndGroupRoles";
@@ -119,6 +121,8 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_URL_SEGMENT = "DBResourceDef.getResourceDefByURLSegment";
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER = "DBResourceDef.getResourceDefByIdentifier";
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION = "DBExtResourceDef.getByIdentifierExtension";
+    public static final String QUERY_RESOURCE_DEF_FOR_USER = "DBResourceDef.getAllForUser";
+    public static final String QUERY_RESOURCE_DEF_FOR_USER_COUNT = "DBResourceDef.getAllForUserCount";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";
     public static final String QUERY_SEARCH_DOCUMENT_REFERENCES = "DBDocument.getDocumentReferences";
