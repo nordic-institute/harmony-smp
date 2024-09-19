@@ -98,7 +98,7 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
    * @param eventList
    */
   writeValue(eventList: DocumentVersionEventRo[]): void {
-    this.eventDataSource.data = !eventList?.length ? [] : eventList;
+    this.eventDataSource.data = !eventList?.length ? [] : [...eventList];
     this.dataChanged = false;
   }
 
@@ -106,12 +106,6 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
     this.eventDataSource.paginator = this.paginator;
     this.eventDataSource.sort = this.sort;
     // add custom filter to exclude filtering on  event description
-    this.eventDataSource.filterPredicate = (data: DocumentVersionEventRo, filter: string) => {
-      return data?.username.toLowerCase().includes(filter)
-        || data?.eventType.toLowerCase().includes(filter)
-        || data?.eventSourceType.toLowerCase().includes(filter)
-        || data?.eventOn.toString().toLowerCase().includes(filter);
-    }
   }
 
   applyFilter(event: Event) {
