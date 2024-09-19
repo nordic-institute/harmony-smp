@@ -90,7 +90,9 @@ class DomainResourceIT {
 
 
         assertNotNull(res);
-        assertEquals(2, res.getServiceEntities().size());
+        // there are two  public domains in the database but only one has resources
+        // see EDELIVERY-13793
+        assertEquals(1, res.getServiceEntities().size());
         res.getServiceEntities().forEach(sgMap -> {
             DomainRO sgro = mapper.convertValue(sgMap, DomainRO.class);
             assertNotNull(sgro.getDomainCode());
