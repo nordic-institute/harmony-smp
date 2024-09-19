@@ -32,7 +32,7 @@ public enum ErrorCode {
     UNAUTHORIZED(401, "SMP:003",ErrorBusinessCode.UNAUTHORIZED, "User not authorized!"),
     UNAUTHORIZED_INVALID_USER_IDENTIFIER(401, "SMP:004",ErrorBusinessCode.UNAUTHORIZED, "Invalid user identifier! User not authorized."),
     UNAUTHORIZED_INVALID_IDENTIFIER(401, "SMP:005",ErrorBusinessCode.UNAUTHORIZED, "Invalid entity identifier!  User not authorized to access the entity data"),
-    UNAUTHORIZED_INVALID_RESET_TOKEN(401, "SMP:006",ErrorBusinessCode.UNAUTHORIZED, "Reset token; Invalid or not active reset token!"),
+    UNAUTHORIZED_INVALID_RESET_TOKEN(401, "SMP:006",ErrorBusinessCode.UNAUTHORIZED, "The reset token it is invalid or not active any more. Please try to reset your password again."),
 
     INVALID_ENCODING (500, "SMP:100",ErrorBusinessCode.TECHNICAL, "Unsupported or invalid encoding for %s!"),
     SML_INVALID_IDENTIFIER (400,"SMP:101",ErrorBusinessCode.FORMAT_ERROR,"Malformed identifier, scheme and id should be delimited by double colon: %s "),

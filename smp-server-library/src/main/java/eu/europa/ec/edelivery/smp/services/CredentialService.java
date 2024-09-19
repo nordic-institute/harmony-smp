@@ -422,6 +422,8 @@ public class CredentialService {
             dbCredential = createCredentialsForUser(user.getId(),
                     CredentialType.USERNAME_PASSWORD,
                     CredentialTargetType.UI);
+            // persist new credential
+            credentialDao.persist(dbCredential);
             optCredential = Optional.of(dbCredential);
         } else {
             dbCredential = optCredential.get();
@@ -515,8 +517,9 @@ public class CredentialService {
      * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
      * the whole chain. Because in some configuration cases does not use the truststore
      *
-     * @param certificateId
-     * @throws CertificateException
+     * @param certificateId certificate id to be validated
+     * @param certPolicyList certificate policy list
+     * @throws AuthenticationServiceException
      */
     protected void validateCertificatePolicyMatchLegacy(String certificateId, List<String> certPolicyList) throws AuthenticationServiceException {
 
