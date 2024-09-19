@@ -72,8 +72,8 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
 
   constructor(
     private globalLookups: GlobalLookups,
-           public dialog: MatDialog,
-              private controlContainer: ControlContainer) {
+    public dialog: MatDialog,
+    private controlContainer: ControlContainer) {
   }
 
   get dateTimeFormat(): string {
