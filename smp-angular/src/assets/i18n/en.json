@@ -373,6 +373,10 @@
   "document.edit.panel.success.save": "Document is saved with current version [{{currentResourceVersion}}].",
   "document.edit.panel.success.generate": "Document is generated.",
   "document.edit.panel.success.valid": "Document is Valid.",
+  "document.edit.panel.select.item.reference": "Reference document",
+  "document.edit.panel.select.item.current": "Current document",
+  "document.edit.panel.label.show.document.type": "View document",
+
   "document.edit.panel.error.document.null": "Can not show document because it is not selected.",
   "document.edit.panel.title": "Resources",
   "document.edit.panel.tooltip.document.wizard": "Show document wizard dialog",

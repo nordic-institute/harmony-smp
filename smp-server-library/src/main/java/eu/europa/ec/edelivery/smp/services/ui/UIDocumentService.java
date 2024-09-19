@@ -754,7 +754,7 @@ public class UIDocumentService {
      * @return documentVersion for the given version or current version
      */
     public DBDocumentVersion getDocumentVersionOrCurrentVersion(DBDocument document, int version) {
-        DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
+        return document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst()
                 .orElse(document.getDocumentVersions().stream()
@@ -762,8 +762,6 @@ public class UIDocumentService {
                         .findFirst()
                         .orElse(document.getDocumentVersions().isEmpty()
                                 ? null : document.getDocumentVersions().get(document.getDocumentVersions().size() - 1)));
-
-        return documentVersion;
     }
 
 

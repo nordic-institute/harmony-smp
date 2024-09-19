@@ -50,9 +50,17 @@
       style="display:flex; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;">
       <ng-container *ngIf="hasDocumentReference; else selectedDocumentVersionDataTemplate" >
         <div style="display:flex;  flex-direction: row;align-items: center;">
-        <mat-slide-toggle
-          formControlName="toggleReferenceDocument"
-          (toggleChange)="toggleShowReference()" [checked]="showReference" style="display: inline-block;">Show reference</mat-slide-toggle>
+          <mat-form-field style="min-width: 250px"
+                          subscriptSizing="dynamic"
+                          appearance="fill">
+            <mat-label>{{ "document.edit.panel.label.show.document.type" | translate }}</mat-label>
+          <mat-select style="width: 250px;"
+                      formControlName="selectDocumentSource"
+                      (selectionChange)="updateTextToEditor()">
+            <mat-option value="TARGET_DOCUMENT">{{ "document.edit.panel.select.item.current"  | translate }}</mat-option>
+            <mat-option value="REFERENCE_DOCUMENT" >{{ "document.edit.panel.select.item.reference" | translate }}</mat-option>
+          </mat-select>
+          </mat-form-field>
         <ng-container *ngIf="showReference; else selectedDocumentVersionDataTemplate" >
           <div style="padding: 0 1em;display: flex;flex-direction: row;align-items: center;">
           <mat-form-field style="min-width: 250px"

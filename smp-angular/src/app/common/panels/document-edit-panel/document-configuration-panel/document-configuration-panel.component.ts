@@ -98,7 +98,6 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
       'referenceDocumentId': new FormControl({value: null}),
       'referenceDocumentName': new FormControl({value: null}),
       'referenceDocumentUrl': new FormControl({value: null}),
-
     });
   }
 
@@ -225,12 +224,15 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
     });
   }
 
+  onSharingEnabledChanged() {
+    this.updateShareCheckboxStatus();
+  }
+
   updateShareCheckboxStatus() {
     if (this.hasReferenceDocument) {
       this.documentConfigurationForm.controls['sharingEnabled'].setValue(false);
       this.documentConfigurationForm.controls['sharingEnabled'].disable();
-    } else
-    {
+    } else {
       this.documentConfigurationForm.controls['sharingEnabled'].enable();
     }
   }
@@ -240,6 +242,10 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
     this.documentConfigurationForm.controls['referenceDocumentName'].setValue("");
     this.documentConfigurationForm.controls['referenceDocumentUrl'].setValue("");
     this.updateShareCheckboxStatus()
+  }
+
+  get disableShowReferenceDocumentButton(): boolean {
+    return this.hasReferenceDocument || this.documentConfigurationForm.controls['sharingEnabled'].value;
   }
 
 }

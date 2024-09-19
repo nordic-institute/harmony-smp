@@ -27,6 +27,7 @@
            readonly>
   </mat-form-field>
   <mat-checkbox formControlName="sharingEnabled"
+                (change)="onSharingEnabledChanged()"
                 matTooltip="{{ 'document.configuration.panel.tooltip.sharing.enabled' | translate }}"
                 id="sharingEnabled_id">
     {{ "document.configuration.panel.label.sharing.enabled" | translate }}
@@ -37,7 +38,7 @@
       <button mat-raised-button
               mat-flat-button color="primary"
               (click)="onShowSearchDialogClicked()"
-              [disabled]="hasReferenceDocument"
+              [disabled]="disableShowReferenceDocumentButton"
       >{{ "document.configuration.panel.button.reference.select" | translate }}
       </button>
 

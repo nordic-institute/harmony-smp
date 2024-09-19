@@ -198,6 +198,7 @@ import {
 import {
   ReferenceDocumentService
 } from "./common/services/reference-document.service";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
@@ -330,6 +331,7 @@ import {
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    MatButtonToggleModule,
     NgxDatatableModule,
     NgxMatDatetimePickerModule,
     NgxMatMomentModule,
