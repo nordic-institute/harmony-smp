@@ -320,9 +320,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
         this.documentForm.controls['payloadVersion'].enable();
       }
       this.updateTextToEditor()
-      if (this.isNewDocumentVersion) {
-        this.documentForm.markAsPristine();
-      }
+      this.documentForm.markAsPristine();
     } else {
       this.documentForm.controls['name'].setValue("");
       this.documentForm.controls['currentResourceVersion'].setValue("");
@@ -343,15 +341,19 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
 
   get document(): DocumentRo {
     let doc: DocumentRo = {...this._document};
-    if (this.showReference)
-      if (this.showReference && this.documentForm.controls['payload'].dirty) {
-        doc.payload = this.documentForm.controls['editorText'].value;
-        doc.payloadStatus = EntityStatus.UPDATED;
 
-      } else {
-        // no need to send payload if not changed
-        doc.payload = null;
-      }
+    console.log("show reference: " + this.showReference + " dirty: " + this.documentForm.controls['payload'].dirty)
+    if (!this.showReference && this.documentForm.controls['editorText'].dirty) {
+      doc.payload = this.documentForm.controls['editorText'].value;
+      doc.payloadStatus = EntityStatus.UPDATED;
+    } else if (this.showReference && this.documentForm.controls['payload'].dirty) {
+      doc.payload = this.documentForm.controls['payload'].value;
+      doc.payloadStatus = EntityStatus.UPDATED;
+    } else {
+      // no need to send payload if not changed
+      doc.payload = null;
+      doc.referencePayload = null;
+    }
 
     // set new properties
     doc.properties = this.documentForm.controls['properties'].value;
@@ -379,7 +381,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       }
     }
   }
-
 
   onBackButtonClicked(): void {
     this.navigationService.navigateUp();
@@ -564,9 +565,12 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
    * Submit the current document for validation to the server
    */
   validateCurrentDocument(): void {
+    let docRequest: DocumentRo = this.document;
+    // set the payload from the current editor text
+    docRequest.payload = this.documentForm.controls['editorText'].value;
     let validateObservable = this.isResourceDocument ?
-      this.editResourceService.validateResourceDocumentObservable(this.resource, this.document) :
-      this.editResourceService.validateSubresourceDocumentObservable(this.subresource, this.resource, this.document);
+      this.editResourceService.validateResourceDocumentObservable(this.resource, docRequest) :
+      this.editResourceService.validateSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
     validateObservable.subscribe(this.validateDocumentObserver);
   }
 

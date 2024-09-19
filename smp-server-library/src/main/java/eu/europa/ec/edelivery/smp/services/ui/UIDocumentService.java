@@ -436,11 +436,13 @@ public class UIDocumentService {
     private DBDocumentVersion storeResourcePayload(DBResource resource, DBDocument document, DocumentRO documentRo) {
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] payload = documentRo.getPayload().getBytes();
         // invoke the resource handler for the document type
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(
                 domainResourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
-                resource, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
+                resource, new ByteArrayInputStream(payload));
+
         ResponseData responseData = new SpiResponseData(baos);
         try {
             resourceHandler.storeResource(data, responseData);
@@ -450,7 +452,7 @@ public class UIDocumentService {
 
         DBDocumentVersion documentVersion;
         if (documentRo.getPayloadVersion() == null) {
-            documentVersion = createNewDocumentVersion(document, baos.toByteArray());
+            documentVersion = createNewDocumentVersion(document, payload);
         } else {
             documentVersion = document.getDocumentVersions().stream()
                     .filter(dv -> dv.getVersion() == documentRo.getPayloadVersion())
@@ -458,7 +460,7 @@ public class UIDocumentService {
             if (documentVersion == null) {
                 throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
             }
-            documentVersion.setContent(baos.toByteArray());
+            documentVersion.setContent(payload);
         }
         return documentVersion;
 
@@ -467,11 +469,11 @@ public class UIDocumentService {
     private DBDocumentVersion storeSubresourcePayload(DBSubresource subresource, DBResource parentResource, DBDocument document, DocumentRO documentRo) {
 
         DBSubresourceDef subresourceDef = subresource.getSubresourceDef();
-
+        byte[] payload = documentRo.getPayload().getBytes();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(
                 parentResource.getDomainResourceDef().getDomain(), parentResource,
-                subresource, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
+                subresource, new ByteArrayInputStream(payload));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ResponseData responseData = new SpiResponseData(baos);
         try {
@@ -480,9 +482,9 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreSubresourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
 
-        DBDocumentVersion documentVersion = null;
+        DBDocumentVersion documentVersion ;
         if (documentRo.getPayloadVersion() == null) {
-            documentVersion = createNewDocumentVersion(document, baos.toByteArray());
+            documentVersion = createNewDocumentVersion(document, payload);
         } else {
             documentVersion = document.getDocumentVersions().stream()
                     .filter(dv -> dv.getVersion() == documentRo.getPayloadVersion())
@@ -490,7 +492,7 @@ public class UIDocumentService {
             if (documentVersion == null) {
                 throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
             }
-            documentVersion.setContent(baos.toByteArray());
+            documentVersion.setContent(payload);
         }
         return documentVersion;
 
@@ -547,7 +549,6 @@ public class UIDocumentService {
             DBDocumentVersion docVersion = subresource == null ?
                     storeResourcePayload(resource, document, documentRo)
                     : storeSubresourcePayload(subresource, resource, document, documentRo);
-            ;
             returnDocVersion = docVersion.getVersion();
         }
 
@@ -569,7 +570,6 @@ public class UIDocumentService {
 
             // update document reference
             updateDocumentReferenceToDocument(document, docConfig);
-            docConfig = new DocumentConfigurationRO();
         }
 
         List<DocumentPropertyRO> initialProperties = subresource == null ? getInitialProperties(resource) : getInitialProperties(subresource);
@@ -639,8 +639,7 @@ public class UIDocumentService {
     public DocumentRO getDocumentForResource(Long resourceId, int version) {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
-        DocumentRO result = convertWithVersion(document, version, getInitialProperties(resource));
-        return result;
+        return convertWithVersion(document, version, getInitialProperties(resource));
     }
 
     @Transactional
