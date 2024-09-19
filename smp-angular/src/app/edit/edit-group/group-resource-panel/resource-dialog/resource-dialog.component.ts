@@ -93,6 +93,7 @@ export class ResourceDialogComponent {
     resource.identifierScheme = this.resourceForm.get('identifierScheme').value;
     resource.resourceTypeIdentifier = this.resourceForm.get('resourceTypeIdentifier').value;
     resource.visibility = this.resourceForm.get('visibility').value;
+    resource.reviewEnabled = this.resourceForm.get('reviewEnabled').value;
     return resource;
   }
 
@@ -156,16 +157,17 @@ export class ResourceDialogComponent {
   public createResource(resource: ResourceRo) {
 
     this.submitInProgress = true;
-    this.editGroupService.createResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
-      if (!!result) {
-        this.closeDialog();
+    this.editGroupService.createResourceForGroup(this.resource, this.group, this.domain).subscribe({
+      next: (result: ResourceRo) => {
+        if (!!result) {
+          this.closeDialog();
+        }
+        this.submitInProgress = false;
+      }, error: (error) => {
+        this.alertService.error(error.error?.errorDescription)
+        this.submitInProgress = false;
       }
-      this.submitInProgress = false;
-    }, (error) => {
-      this.alertService.error(error.error?.errorDescription)
-      this.submitInProgress = false;
     });
-
   }
 
   public saveResource(resource: ResourceRo): void {
