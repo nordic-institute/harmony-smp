@@ -32,4 +32,11 @@ export default class StringUtils {
   static isEmpty(str): boolean {
     return (!str || 0 === str.length);
   }
+
+  /**
+   * Method to check if a string is null or empty and return an empty string if it is null
+   * */
+  static toEmpty(str): string {
+    return !str ?"": str;
+  }
 }

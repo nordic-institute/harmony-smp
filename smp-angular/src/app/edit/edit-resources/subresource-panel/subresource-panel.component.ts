@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild,} from '@angular/core';
+import {AfterViewInit, Component, Input, ViewChild,} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
@@ -17,6 +17,7 @@ import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/
 import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import StringUtils from "../../../common/utils/string-utils";
 
 
 @Component({
@@ -185,7 +186,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
       data: {
         title: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.title")),
         description: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.description", {
-          identifierScheme: this.selected.identifierScheme,
+          identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
           identifierValue: this.selected.identifierValue
         }))
       }
@@ -208,7 +209,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
       .subscribe(async (result: SubresourceRo) => {
           if (result) {
             this.alertService.success(await lastValueFrom(this.translateService.get("subresource.panel.success.delete", {
-              identifierScheme: this.selected.identifierScheme,
+              identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
               identifierValue: this.selected.identifierValue
             })));
             this.selected = null;
@@ -217,9 +218,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
           this.alertService.error(error.error?.errorDescription);
         }
       );
-
   }
-
 
   public onResourceSelected(resource: ResourceRo) {
     this.selected = resource;

@@ -37,8 +37,7 @@
       <mat-label>{{ "resource.dialog.label.resource.scheme" | translate }}</mat-label>
       <input id="identifierScheme_id" type="text" matInput
              formControlName="identifierScheme"
-             maxlength="255"
-             >
+             maxlength="255">
       <div
         *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&  resourceForm.controls['identifierScheme'].hasError('required')"
         style="color:red; font-size: 70%">
@@ -48,7 +47,7 @@
         *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&
                resourceForm.controls['identifierScheme'].hasError('pattern')"
         style="color:red; font-size: 70%">
-        {{participantSchemeMessage}}
+        {{resourceSchemeMessage}}
       </div>
     </mat-form-field>
     <mat-checkbox formControlName="reviewEnabled"

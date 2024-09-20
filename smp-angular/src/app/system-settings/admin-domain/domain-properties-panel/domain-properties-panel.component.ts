@@ -32,10 +32,7 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
   _domain: DomainRo = null;
   selected?: DomainPropertyRo;
   dataChanged: boolean = false
-
-
   private domainPropertyUpdatedEventSub: Subscription = Subscription.EMPTY;
-
   propertyDataSource: MatTableDataSource<DomainPropertyRo> = new MatTableDataSource();
 
   constructor(private domainService: AdminDomainService,
@@ -74,7 +71,6 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
     if (!!this._domain) {
       if (!this.systemAdminService) {
         this.editDomainService.getDomainProperties(this._domain);
-
       } else {
         this.domainService.getDomainProperties(this._domain);
       }
