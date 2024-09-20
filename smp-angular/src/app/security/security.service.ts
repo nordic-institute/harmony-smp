@@ -119,12 +119,12 @@ export class SecurityService {
         complete: () => {
           this.windowSpinnerService.showSpinner = false;
           this.router.navigate(['/login']);
-          }, // completeHandler
+        }, // completeHandler
         error: (error: any) => {
           this.windowSpinnerService.showSpinner = false;
           this.router.navigate(['/login']);
           this.alertService.error(error);
-          },    // errorHandler
+        },    // errorHandler
         next: async () => {
           this.alertService.success(await lastValueFrom(this.translateService.get("reset.credentials.success.password.reset")), true, -1);
         }

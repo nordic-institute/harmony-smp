@@ -291,7 +291,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     }
     this.documentForm.controls['editorText'].valueChanges.subscribe(() => {
       // disable change back option
-      if (this.documentEditable && this.documentForm.controls['editorText'].dirty) {
+      if (this.documentEditable) {
         this.documentForm.controls['selectDocumentSource'].disable();
       } else {
         this.documentForm.controls['selectDocumentSource'].enable();
@@ -321,10 +321,12 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['documentConfiguration'].setValue(value.documentConfiguration);
       this.documentForm.controls['documentReferenceName'].setValue(value.documentConfiguration?.referenceDocumentName);
       // the method documentVersionsExists already uses the current value to check if versions exists
-      if (this.documentVersionsExists && this.isNotReviewMode) {
+      if (this.documentVersionsExists && this.isNotReviewMode && !this.isNewDocumentVersion) {
         this.documentForm.controls['payloadVersion'].enable();
       }
-      this.documentForm.controls['selectDocumentSource'].enable();
+      if (!this.documentEditable && !this.isNewDocumentVersion ) {
+        this.documentForm.controls['selectDocumentSource'].enable();
+      }
       this.updateTextToEditor()
       this.documentForm.markAsPristine();
     } else {
@@ -344,7 +346,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['documentConfiguration'].setValue(null);
       this.documentForm.markAsPristine();
     }
-
   }
 
   get document(): DocumentRo {

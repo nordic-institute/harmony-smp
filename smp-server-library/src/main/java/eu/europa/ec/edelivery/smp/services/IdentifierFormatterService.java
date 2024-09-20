@@ -69,7 +69,8 @@ public class IdentifierFormatterService {
                 .build();
 
         identifierFormatter.setCaseSensitiveSchemas(getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES));
-        identifierFormatter.setSchemeMandatory(getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_MANDATORY));
+        Boolean mandatory = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_MANDATORY);
+        identifierFormatter.setSchemeMandatory(Boolean.TRUE.equals(mandatory));
         identifierFormatter.setSchemeValidationPattern(getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_VALIDATION_REGEXP));
 
         return identifierFormatter;

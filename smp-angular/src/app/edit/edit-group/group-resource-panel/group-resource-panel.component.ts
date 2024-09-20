@@ -19,6 +19,7 @@ import {
 import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import StringUtils from "../../../common/utils/string-utils";
 
 
 @Component({
@@ -168,7 +169,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
       data: {
         title: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.title")),
         description: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.description", {
-          identifierScheme: this.selected.identifierScheme,
+          identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
           identifierValue: this.selected.identifierValue
         }))
       }
@@ -187,16 +188,16 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
           this.refresh();
           this.isLoadingResults = false;
         }))
-      .subscribe(async (result: ResourceRo) => {
+      .subscribe({next:async (result: ResourceRo) => {
           if (result) {
             this.alertService.success(await lastValueFrom(this.translateService.get("group.resource.panel.success.delete", {
-              identifierScheme: this.selected.identifierScheme,
+              identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
               identifierValue: this.selected.identifierValue
             })));
           }
-        }, (error)=> {
+        }, error: (error:any)=> {
           this.alertService.error(error.error?.errorDescription);
-        }
+        }}
       );
   }
 
