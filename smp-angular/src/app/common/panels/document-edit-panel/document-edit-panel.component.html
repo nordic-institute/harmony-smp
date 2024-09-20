@@ -16,7 +16,7 @@
       <button id="validateResource_id" mat-raised-button
               color="primary"
               matTooltip="{{ 'document.edit.panel.tooltip.validate' | translate }}"
-              [disabled]="!documentEditable"
+              [disabled]="!documentEditable  || isResourceDocument"
               (click)="onDocumentValidateButtonClicked()">
         <mat-icon>check_circle</mat-icon>
         <span>{{ "document.edit.panel.button.validate" | translate }}</span>
@@ -48,7 +48,7 @@
        style="display: flex;flex-direction: row;flex-grow: 1; ">
     <div
       style="display:flex; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;">
-      <ng-container *ngIf="hasDocumentReference; else selectedDocumentVersionDataTemplate" >
+      <ng-container *ngIf="hasDocumentReference && isNotReviewMode; else selectedDocumentVersionDataTemplate" >
         <div style="display:flex;  flex-direction: row;align-items: center;">
           <mat-form-field style="min-width: 250px"
                           subscriptSizing="dynamic"
