@@ -39,6 +39,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
@@ -70,6 +71,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     private static final String USER_ID_REQUEST_TYPE = "UserId";
 
     private final UserDao userDao;
+    private final CredentialService credentialService;
     CredentialDao credentialDao;
     private final ConfigurationService configurationService;
     private final ConversionService conversionService;
@@ -81,13 +83,15 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                          ConfigurationService configurationService,
                          ConversionService conversionService,
                          UITruststoreService truststoreService,
-                         CredentialsAlertService alertService) {
+                         CredentialsAlertService alertService,
+                         CredentialService credentialService) {
         this.userDao = userDao;
         this.credentialDao = credentialDao;
         this.configurationService = configurationService;
         this.conversionService = conversionService;
         this.truststoreService = truststoreService;
         this.alertService = alertService;
+        this.credentialService = credentialService;
     }
 
     @Override
@@ -242,7 +246,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     protected DBUser updateUsernamePasswordForUser(Long userID, String password, boolean adminUpdate) {
         Optional<DBCredential> optCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(userID);
 
-        DBCredential dbCredential = optCredential.orElse(createCredentialsForUser(userID,
+        DBCredential dbCredential = optCredential.orElse(credentialService.createCredentialsForUser(userID,
                 CredentialType.USERNAME_PASSWORD,
                 CredentialTargetType.UI));
 
@@ -275,31 +279,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         // submit mail with reset token
         alertService.alertCredentialChanged(dbCredential);
         return dbCredential.getUser();
-    }
-
-
-    /**
-     * Method creates Username/passwords credentials for the user with given userId.
-     * The method must be called inside active transactions.
-     *
-     * @param userID               to change/create username-password credentials
-     * @param credentialType       the credential type
-     * @param credentialTargetType the credential target
-     */
-    protected DBCredential createCredentialsForUser(Long userID, CredentialType credentialType, CredentialTargetType credentialTargetType) {
-
-        DBUser dbUserToUpdate = userDao.find(userID);
-        if (dbUserToUpdate == null) {
-            LOG.error("Can not update user password because user,[{}] does not exist!", userID);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id to update!");
-        }
-        DBCredential credential = new DBCredential();
-        credential.setUser(dbUserToUpdate);
-        credential.setName(dbUserToUpdate.getUsername());
-        credential.setCredentialType(credentialType);
-        credential.setCredentialTarget(credentialTargetType);
-
-        return credential;
     }
 
     /**

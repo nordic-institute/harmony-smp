@@ -34,7 +34,9 @@ import {
 import {MatSort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
 import {MatPaginator} from "@angular/material/paginator";
-import {DocumentVersionEventRo} from "../../model/document-version-event-ro.model";
+import {
+  DocumentVersionEventRo
+} from "../../model/document-version-event-ro.model";
 import {
   BeforeLeaveGuard
 } from "../../../window/sidenav/navigation-on-leave-guard";
@@ -60,7 +62,7 @@ import {GlobalLookups} from "../../global-lookups";
 export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
 
 
-  displayedColumns: string[] = [ 'date', 'eventType', 'username', 'eventSource'];
+  displayedColumns: string[] = ['date', 'eventType', 'username', 'eventSource'];
   private onChangeCallback: (_: any) => void = () => {
   };
   eventDataSource: MatTableDataSource<DocumentVersionEventRo> = new MatTableDataSource();
@@ -72,8 +74,8 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
 
   constructor(
     private globalLookups: GlobalLookups,
-           public dialog: MatDialog,
-              private controlContainer: ControlContainer) {
+    public dialog: MatDialog,
+    private controlContainer: ControlContainer) {
   }
 
   get dateTimeFormat(): string {
@@ -103,6 +105,13 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
   ngAfterViewInit() {
     this.eventDataSource.paginator = this.paginator;
     this.eventDataSource.sort = this.sort;
+    // add custom filter to exclude filtering on  event description
+    this.eventDataSource.filterPredicate = (data: DocumentVersionEventRo, filter: string) => {
+      return data.eventType?.toLowerCase().includes(filter)
+        || data.username?.toLowerCase().includes(filter)
+        || data.eventSourceType?.toLowerCase().includes(filter)
+        || data.eventOn?.toLocaleString().toLowerCase().includes(filter);
+    };
   }
 
   applyFilter(event: Event) {
