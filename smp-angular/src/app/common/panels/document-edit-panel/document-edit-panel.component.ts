@@ -229,7 +229,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       "editorText": new FormControl({value: null}),
       "toggleReferenceDocument": new FormControl({value: null}),
       "selectDocumentSource": new FormControl({value: null}),
-
     });
 
     this.resource = editResourceService.selectedResource;
@@ -348,21 +347,33 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     }
   }
 
+  /**
+   * Methods returns a clone of the document object with the current values from the form
+   * to be submitted to the server for, create, update, delete or other actions.
+   */
   get document(): DocumentRo {
     let doc: DocumentRo = {...this._document};
 
-    console.log("show reference: " + this.showReference + " dirty: " + this.documentForm.controls['payload'].dirty)
-    if (!this.showReference && this.documentForm.controls['editorText'].dirty) {
+    console.log("show reference: " + this.showReference + " payload dirty: " + this.documentForm.controls['payload'].dirty
+      + " editor dirty: " + this.documentForm.controls['editorText'].dirty)
+
+    if (this.showReference !== true && this.documentForm.controls['editorText'].dirty === true) {
+      console.log("Set payload from the text editor")
       doc.payload = this.documentForm.controls['editorText'].value;
+      console.log("Set payload from the text editor: " + doc.payload)
       doc.payloadStatus = EntityStatus.UPDATED;
-    } else if (this.showReference && this.documentForm.controls['payload'].dirty) {
+    } else if (this.showReference === true && this.documentForm.controls['payload'].dirty === true) {
       doc.payload = this.documentForm.controls['payload'].value;
+      console.log("Set payload from the payload control valuer")
       doc.payloadStatus = EntityStatus.UPDATED;
     } else {
       // no need to send payload if not changed
+      console.log("No need to send  payload if not changed")
       doc.payload = null;
-      doc.referencePayload = null;
+
     }
+    // no need to send reference payload if not changed
+    doc.referencePayload = null;
 
     // set new properties
     doc.properties = this.documentForm.controls['properties'].value;
@@ -375,9 +386,12 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
    * is showing then, reference payload is shown in the editor, otherwise the payload is shown.
    */
   updateTextToEditor() {
-    if (this.showReference) {
 
+    // set data
+    if (this.showReference) {
       if (this.isEditorReferencePayload) {
+        // the reference is already displayed
+        this.updateSourceSelectionComponent();
         return;
       }
       if (this.documentForm.controls['editorText'].dirty) {
@@ -388,7 +402,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['editorText'].markAsPristine();
       this.isEditorReferencePayload = true;
     } else {
-
+      //
       this.documentForm.controls['editorText'].setValue(this.documentForm.controls['payload'].value);
       this.documentForm.controls['editorText'].markAsPristine();
       if (this.documentEditable) {
@@ -397,6 +411,21 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
         this.documentForm.controls['editorText'].disable();
       }
       this.isEditorReferencePayload = false;
+    }
+    this.updateSourceSelectionComponent();
+  }
+
+  /**
+   * Method to update the source selection component
+   */
+  private updateSourceSelectionComponent() {
+    // reset the control selectDocumentSource because it most not affect the
+    // documentForm form
+    this.documentForm.controls['selectDocumentSource'].markAsPristine();
+    if (!this.showReference && this.documentForm.controls['editorText'].dirty) {
+      this.documentForm.controls['selectDocumentSource'].disable();
+    } else {
+      this.documentForm.controls['selectDocumentSource'].enable();
     }
   }
 
@@ -467,6 +496,10 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.editResourceService.reviewApproveForSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
     // request review
     onReviewRequestObservable.subscribe(this.reviewActionDocumentObserver);
+
+    if (!this.isNotReviewMode){
+      this.onBackButtonClicked();
+    }
   }
 
   onRejectButtonClicked(): void {
@@ -481,6 +514,9 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.editResourceService.reviewRejectSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
     // request review
     onReviewRequestObservable.subscribe(this.reviewActionDocumentObserver);
+    if (!this.isNotReviewMode){
+      this.onBackButtonClicked();
+    }
   }
 
   /**
@@ -526,10 +562,8 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        let val = formRef.componentInstance.getExtensionXML();
-        this.documentForm.controls['payload'].setValue(val);
-        this.updateTextToEditor()
-        this.documentForm.controls['payload'].markAsDirty();
+        let value = formRef.componentInstance.getExtensionXML();
+        this.updateDocumentPayload(value);
       }
     });
   }
@@ -545,10 +579,8 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       processIdentifier: '',
       processScheme: '',
       transportProfile: 'bdxr-transport-ebms3-as4-v1p0', // default value for oasis AS4
-
       endpointUrl: '',
       endpointCertificate: '',
-
       serviceDescription: '',
       technicalContactUrl: '',
 
@@ -559,12 +591,21 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        let smw: SubresourceWizardRo = formRef.componentInstance.getCurrent();
-        this.documentForm.controls['payload'].setValue(smw.contentXML);
-        this.documentForm.controls['payload'].markAsDirty();
-        this.updateTextToEditor();
+        let value: SubresourceWizardRo = formRef.componentInstance.getCurrent();
+        this.updateDocumentPayload(value.contentXML);
       }
     });
+  }
+
+  private updateDocumentPayload(newContent: string) {
+    if (this.showReference) {
+      this.documentForm.controls['payload'].setValue(newContent);
+      this.documentForm.controls['payload'].markAsDirty();
+    } else {
+      this.documentForm.controls['editorText'].setValue(newContent)
+      this.documentForm.controls['editorText'].markAsDirty();
+
+    }
   }
 
   /**

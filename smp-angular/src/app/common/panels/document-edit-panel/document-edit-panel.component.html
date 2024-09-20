@@ -14,9 +14,10 @@
         <span>{{ "document.edit.panel.button.version.new" | translate }}</span>
       </button>
       <button id="validateResource_id" mat-raised-button
+              *ngIf="isNotReviewMode"
               color="primary"
               matTooltip="{{ 'document.edit.panel.tooltip.validate' | translate }}"
-              [disabled]="!documentEditable  || isResourceDocument"
+              [disabled]="!documentEditable"
               (click)="onDocumentValidateButtonClicked()">
         <mat-icon>check_circle</mat-icon>
         <span>{{ "document.edit.panel.button.validate" | translate }}</span>
