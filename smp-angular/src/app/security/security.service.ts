@@ -122,7 +122,6 @@ export class SecurityService {
         }, // completeHandler
         error: (error: any) => {
           this.windowSpinnerService.showSpinner = false;
-          this.router.navigate(['/login']);
           this.alertService.error(error);
         },    // errorHandler
         next: async () => {
