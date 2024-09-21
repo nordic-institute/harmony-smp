@@ -52,18 +52,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 
+/**
+ * Service for handling document operations for the UI
+ *
+ * @author Joze RIHTARSIC
+ * @since 5.0
+ */
 @Service
 public class UIDocumentService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDocumentService.class);
+    private static final List<DocumentVersionStatusType> REVIEW_STATUSES = Arrays.asList(DocumentVersionStatusType.UNDER_REVIEW, DocumentVersionStatusType.APPROVED, DocumentVersionStatusType.REJECTED);
+    public static final String DOCUMENT_VERSION_NOT_FOUND = "Document version not found";
+    public static final String DOCUMENT_VERSION_NOT_FOUND_TAG = "DocumentVersionNotFound";
+    public static final String DOCUMENT_ID_MISMATCH_TAG = "DocumentIdMismatch";
+    public static final String DOCUMENT_ID_MISMATCH = "Document id does not match the resource document id";
+
+
+
     final ResourceDao resourceDao;
     final SubresourceDao subresourceDao;
     final DocumentDao documentDao;
@@ -118,7 +129,7 @@ public class UIDocumentService {
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
             LOG.warn("Document id [{}] does not match the resource document id [{}]", documentId, document.getId());
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
         }
         return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
     }
@@ -131,7 +142,7 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
         }
         return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
     }
@@ -143,7 +154,7 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND);
         }
         if (isReviewEnabled && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionAlreadyPublished", "Document version has wrong status");
@@ -169,7 +180,7 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
         }
         return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
     }
@@ -181,7 +192,7 @@ public class UIDocumentService {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
         }
         return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
     }
@@ -192,7 +203,7 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND);
         }
 
         if (!isReviewEnabled) {
@@ -221,7 +232,7 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the resource document id");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
         }
         return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(resource));
     }
@@ -233,7 +244,7 @@ public class UIDocumentService {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentIdMismatch", "Document id does not match the subresource document id");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, "Document id does not match the subresource document id");
         }
         return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(subresource));
     }
@@ -249,7 +260,7 @@ public class UIDocumentService {
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND));
 
         if (!reviewEnabled) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewNotEnabled", "Document Review is not enabled for the document");
@@ -450,20 +461,10 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
 
-        DBDocumentVersion documentVersion;
-        if (documentRo.getPayloadVersion() == null) {
-            documentVersion = createNewDocumentVersion(document, payload);
-        } else {
-            documentVersion = document.getDocumentVersions().stream()
-                    .filter(dv -> dv.getVersion() == documentRo.getPayloadVersion())
-                    .findFirst().orElse(null);
-            if (documentVersion == null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
-            }
-            documentVersion.setContent(payload);
-        }
-        return documentVersion;
-
+        // create new version to document or update existing version
+        return documentRo.getPayloadVersion() == null ?
+                createNewDocumentVersion(document, payload) :
+                updatedDocumentVersion(document, payload, documentRo.getPayloadVersion());
     }
 
     private DBDocumentVersion storeSubresourcePayload(DBSubresource subresource, DBResource parentResource, DBDocument document, DocumentRO documentRo) {
@@ -481,24 +482,36 @@ public class UIDocumentService {
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreSubresourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
-
-        DBDocumentVersion documentVersion ;
-        if (documentRo.getPayloadVersion() == null) {
-            documentVersion = createNewDocumentVersion(document, payload);
-        } else {
-            documentVersion = document.getDocumentVersions().stream()
-                    .filter(dv -> dv.getVersion() == documentRo.getPayloadVersion())
-                    .findFirst().orElse(null);
-            if (documentVersion == null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionNotFound", "Document version not found");
-            }
-            documentVersion.setContent(payload);
-        }
-        return documentVersion;
-
+        // create new version to document or update existing version
+        return documentRo.getPayloadVersion() == null ?
+                createNewDocumentVersion(document, payload) :
+                updatedDocumentVersion(document, payload, documentRo.getPayloadVersion());
     }
 
-    public DBDocumentVersion createNewDocumentVersion(DBDocument document, byte[] payload) {
+    /**
+     * Method sets new payload to the existing documentVersion with the given version and loges the event to documentVersion
+     * event list. The method returns the updated document version.
+     *
+     * @param document document to update
+     * @param payload  new payload
+     * @param version  version of the document to update
+     */
+    protected DBDocumentVersion updatedDocumentVersion(DBDocument document, byte[] payload, int version) {
+        DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
+                .filter(dv -> dv.getVersion() == version)
+                .findFirst().orElse(null);
+        if (documentVersion == null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND);
+        }
+        documentVersion.setContent(payload);
+
+        DBDocumentVersionEvent event = documentVersionService.createDocumentVersionEvent(
+                DocumentVersionEventType.UPDATE, DocumentVersionStatusType.DRAFT, EventSourceType.UI, null);
+        documentVersion.addNewDocumentVersionEvent(event);
+        return documentVersion;
+    }
+
+    protected DBDocumentVersion createNewDocumentVersion(DBDocument document, byte[] payload) {
         // create new version to document
         int version = document.getDocumentVersions().stream().mapToInt(DBDocumentVersion::getVersion)
                 .max().orElse(0);
@@ -550,6 +563,7 @@ public class UIDocumentService {
                     storeResourcePayload(resource, document, documentRo)
                     : storeSubresourcePayload(subresource, resource, document, documentRo);
             returnDocVersion = docVersion.getVersion();
+
         }
 
         if (isDocumentPropertiesChanged(documentRo)) {
@@ -799,9 +813,8 @@ public class UIDocumentService {
         docConfigRo.setPublishedVersion(document.getCurrentVersion());
         docConfigRo.setName(document.getName());
         // set list of versions
-        document.getDocumentVersions().forEach(dv -> {
-            docConfigRo.getAllVersions().add(dv.getVersion());
-        });
+        document.getDocumentVersions().forEach(dv ->
+            docConfigRo.getAllVersions().add(dv.getVersion()));
         documentRo.setDocumentConfiguration(docConfigRo);
 
         document.getDocumentVersions().forEach(dv -> {
@@ -829,17 +842,48 @@ public class UIDocumentService {
             documentRo.setPayload(new String(version.getContent()));
             documentRo.setDocumentVersionStatus(version.getStatus());
             // set ven
-            version.getDocumentVersionEvents().stream().forEach(e -> {
-                DocumentVersionEventRO eventRo = new DocumentVersionEventRO();
-                eventRo.setEventType(e.getEventType());
-                eventRo.setEventOn(e.getEventOn());
-                eventRo.setUsername(e.getUsername());
-                eventRo.setEventSourceType(e.getEventSourceType());
-                eventRo.setDetails(e.getDetails());
-                documentRo.addDocumentVersionEvent(eventRo);
-            });
+            version.getDocumentVersionEvents().stream().forEach(e ->
+                    documentRo.addDocumentVersionEvent(
+                            conversionService.convert(e, DocumentVersionEventRO.class))
+            );
         }
         return documentRo;
+    }
+
+    /**
+     * Method validates all document versions and updates version in review process
+     * to NON REVIEW status. The change is logged as new event on version list.
+     *
+     * @param document
+     */
+    public void updateToNonReviewStatuses(DBDocument document) {
+        updateDocumentVersionStatus(document, DocumentVersionEventType.SETTINGS_CHANGE,
+                REVIEW_STATUSES,
+                DocumentVersionStatusType.DRAFT);
+    }
+
+    /*
+     * Method updates the document version status for the given document. The method updates the status for all
+     * document versions that have the old status. The change is logged as new event on version list.
+     */
+    private void updateDocumentVersionStatus(DBDocument document, DocumentVersionEventType eventType,
+                                             List<DocumentVersionStatusType> oldStatus,
+                                             DocumentVersionStatusType newStatus) {
+        if (document == null) {
+            LOG.debug("DBDocument  is null, cannot update document version status");
+            return;
+        }
+        List<DBDocumentVersion> documentVersions = document.getDocumentVersions();
+        documentVersions.forEach(version -> {
+            if (oldStatus.contains(version.getStatus())) {
+                DBDocumentVersionEvent docEvent = documentVersionService.createDocumentVersionEvent(eventType,
+                        newStatus,
+                        EventSourceType.UI,
+                        null);
+                version.addNewDocumentVersionEvent(docEvent);
+                version.setStatus(newStatus);
+            }
+        });
     }
 
 }

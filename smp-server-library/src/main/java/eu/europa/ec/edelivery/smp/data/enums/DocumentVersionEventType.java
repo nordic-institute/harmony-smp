@@ -15,5 +15,6 @@ public enum DocumentVersionEventType {
     RETIRE,
     APPROVE,
     REJECT,
-    ERROR
+    ERROR,
+    SETTINGS_CHANGE,
 }

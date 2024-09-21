@@ -25,6 +25,9 @@ import {
   WindowSpinnerService
 } from "../../../common/services/window-spinner.service";
 import {EditResourceController} from "../edit-resource.controller";
+import {
+  ConfirmationDialogComponent
+} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 
 @Component({
@@ -172,5 +175,31 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
   public onResetButtonClicked() {
     this.resourceForm.reset(this._resource);
+  }
+
+  async onReviewEnabledChanged(event: any) {
+    let newReviewEnabled: boolean = event.target.checked;
+    let showWarning: boolean = this._resource?.reviewEnabled && !newReviewEnabled;
+
+
+    if (showWarning) {
+      this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: await lastValueFrom(this.translateService.get("resource.details.panel.review.disabled.confirmation.dialog.title")),
+          description: await lastValueFrom(this.translateService.get("resource.details.panel.review.disabled.confirmation.dialog.description"))
+        }
+      }).afterClosed().subscribe(result => {
+        if (!result) {
+          // prevent default does not work in case of "async"
+          this.resourceForm.controls['reviewEnabled'].setValue(true);
+          this.resourceForm.controls['reviewEnabled'].markAsPristine();
+        }
+      });
+    }
+  }
+
+  get showReviewEnabledHint(): boolean {
+    return this._resource?.reviewEnabled === true
+      && this.resourceForm.get('reviewEnabled').value !== true;
   }
 }

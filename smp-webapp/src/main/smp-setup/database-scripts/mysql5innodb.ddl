@@ -243,6 +243,7 @@
         EVENT_ON datetime comment 'Date time of the event',
         EVENT_SOURCE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Event source UI, API',
         EVENT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Document version event type',
+        EVENT_STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Document version event type',
         EVENT_BY_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'username identifier of the user who triggered the event',
         FK_DOCUMENT_VERSION_ID bigint,
         primary key (ID)

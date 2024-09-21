@@ -4,7 +4,9 @@ import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
-import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
 import {MatTableDataSource} from "@angular/material/table";
@@ -24,7 +26,7 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   @ViewChild("resourcePaginator") paginator: MatPaginator;
 
   constructor(private editResourceController: EditResourceController) {
-    this.dataSource  = editResourceController;
+    this.dataSource = editResourceController;
   }
 
   ngOnInit() {
@@ -37,7 +39,8 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     }
   }
 
-  ngAfterViewInit():void {
+
+  ngAfterViewInit(): void {
     // bind data to resource controller
     this.dataSource.paginator = this.paginator;
   }
@@ -50,6 +53,7 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   get hasResources(): boolean {
     return this.editResourceController.data?.length > 0;
   }
+
   get domainList(): DomainRo[] {
     return this.editResourceController.domainList;
   };
