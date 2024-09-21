@@ -53,7 +53,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
 
     private static final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(IDENTIFIER_SCHEME);
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
-    private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
+    private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "Resource-Admin";
     private static final String HTTP_HEADER_KEY_RESOURCE_GROUP = "Resource-Group";
     private static final String HTTP_HEADER_KEY_RESOURCE_VISIBILITY = "Resource-Visibility";
     private static final String OTHER_OWNER_NAME = "CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08";
@@ -64,7 +64,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     }
 
     @Test
-    void adminCanCreateServiceGroupNoDomain() throws Exception {
+    void adminCanCreateResourceNoDomain() throws Exception {
         mvc.perform(put(URL_PATH)
                         .with(ADMIN_CREDENTIALS)
                         .contentType(APPLICATION_XML_VALUE)
@@ -85,7 +85,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
             "'Set owner username: OK', 200, test_pat_hashed_pass, 123456,'test_user_hashed_pass'",
             "'Set owner user, but admin updates: Fail', 401, test_pat_hashed_pass, 123456,'pat_smp_admin'",
     })
-    void groupAdminCanUpdateServiceGroupNoDomain(String desc, int expectedStatus,
+    void groupAdminCanUpdateResourceNoDomain(String desc, int expectedStatus,
                                                  String resourceAdminATId, String groupResourceATSecret,
                                                  String resourceOwnerId) throws Exception {
         LOG.info(desc);
@@ -110,7 +110,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     }
 
     @Test
-    void addServiceGroupWithUTF8() throws Exception {
+    void addResourceWithUTF8() throws Exception {
         String resourceLocation = "/input/ServiceGroupWithUTF8.xml";
         LOG.info(resourceLocation);
 
@@ -128,7 +128,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     }
 
     @Test
-    void anonymousUserCannotCreateServiceGroup() throws Exception {
+    void anonymousUserCannotCreateResource() throws Exception {
         mvc.perform(put(URL_PATH)
                         .contentType(APPLICATION_XML_VALUE)
                         .content(SERVICE_GROUP_INPUT_BODY))
@@ -161,7 +161,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     }
 
     @Test
-    void creatingServiceGroupUnderBadFormattedDomainReturnsBadRequestNoDomain() throws Exception {
+    void creatingResourceUnderBadFormattedDomainReturnsBadRequestNoDomain() throws Exception {
         mvc.perform(put(URL_PATH)
                         .with(ADMIN_CREDENTIALS)
                         .contentType(APPLICATION_XML_VALUE)
@@ -172,7 +172,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     }
 
     @Test
-    void creatingServiceGroupUnderNotExistingDomainReturnsBadRequestNoDomain() throws Exception {
+    void creatingResourceUnderNotExistingDomainReturnsBadRequestNoDomain() throws Exception {
         mvc.perform(put(URL_PATH)
                         .with(ADMIN_CREDENTIALS)
                         .contentType(APPLICATION_XML_VALUE)
@@ -183,7 +183,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     }
 
     @Test
-    void adminCanAssignNewServiceGroupToOtherOwnerNoDomain() throws Exception {
+    void adminCanAssignNewResourceToOtherOwnerNoDomain() throws Exception {
         mvc.perform(put(URL_PATH)
                         .with(ADMIN_CREDENTIALS)
                         .contentType(APPLICATION_XML_VALUE)
@@ -198,7 +198,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
             "Existing group:,'domain group',201",
             "Existing group 2:,'Third group',201",
             "Not authorized for domain:,'Second group',401",
-            "Not authorized for non existing domain:,'Not exists group',401"})
+            "Not authorized for non existing domain:,'Not exists group',404"})
     void createResourceForGroup(String testDesc, String groupName, int httpCode) throws Exception {
 
         LOG.info(testDesc);

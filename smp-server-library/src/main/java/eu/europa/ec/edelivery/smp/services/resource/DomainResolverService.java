@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,19 +20,27 @@ package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
+import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_DOMAIN_CODE;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 
 /**
@@ -49,10 +57,12 @@ public class DomainResolverService {
      */
     public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
     final DomainDao domainDao;
+    final GroupDao groupDao;
     final ConfigurationService configurationService;
 
-    public DomainResolverService(DomainDao domainDao, ConfigurationService configurationService) {
+    public DomainResolverService(DomainDao domainDao, ConfigurationService configurationService, GroupDao groupDao) {
         this.domainDao = domainDao;
+        this.groupDao = groupDao;
         this.configurationService = configurationService;
     }
 
@@ -125,5 +135,54 @@ public class DomainResolverService {
         }
         // get domain by code
         return domainDao.getDomainByCode(domain);
+    }
+
+
+    /**
+     * Method resolves the group for the given domain, admin user and group name.
+     * If the group name is null/not given, the first group is returned. If the group name is provided
+     * but the user is not admin for the group, the exception is thrown.
+     *
+     * @param user        admin user creating the resource
+     * @param domain      domain where the resource is created
+     * @param domainGroup group name
+     * @return DBGroup for the given domain, user and group name.
+     * @throws SMPRuntimeException if the user is not admin authorized to create the resource for the given group/domain
+     */
+    public List<DBGroup> resolveGroup(DBUser user, DBDomain domain, String domainGroup) {
+        String userInfo = EntityLoggingUtils.entityToString(user, EntityLoggingUtils.NULL_USER);
+        LOG.debug("Resolve group for domain [{}] and user [{}] and group [{}]", domain.getDomainCode(),
+                userInfo,
+                domainGroup);
+        if (user == null) {
+            LOG.debug("User is null, return null");
+            return Collections.emptyList();
+        }
+
+        String username = user.getUsername();
+        String domainCode = domain.getDomainCode();
+        // return all groups for domain. groups will be filtered on
+        // authorization for action step
+        List<DBGroup> authorizedGroup = groupDao.getAllGroupsForDomain(domain);
+
+
+        if (StringUtils.isBlank(domainGroup)) {
+            // if no group is provided, return the first group
+            LOG.debug("No group is provided, can not determine the group, return al domain authorized groups");
+            return authorizedGroup;
+        }
+
+        if (authorizedGroup.stream().filter(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup)).count() == 0) {
+            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, domainCode);
+        }
+
+        DBGroup group = authorizedGroup.stream()
+                .filter(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup))
+                .findFirst()
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
+                        "User [" + username + "] is not authorized for group ["
+                                + domainGroup + "] in domain [" + domainCode + "]"));
+        return Collections.singletonList(group);
+
     }
 }

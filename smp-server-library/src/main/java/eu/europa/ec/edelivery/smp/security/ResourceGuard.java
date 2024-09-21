@@ -47,9 +47,9 @@ public class ResourceGuard {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceGuard.class);
     private static final String LOG_NOT_LOGGED_IN = "Anonymous users are not permitted to execute action [{}]!";
-    DomainMemberDao domainMemberDao;
-    GroupMemberDao groupMemberDao;
-    ResourceMemberDao resourceMemberDao;
+    private DomainMemberDao domainMemberDao;
+    private GroupMemberDao groupMemberDao;
+    private ResourceMemberDao resourceMemberDao;
 
     public ResourceGuard(DomainMemberDao domainMemberDao, GroupMemberDao groupMemberDao, ResourceMemberDao resourceMemberDao) {
         this.domainMemberDao = domainMemberDao;

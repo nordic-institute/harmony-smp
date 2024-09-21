@@ -140,9 +140,8 @@ public class ResourceResolverService {
             }
             resource = createNewResource(resourceId, resourceDef, domain);
             // determine the group for the resource
-            DBGroup group = resolveResourceGroup(user.getUser(), domain,
+            DBGroup group = resolveAdminResourceGroup(user.getUser(), domain,
                     trimToNull(resourceRequest.getResourceGroupParameter()));
-
             resource.setVisibility(resourceRequest.getResourceVisibilityParameter());
             resource.setGroup(group);
         }
@@ -304,7 +303,7 @@ public class ResourceResolverService {
      * @return DBGroup for the given domain, user and group name.
      * @throws SMPRuntimeException if the user is not admin authorized to create the resource for the given group/domain
      */
-    protected DBGroup resolveResourceGroup(DBUser user, DBDomain domain, String domainGroup) {
+    protected DBGroup resolveAdminResourceGroup(DBUser user, DBDomain domain, String domainGroup) {
         LOG.debug("Resolve group for domain [{}] and user [{}] and group [{}]", domain.getDomainCode(),
                 user.getUsername(),
                 domainGroup);

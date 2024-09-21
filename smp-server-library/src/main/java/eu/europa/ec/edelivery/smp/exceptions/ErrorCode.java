@@ -41,6 +41,7 @@ public enum ErrorCode {
     NO_DOMAIN (500,"SMP:110",ErrorBusinessCode.TECHNICAL, "No domain configured on SMP, at least one domain is mandatory!"),
     DOMAIN_NOT_EXISTS(404,"SMP:111",ErrorBusinessCode.NOT_FOUND, "Invalid domain '%s'!"),
     INVALID_DOMAIN_CODE(400,"SMP:112",ErrorBusinessCode.FORMAT_ERROR,"Provided Domain Code '%s' does not match required pattern: '%s'"),
+    GROUP_NOT_EXISTS(404,"SMP:111",ErrorBusinessCode.NOT_FOUND, "Invalid domain '%s'!"),
     ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY(500,"SMP:113",ErrorBusinessCode.TECHNICAL,"More than one domain entry  (domain: '%s') is defined in database!"),
     MISSING_DOMAIN(400,"SMP:114",ErrorBusinessCode.MISSING_FIELD,"More than one domain registered on SMP. The domain must be defined!"),
     ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY(500,"SMP:115",ErrorBusinessCode.TECHNICAL,"More than one group for domain entry  (group: '%s',  domain: '%s') is defined in database!"),
