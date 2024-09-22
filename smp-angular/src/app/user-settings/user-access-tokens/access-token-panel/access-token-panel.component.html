@@ -45,13 +45,13 @@
       <mat-form-field appearance="fill" style="flex-grow: 1">
         <mat-label>{{ "access.token.panel.label.validity.dates" | translate }}</mat-label>
         <mat-date-range-input [rangePicker]="picker" [min]="minSelectableDate" >
-          <input matStartDate formControlName="activeFrom" placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}">
-          <input matEndDate formControlName="expireOn" placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}">
+          <input matStartDate formControlName="activeFrom" placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}" required>
+          <input matEndDate formControlName="expireOn" placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}" required>
         </mat-date-range-input>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
-        <smp-field-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">{{ "access.token.panel.error.invalid.start.date" | translate }}</smp-field-error >
-        <smp-field-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">{{ "access.token.panel.error.invalid.end.date" | translate }}</smp-field-error >
+        <smp-field-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')  || credentialForm.controls.activeFrom.hasError('required')">{{ "access.token.panel.error.invalid.start.date" | translate }}</smp-field-error >
+        <smp-field-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid') || credentialForm.controls.expireOn.hasError('required')">{{ "access.token.panel.error.invalid.end.date" | translate }}</smp-field-error >
       </mat-form-field>
     </div>
     <div style="display: flex;flex-flow: row;">

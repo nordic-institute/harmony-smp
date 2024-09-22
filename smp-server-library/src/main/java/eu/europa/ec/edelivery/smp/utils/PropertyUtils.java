@@ -27,7 +27,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.event.Level;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.io.File;
@@ -35,6 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -196,8 +197,8 @@ public class PropertyUtils {
         if (propOpt.isPresent()) {
             return propOpt.get().isEncrypted() || property.toLowerCase().contains(".password.decrypted");
         }
-        LOG.warn("Database property [{}] is not recognized by the SMP!", property);
-        return false;
+        LOG.debug("Database property [{}] is not recognized by the SMP. Basic mask rule applied for masking!", property);
+        return StringUtils.contains(property.toLowerCase(), "passw");
     }
 
     /**
@@ -213,5 +214,37 @@ public class PropertyUtils {
 
     public static String getMaskedData(String value) {
         return isNotBlank(value) ? MASKED_VALUE : "Null/Empty/Blank";
+    }
+
+    public static  void printProperties(Properties properties, Level loggingLevel) {
+        if (properties != null) {
+            LOG.debug("------ Print properties ------");
+            properties.entrySet().stream().forEach(e ->
+                    printProperty((String) e.getKey(), (String) e.getValue(), loggingLevel)
+            );
+        }
+    }
+
+    public static void printProperty(String key, String value, Level loggingLevel) {
+        String logValue = "\t[" + key + "] --> [" + getMaskedData(key, value) + "]";
+        switch (loggingLevel) {
+            case TRACE:
+                LOG.trace(logValue);
+                break;
+            case DEBUG:
+                LOG.debug(logValue);
+                break;
+            case INFO:
+                LOG.info(logValue);
+                break;
+            case WARN:
+                LOG.warn(logValue);
+                break;
+            case ERROR:
+                LOG.error(logValue);
+                break;
+            default:
+                LOG.debug(logValue);
+        }
     }
 }

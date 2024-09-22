@@ -15,8 +15,6 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 
-  dateFormat: string = 'yyyy-MM-dd'
-
   _credential: CredentialRo;
   credentialForm: FormGroup;
   _expanded: boolean = false;
