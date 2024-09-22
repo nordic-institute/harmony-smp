@@ -11,13 +11,13 @@ import {
 } from "@angular/forms";
 import {
   AlertMessageService
-} from "../../../common/alert-message/alert-message.service";
-import {EntityStatus} from "../../../common/enums/entity-status.enum";
+} from "../../alert-message/alert-message.service";
+import {EntityStatus} from "../../enums/entity-status.enum";
 import {SmpConstants} from "../../../smp.constants";
 import {HttpClient} from "@angular/common/http";
 import {
   HttpErrorHandlerService
-} from "../../../common/error/http-error-handler.service";
+} from "../../error/http-error-handler.service";
 import {
   PropertyRo
 } from "../../../system-settings/admin-properties/property-ro.model";
@@ -57,7 +57,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
     this.editMode = data.edit;
     this.propertyType = data.propertyType;
     this.propertyType = !data.propertyType ? PropertySourceEnum.SYSTEM : data.propertyType;
-    (async () => await this.updateFormTitle()) ();
+    (async () => await this.updateFormTitle())();
 
     this.current = this.editMode
       ? {
@@ -80,13 +80,12 @@ export class PropertyDetailsDialogComponent implements OnInit {
       'value': new UntypedFormControl({value: ''}),
       'valuePattern': new UntypedFormControl({value: ''}),
       'errorMessage': new UntypedFormControl({value: ''}),
-      'systemDefault': new UntypedFormControl({value: 'true'}),
+      'systemDefault': new UntypedFormControl({value: false}),
     });
 
     this.propertyForm.controls['property'].setValue(this.current.property);
     this.propertyForm.controls['desc'].setValue(this.current.desc);
     this.propertyForm.controls['type'].setValue(this.current.type);
-    this.propertyForm.controls['value'].setValue(this.valueFromPropertyStringValue(this.current.value, this.current.type));
     this.propertyForm.controls['valuePattern'].setValue(this.current.valuePattern);
     this.propertyForm.controls['systemDefault'].setValue(this.current.systemDefault);
 
@@ -96,8 +95,8 @@ export class PropertyDetailsDialogComponent implements OnInit {
 
   async updateFormTitle() {
     this.formTitle = this.editMode
-        ? await lastValueFrom(this.translateService.get("property.details.dialog.title.edit.mode", {type: this.capitalize(this.propertyType)}))
-        : await lastValueFrom(this.translateService.get("property.details.dialog.title.new.mode", {type: this.capitalize(this.propertyType)}));
+      ? await lastValueFrom(this.translateService.get("property.details.dialog.title.edit.mode", {type: this.capitalize(this.propertyType)}))
+      : await lastValueFrom(this.translateService.get("property.details.dialog.title.new.mode", {type: this.capitalize(this.propertyType)}));
   }
 
   ngOnInit() {
@@ -123,7 +122,6 @@ export class PropertyDetailsDialogComponent implements OnInit {
     // if system property validate property
     let validationObservable = this.http
       .post<PropertyValidationRo>(SmpConstants.REST_INTERNAL_PROPERTY_VALIDATE, request);
-
 
     this.showSpinner = true;
 
@@ -164,25 +162,32 @@ export class PropertyDetailsDialogComponent implements OnInit {
 
   /**
    * Method casts string value to correct property type for dialog component used for editing.
-   * @param value
-   * @param propertyType
+   * At the moment only BOOLEAN needs to be updated, other types are returned as is.
+   * @param value - string value
+   * @param propertyType - property type
    */
-  public valueFromPropertyStringValue(value: string, propertyType: string) {
-    switch (propertyType) {
-      case 'BOOLEAN':
-        return value === 'true';
-      default:
-        return value;
+  public valueFromPropertyStringValue(value: any, propertyType: string) {
+
+    if (propertyType === 'BOOLEAN') {
+      // make sure that the value is lower case string!
+      const valToString = value?.toString().toLowerCase();
+      return valToString === 'true' || valToString === '1' || valToString === 'yes';
     }
+    return value;
   }
 
+  /**
+   * Method casts value to string for property value. At the moment only BOOLEAN needs to be updated.
+   * @param value - value
+   * @param propertyType - property type
+   */
   public valueToPropertyStringValue(value: string, propertyType: string) {
-    switch (propertyType) {
-      case 'BOOLEAN':
-        return value === 'true';
-      default:
-        return value;
+    if (propertyType === 'BOOLEAN') {
+      // make sure that the value is lower case string!
+      const valToString = value?.toString().toLowerCase();
+      return valToString === 'true' || valToString === '1' || valToString === 'yes' ? 'true' : 'false';
     }
+    return value;
   }
 
   getInputType(propertyType: string) {
@@ -235,7 +240,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
 
   public getCurrent(): PropertyRo {
     this.current.status = EntityStatus.UPDATED;
-    this.current.value = this.propertyForm.value['value'];
+    this.current.value = this.valueToPropertyStringValue(this.propertyForm.value['value'], this.current.type);
     this.current.systemDefault = this.propertyForm.value['systemDefault'];
     return this.current;
   }
@@ -245,21 +250,22 @@ export class PropertyDetailsDialogComponent implements OnInit {
   }
 
   get isSystemDefault(): boolean {
-    let systemDefault = this.propertyForm.value['systemDefault'];
-    return systemDefault;
+    return this.propertyForm.value['systemDefault'];
   }
 
   /**
    * Method updates the state of the value field based on the system default checkbox.
    */
   updateValueState(): void {
+    let value;
     if (!this.isDomainProperty || !this.isSystemDefault) {
+      value = this.valueFromPropertyStringValue(this.current.value, this.current.type);
       this.propertyForm.controls['value'].enable();
-      this.propertyForm.controls['value'].setValue(this.current.value);
     } else {
-      this.propertyForm.controls['value'].setValue(this.current.systemDefaultValue);
+      value = this.valueFromPropertyStringValue(this.current.systemDefaultValue, this.current.type);
       this.propertyForm.controls['value'].disable();
     }
+    this.propertyForm.controls['value'].setValue(value);
   }
 
   get isDomainProperty(): boolean {
