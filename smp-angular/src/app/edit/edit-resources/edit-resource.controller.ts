@@ -13,6 +13,7 @@ import {
   AlertMessageService
 } from "../../common/alert-message/alert-message.service";
 import {MatTableDataSource} from "@angular/material/table";
+import {SecurityEventService} from "../../security/security-event.service";
 
 /**
  * The purpose of the EditResourceController is to  control the data of edit resource components when navigating
@@ -43,8 +44,30 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     private groupService: EditGroupService,
     private resourceService: EditResourceService,
     private alertService: AlertMessageService,
+    private securityEventService: SecurityEventService
   ) {
     super();
+    this.securityEventService.onLogoutSuccessEvent().subscribe(value => {
+      this.clearSelectedData();
+    });
+    this.securityEventService.onLoginSuccessEvent().subscribe(value => {
+      this.clearSelectedData();
+    });
+  }
+
+
+  private clearSelectedData() {
+    this.domainList = [];
+    this.groupList = [];
+    this._selectedDomain = null;
+    this._selectedGroup = null;
+    this._selectedResource = null;
+    this._selectedDomainResourceDefs = [];
+    this.pageIndex = 0;
+    this.pageSize = 10;
+    this.resourcesFilter = {};
+    this.isLoadingResults = false;
+    super.data = [];
   }
 
   get selectedDomain(): DomainRo {

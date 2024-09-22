@@ -87,7 +87,6 @@ public class UIResourceService {
     private final DocumentVersionService documentVersionService;
 
 
-
     public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao,
                              DomainResourceDefDao domainResourceDefDao, UserDao userDao, GroupDao groupDao,
                              IdentifierService identifierService,
@@ -294,10 +293,22 @@ public class UIResourceService {
         DBResource resource = resourceDao.find(resourceId);
         resource.setVisibility(resourceRO.getVisibility());
         if (resourceRO.isReviewEnabled() != null) {
+            Boolean newValue = isTrue(resourceRO.isReviewEnabled());
+            Boolean oldValue = isTrue(resource.isReviewEnabled());
+            // update resource review enabled in case if it was null before
+            resource.setReviewEnabled(newValue);
+            // check if new status is disabled  and changed
+            if (oldValue != newValue && !newValue) {
+                // update all document versions to non review status
+                uiDocumentService.updateToNonReviewStatuses(resource.getDocument());
+                // update statuses for all subresources
+                resource.getSubresources().stream().forEach(subResource ->
+                    uiDocumentService.updateToNonReviewStatuses(subResource.getDocument()));
+            }
             resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
         }
         ResourceRO resourceROResult = conversionService.convert(resource, ResourceRO.class);
-        if (StringUtils.isNotBlank(resourceRO.getResourceId())){
+        if (StringUtils.isNotBlank(resourceRO.getResourceId())) {
             // return the same encrypted id so the UI can use update old resource
             resourceROResult.setResourceId(resourceRO.getResourceId());
         }

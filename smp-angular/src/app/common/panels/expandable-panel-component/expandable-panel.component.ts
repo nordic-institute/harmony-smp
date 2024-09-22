@@ -77,7 +77,7 @@ export class ExpandablePanelComponent implements AfterViewInit {
   }
 
   getButtonClass(index: number) {
-    return index === this.selectedIndex ? 'mat-raised-button' : 'mat-raised-button button-deselected';
+    return index === this.selectedIndex ? 'button-selected' : 'button-deselected';
   }
 
   onDoubleClick(item: ExpandableItemComponent, index: number) {

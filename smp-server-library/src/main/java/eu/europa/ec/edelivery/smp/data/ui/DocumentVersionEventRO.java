@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 
 import java.time.OffsetDateTime;
@@ -18,6 +19,7 @@ public class DocumentVersionEventRO extends BaseRO {
     private static final long serialVersionUID = 9008583888835630037L;
 
     private DocumentVersionEventType eventType = DocumentVersionEventType.CREATE;
+    private DocumentVersionStatusType documentVersionStatus = DocumentVersionStatusType.DRAFT;
     private OffsetDateTime eventOn;
     private String username;
     private EventSourceType eventSourceType = EventSourceType.OTHER;
@@ -62,5 +64,14 @@ public class DocumentVersionEventRO extends BaseRO {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+
+    public DocumentVersionStatusType getDocumentVersionStatus() {
+        return documentVersionStatus;
+    }
+
+    public void setDocumentVersionStatus(DocumentVersionStatusType status) {
+        this.documentVersionStatus = status;
     }
 }

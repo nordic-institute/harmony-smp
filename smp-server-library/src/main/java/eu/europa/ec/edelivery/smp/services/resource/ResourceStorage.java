@@ -165,9 +165,8 @@ public class ResourceStorage {
         documentProperties.put(DOCUMENT_NAME.getPropertyName(), document.getName());
         documentProperties.put(DOCUMENT_MIMETYPE.getPropertyName(), document.getMimeType());
         documentProperties.put(DOCUMENT_VERSION.getPropertyName(), document.getCurrentVersion());
-        document.getDocumentProperties().forEach(property -> {
-            documentProperties.put(property.getProperty(), property.getValue());
-        });
+        document.getDocumentProperties().forEach(property ->
+            documentProperties.put(property.getProperty(), property.getValue()));
         return documentProperties;
     }
 
@@ -202,7 +201,9 @@ public class ResourceStorage {
         document.getDocumentVersions().stream()
                 .filter(v -> v.getStatus() == DocumentVersionStatusType.PUBLISHED)
                 .forEach(v -> {v.setStatus(DocumentVersionStatusType.RETIRED);
-                    v.getDocumentVersionEvents().add(documentVersionService.createDocumentVersionEvent(DocumentVersionEventType.RETIRE, EventSourceType.REST_API, null));});
+                    v.getDocumentVersionEvents().add(documentVersionService.createDocumentVersionEvent(DocumentVersionEventType.RETIRE,
+                            DocumentVersionStatusType.RETIRED,
+                            EventSourceType.REST_API, null));});
         managedResource.getDocument().addNewDocumentVersion(version);
         return managedResource;
     }

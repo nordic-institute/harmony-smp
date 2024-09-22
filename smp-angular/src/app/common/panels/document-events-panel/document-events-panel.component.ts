@@ -62,7 +62,7 @@ import {GlobalLookups} from "../../global-lookups";
 export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
 
 
-  displayedColumns: string[] = ['date', 'eventType', 'username', 'eventSource'];
+  displayedColumns: string[] = ['date', 'eventType', 'status','username', 'eventSource'];
   private onChangeCallback: (_: any) => void = () => {
   };
   eventDataSource: MatTableDataSource<DocumentVersionEventRo> = new MatTableDataSource();
@@ -109,6 +109,7 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
     this.eventDataSource.filterPredicate = (data: DocumentVersionEventRo, filter: string) => {
       return data.eventType?.toLowerCase().includes(filter)
         || data.username?.toLowerCase().includes(filter)
+        || data.documentVersionStatus?.toLowerCase().includes(filter)
         || data.eventSourceType?.toLowerCase().includes(filter)
         || data.eventOn?.toLocaleString().toLowerCase().includes(filter);
     };

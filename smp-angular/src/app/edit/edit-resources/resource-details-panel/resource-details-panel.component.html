@@ -1,7 +1,6 @@
 <div id="edit-resource-panel" class="mat-elevation-z2">
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
-
       <button id="showResource" mat-raised-button
               color="primary"
               matTooltip="{{ 'resource.details.panel.tooltip.show.resource' | translate }}"
@@ -41,10 +40,15 @@
       >
     </mat-form-field>
     <mat-checkbox formControlName="reviewEnabled"
+                  (click)="onReviewEnabledChanged($event)"
                   matTooltip="{{ 'resource.details.panel.label.resource.review.enabled' | translate }}"
                   id="reviewEnabled_id">
       {{ "resource.details.panel.tooltip.resource.review.enabled" | translate }}
     </mat-checkbox>
+    <smp-warning-panel *ngIf="showReviewEnabledHint"
+                       type="warning"
+                       icon="warning"
+    label="{{ 'resource.details.panel.review.disabled.confirmation.dialog.description' | translate }}"></smp-warning-panel>
     <mat-form-field style="width:100%">
       <mat-label>{{ "resource.details.panel.label.resource.visibility" | translate }}</mat-label>
       <select matNativeControl formControlName="visibility"
@@ -76,5 +80,4 @@
       [label]="visibilityDescription"
     ></smp-warning-panel>
   </form>
-
 </div>

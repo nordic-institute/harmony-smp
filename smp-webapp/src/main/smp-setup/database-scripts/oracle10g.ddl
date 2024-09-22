@@ -387,6 +387,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         EVENT_ON timestamp,
         EVENT_SOURCE varchar2(255 char) not null,
         EVENT_TYPE varchar2(255 char) not null,
+        EVENT_STATUS varchar2(255 char) not null,
         EVENT_BY_USERNAME varchar2(64 char),
         FK_DOCUMENT_VERSION_ID number(19,0),
         primary key (ID)
@@ -408,6 +409,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         'Event source UI, API';
 
     comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_TYPE is
+        'Document version event type';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_STATUS is
         'Document version event type';
 
     comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_BY_USERNAME is
