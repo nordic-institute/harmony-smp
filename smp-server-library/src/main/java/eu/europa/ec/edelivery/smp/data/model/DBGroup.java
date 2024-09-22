@@ -143,11 +143,16 @@ public class DBGroup extends BaseEntity {
         return this.groupMembers;
     }
 
+    /**
+     * Print the group information. To prevent lazy initialization which throws error
+     * for detached entities, the domain prints just a domain id.
+     * @return string information of the group
+     */
     @Override
     public String toString() {
         return "DBGroup{" +
                 "id=" + id +
-                ", domain=" + domain +
+                ", domain=" + (domain != null ? domain.getId() : null) +
                 ", groupName='" + groupName + '\'' +
                 '}';
     }
@@ -155,14 +160,11 @@ public class DBGroup extends BaseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
-
         DBGroup group = (DBGroup) o;
-
         return new EqualsBuilder().appendSuper(super.equals(o))
                 .append(id, group.id)
-                .append(domain, group.domain)
+                .append(domain.id, group.domain.id) // to prevent lazy initialization
                 .append(groupName, group.groupName)
                 .append(groupDescription, group.groupDescription)
                 .append(visibility, group.visibility)
@@ -173,7 +175,7 @@ public class DBGroup extends BaseEntity {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode()).append(id)
-                .append(domain)
+                .append(domain != null ? domain.getId() : null) // to prevent lazy initialization
                 .append(groupName)
                 .toHashCode();
     }

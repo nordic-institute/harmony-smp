@@ -68,8 +68,8 @@ public class ResourceController {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceController.class);
     // set them to lower case for fast comparing with the  http headers
     private static final List<String> SUPPORTED_HEADERS = Arrays.asList(lowerCase(HTTP_PARAM_DOMAIN),
-            lowerCase(HTTP_PARAM_OWNER),
-            lowerCase(HTTP_PARAM_OWNER_OBSOLETE),
+            lowerCase(HTTP_PARAM_ADMIN),
+            lowerCase(HTTP_PARAM_ADMIN_OBSOLETE),
             lowerCase(HTTP_PARAM_RESOURCE_GROUP),
             lowerCase(HTTP_PARAM_RESOURCE_VISIBILITY),
             lowerCase(HTTP_PARAM_RESOURCE_TYPE));
@@ -131,6 +131,7 @@ public class ResourceController {
         ResourceRequest resourceRequest = fromServletRequest(httpReq, pathParameters);
         LOG.debug("Got resource request [{}]", resourceRequest);
         SMPUserDetails user = authorizeForDomain(resourceRequest);
+
         ResourceResponse resourceResponse = fromServletResponse(httpRes);
         // handle the request
         resourceService.handleRequest(user, resourceRequest, resourceResponse);
@@ -152,6 +153,8 @@ public class ResourceController {
         }
         // resolve domain and test authorization for the domain.
         domainGuard.resolveAndAuthorizeForDomain(resourceRequest, user);
+        // resolve group and test authorization for the group.
+        domainGuard.resolveAndAuthorizeForGroup(resourceRequest, user);
         return user;
     }
 

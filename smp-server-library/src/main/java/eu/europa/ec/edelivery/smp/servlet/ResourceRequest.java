@@ -20,12 +20,14 @@ package eu.europa.ec.edelivery.smp.servlet;
 
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.resource.ResolvedData;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ public class ResourceRequest {
     InputStream getInputStream;
 
     DBDomain authorizedDomain;
+    List<DBGroup> authorizedGroup = new ArrayList<>();
 
     ResolvedData resolvedData;
 
@@ -69,12 +72,12 @@ public class ResourceRequest {
     }
 
     public String getOwnerHttpParameter() {
-        String owner = getHeader(WebConstants.HTTP_PARAM_OWNER);
+        String owner = getHeader(WebConstants.HTTP_PARAM_ADMIN);
         if (StringUtils.isBlank(owner)) {
             LOG.debug("Try with obsolete owner parameter: 'ServiceGroup-Owner'");
-            owner = getHeader(WebConstants.HTTP_PARAM_OWNER_OBSOLETE);
+            owner = getHeader(WebConstants.HTTP_PARAM_ADMIN_OBSOLETE);
             if (StringUtils.isNotBlank(owner)) {
-                LOG.debug("Using obsolete owner parameter: 'ServiceGroup-Owner'. Move to new parameter: 'Resource-Owner'");
+                LOG.debug("Using obsolete owner parameter: 'ServiceGroup-Owner'. Move to new parameter: 'Resource-Admin'");
             }
         }
         return owner;
@@ -114,6 +117,10 @@ public class ResourceRequest {
 
     public void setAuthorizedDomain(DBDomain authorizedDomain) {
         this.authorizedDomain = authorizedDomain;
+    }
+
+    public List<DBGroup> getAuthorizedGroups() {
+        return authorizedGroup;
     }
 
     public InputStream getInputStream() {

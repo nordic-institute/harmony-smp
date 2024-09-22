@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -35,6 +35,8 @@ import java.io.IOException;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.generateServiceMetadata;
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBody;
+import static eu.europa.ec.edelivery.smp.server.security.SecurityConfigurationTest.PASSWORD;
+import static eu.europa.ec.edelivery.smp.server.security.SecurityConfigurationTest.TEST_USERNAME_DB_HASHED_PASS;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,10 +49,14 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
 
     private static final String IDENTIFIER_SCHEME = "ehealth-participantid-qns";
     private static final String DOCUMENT_SCHEME = "doctype";
+    public static final String GROUP_01 = "domain group";
+    public static final String GROUP_02 = "Second group";
+    public static final String GROUP_03 = "Third group";
 
 
     @BeforeEach
     public void setupController() throws IOException {
+        // for database setup check the webapp_integration_test_data.sql
         super.setup();
     }
 
@@ -68,9 +74,9 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
             "'Legacy: Set owner user, but default admin owner deletes: OK', 200, test_pat_hashed_pass, 123456, pat_smp_admin, 123456, 'test_pat_hashed_pass'",
     })
     void getPrivateSubResourcePermissions(String desc, int expectedStatus,
-                                      String resourceAdminCreateATId, String resourceCreateATSecret,
-                                      String getUserATId, String getUserPassword,
-                                      String resourceOwnerId) throws Exception {
+                                          String resourceAdminCreateATId, String resourceCreateATSecret,
+                                          String getUserATId, String getUserPassword,
+                                          String resourceOwnerId) throws Exception {
         LOG.info(desc);
 
         String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
@@ -79,7 +85,7 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(WebConstants.HTTP_PARAM_RESOURCE_VISIBILITY, VisibilityType.PRIVATE.name());
         if (StringUtils.isNotBlank(resourceOwnerId)) {
-            httpHeaders.add(WebConstants.HTTP_PARAM_OWNER, resourceOwnerId);
+            httpHeaders.add(WebConstants.HTTP_PARAM_ADMIN, resourceOwnerId);
         }
         // crate service group
         mvc.perform(put(URL_PATH)
@@ -125,7 +131,7 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
         // owner headers
         HttpHeaders httpHeaders = new HttpHeaders();
         if (StringUtils.isNotBlank(resourceOwnerId)) {
-            httpHeaders.add(WebConstants.HTTP_PARAM_OWNER, resourceOwnerId);
+            httpHeaders.add(WebConstants.HTTP_PARAM_ADMIN, resourceOwnerId);
         }
         // crate service group
         mvc.perform(put(URL_PATH)
@@ -166,7 +172,7 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
         // owner headers
         HttpHeaders httpHeaders = new HttpHeaders();
         if (StringUtils.isNotBlank(resourceOwnerId)) {
-            httpHeaders.add(WebConstants.HTTP_PARAM_OWNER, resourceOwnerId);
+            httpHeaders.add(WebConstants.HTTP_PARAM_ADMIN, resourceOwnerId);
         }
         // crate service group
         mvc.perform(put(URL_PATH)
@@ -185,6 +191,92 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
         // delete subresource/service-metadata with test owner
         mvc.perform(delete(URL_DOC_PATH)
                         .with(httpBasic(deleteAdminCreateATId, deleteCreateATSecret)))
+                .andExpect(status().is(expectedStatus));
+    }
+
+    /**
+     * Test update permissions for resource with different creation parameters. The user data match
+     * the data in the database: webapp_integration_test_data.sql
+     */
+    @ParameterizedTest
+    @CsvSource({"'The right group: OK', 201, 'Third group'",
+            "'Wrong group', 401, 'domain group'",
+            "'Group not exists', 404, 'NotExits'",
+            "'If group is not given it figures it out the right group', 201, ''",
+    })
+    void createSubResourceForGroupPermissions(String desc, int expectedStatus,
+                                              String targetGroup) throws Exception {
+        LOG.info(desc);
+
+        String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
+        // owner headers and group
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(WebConstants.HTTP_PARAM_ADMIN, TEST_USERNAME_DB_HASHED_PASS);
+        httpHeaders.add(WebConstants.HTTP_PARAM_RESOURCE_GROUP, GROUP_03);
+
+        // crate service group
+        mvc.perform(put(URL_PATH)
+                        .with(ADMIN_CREDENTIALS)
+                        .headers(httpHeaders)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .content(xmlSG))
+                .andExpect(status().isCreated());
+        // add subresource/service-metadata with owner user
+        HttpHeaders httpHeadersTest = new HttpHeaders();
+        httpHeadersTest.add(WebConstants.HTTP_PARAM_RESOURCE_GROUP, targetGroup);
+        mvc.perform(put(URL_DOC_PATH)
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .headers(httpHeadersTest)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .content(xmlMD))
+                .andExpect(status().is(expectedStatus));
+    }
+
+    /**
+     * Test update permissions for resource with different creation parameters. The user data match
+     * the data in the database: webapp_integration_test_data.sql
+     */
+    @ParameterizedTest
+    @CsvSource({"'The right group: OK', 200, 'Third group'",
+            "'Wrong group not allowed', 401, 'domain group'",
+            "'Group not exists', 404, 'NotExits'",
+            "'If group is not given it figures it out the right group', 200, ''",
+    })
+    void deleteSubResourceForGroupPermissions(String desc, int expectedStatus,
+                                              String targetGroup) throws Exception {
+        LOG.info(desc);
+
+        String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
+        // owner headers
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(WebConstants.HTTP_PARAM_ADMIN, TEST_USERNAME_DB_HASHED_PASS);
+        httpHeaders.add(WebConstants.HTTP_PARAM_RESOURCE_GROUP, GROUP_03);
+        // crate service group
+        mvc.perform(put(URL_PATH)
+                        .with(ADMIN_CREDENTIALS)
+                        .headers(httpHeaders)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .content(xmlSG))
+                .andExpect(status().isCreated());
+        // add subresource/service-metadata with appropriate owner and group
+        HttpHeaders httpHeadersTestCreateSubR = new HttpHeaders();
+        httpHeadersTestCreateSubR.add(WebConstants.HTTP_PARAM_RESOURCE_GROUP, GROUP_03);
+        mvc.perform(put(URL_DOC_PATH)
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .headers(httpHeadersTestCreateSubR)
+                        .contentType(APPLICATION_XML_VALUE)
+                        .content(xmlMD))
+                .andExpect(status().isCreated());
+
+        // delete subresource/service-metadata with test owner
+        // add subresource/service-metadata with owner user
+        HttpHeaders httpHeadersTest = new HttpHeaders();
+        httpHeadersTest.add(WebConstants.HTTP_PARAM_RESOURCE_GROUP, targetGroup);
+        mvc.perform(delete(URL_DOC_PATH)
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .headers(httpHeadersTest))
                 .andExpect(status().is(expectedStatus));
     }
 
