@@ -41,6 +41,7 @@ public class DBDomainConfToDomainPropROConverter implements Converter<DBDomainCo
         target.setProperty(source.getProperty());
         target.setSystemDefault(source.isUseSystemDefault());
         target.setValue(source.getValue());
+        target.setDesc(source.getDescription());
         target.setValuePattern(enumType.getValuePattern().pattern());
         target.setType(enumType.getPropertyType().name());
         target.setSystemDefaultValue(configurationService.getDefaultDomainConfiguration(enumType));
