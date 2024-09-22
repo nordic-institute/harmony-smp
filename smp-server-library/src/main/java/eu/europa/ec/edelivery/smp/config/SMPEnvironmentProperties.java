@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,6 +28,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,7 +106,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
         classPathEnvFileProperties = readProperties(CLASSPATH_PROPERTIES, true);
         if (classPathEnvFileProperties != null) {
             LOG.debug("------ Print classPathEnvFileProperties ------");
-            classPathEnvFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
         // get init file property
@@ -113,21 +114,21 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
         extInitFileProperties = readProperties(extInitPropFilePath, false);
         if (extInitFileProperties != null) {
             LOG.debug("------ Print classPathEnvFileProperties ------");
-            extInitFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.INFO);
         }
 
         // get init file property
         extSpringBootFileProperties = readProperties(INIT_SPRINGBOOT_PROPERTIES, false);
         if (extSpringBootFileProperties != null) {
             LOG.debug("------ Print extSpringBootFileProperties ------");
-            extSpringBootFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
         String extAppFilePath = getEnvPropertyValue(CONFIGURATION_FILE);
         extEnvFileProperties = readProperties(extAppFilePath, false);
         if (extInitFileProperties != null) {
             LOG.debug("------ Print extInitFileProperties ------");
-            extEnvFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.INFO);
         }
 
 
@@ -135,6 +136,39 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
         updateLogConfiguration(getEnvPropertyValue(LOG_FOLDER),
                 getEnvPropertyValue(LOG_CONFIGURATION_FILE));
     }
+
+    private void printProperties(Properties properties, Level loggingLevel) {
+        if (properties != null) {
+            LOG.debug("------ Print properties ------");
+            properties.entrySet().stream().forEach(e ->
+                    printProperty((String) e.getKey(), (String) e.getValue(), loggingLevel)
+        );
+        }
+    }
+
+    private void printProperty(String key, String value, Level loggingLevel) {
+        String logValue = "\t[" + key + "] --> [" + (key.contains("passw") ? "*******" : value) + "]";
+        switch (loggingLevel) {
+            case TRACE:
+                LOG.trace(logValue);
+                break;
+            case DEBUG:
+                LOG.debug(logValue);
+                break;
+            case INFO:
+                LOG.info(logValue);
+                break;
+            case WARN:
+                LOG.warn(logValue);
+                break;
+            case ERROR:
+                LOG.error(logValue);
+                break;
+            default:
+                LOG.debug(logValue);
+        }
+    }
+
 
     protected Properties readProperties(String path, boolean inClasspath) {
 
@@ -336,6 +370,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
 
     /**
      * For the precaution the mode must be in development mode to enable  create ddl!
+     *
      * @return
      */
     @Override
@@ -351,9 +386,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
     }
 
 
-
-
-    public boolean isSMPStartupInDevMode(){
+    public boolean isSMPStartupInDevMode() {
         return Boolean.parseBoolean(getEnvPropertyValue(SMP_MODE_DEVELOPMENT));
     }
 }

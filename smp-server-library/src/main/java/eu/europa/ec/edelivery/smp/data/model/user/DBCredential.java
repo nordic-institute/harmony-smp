@@ -36,9 +36,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Audited
 @Table(name = "SMP_CREDENTIAL",
         indexes = {
-            @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true),
-            @Index(name = "SMP_CRD_USER_NAME_RESET_IDX", columnList = "RESET_TOKEN, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true)
-        })
+            @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true)
+})
 @org.hibernate.annotations.Table(appliesTo = "SMP_CREDENTIAL", comment = "Credentials for the users")
 @NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u")
 @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
