@@ -101,7 +101,7 @@ public class DBResourceDef extends BaseEntity {
     @ColumnDescription(comment = "resources are published under url_segment.")
     String urlSegment;
 
-    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_256 )
+    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
     private String handlerImplementationName;
 
     @ManyToOne(fetch = FetchType.LAZY)

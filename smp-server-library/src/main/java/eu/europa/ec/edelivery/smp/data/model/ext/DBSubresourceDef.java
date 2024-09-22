@@ -76,7 +76,7 @@ public class DBSubresourceDef extends BaseEntity {
     @ColumnDescription(comment = "Subresources are published under url_segment. It must be unique for resource type")
     private String urlSegment;
 
-    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_256 )
+    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
     private String handlerImplementationName;
 
     @Override

@@ -68,7 +68,7 @@ public class DBExtension extends BaseEntity {
     @Column(name = "DESCRIPTION", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
     private String description;
 
-    @Column(name = "IMPLEMENTATION_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_256 )
+    @Column(name = "IMPLEMENTATION_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
     private String implementationName;
 
 
