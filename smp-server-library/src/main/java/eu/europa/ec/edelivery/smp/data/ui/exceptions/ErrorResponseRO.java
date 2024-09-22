@@ -28,6 +28,7 @@ import java.util.Objects;
  */
 public class ErrorResponseRO {
     protected String businessCode;
+    protected String errorCode;
     protected String errorDescription;
     protected String errorUniqueId;
 
@@ -67,6 +68,13 @@ public class ErrorResponseRO {
         this.errorDescription = value;
     }
 
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
 
     public String getErrorUniqueId() {
         return errorUniqueId;

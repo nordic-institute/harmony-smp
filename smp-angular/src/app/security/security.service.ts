@@ -15,6 +15,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {WindowSpinnerService} from "../common/services/window-spinner.service";
+import {SmpErrorCode} from "../common/enums/smp-error-code.enum";
 
 @Injectable()
 export class SecurityService {
@@ -122,7 +123,11 @@ export class SecurityService {
         }, // completeHandler
         error: (error: any) => {
           this.windowSpinnerService.showSpinner = false;
-          this.router.navigate(['/login']);
+          // if the error is not related to the password, we redirect to the login page
+          console
+          if (error.error?.errorCode !== SmpErrorCode.ERROR_CODE_INVALID_NEW_PASSWORD) {
+            this.router.navigate(['/login']);
+          }
           this.alertService.error(error);
         },    // errorHandler
         next: async () => {
@@ -194,13 +199,15 @@ export class SecurityService {
     let subject = new ReplaySubject<boolean>();
     if (callServer) {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
-      this.getCurrentUsernameFromServer().subscribe((user: User) => {
-        if (!user) {
-          this.clearLocalStorage();
+      this.getCurrentUsernameFromServer().subscribe({
+        next: (user: User) => {
+          if (!user) {
+            this.clearLocalStorage();
+          }
+          subject.next(user !== null);
+        }, error: (user: any) => {
+          subject.next(false);
         }
-        subject.next(user !== null);
-      }, (user: string) => {
-        subject.next(false);
       });
 
     } else {

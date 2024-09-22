@@ -34,6 +34,9 @@ public enum ErrorCode {
     UNAUTHORIZED_INVALID_IDENTIFIER(401, "SMP:005",ErrorBusinessCode.UNAUTHORIZED, "Invalid entity identifier!  User not authorized to access the entity data"),
     UNAUTHORIZED_INVALID_RESET_TOKEN(401, "SMP:006",ErrorBusinessCode.UNAUTHORIZED, "The reset token it is invalid or not active any more. Please try to reset your password again."),
 
+    USER_CHANGE_INVALID_NEW_CREDENTIAL(400, "SMP:010",ErrorBusinessCode.INVALID_INPUT_DATA, "Password change failed. %s"),
+
+
     INVALID_ENCODING (500, "SMP:100",ErrorBusinessCode.TECHNICAL, "Unsupported or invalid encoding for %s!"),
     SML_INVALID_IDENTIFIER (400,"SMP:101",ErrorBusinessCode.FORMAT_ERROR,"Malformed identifier, scheme and id should be delimited by double colon: %s "),
 
@@ -79,6 +82,7 @@ public enum ErrorCode {
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"SML integration error! Error: %s "),
     XML_SIGNING_EXCEPTION (500,"SMP:500",ErrorBusinessCode.TECHNICAL,"Error occurred while signing response!"),
+    INTERNAL_ERROR_GENERIC (500,"SMP:501",ErrorBusinessCode.TECHNICAL, "Internal error!"),
     JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class [%s]!"),
     XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for [%s].  Error: %s!"),
     INVALID_REQUEST(400,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request [%s]. Error: %s!"),
