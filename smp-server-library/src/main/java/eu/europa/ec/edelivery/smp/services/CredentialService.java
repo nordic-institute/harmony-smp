@@ -366,23 +366,24 @@ public class CredentialService {
         // retrieve user Optional credentials by username
         Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, false);
         if (!optCredential.isPresent()) {
+            LOG.warn("User [{}] does not have active reset token!", username);
             throw UNAUTHORIZED_INVALID_RESET_TOKEN;
         }
         DBCredential dbCredential = optCredential.get();
         if (!resetToken.equals(dbCredential.getResetToken())) {
-            LOG.warn("User [{}] reset token does not match the active reset token! The request is ignored", username);
-            return;
+            LOG.warn("User [{}] reset token does not match the active reset token!", username);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
         }
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
         if (pattern != null && !pattern.matcher(newPassword).matches()) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because it does not match password policy!: [{}]", username);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
+            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL, configurationService.getPasswordPolicyValidationMessage());
         }
 
         if (StringUtils.isNotBlank(dbCredential.getValue()) && BCrypt.checkpw(newPassword, dbCredential.getValue())) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", username);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
+            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL, configurationService.getPasswordPolicyValidationMessage());
         }
 
         OffsetDateTime now = OffsetDateTime.now();

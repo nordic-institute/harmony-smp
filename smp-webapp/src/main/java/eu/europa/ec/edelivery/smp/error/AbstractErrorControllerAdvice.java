@@ -21,9 +21,9 @@ package eu.europa.ec.edelivery.smp.error;
 
 import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
-import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +43,7 @@ abstract class AbstractErrorControllerAdvice {
         ResponseEntity response;
         if (runtimeException instanceof SMPRuntimeException) {
             SMPRuntimeException ex = (SMPRuntimeException)runtimeException;
-            response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()), ex.getErrorCode().getErrorBusinessCode(), ex.getMessage(), ex);
-        } else if (runtimeException instanceof SMPResponseStatusException ){
-            SMPResponseStatusException ex = (SMPResponseStatusException)runtimeException;
-            response = buildAndLog(ex.getStatus(), ex.getErrorBusinessCode(), ex.getMessage(), ex);
+            response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()), ex.getErrorCode(), ex.getMessage(), ex);
         } else if (runtimeException instanceof AuthenticationException ){
             AuthenticationException ex = (AuthenticationException)runtimeException;
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
@@ -66,7 +63,7 @@ abstract class AbstractErrorControllerAdvice {
         }
 
 
-        String errorCodeId = response.getBody() instanceof  ErrorResponseRO?
+        String errorCodeId = response.getBody()!=null && response.getBody() instanceof  ErrorResponseRO?
                 ((ErrorResponseRO) response.getBody()).getErrorUniqueId(): null;
 
 
@@ -74,5 +71,16 @@ abstract class AbstractErrorControllerAdvice {
         return response;
     }
 
-    abstract ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception);
+
+    ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
+        return buildAndLog(status, ErrorCode.INTERNAL_ERROR_GENERIC, businessCode, msg, exception);
+    }
+
+    ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, String msg, Exception exception) {
+        return buildAndLog(status, errorCode, errorCode.getErrorBusinessCode(), msg, exception);
+    }
+
+    abstract ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode,
+                                        ErrorBusinessCode businessCode,
+                                        String msg, Exception exception);
 }

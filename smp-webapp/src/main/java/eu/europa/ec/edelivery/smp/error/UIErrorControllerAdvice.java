@@ -19,9 +19,9 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
-import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,17 +47,17 @@ public class UIErrorControllerAdvice extends AbstractErrorControllerAdvice {
     @ExceptionHandler({BadCredentialsException.class,
             RuntimeException.class,
             SMPRuntimeException.class,
-            SMPResponseStatusException.class,
             AuthenticationException.class,
             BadRequestException.class})
     public ResponseEntity handleRuntimeException(RuntimeException ex) {
         return super.handleRuntimeException(ex);
     }
 
-    ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
+    protected ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, ErrorBusinessCode businessCode, String msg, Exception exception) {
 
         ResponseEntity response = ErrorResponseBuilder.status(status)
                 .businessCode(businessCode)
+                .errorCode(errorCode)
                 .errorDescription(msg)
                 .buildJSon();
 
