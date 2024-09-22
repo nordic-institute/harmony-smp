@@ -1,41 +1,52 @@
 <mat-expansion-panel [expanded]="_expanded">
-  <mat-expansion-panel-header style="height: 80px">
-    <div style="display: flex; flex-direction: column;width: 100%;margin-right: 10px;" >
-      <smp-warning-panel *ngIf="!!_credential?.expired;" class="smp-certificate-warning-panel"
+  <mat-expansion-panel-header style="height: 95px">
+    <div
+      style="display: flex; flex-direction: column;width: 100%;margin-right: 10px;">
+      <smp-warning-panel *ngIf="!!_credential?.expired;"
+                         class="smp-certificate-warning-panel"
                          [padding]="false"
                          icon="error"
                          label="{{ 'access.token.panel.label.token.expired' | translate }}">
       </smp-warning-panel>
-      <div style="display: flex; flex-direction: row; justify-content: space-between; gap: 3px; padding-left: 5px;">
-        <input matInput style="flex-grow: 1; padding: 5px 0"
-               [value]="credential?.name"
-               [disabled]="!credential?.active"
-               maxlength="255" readonly>
-        <div style="display: inline">
+      <div
+        style="display: flex; flex-direction: row; justify-content: space-between; gap: 3px; padding-left: 5px;">
+
+        <mat-form-field style="flex-grow: 1">
+          <mat-label>{{ "access.token.panel.label.name" | translate }}</mat-label>
+          <input matInput
+                 [value]="_credential.name"
+                 maxlength="255" disabled>
+          <mat-hint
+            style="display: flex; flex-direction: row; font-size: 0.8em;overflow: hidden">
+            <span
+              *ngIf="credentialForm.controls['activeFrom'].value;else elseNoDate">{{ credentialForm.controls["activeFrom"].value | date: dateFormat }}</span>
+            &nbsp;&nbsp;-&nbsp;&nbsp;
+            <span
+              *ngIf="credentialForm.controls['expireOn'].value;else elseNoDate">{{ credentialForm.controls["expireOn"].value | date: dateFormat }}</span>;
+            <span
+              style="overflow: hidden">{{ credentialForm.controls["description"].value }}</span>
+            <ng-template #elseNoDate><span>&nbsp;/&nbsp;</span></ng-template>
+          </mat-hint>
+        </mat-form-field>
+        <div style="display: inline;display: flex;flex-direction: column">
           <button id="deleteButton" mat-raised-button
                   (click)="onDeleteButtonClicked($event)"
-                  color="primary" >
+                  color="primary">
             <mat-icon>delete</mat-icon>
             <span>{{ "access.token.panel.button.delete" | translate }}</span>
           </button>
           <button id="saveButton" mat-raised-button
                   (click)="onSaveButtonClicked($event)"
                   color="primary"
-                  [disabled]="!submitButtonEnabled" >
+                  [disabled]="!submitButtonEnabled">
             <mat-icon>save</mat-icon>
             <span>{{ "access.token.panel.button.save" | translate }}</span>
           </button>
         </div>
       </div>
-      <div style="display: flex; flex-direction: row; font-size: 0.8em; ">
-        <span>{{ credentialForm.controls["activeFrom"].value | date: dateFormat }}</span>
-        &nbsp;&nbsp;-&nbsp;&nbsp;
-        <span>{{ credentialForm.controls["expireOn"].value | date: dateFormat }}</span>;
-        <span>{{ credentialForm.controls["description"].value }}</span>
-      </div>
     </div>
   </mat-expansion-panel-header>
-  <div class="smp-data-panel"  [formGroup]="credentialForm">
+  <div class="smp-data-panel" [formGroup]="credentialForm">
     <mat-form-field style="width: 100%">
       <mat-label>{{ "access.token.panel.label.description" | translate }}</mat-label>
       <input matInput
@@ -44,20 +55,30 @@
     </mat-form-field>
     <div style="display: flex;flex-flow: row wrap;">
 
-      <mat-checkbox formControlName="active" style="align-self: center; padding-bottom: 1em;padding-right: 2em">
+      <mat-checkbox formControlName="active"
+                    style="align-self: center; padding-bottom: 1em;padding-right: 2em">
         {{ "access.token.panel.label.active" | translate }}
       </mat-checkbox>
 
       <mat-form-field appearance="fill" style="flex-grow: 1">
         <mat-label>{{ "access.token.panel.label.validity.dates" | translate }}</mat-label>
-        <mat-date-range-input [rangePicker]="picker" [min]="minSelectableDate" >
-          <input matStartDate formControlName="activeFrom" placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}" required>
-          <input matEndDate formControlName="expireOn" placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}" required>
+        <mat-date-range-input [rangePicker]="picker" [min]="minSelectableDate">
+          <input matStartDate formControlName="activeFrom"
+                 placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}"
+                 required>
+          <input matEndDate formControlName="expireOn"
+                 placeholder="{{ 'access.token.panel.placeholder.end.date' | translate }}"
+                 required>
         </mat-date-range-input>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker-toggle matIconSuffix
+                               [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
-        <smp-field-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')  || credentialForm.controls.activeFrom.hasError('required')">{{ "access.token.panel.error.invalid.start.date" | translate }}</smp-field-error >
-        <smp-field-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid') || credentialForm.controls.expireOn.hasError('required')">{{ "access.token.panel.error.invalid.end.date" | translate }}</smp-field-error >
+        <smp-field-error
+          *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')  || credentialForm.controls.activeFrom.hasError('required')">{{ "access.token.panel.error.invalid.start.date" | translate }}
+        </smp-field-error>
+        <smp-field-error
+          *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid') || credentialForm.controls.expireOn.hasError('required')">{{ "access.token.panel.error.invalid.end.date" | translate }}
+        </smp-field-error>
       </mat-form-field>
     </div>
     <div style="display: flex;flex-flow: row;">
@@ -65,26 +86,33 @@
         <mat-label>{{ "access.token.panel.label.login.failed.attempts" | translate }}</mat-label>
         <input matInput
                [value]="sequentialLoginFailureCount"
-               id="sequentialTokenLoginFailureCount_id" maxlength="255" disabled readonly>
+               id="sequentialTokenLoginFailureCount_id" maxlength="255" disabled
+               readonly>
       </mat-form-field>
-      <mat-form-field style="flex-grow:2 "  floatLabel="always">
+      <mat-form-field style="flex-grow:2 " floatLabel="always">
         <mat-label>{{ "access.token.panel.label.login.last.failed.attempt" | translate }}</mat-label>
-        <input id="LastFailedAttempt_id" matInput [ngxMatDatetimePicker]="LastFailedAttemptPicker"
+        <input id="LastFailedAttempt_id" matInput
+               [ngxMatDatetimePicker]="LastFailedAttemptPicker"
                [value]="lastFailedLoginAttempt"
                placeholder="---"
                readonly>
-        <mat-datepicker-toggle matSuffix [for]="LastFailedAttemptPicker" style="visibility: hidden"></mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #LastFailedAttemptPicker [showSpinners]="true" [showSeconds]="false"
+        <mat-datepicker-toggle matSuffix [for]="LastFailedAttemptPicker"
+                               style="visibility: hidden"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #LastFailedAttemptPicker [showSpinners]="true"
+                                 [showSeconds]="false"
                                  [hideTime]="false"></ngx-mat-datetime-picker>
       </mat-form-field>
-      <mat-form-field style="flex-grow: 2"  floatLabel="always">
+      <mat-form-field style="flex-grow: 2" floatLabel="always">
         <mat-label>{{ "access.token.panel.label.suspended.until" | translate }}</mat-label>
-        <input id="SuspendedUtil_id" matInput [ngxMatDatetimePicker]="suspendedUtilPicker"
+        <input id="SuspendedUtil_id" matInput
+               [ngxMatDatetimePicker]="suspendedUtilPicker"
                [value]="suspendedUtil"
                placeholder="---"
                readonly>
-        <mat-datepicker-toggle matSuffix [for]="suspendedUtilPicker" style="visibility: hidden"></mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #suspendedUtilPicker [showSpinners]="true" [showSeconds]="false"
+        <mat-datepicker-toggle matSuffix [for]="suspendedUtilPicker"
+                               style="visibility: hidden"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #suspendedUtilPicker [showSpinners]="true"
+                                 [showSeconds]="false"
                                  [hideTime]="false"></ngx-mat-datetime-picker>
 
       </mat-form-field>

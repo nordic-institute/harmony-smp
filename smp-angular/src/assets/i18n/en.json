@@ -812,6 +812,7 @@
   "access.token.panel.button.save": "Save",
   "access.token.panel.error.invalid.end.date": "Invalid expire on date",
   "access.token.panel.error.invalid.start.date": "Invalid active from date",
+  "access.token.panel.label.name": "Name",
   "access.token.panel.label.active": "Active",
   "access.token.panel.label.description": "Description",
   "access.token.panel.label.login.failed.attempts": "Seq. failed attempts",

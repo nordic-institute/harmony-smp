@@ -28,6 +28,7 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
               private globalLookups: GlobalLookups) {
     this.credentialForm = formBuilder.group({
       // common values
+      'name': new FormControl({value: '', disabled: true}),
       'active': new FormControl({value: '', disabled: false}),
       'description': new FormControl({value: '', disabled: false}),
       'activeFrom': new FormControl({value: '', disabled: false}),
@@ -42,11 +43,13 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   @Input() set credential(value: CredentialRo) {
     this._credential = value;
     if (this._credential) {
+      this.credentialForm.controls['name'].setValue(this._credential.name);
       this.credentialForm.controls['active'].setValue(this._credential.active);
       this.credentialForm.controls['description'].setValue(this._credential.description);
       this.credentialForm.controls['activeFrom'].setValue(this._credential.activeFrom);
       this.credentialForm.controls['expireOn'].setValue(this._credential.expireOn);
     } else {
+      this.credentialForm.controls['name'].setValue(null);
       this.credentialForm.controls['active'].setValue(null);
       this.credentialForm.controls['description'].setValue(null);
       this.credentialForm.controls['activeFrom'].setValue(null);
