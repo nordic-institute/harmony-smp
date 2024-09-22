@@ -73,8 +73,13 @@ export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuar
         certificate];
     }
 
+    // show current page after update if possible or previous page
+    let pageIndex = Math.min(this.paginator.pageIndex,
+      Math.floor(this.certificates.length / this.paginator.pageSize));
+    // set data
     this.dataSource.data = this.certificates;
-    // show the last page
+    // set page
+    this.paginator.pageIndex = pageIndex;
     this.paginator.lastPage();
   }
 
