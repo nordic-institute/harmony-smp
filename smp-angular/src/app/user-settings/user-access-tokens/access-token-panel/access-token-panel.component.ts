@@ -6,6 +6,7 @@ import {
 } from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {GlobalLookups} from "../../../common/global-lookups";
 
 
 @Component({
@@ -23,7 +24,8 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   credentialForm: FormGroup;
   _expanded: boolean = false;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder,
+              private globalLookups: GlobalLookups) {
     this.credentialForm = formBuilder.group({
       // common values
       'active': new FormControl({value: '', disabled: false}),
@@ -88,5 +90,9 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
   isDirty(): boolean {
     return this.credentialForm.dirty;
+  }
+
+  get dateFormat(): string {
+    return this.globalLookups.getDateFormat();
   }
 }

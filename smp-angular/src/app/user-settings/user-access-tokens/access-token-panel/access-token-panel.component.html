@@ -1,6 +1,6 @@
 <mat-expansion-panel [expanded]="_expanded">
-  <mat-expansion-panel-header style="height: 72px">
-    <div style="display: flex; flex-direction: column;width: 100%; padding-right: 10px">
+  <mat-expansion-panel-header style="height: 80px">
+    <div style="display: flex; flex-direction: column;width: 100%;margin-right: 10px;" >
       <smp-warning-panel *ngIf="!!_credential?.expired;" class="smp-certificate-warning-panel"
                          [padding]="false"
                          icon="error"
@@ -27,9 +27,15 @@
           </button>
         </div>
       </div>
+      <div style="display: flex; flex-direction: row; font-size: 0.8em; ">
+        <span>{{ credentialForm.controls["activeFrom"].value | date: dateFormat }}</span>
+        &nbsp;&nbsp;-&nbsp;&nbsp;
+        <span>{{ credentialForm.controls["expireOn"].value | date: dateFormat }}</span>;
+        <span>{{ credentialForm.controls["description"].value }}</span>
+      </div>
     </div>
   </mat-expansion-panel-header>
-  <div class="panel smp-data-panel"  [formGroup]="credentialForm">
+  <div class="smp-data-panel"  [formGroup]="credentialForm">
     <mat-form-field style="width: 100%">
       <mat-label>{{ "access.token.panel.label.description" | translate }}</mat-label>
       <input matInput

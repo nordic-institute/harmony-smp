@@ -16,9 +16,7 @@
   @include access-token-panel.set-component-colors($theme);
   @include expandable-panel.set-component-colors($theme);
   /* shared classes*/
-  .smp-data-panel:hover {
-    background-color: smp.get-theme-color($theme, primary, 300);
-  }
+
 
   .datatable-row-odd {
     background-color: smp.get-theme-color($theme, primary, 50, 0.2) !important;

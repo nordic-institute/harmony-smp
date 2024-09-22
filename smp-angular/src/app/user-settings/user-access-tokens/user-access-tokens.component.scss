@@ -17,6 +17,7 @@
 #user-access-token-table {
   padding: 0;
   border: none;
+  background-color: transparent !important;
 }
 
 .user-access-token-table-header {
@@ -25,4 +26,5 @@
 
 .user-access-token-table-data td {
   padding: 0;
+  background-color: transparent !important;
 }
