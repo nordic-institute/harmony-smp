@@ -59,13 +59,14 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
     this.credentialForm.markAsPristine();
   }
 
-  onDeleteButtonClicked() {
-
+  onDeleteButtonClicked(event: MouseEvent) {
     this.onDeleteEvent.emit(this.credential);
+    event?.stopPropagation();
   }
 
-  onSaveButtonClicked() {
+  onSaveButtonClicked(event: MouseEvent) {
     this.onSaveEvent.emit(this.credential);
+    event?.stopPropagation();
   }
 
   onShowCertificateButtonClicked(){

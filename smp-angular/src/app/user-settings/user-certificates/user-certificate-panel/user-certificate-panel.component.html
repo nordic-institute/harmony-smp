@@ -1,4 +1,4 @@
-<mat-expansion-panel [expanded]="_expanded" [formGroup]="credentialForm" (ngSubmit)="onSaveButtonClicked()">
+<mat-expansion-panel [expanded]="_expanded" [formGroup]="credentialForm" >
   <mat-expansion-panel-header style="height: 72px">
     <div style="display: flex; flex-direction: column;width: 100%; padding-right: 10px">
       <smp-warning-panel *ngIf="_credential.certificate?.invalid;" class="smp-certificate-warning-panel"
@@ -16,13 +16,13 @@
         <div
           style="display: flex; flex-direction: row; justify-content: space-between; gap: 3px; padding-left: 5px;">
           <button id="deleteButton" mat-raised-button
-                  (click)="onDeleteButtonClicked()"
+                  (click)="onDeleteButtonClicked($event)"
                   color="primary">
             <mat-icon>delete</mat-icon>
             <span>{{ "user.certificate.panel.button.delete" | translate }}</span>
           </button>
           <button id="saveButton" mat-raised-button
-                  (click)="onSaveButtonClicked()"
+                  (click)="onSaveButtonClicked($event)"
                   color="primary"
                   [disabled]="!submitButtonEnabled">
             <mat-icon>save</mat-icon>

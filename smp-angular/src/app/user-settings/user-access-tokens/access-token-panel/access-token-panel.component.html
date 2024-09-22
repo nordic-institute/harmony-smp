@@ -13,13 +13,13 @@
                maxlength="255" readonly>
         <div style="display: inline">
           <button id="deleteButton" mat-raised-button
-                  (click)="onDeleteButtonClicked()"
+                  (click)="onDeleteButtonClicked($event)"
                   color="primary" >
             <mat-icon>delete</mat-icon>
             <span>{{ "access.token.panel.button.delete" | translate }}</span>
           </button>
           <button id="saveButton" mat-raised-button
-                  (click)="onSaveButtonClicked()"
+                  (click)="onSaveButtonClicked($event)"
                   color="primary"
                   [disabled]="!submitButtonEnabled" >
             <mat-icon>save</mat-icon>
@@ -29,7 +29,7 @@
       </div>
     </div>
   </mat-expansion-panel-header>
-  <div class="panel smp-data-panel"  [formGroup]="credentialForm" (ngSubmit)="onSaveButtonClicked()">
+  <div class="panel smp-data-panel"  [formGroup]="credentialForm">
     <mat-form-field style="width: 100%">
       <mat-label>{{ "access.token.panel.label.description" | translate }}</mat-label>
       <input matInput

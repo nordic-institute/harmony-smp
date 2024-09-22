@@ -1,5 +1,9 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup
+} from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 
@@ -11,7 +15,7 @@ import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guar
 })
 export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
-  @Output() minSelectableDate: Date = new Date();
+  @Output() minSelectableDate: Date = null;
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 
@@ -51,16 +55,17 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
     this.credentialForm.markAsPristine();
   }
 
-  onDeleteButtonClicked() {
+  onDeleteButtonClicked(event: MouseEvent) {
     this.onDeleteEvent.emit(this.credential);
+    event?.stopPropagation();
   }
 
-  onSaveButtonClicked() {
+  onSaveButtonClicked(event: MouseEvent) {
     this._credential.active = this.credentialForm.controls['active'].value
     this._credential.description = this.credentialForm.controls['description'].value
     this._credential.activeFrom = this.credentialForm.controls['activeFrom'].value
     this._credential.expireOn = this.credentialForm.controls['expireOn'].value
-
+    event?.stopPropagation();
     this.onSaveEvent.emit(this._credential);
   }
 
@@ -84,5 +89,4 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   isDirty(): boolean {
     return this.credentialForm.dirty;
   }
-
 }
