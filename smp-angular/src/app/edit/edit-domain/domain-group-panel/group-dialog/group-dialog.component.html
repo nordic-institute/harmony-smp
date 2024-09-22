@@ -7,6 +7,8 @@
       <input id="name_id" type="text" matInput formControlName="name"
              required>
       <mat-hint >{{ "group.dialog.hint.group.name" | translate }}</mat-hint>
+      <smp-field-error  *ngIf="inputDataError('name', 'maxlength')">{{ "group.dialog.error.group.name.length" | translate }}
+      </smp-field-error >
     </mat-form-field>
 
     <mat-form-field  style="width: 100%">

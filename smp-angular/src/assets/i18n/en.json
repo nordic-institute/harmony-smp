@@ -246,6 +246,7 @@
   "group.dialog.label.group.visibility": "Group visibility",
   "group.dialog.placeholder.group.visibility": "Group visibility",
   "group.dialog.tooltip.group.visibility": "Group visibility.",
+  "group.dialog.error.group.name": "Group name must not be empty and shorter than 512 characters.",
   "domain.group.button.create": "Create",
   "domain.group.button.delete": "Delete",
   "domain.group.button.edit": "Edit data",
