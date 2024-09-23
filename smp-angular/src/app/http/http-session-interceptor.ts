@@ -7,6 +7,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {
   SessionExpirationDialogComponent
 } from "../common/dialogs/session-expiration-dialog/session-expiration-dialog.component";
+import {TranslateService} from "@ngx-translate/core";
 
 /*
  * A custom interceptor that handles session expiration before it happens.
@@ -26,6 +27,8 @@ export class HttpSessionInterceptor implements HttpInterceptor {
   private timerToLogoutId: number;
 
   constructor(public securityService: SecurityService,
+              private alertService: AlertMessageService,
+              private translateService: TranslateService,
               private dialog: MatDialog) {
   }
 
@@ -33,7 +36,7 @@ export class HttpSessionInterceptor implements HttpInterceptor {
     clearTimeout(this.timerId);
     clearTimeout(this.timerToLogoutId);
     let user = this.securityService.getCurrentUser();
-    if (user && user.sessionMaxIntervalTimeoutInSeconds && user.sessionMaxIntervalTimeoutInSeconds > this.TIME_BEFORE_EXPIRATION_IN_SECONDS) {
+    if (user?.sessionMaxIntervalTimeoutInSeconds && user.sessionMaxIntervalTimeoutInSeconds > this.TIME_BEFORE_EXPIRATION_IN_SECONDS) {
       let timeout = Math.min((user.sessionMaxIntervalTimeoutInSeconds - this.TIME_BEFORE_EXPIRATION_IN_SECONDS) * 1000, this.MAXIMUM_TIMEOUT_VALUE);
       this.timerId = setTimeout(() => this.sessionExpiringSoon(user.sessionMaxIntervalTimeoutInSeconds), timeout);
     }
@@ -44,6 +47,7 @@ export class HttpSessionInterceptor implements HttpInterceptor {
     // Logout the user after the session expires
     this.timerToLogoutId = setTimeout(() => {
       this.securityService.logout();
+      this.alertService.errorForTranslation("session.alert.message.logout.expired", true);
     }, this.TIME_BEFORE_EXPIRATION_IN_SECONDS * 1000);
 
     this.dialog.open(SessionExpirationDialogComponent, {
