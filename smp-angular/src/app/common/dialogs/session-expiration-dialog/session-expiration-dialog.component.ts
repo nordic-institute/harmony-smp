@@ -24,5 +24,13 @@ export class SessionExpirationDialogComponent {
     this.securityService.logout();
     this.dialogRef.close();
   }
+
+  get sessionDurationInMinutes() {
+    return Math.floor(this.data.timeout / 60);
+  }
+
+  get sessionDurationInMinutesReminder() {
+    return this.data.timeout % 60;
+  }
 }
 
