@@ -39,7 +39,7 @@ export class GroupDialogComponent {
 
     this.groupForm = formBuilder.group({
       'name': new FormControl({value: null},  Validators.maxLength(512)),
-      'description': new FormControl({value: null}),
+      'description': new FormControl({value: null}, Validators.maxLength(1024)),
       'visibility': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
