@@ -373,39 +373,39 @@ public class TestUtilsDao {
         createUsers();
         createResourceDefinitions();
 
-        DBDomain publicDomain = createDomain("publicDomain", VisibilityType.PUBLIC);
-        DBDomain privateDomain = createDomain("privateDomain", VisibilityType.PRIVATE);
+        d1 = createDomain("publicDomain", VisibilityType.PUBLIC);
+        d2 = createDomain("privateDomain", VisibilityType.PRIVATE);
 
 
-        DBDomainResourceDef publicDomainResourceDef = registerDomainResourceDefinition(publicDomain, resourceDefSmp);
-        DBDomainResourceDef privateDomainResourceDef= registerDomainResourceDefinition(privateDomain, resourceDefSmp);
-        DBDomainResourceDef privateDomainResourceDef2= registerDomainResourceDefinition(privateDomain, resourceDefCpp);
+        domainResourceDefD1R1 = registerDomainResourceDefinition(d1, resourceDefSmp);
+        domainResourceDefD2R1 = registerDomainResourceDefinition(d2, resourceDefSmp);
+        DBDomainResourceDef privateDomainResourceDef2= registerDomainResourceDefinition(d2, resourceDefCpp);
         // membership of the domain
-        createDomainMembership(MembershipRoleType.VIEWER, user3, privateDomain);
+        createDomainMembership(MembershipRoleType.VIEWER, user3, d2);
 
-        DBGroup pubPubGroup = createGroup("pubPubGroup", VisibilityType.PUBLIC, publicDomain);
-        DBGroup pubPrivGroup = createGroup("pubPrivGroup", VisibilityType.PRIVATE, publicDomain);
-        DBGroup privPubGroup = createGroup("privPubGroup", VisibilityType.PUBLIC, privateDomain);
-        DBGroup privPrivGroup = createGroup("privPrivGroup", VisibilityType.PRIVATE, privateDomain);
+        groupD1G1  = createGroup("pubPubGroup", VisibilityType.PUBLIC, d1);
+        groupD1G2 = createGroup("pubPrivGroup", VisibilityType.PRIVATE, d1);
+        groupD2G1 = createGroup("privPubGroup", VisibilityType.PUBLIC, d2);
+        DBGroup privPrivGroup = createGroup("privPrivGroup", VisibilityType.PRIVATE, d2);
 
         createGroupMembership(MembershipRoleType.VIEWER, user4, privPrivGroup);
 
-        searchPubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPubGroup);
+        searchPubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, domainResourceDefD1R1,  groupD1G1);
         searchPubPubPubSubRes = createSubresource(searchPubPubPubRes, "subres-pubPubPub", "s-1-1-1", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPubGroup);
+        searchPubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, domainResourceDefD1R1,  groupD1G1);
         searchPubPubPrivSubRes = createSubresource(searchPubPubPrivRes, "subres-pubPubPriv", "s-2-2-2", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPrivGroup);
+        searchPubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, domainResourceDefD1R1,  groupD1G2);
         searchPubPrivPubSubRes = createSubresource(searchPubPrivPubRes, "subres-pubPrivPub", "s-3-3-3", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPrivGroup);
+        searchPubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, domainResourceDefD1R1,  groupD1G2);
         searchPubPrivPrivSubRes = createSubresource(searchPubPrivPrivRes, "subres-pubPrivPriv", "s-4-4-4", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
 
-        searchPrivPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, privateDomainResourceDef,  privPubGroup);
+        searchPrivPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, domainResourceDefD2R1,  groupD2G1);
         searchPrivPubPubSubRes = createSubresource(searchPrivPubPubRes, "subres-privPubPub", "s-5-5-5", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPrivPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, privateDomainResourceDef,  privPubGroup);
+        searchPrivPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, domainResourceDefD2R1,  groupD2G1);
         searchPrivPubPrivSubRes = createSubresource(searchPrivPubPrivRes, "subres-privPubPriv", "s-6-6-6", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPrivPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, privateDomainResourceDef,  privPrivGroup);
+        searchPrivPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, domainResourceDefD2R1,  privPrivGroup);
         searchPrivPrivPubSubRes = createSubresource(searchPrivPrivPubRes, "subres-privPrivPub", "s-7-7-7", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPrivPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, privateDomainResourceDef,  privPrivGroup);
+        searchPrivPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, domainResourceDefD2R1,  privPrivGroup);
         searchPrivPrivPrivSubRes = createSubresource(searchPrivPrivPrivRes, "subres-privPrivPriv", "s-8-8-8", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
 
 
