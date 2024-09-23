@@ -68,9 +68,12 @@ export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuar
         userAccessToken];
     }
 
+    // show current page after update if possible or previous page
+    let pageIndex = Math.min(this.paginator.pageIndex,
+      Math.floor(this.accessTokens.length / this.paginator.pageSize));
+    // set the data source
     this.dataSource.data = this.accessTokens;
-    // show the last page
-    this.paginator.lastPage();
+    this.paginator.pageIndex = pageIndex;
   }
 
   public trackListItem(index: number, credential: CredentialRo) {

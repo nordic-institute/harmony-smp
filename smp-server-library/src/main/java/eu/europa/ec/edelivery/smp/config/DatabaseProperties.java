@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
+import org.slf4j.event.Level;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Transient;
@@ -40,8 +41,6 @@ import static org.apache.commons.lang3.StringUtils.trim;
  * @since 4.2
  */
 public class DatabaseProperties extends Properties {
-    @Transient
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DatabaseProperties.class);
 
     private OffsetDateTime lastUpdate;
 
@@ -54,7 +53,7 @@ public class DatabaseProperties extends Properties {
                 String prop =trim(dc.getProperty());
                 String value =trim(dc.getValue());
                 setProperty(prop, value);
-                LOG.info("Database property: [{}] value: [{}]", prop,PropertyUtils.getMaskedData(prop, value) );
+                PropertyUtils.printProperty(prop, value, Level.INFO);
             }
             lastUpdate = (lastUpdate == null || lastUpdate.isBefore(dc.getLastUpdatedOn())) ? dc.getLastUpdatedOn() : lastUpdate;
         }

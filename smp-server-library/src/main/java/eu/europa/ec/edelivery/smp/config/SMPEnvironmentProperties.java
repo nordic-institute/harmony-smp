@@ -43,6 +43,7 @@ import java.util.Properties;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED;
+import static eu.europa.ec.edelivery.smp.utils.PropertyUtils.printProperties;
 
 /**
  * DomiSMP environment property initialization.
@@ -102,7 +103,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
      * Initialize the default properties in to the cache for faster lookup of the default values
      */
     private void init() {
-        LOG.debug("Initialize DomiSMP environment properties");
+        LOG.info("Initialize DomiSMP environment properties");
         classPathEnvFileProperties = readProperties(CLASSPATH_PROPERTIES, true);
         if (classPathEnvFileProperties != null) {
             LOG.debug("------ Print classPathEnvFileProperties ------");
@@ -114,7 +115,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
         extInitFileProperties = readProperties(extInitPropFilePath, false);
         if (extInitFileProperties != null) {
             LOG.debug("------ Print classPathEnvFileProperties ------");
-            printProperties(extInitFileProperties, Level.INFO);
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
         // get init file property
@@ -128,45 +129,17 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
         extEnvFileProperties = readProperties(extAppFilePath, false);
         if (extInitFileProperties != null) {
             LOG.debug("------ Print extInitFileProperties ------");
-            printProperties(extInitFileProperties, Level.INFO);
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
 
         // update log configuration
         updateLogConfiguration(getEnvPropertyValue(LOG_FOLDER),
                 getEnvPropertyValue(LOG_CONFIGURATION_FILE));
-    }
 
-    private void printProperties(Properties properties, Level loggingLevel) {
-        if (properties != null) {
-            LOG.debug("------ Print properties ------");
-            properties.entrySet().stream().forEach(e ->
-                    printProperty((String) e.getKey(), (String) e.getValue(), loggingLevel)
-        );
-        }
-    }
-
-    private void printProperty(String key, String value, Level loggingLevel) {
-        String logValue = "\t[" + key + "] --> [" + (key.contains("passw") ? "*******" : value) + "]";
-        switch (loggingLevel) {
-            case TRACE:
-                LOG.trace(logValue);
-                break;
-            case DEBUG:
-                LOG.debug(logValue);
-                break;
-            case INFO:
-                LOG.info(logValue);
-                break;
-            case WARN:
-                LOG.warn(logValue);
-                break;
-            case ERROR:
-                LOG.error(logValue);
-                break;
-            default:
-                LOG.debug(logValue);
-        }
+        LOG.info("DomiSMP environment properties initialized!");
+        Properties properties = getEnvProperties();
+        printProperties(properties, Level.INFO);
     }
 
 

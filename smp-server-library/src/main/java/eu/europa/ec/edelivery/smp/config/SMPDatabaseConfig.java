@@ -55,7 +55,7 @@ public class SMPDatabaseConfig {
     @Bean(name = "smpDataSource")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public DataSource getDataSource() {
-        LOG.info("Create DomiSMP datasource");
+        LOG.trace("Create DomiSMP datasource");
         return databaseConnectionBeanCreator.getDataSource();
     }
 
@@ -63,7 +63,7 @@ public class SMPDatabaseConfig {
     @Bean(name = "smpEntityManagerFactory")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory(@Qualifier("smpDataSource") DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
-        LOG.info("Create DomiSMP EntityManagerFactory");
+        LOG.trace("Create DomiSMP EntityManagerFactory");
         return databaseConnectionBeanCreator.smpEntityManagerFactory(dataSource, jpaVendorAdapter);
     }
 
@@ -71,7 +71,7 @@ public class SMPDatabaseConfig {
     @Bean(name = "transactionManager")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public PlatformTransactionManager smpTransactionManager(@Qualifier("smpEntityManagerFactory") EntityManagerFactory emf) {
-        LOG.info("Create DomiSMP TransactionManager");
+        LOG.trace("Create DomiSMP TransactionManager");
         return databaseConnectionBeanCreator.getSmpTransactionManager(emf);
     }
 

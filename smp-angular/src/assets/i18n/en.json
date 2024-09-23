@@ -812,6 +812,7 @@
   "access.token.panel.button.save": "Save",
   "access.token.panel.error.invalid.end.date": "Invalid expire on date",
   "access.token.panel.error.invalid.start.date": "Invalid active from date",
+  "access.token.panel.label.name": "Name",
   "access.token.panel.label.active": "Active",
   "access.token.panel.label.description": "Description",
   "access.token.panel.label.login.failed.attempts": "Seq. failed attempts",
@@ -833,6 +834,9 @@
   "user.access.tokens.update.confirmation.dialog.description": "Action will update access token: \"{{credentialName}}\"!<br /><br />Do you wish to continue?",
   "user.access.tokens.update.confirmation.dialog.title": "Update Access token",
   "user.access.tokens.tooltip.create": "Create new Access token",
+  "user.access.tokens.success.deleted": "Access token \"{{credentialName}}\" has been deleted!",
+  "user.access.tokens.success.updated": "Access token \"{{credentialName}}\" has been updated!",
+
 
   "user.certificate.panel.button.delete": "Delete",
   "user.certificate.panel.button.show.details": "Show Details",
@@ -846,6 +850,9 @@
   "user.certificate.panel.label.validity.dates": "Validity period of the certificate",
   "user.certificate.panel.placeholder.end.date": "End date",
   "user.certificate.panel.placeholder.start.date": "Start date",
+  "user.certificate.success.deleted": "Certificate \"{{credentialName}}\" has been deleted!",
+  "user.certificate.success.updated": "Certificate \"{{credentialName}}\" has been updated!",
+  "user.certificate.success.uploaded": "Certificate \"{{credentialName}}\" has been uploaded!",
 
   "user.certificates.button.import": "Import new certificate",
   "user.certificates.label.user.certificate": "User Certificates",
