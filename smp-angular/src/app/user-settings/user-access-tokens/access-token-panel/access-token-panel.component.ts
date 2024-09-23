@@ -1,12 +1,31 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
-  FormGroup
+  FormGroup, ValidatorFn
 } from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {GlobalLookups} from "../../../common/global-lookups";
+
+
+export function notAfterCurrentDateValidator(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const date = control.value;
+    const forbidden = date && date > Date.now();
+
+    return forbidden ? { 'matStartDateInvalid': { value: control.value } } : null;
+  };
+}
+
+export function notBeforeCurrentDateValidator(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const date = control.value;
+    const forbidden = date && date < Date.now();
+    return forbidden ? { 'matEndDateInvalid': { value: control.value } } : null;
+  };
+}
 
 
 @Component({
@@ -24,6 +43,8 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   credentialForm: FormGroup;
   _expanded: boolean = false;
 
+
+
   constructor(private formBuilder: FormBuilder,
               private globalLookups: GlobalLookups) {
     this.credentialForm = formBuilder.group({
@@ -31,9 +52,10 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
       'name': new FormControl({value: '', disabled: true}),
       'active': new FormControl({value: '', disabled: false}),
       'description': new FormControl({value: '', disabled: false}),
-      'activeFrom': new FormControl({value: '', disabled: false}),
-      'expireOn': new FormControl({value: '', disabled: false})
+      'activeFrom': new FormControl({value: '', disabled: false}, [notAfterCurrentDateValidator()]),
+      'expireOn': new FormControl({value: '', disabled: false}, [notBeforeCurrentDateValidator()])
     });
+
   }
 
   get credential(): CredentialRo {
@@ -68,8 +90,21 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   onSaveButtonClicked(event: MouseEvent) {
     this._credential.active = this.credentialForm.controls['active'].value
     this._credential.description = this.credentialForm.controls['description'].value
-    this._credential.activeFrom = this.credentialForm.controls['activeFrom'].value
-    this._credential.expireOn = this.credentialForm.controls['expireOn'].value
+    let dateFrom = this.credentialForm.controls['activeFrom'].value;
+    if (dateFrom) {
+      // make date mutable and the modification
+      dateFrom = new Date(dateFrom);
+      dateFrom.setHours(0, 0, 0, 0);
+    }
+    this._credential.activeFrom = dateFrom
+    let dateTo = this.credentialForm.controls['expireOn'].value;
+    if (dateTo) {
+      // make date mutable and the modification
+      dateTo = new Date(dateTo);
+      dateTo.setHours(0, 0, 0, 0);
+    }
+    this._credential.expireOn = dateTo
+
     event?.stopPropagation();
     this.onSaveEvent.emit(this._credential);
   }
@@ -79,7 +114,7 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   }
 
   get sequentialLoginFailureCount(): string {
-    return this._credential && this._credential.sequentialLoginFailureCount ?
+    return this._credential?.sequentialLoginFailureCount ?
       this._credential.sequentialLoginFailureCount + "" : "0";
   }
 
