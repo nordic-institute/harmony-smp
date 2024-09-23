@@ -417,7 +417,7 @@ public class CredentialService {
         if (!optCredential.isPresent()) {
             DBUser user = userDao.findUserByUsername(username).orElseThrow(() -> {
                 LOG.warn("There is no user with username [{}]!", username);
-                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD, "User not found!");
+                return new SMPRuntimeException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD, "User not found!");
             });
             LOG.info("User [{}] does not have username/password credentials. Create new credentials!", username);
             dbCredential = createCredentialsForUser(user.getId(),
