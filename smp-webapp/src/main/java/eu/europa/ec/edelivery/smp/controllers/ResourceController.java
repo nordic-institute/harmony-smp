@@ -22,7 +22,7 @@ import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.security.DomainGuard;
+import eu.europa.ec.edelivery.smp.security.DomainGroupGuard;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
@@ -74,10 +74,10 @@ public class ResourceController {
             lowerCase(HTTP_PARAM_RESOURCE_VISIBILITY),
             lowerCase(HTTP_PARAM_RESOURCE_TYPE));
     final ResourceService resourceService;
-    final DomainGuard domainGuard;
+    final DomainGroupGuard domainGuard;
 
 
-    public ResourceController(ResourceService resourceLocatorService, DomainGuard domainGuard) {
+    public ResourceController(ResourceService resourceLocatorService, DomainGroupGuard domainGuard) {
         this.resourceService = resourceLocatorService;
         this.domainGuard = domainGuard;
     }

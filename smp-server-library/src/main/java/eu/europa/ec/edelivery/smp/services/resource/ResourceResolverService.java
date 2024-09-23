@@ -34,6 +34,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.security.DomainGroupGuard;
 import eu.europa.ec.edelivery.smp.security.ResourceGuard;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
@@ -44,6 +45,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,6 +67,7 @@ public class ResourceResolverService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceResolverService.class);
 
     final ResourceGuard resourceGuard;
+    final DomainGroupGuard domainGroupGuard;
     final ConfigurationService configurationService;
     final IdentifierService identifierService;
     final DomainDao domainDao;
@@ -76,6 +79,7 @@ public class ResourceResolverService {
 
 
     public ResourceResolverService(ResourceGuard resourceGuard,
+                                      DomainGroupGuard domainGroupGuard,
                                    ConfigurationService configurationService,
                                    IdentifierService identifierService,
                                    DomainDao domainDao,
@@ -94,6 +98,7 @@ public class ResourceResolverService {
         this.resourceDefinitionDao = resourceDefinitionDao;
         this.resourceDao = resourceDao;
         this.subresourceDao = subresourceDao;
+        this.domainGroupGuard = domainGroupGuard;
     }
 
     @Transactional
@@ -144,6 +149,18 @@ public class ResourceResolverService {
                     trimToNull(resourceRequest.getResourceGroupParameter()));
             resource.setVisibility(resourceRequest.getResourceVisibilityParameter());
             resource.setGroup(group);
+        } else {
+            // initially the GroupGuard checked for all groups on the domain
+            // but now recheck if the user is authorized for the group
+            if (!domainGroupGuard.isUserAuthorizedForGroup(Collections.singletonList(resource.getGroup()),
+                    user, resourceRequest.getAction())) {
+
+                LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on group [{}] in domain [{}]",
+                        resourceRequest.getAction(),
+                        getUsername(user),
+                        resource.getGroup().getGroupName(), domain.getDomainCode());
+                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
+            }
         }
 
         locationVector.setResource(resource);
