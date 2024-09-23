@@ -67,16 +67,23 @@ public abstract class AbstractHandler implements ResourceHandlerSpi {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setValidating(true);
-        try {
-            factory.setFeature(DISALLOW_DOCTYPE_FEATURE, true);
-        } catch (ParserConfigurationException e) {
-            LOG.warn("DocumentBuilderFactory initialization error. The feature [{}] is not supported by current factory. The feature is ignored.", DISALLOW_DOCTYPE_FEATURE);
-        }
+        enableFeature(factory, DISALLOW_DOCTYPE_FEATURE);
+        enableFeature(factory, XMLConstants.FEATURE_SECURE_PROCESSING);
 
         try {
             return factory.newDocumentBuilder();
         } catch (ParserConfigurationException ex) {
             throw new CPPARuntimeException(CPPARuntimeException.ErrorCode.INITIALIZE_ERROR, "Can not create new XML Document builder! Error: [" + ExceptionUtils.getRootCauseMessage(ex) + "]", ex);
+        }
+    }
+
+    private static boolean enableFeature(DocumentBuilderFactory factory, String feature) {
+        try {
+            factory.setFeature(feature, true);
+            return true;
+        } catch (ParserConfigurationException e) {
+            LOG.warn("DocumentBuilderFactory initialization error. The feature [{}] is not supported by current factory. The feature is ignored.", feature);
+            return false;
         }
     }
 
