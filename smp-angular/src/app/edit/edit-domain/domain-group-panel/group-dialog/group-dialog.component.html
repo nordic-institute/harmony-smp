@@ -16,6 +16,8 @@
       <input id="description_id" type="text" matInput
              formControlName="description"
              >
+      <smp-field-error  *ngIf="inputDataError('description', 'maxlength')">{{ "group.dialog.error.group.description.length" | translate }}
+      </smp-field-error >
     </mat-form-field>
 
 

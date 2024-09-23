@@ -19,11 +19,14 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +144,27 @@ class ResourceDaoSearchTest extends AbstractBaseDao {
         result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser5(), null, null, null, null);
         assertEquals(4, result.intValue());
 
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "'Get all public  OK',0088:1234556-1234,test-test-test,,,2",
+            "'Search by identifier OK',0088:1234556-1234,test-test-test,0088:1234556-123,, 1",
+            "'Search by identifier partial OK',0088:1234556-1234,test-test-test,88:12,, 1",
+            "'Search by scheme partial OK',0088:1234556,test-test-test,,-test-, 1",
+            "'Search by chars OK',0088:#$%!@#$-1234,test-test-test,#$%!@#,, 1",
+            "'Search by '/' OK',0088/1234,test-test-test,88/12,, 1",
+            "'Search by '\\' OK',0088\\1234,test-test-test,88\\12,, 1",
+    })
+    void testGetSearchSlashCharacter(String testDec, String identifierValue, String identifierScheme, String searchValue, String searcScheme, int cnt) {
+        LOG.info(testDec);
+        // given
+        testUtilsDao.createResource(identifierValue,identifierScheme, VisibilityType.PUBLIC, testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1()  );
+        // then
+        List<ResourceDao.DBResourceWrapper> result = testInstance.getPublicResourcesSearch(-1, -1, null, searcScheme, searchValue, null, null);
+        assertEquals(cnt, result.size());
+        result.stream().forEach(val -> {
+            assertEquals(VisibilityType.PUBLIC, val.getDbResource().getVisibility());
+        });
     }
 
 }

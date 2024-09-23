@@ -155,8 +155,8 @@ public class ResourceDao extends BaseDao<DBResource> {
             query.setMaxResults(iPageSize);
         }
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
-        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema) ? null : StringUtils.wrapIfMissing(schema, "%"));
-        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier) ? null : StringUtils.wrapIfMissing(identifier, "%"));
+        query.setParameter(PARAM_RESOURCE_SCHEME, getNormalizedLikeParameter(schema));
+        query.setParameter(PARAM_RESOURCE_IDENTIFIER, getNormalizedLikeParameter(identifier));
         query.setParameter(PARAM_DOMAIN_CODE, StringUtils.defaultIfBlank(domainCode, null));
         query.setParameter(PARAM_DOCUMENT_TYPE, StringUtils.defaultIfBlank(documentType, null));
         List<Tuple> resultList = query.getResultList();
@@ -168,6 +168,19 @@ public class ResourceDao extends BaseDao<DBResource> {
             String urlSegment = tuple.get("urlSegment").toString();
             return new DBResourceWrapper(resource, domainCodeValue, documentTypeValue, urlSegment);
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * Method 'Escapes' the \ characters of the value and wraps it with % if the value is not empty.
+     * @param value value to be "Normalized" and wrapped
+     * @return escaped value
+     */
+    private  String getNormalizedLikeParameter(String value) {
+        if (StringUtils.isBlank(value)){
+            return null;
+        }
+        String escapedValue = value.replace("\\", "\\\\");
+        return StringUtils.wrapIfMissing(escapedValue, "%");
     }
 
     public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier, String domainCode, String documentType) {
