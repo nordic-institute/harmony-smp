@@ -357,6 +357,7 @@
   "resource.details.panel.button.save": "Save",
   "resource.details.panel.review.disabled.confirmation.dialog.title": "Review disabled?",
   "resource.details.panel.review.disabled.confirmation.dialog.description": "All document versions with review statuses (UNDER_REVIEW, APPROVED, REJECTED) will be set to DRAFT\nDo you want to continue?",
+
   "document.edit.panel.button.back": "Back",
   "document.edit.panel.button.cancel": "Cancel",
   "document.edit.panel.button.document.wizard": "Document wizard",
@@ -382,7 +383,6 @@
   "document.edit.panel.select.item.reference": "Reference document",
   "document.edit.panel.select.item.current": "Current document",
   "document.edit.panel.label.show.document.type": "View document",
-
   "document.edit.panel.error.document.null": "Can not show document because it is not selected.",
   "document.edit.panel.title": "Resources",
   "document.edit.panel.tooltip.document.wizard": "Show document wizard dialog",
@@ -393,9 +393,15 @@
   "document.edit.panel.tooltip.version.new": "Create new document version for the resource",
   "document.edit.panel.tooltip.version.publish": "Publish selected document version",
   "document.edit.panel.tooltip.version.request.review": "Submit selected document version for the review",
-  "document.edit.panel.tooltip.version.review.approve": "Approve  document version",
-  "document.edit.panel.tooltip.version.review.reject": "Reject document version",
+  "document.edit.panel.tooltip.version.review.approve.description": "Approve  document version",
+  "document.edit.panel.tooltip.version.review.reject.description": "Reject document version",
   "document.edit.panel.note.editable": "Note: Only document payloads in following status can be edited: [{{editableDocStatusList}}]",
+  "document.edit.panel.dialog.confirmation.publish.title": "Document publish action confirmation",
+  "document.edit.panel.dialog.confirmation.publish.description": "Do you want to publish the document version?",
+
+  "document.edit.panel.review.dialog.confirmation.title": "Review action confirmation",
+  "document.edit.panel.review.dialog.confirmation.approve.description": "Do you want to <b>approve</b> the document version?",
+  "document.edit.panel.review.dialog.confirmation.reject.description": "Do you want to <b>reject</b> the document version?",
 
   "document.configuration.panel.tab.title": "Document configuration",
   "document.configuration.panel.tab.button.metadata": "Metadata",

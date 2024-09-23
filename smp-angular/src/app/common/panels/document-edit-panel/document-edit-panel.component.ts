@@ -323,7 +323,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       if (this.documentVersionsExists && this.isNotReviewMode && !this.isNewDocumentVersion) {
         this.documentForm.controls['payloadVersion'].enable();
       }
-      if (!this.documentEditable && !this.isNewDocumentVersion ) {
+      if (!this.documentEditable && !this.isNewDocumentVersion) {
         this.documentForm.controls['selectDocumentSource'].enable();
       }
       this.updateTextToEditor()
@@ -471,6 +471,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   onReviewRequestButtonClicked(): void {
+
     // create lightweight document object
     let docRequest: DocumentRo = {
       documentId: this._document.documentId,
@@ -484,7 +485,21 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     onReviewRequestObservable.subscribe(this.loadDocumentObserver);
   }
 
-  onApproveButtonClicked(): void {
+
+  async onApproveButtonClicked() {
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: await lastValueFrom(this.translateService.get("document.edit.panel.review.dialog.confirmation.title")),
+        description: await lastValueFrom(this.translateService.get("document.edit.panel.review.dialog.confirmation.approve.description"))
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.submitReviewApproveAction()
+      }
+    });
+  }
+
+  private submitReviewApproveAction() {
     // create lightweight document object
     let docRequest: DocumentRo = {
       documentId: this._document.documentId,
@@ -497,12 +512,26 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     // request review
     onReviewRequestObservable.subscribe(this.reviewActionDocumentObserver);
 
-    if (!this.isNotReviewMode){
+    if (!this.isNotReviewMode) {
       this.onBackButtonClicked();
     }
   }
 
-  onRejectButtonClicked(): void {
+
+  async onRejectButtonClicked() {
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: await lastValueFrom(this.translateService.get("document.edit.panel.review.dialog.confirmation.title")),
+        description: await lastValueFrom(this.translateService.get("document.edit.panel.review.dialog.confirmation.reject.description"))
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.submitReviewRejectAction()
+      }
+    });
+  }
+
+  private submitReviewRejectAction() {
     // create lightweight document object
     let docRequest: DocumentRo = {
       documentId: this._document.documentId,
@@ -514,7 +543,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.editResourceService.reviewRejectSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
     // request review
     onReviewRequestObservable.subscribe(this.reviewActionDocumentObserver);
-    if (!this.isNotReviewMode){
+    if (!this.isNotReviewMode) {
       this.onBackButtonClicked();
     }
   }
@@ -523,7 +552,21 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
    * Publish the current document version
    *
    */
-  onPublishButtonClicked(): void {
+
+  async onPublishButtonClicked() {
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: await lastValueFrom(this.translateService.get("document.edit.panel.dialog.confirmation.publish.title")),
+        description: await lastValueFrom(this.translateService.get("document.edit.panel.dialog.confirmation.publish.description"))
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.submitPublishAction()
+      }
+    });
+  }
+
+  private submitPublishAction() {
     // create lightweight document object
     let docRequest: DocumentRo = {
       documentId: this._document.documentId,
