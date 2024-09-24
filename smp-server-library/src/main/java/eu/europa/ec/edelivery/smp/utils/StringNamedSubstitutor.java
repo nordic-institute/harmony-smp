@@ -53,7 +53,7 @@ public class StringNamedSubstitutor {
      * @param config the config to use
      * @return the resolved string
      */
-    public static String resolve(String string, Map<String, Object> config) {
+    public static String resolve(String string, Map<String, String> config) {
         String charset = Charset.defaultCharset().name();
         LOG.debug("Using default charset: [{}]", charset);
         return resolve(string, config, charset);
@@ -68,7 +68,7 @@ public class StringNamedSubstitutor {
      * @param charset the character of the input stream
      * @return the resolved string
      */
-    public static String resolve(String string, Map<String, Object> config, String charset) {
+    public static String resolve(String string, Map<String, String> config, String charset) {
         try {
             return resolve(new ByteArrayInputStream(string.getBytes()), config, charset);
         } catch (IOException e) {
@@ -86,7 +86,7 @@ public class StringNamedSubstitutor {
      * @return the resolved string
      * @throws IOException if an I/O error occurs
      */
-    public static String resolve(InputStream templateIS, Map<String, Object> config) throws IOException {
+    public static String resolve(InputStream templateIS, Map<String, String> config) throws IOException {
         String charset = Charset.defaultCharset().name();
         LOG.debug("Using default charset: [{}]", charset);
         return resolve(templateIS, config, charset);
@@ -101,7 +101,7 @@ public class StringNamedSubstitutor {
      * @param charset    the character of the input stream
      * @return the resolved string
      */
-    public static String resolve(InputStream templateIS, Map<String, Object> config, String charset) throws IOException {
+    public static String resolve(InputStream templateIS, Map<String, String> config, String charset) throws IOException {
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             resolve(templateIS, config, byteArrayOutputStream, charset);
@@ -119,9 +119,9 @@ public class StringNamedSubstitutor {
      * @param charset      the charset to use
      * @throws IOException if an I/O error occurs
      */
-    public static void resolve(InputStream templateIS, Map<String, Object> config,
+    public static void resolve(InputStream templateIS, Map<String, String> config,
                                OutputStream outputStream, String charset) throws IOException {
-        Map<String, Object> lowerCaseMap = normalizeData(config);
+        Map<String, String> lowerCaseMap = normalizeData(config);
         try (BufferedReader template = new BufferedReader(new InputStreamReader(templateIS, charset));
              Writer writer = new OutputStreamWriter(outputStream, charset)) {
             int read;
@@ -137,11 +137,9 @@ public class StringNamedSubstitutor {
                     writer.write(START_NAME);
                 } else {
                     String key = lowerCase(name);
-                    Object objValue = lowerCaseMap.get(key);
-                    String value = objValue != null ? String.valueOf(lowerCaseMap.get(key)) : null;
-
-                    if (value != null) {
-                        writer.write(value);
+                    String objValue = lowerCaseMap.get(key);
+                    if (objValue != null) {
+                        writer.write(objValue);
                     } else {
                         writer.write(START_NAME);
                         writer.write(name);
@@ -158,8 +156,8 @@ public class StringNamedSubstitutor {
      * @param dataModel the data model
      * @return the normalized data model
      */
-    private static Map<String, Object> normalizeData(Map<String, Object> dataModel) {
-        Map<String, Object> lowerCaseMap = new HashMap<>();
+    private static Map<String, String> normalizeData(Map<String, String> dataModel) {
+        Map<String, String> lowerCaseMap = new HashMap<>();
         // Note: do not use stream with Collectors.toMap because it throws NPE if value is null
         dataModel.forEach((key, value) ->
                 lowerCaseMap.put(lowerCase(trim(key)), value));

@@ -49,7 +49,7 @@ import java.time.OffsetDateTime;
 import java.util.Date;
 
 import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_CREDENTIAL_ALERTS;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static eu.europa.ec.edelivery.smp.utils.DateTimeUtils.formatOffsetDateTimeWithLocal;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 /**
@@ -239,18 +239,16 @@ public class CredentialsAlertService {
                                           String credentialId,
                                           OffsetDateTime expirationDate
     ) {
-
-        String serverName = HttpUtils.getServerAddress();
+        DBUser user = credential.getUser();
         // add alert properties
         alert.addProperty(CredentialsExpirationProperties.CREDENTIAL_TYPE.name(), credentialType.name());
         alert.addProperty(CredentialsExpirationProperties.CREDENTIAL_ID.name(), credentialId);
-        alert.addProperty(CredentialsExpirationProperties.EXPIRATION_DATETIME.name(), expirationDate);
-        alert.addProperty(CredentialsExpirationProperties.REPORTING_DATETIME.name(), alert.getReportingTime());
+        alert.addProperty(CredentialsExpirationProperties.EXPIRATION_DATETIME.name(), formatOffsetDateTimeWithLocal(expirationDate, user.getSmpLocale()));
+        alert.addProperty(CredentialsExpirationProperties.REPORTING_DATETIME.name(), formatOffsetDateTimeWithLocal(expirationDate, user.getSmpLocale()));
         alert.addProperty(CredentialsExpirationProperties.ALERT_LEVEL.name(), alert.getAlertLevel().name());
-        alert.addProperty(CredentialsExpirationProperties.SERVER_NAME.name(), serverName);
         alertDao.persistFlushDetach(alert);
         // submit alerts
-        submitAlertMail(alert, credential.getUser());
+        submitAlertMail(alert, user);
         // when alert about to expire - check if the next cron execution is expired
         // and set date sent tp null to ensure alert submission in next cron execution
         credentialDao.updateAlertSentForUserCredentials(credential,
@@ -267,15 +265,13 @@ public class CredentialsAlertService {
                                                   OffsetDateTime lastFailedLoginDate
     ) {
         LOG.info("Prepare alert for credentials [{}] ", credentialId);
-        String serverName = HttpUtils.getServerAddress();
         // add alert properties
         alert.addProperty(CredentialVerificationFailedProperties.CREDENTIAL_TYPE.name(), credentialType.name());
         alert.addProperty(CredentialVerificationFailedProperties.CREDENTIAL_ID.name(), credentialId);
         alert.addProperty(CredentialVerificationFailedProperties.FAILED_LOGIN_ATTEMPT.name(), failedLoginCount.toString());
-        alert.addProperty(CredentialVerificationFailedProperties.LAST_LOGIN_FAILURE_DATETIME.name(), lastFailedLoginDate);
-        alert.addProperty(CredentialVerificationFailedProperties.REPORTING_DATETIME.name(), alert.getReportingTime());
+        alert.addProperty(CredentialVerificationFailedProperties.LAST_LOGIN_FAILURE_DATETIME.name(), formatOffsetDateTimeWithLocal(lastFailedLoginDate, user.getSmpLocale()));
+        alert.addProperty(CredentialVerificationFailedProperties.REPORTING_DATETIME.name(), formatOffsetDateTimeWithLocal(alert.getReportingTime(), user.getSmpLocale()));
         alert.addProperty(CredentialVerificationFailedProperties.ALERT_LEVEL.name(), alert.getAlertLevel().name());
-        alert.addProperty(CredentialVerificationFailedProperties.SERVER_NAME.name(), serverName);
         alertDao.persistFlushDetach(alert);
         // submit alerts
         submitAlertMail(alert, user);
@@ -289,16 +285,15 @@ public class CredentialsAlertService {
                                          OffsetDateTime lastFailedLoginDate,
                                          OffsetDateTime suspendedUtil) {
 
-        String serverName = HttpUtils.getServerAddress();
+
         // add alert properties
         alert.addProperty(CredentialSuspendedProperties.CREDENTIAL_TYPE.name(), credentialType.name());
         alert.addProperty(CredentialSuspendedProperties.CREDENTIAL_ID.name(), credentialId);
         alert.addProperty(CredentialSuspendedProperties.FAILED_LOGIN_ATTEMPT.name(), failedLoginCount.toString());
-        alert.addProperty(CredentialSuspendedProperties.LAST_LOGIN_FAILURE_DATETIME.name(), lastFailedLoginDate);
-        alert.addProperty(CredentialSuspendedProperties.SUSPENDED_UNTIL_DATETIME.name(), suspendedUtil);
-        alert.addProperty(CredentialSuspendedProperties.REPORTING_DATETIME.name(), alert.getReportingTime());
+        alert.addProperty(CredentialSuspendedProperties.LAST_LOGIN_FAILURE_DATETIME.name(), formatOffsetDateTimeWithLocal(lastFailedLoginDate, user.getSmpLocale()));
+        alert.addProperty(CredentialSuspendedProperties.SUSPENDED_UNTIL_DATETIME.name(), formatOffsetDateTimeWithLocal(suspendedUtil, user.getSmpLocale()));
+        alert.addProperty(CredentialSuspendedProperties.REPORTING_DATETIME.name(), formatOffsetDateTimeWithLocal(alert.getReportingTime(), user.getSmpLocale()));
         alert.addProperty(CredentialSuspendedProperties.ALERT_LEVEL.name(), alert.getAlertLevel().name());
-        alert.addProperty(CredentialSuspendedProperties.SERVER_NAME.name(), serverName);
         alertDao.persistFlushDetach(alert);
         // submit alerts
         submitAlertMail(alert, user);
@@ -404,7 +399,7 @@ public class CredentialsAlertService {
         // add alert properties
         alert.addProperty(CredentialsResetRequestProperties.CREDENTIAL_TYPE.name(), credentialType.name());
         alert.addProperty(CredentialsResetRequestProperties.CREDENTIAL_ID.name(), credentialId);
-        alert.addProperty(CredentialsResetRequestProperties.REPORTING_DATETIME.name(), alert.getReportingTime());
+        alert.addProperty(CredentialsResetRequestProperties.REPORTING_DATETIME.name(), formatOffsetDateTimeWithLocal(alert.getReportingTime(), user.getSmpLocale()));
         alert.addProperty(CredentialsResetRequestProperties.ALERT_LEVEL.name(), alert.getAlertLevel().name());
         alert.addProperty(CredentialsResetRequestProperties.RESET_URL.name(), resetUrlPath);
         alert.addProperty(CredentialsResetRequestProperties.SERVER_NAME.name(), serverName);
@@ -437,13 +432,11 @@ public class CredentialsAlertService {
                                        CredentialType credentialType,
                                        String credentialId) {
 
-        String serverName = HttpUtils.getServerAddress();
         // add alert properties
         alert.addProperty(CredentialsChangedProperties.CREDENTIAL_TYPE.name(), credentialType.name());
         alert.addProperty(CredentialsChangedProperties.CREDENTIAL_ID.name(), credentialId);
-        alert.addProperty(CredentialsChangedProperties.REPORTING_DATETIME.name(), alert.getReportingTime());
+        alert.addProperty(CredentialsChangedProperties.REPORTING_DATETIME.name(), formatOffsetDateTimeWithLocal(alert.getReportingTime(), user.getSmpLocale()));
         alert.addProperty(CredentialsChangedProperties.ALERT_LEVEL.name(), alert.getAlertLevel().name());
-        alert.addProperty(CredentialsChangedProperties.SERVER_NAME.name(), serverName);
         alertDao.persistFlushDetach(alert);
         // submit alerts
         submitAlertMail(alert, user);
@@ -463,6 +456,9 @@ public class CredentialsAlertService {
                                   AlertLevelEnum level,
                                   AlertTypeEnum alertType) {
 
+
+        String serverName = HttpUtils.getServerAddress();
+
         DBAlert alert = new DBAlert();
         alert.setMailSubject(mailSubject);
         alert.setMailTo(mailTo);
@@ -471,6 +467,7 @@ public class CredentialsAlertService {
         alert.setAlertType(alertType);
         alert.setAlertLevel(level);
         alert.setAlertStatus(AlertStatusEnum.PROCESS);
+        alert.addProperty(CredentialSuspendedProperties.SERVER_NAME.name(), serverName);
         return alert;
     }
 
@@ -487,13 +484,14 @@ public class CredentialsAlertService {
             return;
         }
 
-
         String mailFrom = configurationService.getAlertEmailFrom();
         MailDataModel props = new MailDataModel(user.getSmpLocale(), alert);
+
+        // add additional common properties to the model
         props.getModel().put(MailDataModel.CommonProperties.SMP_INSTANCE_NAME.name(),
                 configurationService.getSMPInstanceName());
         props.getModel().put(MailDataModel.CommonProperties.CURRENT_DATETIME.name(),
-                OffsetDateTime.now().format(ISO_DATE_TIME));
+                formatOffsetDateTimeWithLocal(OffsetDateTime.now(), user.getSmpLocale()));
 
         try {
             mailService.sendMail(props, mailFrom, alert.getMailTo());

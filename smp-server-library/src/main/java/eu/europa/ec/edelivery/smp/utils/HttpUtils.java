@@ -23,6 +23,8 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.AccessControlException;
 import java.util.Arrays;
 
 public class HttpUtils {
@@ -62,7 +64,7 @@ public class HttpUtils {
         String serverAddress;
         try {
             serverAddress = InetAddress.getLocalHost().getHostName();
-        } catch (Exception e) {
+        } catch (AccessControlException | UnknownHostException e) {
             LOG.error(e.getMessage(), e);
             serverAddress = StringUtils.EMPTY;
         }
