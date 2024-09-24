@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
  * @author Joze RIHTARSIC
  */
 @Component
-public class DomainGuard {
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainGuard.class);
+public class DomainGroupGuard {
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainGroupGuard.class);
     public static final String NOT_DEFINED = "Not defined";
 
     final DomainResolverService domainResolverService;
@@ -59,11 +59,11 @@ public class DomainGuard {
     final GroupMemberDao groupMemberDao;
     final ResourceMemberDao resourceMemberDao;
 
-    public DomainGuard(DomainResolverService domainResolverService,
-                       DomainMemberDao domainMemberDao,
-                       GroupMemberDao groupMemberDao,
-                       ResourceMemberDao resourceMemberDao,
-                       GroupDao groupDao) {
+    public DomainGroupGuard(DomainResolverService domainResolverService,
+                            DomainMemberDao domainMemberDao,
+                            GroupMemberDao groupMemberDao,
+                            ResourceMemberDao resourceMemberDao,
+                            GroupDao groupDao) {
         this.domainResolverService = domainResolverService;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
@@ -297,9 +297,11 @@ public class DomainGuard {
             LOG.warn(SMPLogger.SECURITY_MARKER, "Anonymous user [{}] is not authorized to delete resources on groups [{}]", userInfo, groupsInfo);
             return false;
         }
-        // allow only group admins to create/delete resources
-        boolean isAuthorized = groupMemberDao.isUserGroupMember(user.getUser(), groups)
-                || resourceMemberDao.isUserAnyGroupsResourceMember(user.getUser(), groups);
+        // allow only group admins to delete resources
+        List<Long> groupIds = groups.stream().map(DBGroup::getId).collect(Collectors.toList());
+        boolean isAuthorized =
+                resourceMemberDao.isUserAnyGroupsResourceMemberWithRole(userId, groupIds, MembershipRoleType.ADMIN)
+                        || groupMemberDao.isUserGroupMemberWithRole(userId, groupIds, MembershipRoleType.ADMIN);
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is authorized: [{}] to delete resources from groups [{}]", userInfo, isAuthorized, groupsInfo);
         return isAuthorized;
     }
