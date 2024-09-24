@@ -585,7 +585,7 @@
 
   "domain.panel.button.reset": "Reset",
   "domain.panel.button.save": "Save",
-  "domain.panel.label.domain": "Domain Code [{{value}}]",
+  "domain.panel.label.domain": "Domain Code",
   "domain.panel.label.domain.already.exists": "The Domain code already exists!",
   "domain.panel.label.domain.default.resource.type": "Default resource type for the domain",
   "domain.panel.label.domain.mandatory": "Domain code must contain only chars and numbers and must be less than 63 chars long.",
