@@ -12,7 +12,12 @@ import {GlobalLookups} from "../../../common/global-lookups";
 
 export function notAfterCurrentDateValidator(): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
-    const date = control.value;
+    let date = control.value;
+    if (date) {
+      // make date mutable and the modification
+      date = new Date(date);
+      date.setHours(0, 0, 0, 0);
+    }
     const forbidden = date && date > Date.now();
 
     return forbidden ? { 'matStartDateInvalid': { value: control.value } } : null;
@@ -21,7 +26,12 @@ export function notAfterCurrentDateValidator(): ValidatorFn {
 
 export function notBeforeCurrentDateValidator(): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
-    const date = control.value;
+    let date = control.value;
+    if (date) {
+      // make date mutable and the modification
+      date = new Date(date);
+      date.setHours(23, 59, 59, 999);
+    }
     const forbidden = date && date < Date.now();
     return forbidden ? { 'matEndDateInvalid': { value: control.value } } : null;
   };
@@ -101,7 +111,7 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
     if (dateTo) {
       // make date mutable and the modification
       dateTo = new Date(dateTo);
-      dateTo.setHours(0, 0, 0, 0);
+      dateTo.setHours(23, 59, 59, 999);
     }
     this._credential.expireOn = dateTo
 
