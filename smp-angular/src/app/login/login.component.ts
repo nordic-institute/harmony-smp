@@ -1,22 +1,33 @@
 ﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SecurityService} from '../security/security.service';
-import {AlertMessageService} from '../common/alert-message/alert-message.service';
+import {
+  AlertMessageService
+} from '../common/alert-message/alert-message.service';
 import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
 import {MatDialog} from '@angular/material/dialog';
-import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 import {lastValueFrom, Subscription} from 'rxjs';
 import {
   ExpiredPasswordDialogComponent
 } from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
 import {GlobalLookups} from "../common/global-lookups";
-import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
-import {InformationDialogComponent} from "../common/dialogs/information-dialog/information-dialog.component";
+import {
+  PasswordChangeDialogComponent
+} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
+import {
+  InformationDialogComponent
+} from "../common/dialogs/information-dialog/information-dialog.component";
 import {formatDate} from "@angular/common";
-import {EntityStatus} from "../common/enums/entity-status.enum";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {
+  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from "@angular/forms";
 import {TranslateService} from "@ngx-translate/core";
+import {WindowSpinnerService} from "../common/services/window-spinner.service";
 
 @Component({
   templateUrl: './login.component.html',
@@ -24,8 +35,8 @@ import {TranslateService} from "@ngx-translate/core";
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-  loginForm: FormGroup;
-  resetForm: FormGroup;
+  loginForm: UntypedFormGroup;
+  resetForm: UntypedFormGroup;
   loading = false;
   returnUrl: string;
   sub: Subscription;
@@ -39,17 +50,28 @@ export class LoginComponent implements OnInit, OnDestroy {
               private alertService: AlertMessageService,
               private securityEventService: SecurityEventService,
               private dialog: MatDialog,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private fb: UntypedFormBuilder,
+              private windowSpinnerService: WindowSpinnerService) {
+    this.loginForm = fb.group({
+      'username': new UntypedFormControl({value: ''}, [Validators.required]),
+      'password': new UntypedFormControl({value: ''}, [Validators.required]),
+    });
+    this.resetForm = new FormGroup({
+      'resetUsername': new UntypedFormControl({value: ''}, [Validators.required]),
+    });
+    this.loginForm.controls['username'].setValue('');
+    this.loginForm.controls['password'].setValue('');
+    this.resetForm.controls['resetUsername'].setValue('');
   }
 
 
   ngOnInit() {
-    this.initForm();
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-
+    // make reference to this to be available in async functions where ''this'' is something else
     this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(
       user => {
-        if (user && user.passwordExpired) {
+        if (user?.passwordExpired) {
           if (user.forceChangeExpiredPassword) {
             this.dialog.open(PasswordChangeDialogComponent, {
               data: {
@@ -82,10 +104,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         switch (error.status) {
           case HTTP_UNAUTHORIZED:
             message = error.error.errorDescription;
-            this.loginForm['password'].setValue('');
+            this.loginForm.controls['password'].setValue('');
             break;
           case HTTP_FORBIDDEN:
-            const forbiddenCode = error.message;
+            const forbiddenCode = error?.message;
             switch (forbiddenCode) {
               case USER_INACTIVE:
                 message = await lastValueFrom(this.translateService.get("login.error.inactive.user"));
@@ -93,7 +115,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               default:
                 message = await lastValueFrom(this.translateService.get("login.error.invalid.credentials", {errorStatus: error.status}));
                 // clear the password
-                this.loginForm['password'].setValue('');
+                this.loginForm.controls['password'].setValue('');
                 break;
             }
             break;
@@ -109,24 +131,21 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
   }
 
-  private initForm() {
-    this.loginForm = new FormGroup({
-      username: new FormControl('', Validators.required),
-      password: new FormControl('', Validators.required),
-    });
-
-    this.resetForm = new FormGroup({
-      resetUsername: new FormControl('', Validators.required),
-    });
-
+  onLoginFormEnterKeyDown(event: KeyboardEvent) {
+    if (this.loginForm.valid
+      && !this.windowSpinnerService.showSpinner) {
+      event.preventDefault();
+      this.login();
+    }
   }
 
   async login() {
+
     this.alertService.clearAlert();
     if (this.loginForm.valid) {
       this.securityService.login(
-        this.loginForm.get('username').value,
-        this.loginForm.get('password').value
+        this.loginForm.controls['username'].value,
+        this.loginForm.controls['password'].value
       );
     } else {
       this.alertService.error(await lastValueFrom(this.translateService.get("login.error.invalid.username.or.password")));
@@ -137,7 +156,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.alertService.clearAlert();
     if (this.resetForm.valid) {
       this.securityService.requestCredentialReset(
-        this.resetForm.get('resetUsername').value
+        this.resetForm.controls['resetUsername'].value
       );
     } else {
       this.alertService.error(await lastValueFrom(this.translateService.get("login.error.invalid.username")));

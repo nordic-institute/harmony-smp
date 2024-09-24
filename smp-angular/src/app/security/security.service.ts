@@ -39,6 +39,7 @@ export class SecurityService {
   }
 
   login(username: string, password: string) {
+    this.windowSpinnerService.showSpinner = true;
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION,
       JSON.stringify({
@@ -52,9 +53,14 @@ export class SecurityService {
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
         error: (error: any) => {
+          this.windowSpinnerService.showSpinner = false
           this.alertService.error(error.error?.errorDescription)
           this.securityEventService.notifyLoginErrorEvent(error);
+
+        }, complete: () => {
+          this.windowSpinnerService.showSpinner = false
         }
+
       });
   }
 

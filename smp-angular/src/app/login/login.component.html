@@ -29,7 +29,7 @@
 
 
 <ng-template #loginFormContainer>
-  <div [formGroup]="loginForm" class="form-control">
+  <div [formGroup]="loginForm" class="form-control" (ngSubmit)="login()" (keydown.enter)="onLoginFormEnterKeyDown($event)">
     <mat-form-field style="width: 100%">
       <mat-label>{{ "login.label.login.username" | translate }}</mat-label>
       <input matInput id="username_id"
@@ -40,6 +40,7 @@
     <mat-form-field style="width: 100%">
       <mat-label>{{ "login.label.password" | translate }}</mat-label>
       <input matInput id="password_id" type="password"
+
              formControlName="password" required>
     </mat-form-field>
     <button mat-raised-button color="primary" id="loginbutton_id" [disabled]="!loginForm.valid"
