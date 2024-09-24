@@ -6,7 +6,8 @@ import {ObjectPropertiesDialogComponent} from "../../dialogs/object-properties-d
 
 export class AlertController implements SearchTableController {
 
-  constructor(protected lookups: GlobalLookups, public dialog: MatDialog) {
+  constructor(protected lookups: GlobalLookups,
+              public dialog: MatDialog) {
   }
 
   validateDeleteOperation(rows: SearchTableEntity[]) {
@@ -32,19 +33,37 @@ export class AlertController implements SearchTableController {
   public showDetails(row: any): MatDialogRef<any> {
     return this.dialog.open(ObjectPropertiesDialogComponent, {
       data: {
-        title: "Alert details",
-        object: row,
+        i18n: "alert.panel.dialog.title.alert.details",
+        object: [{
+          i18n: "alert.panel.label.column.alert.date",
+          value: row?.reportingTime,
+          type: "dateTime"
+        }, {
+          i18n: "alert.panel.label.column.alert.level",
+          value: row?.alertLevel
+        }, {
+          i18n: "alert.panel.label.column.for.user",
+          value: row?.username
+        }, {
+          i18n: "alert.panel.label.column.credential.type",
+          value: row?.alertDetails['CREDENTIAL_TYPE']
+        }, {
+          i18n: "alert.panel.label.column.alert.type",
+          value: row?.alertType,
+        }, {
+          i18n: "alert.panel.label.column.alert.status",
+          value: row?.alertStatus,
+        }, {
+          i18n: "alert.panel.label.column.status.description",
+          value: row?.alertStatusDesc,
+        }]
       }
     });
   }
 
   public edit(row: any): MatDialogRef<any> {
-    return this.dialog.open(ObjectPropertiesDialogComponent, {
-      data: {
-        title: "Update Alert",
-        object: row,
-      }
-    });
+    // not actually editing the row
+    return this.showDetails(row);
   }
 
   public delete(row: any) {

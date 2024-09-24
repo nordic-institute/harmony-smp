@@ -34,9 +34,9 @@ export class ReviewTasksController implements SearchTableController {
   }
 
   public showDetails(row: any): MatDialogRef<any> {
-    return this.dialog.open(ObjectPropertiesDialogComponent, {
+    return this.dialog.open(AlertDetailsDialogComponent, {
       data: {
-        title: "Review tasks details",
+        i18n: "review.edit.dialog.title",
         object: row,
       }
     });

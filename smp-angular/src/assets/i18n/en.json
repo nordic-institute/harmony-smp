@@ -108,8 +108,23 @@
   "session.expiration.dialog.title": "Extend session",
   "session.expiration.dialog.label.session.about.to.expire": "Your session is about to expire in <b>{{timeLeft}}</b> seconds!<br />Would you like to logout now or extend it for another <b>{{timeout}}</b> seconds?",
 
-  "alert.panel.title": "Alerts",
+  "alert.panel.dialog.title.alert.details": "Alert details",
+  "alert.panel.label.column.alert.date": "Alert date",
+  "alert.panel.label.column.alert.level": "Alert level",
+  "alert.panel.label.column.alert.status": "Alert status",
+  "alert.panel.label.column.alert.type": "Alert type",
+  "alert.panel.label.column.credential.type": "Credential type",
+  "alert.panel.label.column.for.user": "For User",
+  "alert.panel.label.column.status.description": "Status desc.",
+  "alert.panel.label.column.title.alert.date": "Alert date",
+  "alert.panel.label.column.title.alert.level": "Alert level.",
+  "alert.panel.label.column.title.alert.status": "Alert status.",
+  "alert.panel.label.column.title.alert.type": "Alert type.",
+  "alert.panel.label.column.title.credential.type": "Credential type.",
+  "alert.panel.label.column.title.for.user": "For User",
+  "alert.panel.label.column.title.status.description": "Status desc.",
   "alert.panel.user.title": "{{value}} (Email: '{{mailTo}}')",
+  "alert.panel.title": "Alerts",
 
   "certificate.panel.title": "Selected certificate data",
   "certificate.panel.label.alias": "Alias",
@@ -428,6 +443,7 @@
   "document.metadata.panel.label.sharing.enabled": "Document sharing enabled",
   "document.metadata.panel.label.reference.document": "Referenced document",
 
+  "review.edit.dialog.title": "Review tasks details",
   "review.edit.panel.label.review": "Review",
   "review.edit.panel.label.column.date": "Review date",
   "review.edit.panel.label.column.version": "Version",
@@ -436,8 +452,8 @@
   "review.edit.panel.label.column.resource.value": "Res. value",
   "review.edit.panel.label.column.subresource.scheme": "Subr. scheme",
   "review.edit.panel.label.column.subresource.value": "Subr. value",
-
-
+  "review.edit.panel.label.column.review.date": "Review date",
+  "review.edit.panel.label.column.title.review.date": "Review date",
 
   "subresource.document.wizard.button.cancel": "Cancel",
   "subresource.document.wizard.button.ok": "OK",

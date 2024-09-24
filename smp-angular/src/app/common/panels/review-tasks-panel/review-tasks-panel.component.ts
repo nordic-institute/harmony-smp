@@ -77,8 +77,8 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
   async initColumns() {
     this.columnPicker.allColumns = [
       {
-        name: 'Review date',
-        title: "Review date",
+        name: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.review.date")),
+        title: await lastValueFrom(this.translateService.get("review.edit.panel.label.column.title.review.date")),
         prop: 'lastUpdatedOn',
         showInitially: true,
         maxWidth: 200,
@@ -124,9 +124,6 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
         resizable: 'true',
         showInitially: true,
       },
-
-
-
     ];
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
     this.searchTable.tableColumnInit();
@@ -135,7 +132,6 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
   ngAfterViewInit() {
     this.initColumns();
   }
-
 
   details(row: any) {
   }
@@ -152,10 +148,9 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
   async onRowDoubleClicked(row: ReviewDocumentVersionRo) {
     // set selected resource
     this.editResourceService.selectedReviewDocument = row;
-    let node: NavigationNode = await this.createNewReviewDocumentNavigationNode();
+    let node = await this.createNewReviewDocumentNavigationNode();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
-
   }
 
   public async createNewReviewDocumentNavigationNode() {
@@ -171,4 +166,3 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
     }
   }
 }
-
