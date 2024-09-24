@@ -1,4 +1,11 @@
 .smp-certificate-warning-panel   {
   font-size: 0.8em;
+  padding-bottom: 5px;
+}
+
+.user-certificate-control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 

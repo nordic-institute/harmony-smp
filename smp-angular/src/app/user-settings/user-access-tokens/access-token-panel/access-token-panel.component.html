@@ -1,13 +1,7 @@
 <mat-expansion-panel [expanded]="_expanded">
-  <mat-expansion-panel-header style="height: 95px">
+  <mat-expansion-panel-header style="height: 115px">
     <div
-      style="display: flex; flex-direction: column;width: 100%;margin-right: 10px;">
-      <smp-warning-panel *ngIf="!!_credential?.expired;"
-                         class="smp-certificate-warning-panel"
-                         [padding]="false"
-                         icon="error"
-                         label="{{ 'access.token.panel.label.token.expired' | translate }}">
-      </smp-warning-panel>
+      style="flex-direction: column;width: 100%;margin-right: 10px;margin-top: 5px">
       <div
         style="display: flex; flex-direction: row; justify-content: space-between; gap: 3px; padding-left: 5px;">
 
@@ -28,7 +22,7 @@
             <ng-template #elseNoDate><span>&nbsp;/&nbsp;</span></ng-template>
           </mat-hint>
         </mat-form-field>
-        <div style="display: inline;display: flex;flex-direction: column">
+        <div class="access-token-control-panel">
           <button id="deleteButton" mat-raised-button
                   (click)="onDeleteButtonClicked($event)"
                   color="primary">
@@ -44,6 +38,12 @@
           </button>
         </div>
       </div>
+      <smp-warning-panel *ngIf="!!_credential?.expired;"
+                         [padding]="false"
+                         style="padding-bottom: 5px"
+                         icon="error"
+                         label="{{ 'access.token.panel.label.token.expired' | translate }}">
+      </smp-warning-panel>
     </div>
   </mat-expansion-panel-header>
   <div class="smp-data-panel" [formGroup]="credentialForm">

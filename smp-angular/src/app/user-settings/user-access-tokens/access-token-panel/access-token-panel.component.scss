@@ -1,5 +1,9 @@
 .access-token-panel {
-
-
   border-bottom: 1px solid #e0e0e0;
+}
+
+.access-token-control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 3px
 }
