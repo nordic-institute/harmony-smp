@@ -1,13 +1,8 @@
 <mat-expansion-panel [expanded]="_expanded" [formGroup]="credentialForm">
-  <mat-expansion-panel-header style="height: 95px">
+  <mat-expansion-panel-header style="height: 105px">
     <div
-      style="display: flex; flex-direction: column;width: 100%; padding-right: 10px">
-      <smp-warning-panel *ngIf="_credential.certificate?.invalid;"
-                         class="smp-certificate-warning-panel"
-                         [padding]="false"
-                         icon="error"
-                         label="{{ 'user.certificate.panel.label.invalid.certificate' | translate: { reason: _credential.certificate.invalidReason} }}">
-      </smp-warning-panel>
+      style="display: flex; flex-direction: column;width: 100%; padding-right: 10px;margin-top: 5px">
+
       <div
         style="display: flex;flex-flow: row; align-items: center; width: 100%">
 
@@ -27,7 +22,7 @@
         </mat-form-field>
 
         <div
-          style="display: flex; flex-direction: column; justify-content: space-between;  padding-left: 5px;">
+          class="user-certificate-control-panel">
           <button id="deleteButton" mat-raised-button
                   (click)="onDeleteButtonClicked($event)"
                   color="primary">
@@ -43,6 +38,12 @@
           </button>
         </div>
       </div>
+      <smp-warning-panel *ngIf="_credential.certificate?.invalid;"
+                         class="smp-certificate-warning-panel"
+                         [padding]="false"
+                         icon="error"
+                         label="{{ 'user.certificate.panel.label.invalid.certificate' | translate: { reason: _credential.certificate.invalidReason} }}">
+      </smp-warning-panel>
     </div>
   </mat-expansion-panel-header>
   <div class="panel smp-data-panel">
