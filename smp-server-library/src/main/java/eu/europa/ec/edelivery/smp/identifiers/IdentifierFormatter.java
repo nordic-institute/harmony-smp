@@ -72,7 +72,7 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
         boolean schemeMandatory = false;
         Pattern schemeValidationPattern;
         List<String> caseSensitiveSchemas;
-        FormatterType[] formatterTypes = null;
+        List<FormatterType> formatterTypes = null;
 
         AbstractFormatterType defaultFormatter;
 
@@ -95,7 +95,10 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
         }
 
         public Builder addFormatterTypes(FormatterType ... formatterTypes) {
-            this.formatterTypes = formatterTypes;
+            if (this.formatterTypes == null) {
+                this.formatterTypes = new ArrayList<>();
+            }
+            this.formatterTypes.addAll(Arrays.asList(formatterTypes));;
             return this;
         }
 
@@ -108,7 +111,9 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
             identifierFormatter.setSchemeMandatory(schemeMandatory);
             identifierFormatter.setCaseSensitiveSchemas(caseSensitiveSchemas);
             identifierFormatter.setSchemeValidationPattern(schemeValidationPattern);
-            identifierFormatter.addFormatterTypes(formatterTypes);
+            if (formatterTypes!=null) {
+                identifierFormatter.addFormatterTypes(formatterTypes.toArray(new FormatterType[0]));
+            }
             if (defaultFormatter != null) {
                 identifierFormatter.setDefaultFormatter(defaultFormatter);
             }

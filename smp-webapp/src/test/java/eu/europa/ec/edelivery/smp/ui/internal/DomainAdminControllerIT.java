@@ -273,8 +273,10 @@ class DomainAdminControllerIT extends AbstractControllerTest {
             "RESOURCE_SCH_VALIDATION_REGEXP,^.*$",
             "RESOURCE_SCH_REGEXP_MSG,'This is test message'",
             "RESOURCE_SCH_MANDATORY,true",
-            "RESOURCE_SCH_SPLIT_REGEXP,'^(?i)\\s*?(?<scheme>urn:)::?(?<identifier>.+)?\\s*$'",
-            "RESOURCE_SCH_URN_REGEXP,true",
+            "RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP,'^(?i)\\s*?(?<scheme>urn:)::?(?<identifier>.+)?\\s*$'",
+            "RESOURCE_IDENTIFIER_TMPL_MATCH_REGEXP,'^(?i)\\s*(::)?((urn:ehealth:[a-zA-Z]{2})|mailto).*$'",
+            "RESOURCE_IDENTIFIER_TMPL_CONCATENATE,'${scheme}::${identifier}'",
+            "RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME,'${identifier}'",
             "RESOURCE_CASE_SENSITIVE_SCHEMES,sensitive-participant-sc1",
             "SUBRESOURCE_CASE_SENSITIVE_SCHEMES,'sensitive-doc-sc1'",
             })

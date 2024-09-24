@@ -38,7 +38,7 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
  * It is used to update identifier configuration if properties are changed.
  * It listens for changes in the following properties:
  * <ul>
- *     <li>{@link SMPPropertyEnum#RESOURCE_SCH_SPLIT_REGEXP}</li>
+ *     <li>{@link SMPPropertyEnum#RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP}</li>
  *     <li>{@link SMPPropertyEnum#RESOURCE_SCH_VALIDATION_REGEXP}</li>
  *     <li>{@link SMPPropertyEnum#RESOURCE_SCH_MANDATORY}</li>
  *     <li>{@link SMPPropertyEnum#RESOURCE_CASE_SENSITIVE_SCHEMES}</li>
@@ -77,7 +77,7 @@ public class SMPIdentifierServicePropertyUpdateListener implements PropertyUpdat
     @Override
     public List<SMPPropertyEnum> handledProperties() {
         return Arrays.asList(
-                RESOURCE_SCH_SPLIT_REGEXP,
+                RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP,
                 RESOURCE_SCH_VALIDATION_REGEXP,
                 RESOURCE_SCH_MANDATORY,
                 RESOURCE_CASE_SENSITIVE_SCHEMES,

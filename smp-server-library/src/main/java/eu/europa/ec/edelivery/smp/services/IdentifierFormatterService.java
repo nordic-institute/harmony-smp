@@ -1,7 +1,9 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
+import eu.europa.ec.dynamicdiscovery.enums.DNSLookupFormatType;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.TemplateFormatterType;
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
@@ -20,9 +22,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Spring bean  provides Identifier formatters for the domain.
+ *
  * @since 5.1
  */
 @Component
@@ -48,6 +52,7 @@ public class IdentifierFormatterService {
     /**
      * Method returns participant identifier formatter for given domain. If the
      * domain code is empty, default resource identifier formatter is returned.
+     *
      * @param domainCode domain code to get IdentifierFormatter
      * @return IdentifierFormatter for given domain code or default resource identifier formatter.
      * @throws SMPRuntimeException if domain is not found
@@ -60,14 +65,21 @@ public class IdentifierFormatterService {
             return getDefaultResourceIdentifierFormatter();
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,  domainCode));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, domainCode));
 
-        List<DBDomainConfiguration> listDomainConf =  domainConfigurationDao.getDomainConfiguration(domain);
-        IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder
+        IdentifierFormatter.Builder builder = IdentifierFormatter.Builder
                 .create()
-                .addFormatterTypes(new EBCorePartyIdFormatterType())
-                .build();
+                .addFormatterTypes(new EBCorePartyIdFormatterType());;
 
+        // template for formating the identifier
+        List<DBDomainConfiguration> listDomainConf = domainConfigurationDao.getDomainConfiguration(domain);
+        TemplateFormatterType templateFormatterType = createTemplateFormatterType(listDomainConf, domainCode);
+        if (templateFormatterType != null) {
+            builder.addFormatterTypes(templateFormatterType);
+        }
+        builder.addFormatterTypes(new EBCorePartyIdFormatterType());
+
+        IdentifierFormatter identifierFormatter = builder.build();
         identifierFormatter.setCaseSensitiveSchemas(getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES));
         Boolean mandatory = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_MANDATORY);
         identifierFormatter.setSchemeMandatory(Boolean.TRUE.equals(mandatory));
@@ -78,14 +90,25 @@ public class IdentifierFormatterService {
 
     /**
      * Method returns default resource identifier formatter using the system configuration.
+     *
      * @return default resource identifier formatter
      */
     private IdentifierFormatter getDefaultResourceIdentifierFormatter() {
-        IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder
+        IdentifierFormatter.Builder builder = IdentifierFormatter.Builder
                 .create()
-                .addFormatterTypes(new EBCorePartyIdFormatterType())
-                .build();
+                .addFormatterTypes(new EBCorePartyIdFormatterType());
 
+        Pattern matchRegExp = configurationService.getParticipantIdentifierTmplMatchRexExp();
+        Pattern splitRegExp = configurationService.getParticipantIdentifierTmplSplitRexExp();
+        String formatTemplate = configurationService.getParticipantIdentifierTmplConcatenate();
+        String formatNullTemplate = configurationService.getParticipantIdentifierTmplConcatenateSchemeNull();
+
+        TemplateFormatterType templateFormatterType = createTemplateFormatterType(matchRegExp, splitRegExp, formatTemplate, formatNullTemplate, "system-default");
+        if (templateFormatterType != null) {
+            builder.addFormatterTypes(templateFormatterType);
+        }
+
+        IdentifierFormatter identifierFormatter = builder.build();
         identifierFormatter.setCaseSensitiveSchemas(configurationService.getCaseSensitiveParticipantScheme());
         identifierFormatter.setSchemeMandatory(configurationService.getParticipantSchemeMandatory());
         identifierFormatter.setSchemeValidationPattern(configurationService.getParticipantIdentifierSchemeRexExp());
@@ -93,19 +116,41 @@ public class IdentifierFormatterService {
         return identifierFormatter;
     }
 
+    TemplateFormatterType createTemplateFormatterType(List<DBDomainConfiguration> listDomainConf,  String domainCode) {
+        // template for formating the identifier
+        Pattern matchRegExp = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_MATCH_REGEXP);
+        Pattern splitRegExp = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP);
+        String formatTemplate = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_CONCATENATE);
+        String formatNullTemplate = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME);
+
+        return createTemplateFormatterType(matchRegExp, splitRegExp, formatTemplate, formatNullTemplate, domainCode);
+    }
+
+    TemplateFormatterType createTemplateFormatterType( Pattern matchRegExp, Pattern splitRegExp, String formatTemplate, String formatNullTemplate, String domainCode) {
+        // template for formating the identifier
+        if (matchRegExp == null ||  splitRegExp == null) {
+            LOG.info("TemplateFormatterType for domain [{}] not be created. One of the required parameters is empty: " +
+                            "matchRegExp: [{}], splitRegExp: [{}], formatTemplate: [{}],formatNullTemplate: [{}]",
+                    domainCode, matchRegExp, splitRegExp, formatTemplate, formatNullTemplate);
+            return null;
+        }
+        return new TemplateFormatterType(matchRegExp, formatTemplate, formatNullTemplate, splitRegExp, DNSLookupFormatType.ALL_IN_HASH);
+    }
+
     /**
      * Method returns participant identifier formatter for given domain
+     *
      * @param domainCode domain code to get IdentifierFormatter
      */
     @Cacheable(CACHE_NAME_DOMAIN_SUBRESOURCE_IDENTIFIER_FORMATTER)
     public IdentifierFormatter getSubresourceIdentifierFormatter(String domainCode) {
 
         if (StringUtils.isBlank(domainCode)) {
-            throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,  domainCode);
+            throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, domainCode);
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,  domainCode));
-        List<DBDomainConfiguration> listDomainConf =  domainConfigurationDao.getDomainConfiguration(domain);
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, domainCode));
+        List<DBDomainConfiguration> listDomainConf = domainConfigurationDao.getDomainConfiguration(domain);
         IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder
                 .create()
                 .build();
@@ -118,10 +163,11 @@ public class IdentifierFormatterService {
     /**
      * Method returns parsed value for  property on given domain. If property is not found or use system default,
      * system default value is returned.
-     * @param domain domain to get configuration value
+     *
+     * @param domain   domain to get configuration value
      * @param property domain property type
+     * @param <T>      type of returned value
      * @return parsed value for property
-     * @param <T> type of returned value
      */
     public <T> T getDomainConfigurationValue(List<DBDomainConfiguration> domain, SMPDomainPropertyEnum property) {
 
@@ -147,7 +193,7 @@ public class IdentifierFormatterService {
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encrypted domain Properties are not supported!. Can not parse   ["
                     + property + "]!");
         }
-        if (sysPropType.getPropertyType()  == SMPPropertyTypeEnum.PATH ||
+        if (sysPropType.getPropertyType() == SMPPropertyTypeEnum.PATH ||
                 sysPropType.getPropertyType() == SMPPropertyTypeEnum.FILENAME) {
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Path or filename domain properties are not supported!. Can not parse   ["
                     + property + "]!");

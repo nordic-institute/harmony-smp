@@ -176,12 +176,20 @@ public class ConfigurationService {
         return value != null && value;
     }
 
-    public Pattern getParticipantIdentifierSplitRexExp() {
-        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_SPLIT_REGEXP);
+    public Pattern getParticipantIdentifierTmplSplitRexExp() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP);
     }
 
-    public Pattern getParticipantIdentifierUrnValidationRexExp() {
-        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_URN_REGEXP);
+    public Pattern getParticipantIdentifierTmplMatchRexExp() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_MATCH_REGEXP);
+    }
+
+    public String getParticipantIdentifierTmplConcatenate() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_CONCATENATE);
+    }
+
+    public String getParticipantIdentifierTmplConcatenateSchemeNull() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME);
     }
 
     public boolean isProxyEnabled() {
