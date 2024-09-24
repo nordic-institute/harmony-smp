@@ -13,7 +13,7 @@ export class ObjectPropertiesDialogComponent {
 
   title: string = "Object properties";
   displayedColumns: string[] = ['key', 'value'];
-  dataSource : object[];
+  dataSource: object[];
 
   constructor(public dialogRef: MatDialogRef<ObjectPropertiesDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
@@ -21,13 +21,14 @@ export class ObjectPropertiesDialogComponent {
               private datePipe: DatePipe,
               private lookups: GlobalLookups) {
     this.translateService.get(data.i18n).subscribe(title => this.title = title);
-    this.dataSource = Array.of(data.object)
-      .map(async row => await this.translateService.get(row.i18n).subscribe(key => {
-        if (row.type === "dateTime") {
-          let dateTimeFormat = this.lookups.getDateTimeFormat();
-          return this.datePipe.transform(row.value, dateTimeFormat);
-        }
-        return row.value;
-      }));
+    this.dataSource = data.object.map(row => [row.i18n, this.parseValue(row)]);
+  }
+
+  private parseValue(row) {
+    if (row.type === "dateTime") {
+      let dateTimeFormat = this.lookups.getDateTimeFormat();
+      return this.datePipe.transform(row.value, dateTimeFormat);
+    }
+    return row.value;
   }
 }

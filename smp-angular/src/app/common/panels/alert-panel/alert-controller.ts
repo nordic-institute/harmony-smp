@@ -36,26 +36,26 @@ export class AlertController implements SearchTableController {
         i18n: "alert.panel.dialog.title.alert.details",
         object: [{
           i18n: "alert.panel.label.column.alert.date",
-          value: row?.reportingTime,
+          value: row.row?.reportingTime,
           type: "dateTime"
         }, {
           i18n: "alert.panel.label.column.alert.level",
-          value: row?.alertLevel
+          value: row.row?.alertLevel
         }, {
           i18n: "alert.panel.label.column.for.user",
-          value: row?.username
+          value: row.row?.username
         }, {
           i18n: "alert.panel.label.column.credential.type",
-          value: row?.alertDetails['CREDENTIAL_TYPE']
+          value: row.row?.alertDetails['CREDENTIAL_TYPE']
         }, {
           i18n: "alert.panel.label.column.alert.type",
-          value: row?.alertType,
+          value: row.row?.alertType,
         }, {
           i18n: "alert.panel.label.column.alert.status",
-          value: row?.alertStatus,
+          value: row.row?.alertStatus,
         }, {
           i18n: "alert.panel.label.column.status.description",
-          value: row?.alertStatusDesc,
+          value: row.row?.alertStatusDesc,
         }]
       }
     });
