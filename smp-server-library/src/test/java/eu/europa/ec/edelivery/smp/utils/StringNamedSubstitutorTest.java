@@ -59,7 +59,7 @@ class StringNamedSubstitutorTest {
                     "'The quick red fox jumps over the ${DOG_MODE} dog'",
     })
     void resolve(String testString, String values, String expected) {
-        Map<String, Object> mapVal = Stream.of(values.split("\\s*;\\s*"))
+        Map<String, String> mapVal = Stream.of(values.split("\\s*;\\s*"))
                 .map(s -> s.split("\\s*=\\s*"))
                 .collect(HashMap::new, (m, v) -> m.put(v[0], v[1]), Map::putAll);
 
@@ -69,7 +69,7 @@ class StringNamedSubstitutorTest {
 
     @Test
     void testTransientResolutionForResourceWithUTF8() throws UnsupportedEncodingException {
-        Map<String, Object> mapProperties = new HashMap<>();
+        Map<String, String> mapProperties = new HashMap<>();
         mapProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), "value");
         mapProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), "scheme");
         String serviceGroupWithUt8 = URLDecoder.decode(SERVICE_GROUP_WITH_UTF8, "UTF-8");
@@ -87,7 +87,7 @@ class StringNamedSubstitutorTest {
 
     @Test
     void testTransientResolutionWithUTF8String() throws UnsupportedEncodingException {
-        Map<String, Object> mapProperties = new HashMap<>();
+        Map<String, String> mapProperties = new HashMap<>();
         mapProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), "value");
         mapProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), "scheme");
         String serviceGroupWithUt8 = URLDecoder.decode(TEST_UTF8_STRING, "UTF-8");

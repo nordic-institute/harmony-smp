@@ -102,14 +102,14 @@ public class ResourceStorage {
         return getDocumentContent(document, true);
     }
     @Transactional
-    public Map<String, Object> getResourceProperties(DBResource resource) {
+    public Map<String, String> getResourceProperties(DBResource resource) {
 
         DBDocument document = documentDao.getDocumentForResource(resource).orElseGet(null);
         if (document == null) {
             LOG.debug("Document not found for resource [{}]", resource);
             return Collections.emptyMap();
         }
-        Map<String, Object> documentProperties = getDocumentProperties(document, true);
+        Map<String, String> documentProperties = getDocumentProperties(document, true);
         // then overwrite with document properties
         documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
         if (resource.getIdentifierScheme() != null) {
@@ -119,7 +119,7 @@ public class ResourceStorage {
     }
 
     @Transactional
-    public Map<String, Object> getSubresourceProperties(DBResource resource, DBSubresource subresource) {
+    public Map<String, String> getSubresourceProperties(DBResource resource, DBSubresource subresource) {
 
         DBDocument document = documentDao.getDocumentForSubresource(subresource).orElseGet(null);
         if (document == null) {
@@ -127,7 +127,7 @@ public class ResourceStorage {
             return Collections.emptyMap();
         }
 
-        Map<String, Object> documentProperties = getDocumentProperties(document, true);
+        Map<String, String> documentProperties = getDocumentProperties(document, true);
         // add resource and subresource properties
         documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
         if (resource.getIdentifierScheme() != null) {
@@ -147,12 +147,12 @@ public class ResourceStorage {
      * @param document document
      * @return document properties the key, value map
      */
-    private Map<String, Object> getDocumentProperties(DBDocument document, boolean followReference) {
+    private Map<String, String> getDocumentProperties(DBDocument document, boolean followReference) {
         if (document == null) {
             return Collections.emptyMap();
         }
 
-        Map<String, Object> documentProperties = new HashMap<>();
+        Map<String, String> documentProperties = new HashMap<>();
         DBDocument referenceDocument = document.getReferenceDocument();
         if (followReference && referenceDocument != null) {
             if (Boolean.TRUE.equals(referenceDocument.getSharingEnabled())) {
@@ -164,7 +164,7 @@ public class ResourceStorage {
         //add/overwrite with document properties
         documentProperties.put(DOCUMENT_NAME.getPropertyName(), document.getName());
         documentProperties.put(DOCUMENT_MIMETYPE.getPropertyName(), document.getMimeType());
-        documentProperties.put(DOCUMENT_VERSION.getPropertyName(), document.getCurrentVersion());
+        documentProperties.put(DOCUMENT_VERSION.getPropertyName(), String.valueOf(document.getCurrentVersion()));
         document.getDocumentProperties().forEach(property ->
             documentProperties.put(property.getProperty(), property.getValue()));
         return documentProperties;
