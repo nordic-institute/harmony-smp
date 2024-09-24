@@ -151,74 +151,81 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   }
 
   updateUserData(user: UserRo) {
+
+    // capture this to variable because of async call 'this' inside targets the wrong object
+    const thatAdminUserComponent = this;
     // change only allowed data
     this.adminUserService.updateManagedUser(user).subscribe({
       async next(user: UserRo) {
         if (user) {
-          this.selected = null;
-          this.managedUserData = null;
-          this.loadTableData(user.username);
-          this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.update", {username: user.username})));
+          thatAdminUserComponent.selected = null;
+          thatAdminUserComponent.managedUserData = null;
+          thatAdminUserComponent.loadTableData(user.username);
+          thatAdminUserComponent.alertService.success(await lastValueFrom(thatAdminUserComponent.translateService.get("admin.user.success.update", {username: user.username})));
 
         }
       }, error(error) {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        if (thatAdminUserComponent.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
           return;
         }
-        this.alertService.error(error.error?.errorDescription)
+        thatAdminUserComponent.alertService.error(error.error?.errorDescription)
       }
     });
   }
 
   createUserData(user: UserRo) {
     // change only allowed data
+    // capture this to variable because of async call 'this' inside targets the wrong object
+    const thatAdminUserComponent = this;
     this.adminUserService.createManagedUser(user).subscribe({
       async next(user: UserRo) {
         if (user) {
-          this.selected = null;
-          this.managedUserData = null;
-          this.loadTableData(user.username);
-          this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.create", {username: user.username})));
+          thatAdminUserComponent.selected = null;
+          thatAdminUserComponent.managedUserData = null;
+          thatAdminUserComponent.loadTableData(user.username);
+          thatAdminUserComponent.alertService.success(await lastValueFrom(thatAdminUserComponent.translateService.get("admin.user.success.create", {username: user.username})));
         }
       }, error(error) {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        if (thatAdminUserComponent.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
           return;
         }
-        this.alertService.error(error.error?.errorDescription)
+        thatAdminUserComponent.alertService.error(error.error?.errorDescription)
       }
     });
   }
 
   async onDeleteSelectedUserClicked() {
-
+    // capture this to variable because of async call 'this' inside targets the wrong object
+    const thatAdminUserComponent = this;
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: await lastValueFrom(this.translateService.get("admin.user.delete.confirmation.dialog.title", {username: this.managedUserData?.username})),
-        description: await lastValueFrom(this.translateService.get("admin.user.delete.confirmation.dialog.description"))
+        title: await lastValueFrom(thatAdminUserComponent.translateService.get("admin.user.delete.confirmation.dialog.title", {username: this.managedUserData?.username})),
+        description: await lastValueFrom(thatAdminUserComponent.translateService.get("admin.user.delete.confirmation.dialog.description"))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.deleteUser(this.managedUserData);
+        this.deleteUser(thatAdminUserComponent.managedUserData);
       }
     });
   }
 
   deleteUser(user: UserRo) {
-
+    // capture this to variable because of async call 'this' inside targets the wrong object
+    const thatAdminUserComponent = this;
     // change only allowed data
     this.adminUserService.deleteManagedUser(user).subscribe({
       async next(user: UserRo) {
         if (user) {
-          this.selected = null;
-          this.managedUserData = null;
-          this.loadTableData();
-          this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.delete", {username: user.username})));
+          thatAdminUserComponent.selected = null;
+          thatAdminUserComponent.managedUserData = null;
+          thatAdminUserComponent.loadTableData();
+          thatAdminUserComponent.alertService.success(await lastValueFrom(thatAdminUserComponent.translateService.get("admin.user.success.delete", {username: user.username})));
         }
       }, error(error) {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        if (thatAdminUserComponent.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
           return;
         }
-        this.alertService.error(error.error?.errorDescription)
+        thatAdminUserComponent.alertService.error(error.error?.errorDescription)
       }
     });
 
@@ -235,7 +242,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
       if (result) {
         this.selected = null;
         this.managedUserData = null;
-        this.loadTableData();
+        this.loadTableData(user.username);
         this.alertService.success(await lastValueFrom(this.translateService.get("admin.user.success.password.updated")));
       }
     });

@@ -10,18 +10,27 @@ import {
 } from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
-import {AlertMessageService} from '../common/alert-message/alert-message.service';
+import {
+  AlertMessageService
+} from '../common/alert-message/alert-message.service';
 import {ResourceSearchController} from './resource-search-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
-import {SearchTableComponent} from "../common/search-table/search-table.component";
+import {
+  SearchTableComponent
+} from "../common/search-table/search-table.component";
 import {ResourceSearchRo} from "./resource-search-ro.model";
 import {SubresourceSearchRo} from "./subresource-search-ro.model";
-import {ResourceFilterOptionsService} from "../common/services/resource-filter-options.service";
-import {ResourceFilterOptionsRo} from "../common/model/resource-filter-options-ro.model";
+import {
+  ResourceFilterOptionsService
+} from "../common/services/resource-filter-options.service";
+import {
+  ResourceFilterOptionsRo
+} from "../common/model/resource-filter-options-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import {SecurityEventService} from "../security/security-event.service";
 
 @Component({
   templateUrl: './resource-search.component.html',
@@ -47,9 +56,14 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef,
               private resourceFilterOptionsService: ResourceFilterOptionsService,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private securityEventService: SecurityEventService) {
 
     this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_RESOURCE;
+    this.securityEventService.onLogoutSuccessEvent().subscribe(value => {
+      // refresh the search table pn logout
+      this.searchTable.search();
+    });
   }
 
   ngOnInit() {
@@ -64,6 +78,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         this.alertService.exception(await lastValueFrom(this.translateService.get("resource.search.error.fetch.resource.metadata")), err);
       }
     });
+
   }
 
   async initColumns() {
@@ -127,15 +142,15 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
   }
 
   createResourceURL(row: ResourceSearchRo) {
-    return (!row?.domainCode? "" : row.domainCode+ '/')
-          + (!row?.resourceDefUrlSegment?"" : row.resourceDefUrlSegment + '/')
-          + encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
+    return (!row?.domainCode ? "" : row.domainCode + '/')
+      + (!row?.resourceDefUrlSegment ? "" : row.resourceDefUrlSegment + '/')
+      + encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
   }
 
   createServiceMetadataURL(row: ResourceSearchRo, rowSMD: SubresourceSearchRo) {
     return this.createResourceURL(row)
-            + '/' + rowSMD.subresourceDefUrlSegment + '/'
-            + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
+      + '/' + rowSMD.subresourceDefUrlSegment + '/'
+      + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
 
   details(row: any) {

@@ -1,6 +1,7 @@
 <h2 mat-dialog-title>{{ "session.expiration.dialog.title" | translate }}</h2>
 <mat-dialog-content>
-  <div innerHTML='{{"session.expiration.dialog.label.session.about.to.expire" | translate:{timeLeft: data.timeLeft, timeout: data.timeout} }}'></div>
+  <div innerHTML='{{"session.expiration.dialog.label.session.about.to.expire" | translate:{timeLeft: data.timeLeft,
+  timeoutMinutes: sessionDurationInMinutes, timeoutSeconds: sessionDurationInMinutesReminder} }}'></div>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-raised-button mat-dialog-close (click)="onLogoutClicked()" tabindex="-1">

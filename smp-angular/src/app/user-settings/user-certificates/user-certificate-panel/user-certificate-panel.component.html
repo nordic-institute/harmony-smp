@@ -1,28 +1,36 @@
-<mat-expansion-panel [expanded]="_expanded" [formGroup]="credentialForm" (ngSubmit)="onSaveButtonClicked()">
-  <mat-expansion-panel-header style="height: 72px">
-    <div style="display: flex; flex-direction: column;width: 100%; padding-right: 10px">
-      <smp-warning-panel *ngIf="_credential.certificate?.invalid;" class="smp-certificate-warning-panel"
-                         [padding]="false"
-                         icon="error"
-                         label="{{ 'user.certificate.panel.label.invalid.certificate' | translate: { reason: _credential.certificate.invalidReason} }}">
-      </smp-warning-panel>
-      <div style="display: flex;flex-flow: row; align-items: center; width: 100%">
+<mat-expansion-panel [expanded]="_expanded" [formGroup]="credentialForm">
+  <mat-expansion-panel-header style="height: 105px">
+    <div
+      style="display: flex; flex-direction: column;width: 100%; padding-right: 10px;margin-top: 5px">
 
-        <input matInput style="flex-grow: 1; padding: 5px 0" [matTooltip]="credential?.name"
-               [value]="credential?.name"
-               [disabled]="!credential?.active"
-               maxlength="255" readonly>
+      <div
+        style="display: flex;flex-flow: row; align-items: center; width: 100%">
+
+        <mat-form-field style="flex-grow: 1">
+          <mat-label>{{ "user.certificate.panel.label.certificate.id" | translate }}</mat-label>
+          <input matInput
+                 [value]="_credential.name"
+                 maxlength="255" disabled>
+          <mat-hint
+            style="display: flex; flex-direction: row; font-size: 0.8em;overflow: hidden">
+            <span *ngIf="credentialForm.controls['activeFrom'].value;else elseNoDate ">{{ credentialForm.controls["activeFrom"].value | date: dateFormat }}</span>
+            &nbsp;&nbsp;-&nbsp;&nbsp;
+            <span *ngIf="credentialForm.controls['expireOn'].value;else elseNoDate">{{ credentialForm.controls["expireOn"].value | date: dateFormat }}</span>;
+            <span style="overflow: hidden">{{ credentialForm.controls["description"].value }}</span>
+          </mat-hint>
+          <ng-template #elseNoDate><span>&nbsp;/&nbsp;</span></ng-template>
+        </mat-form-field>
 
         <div
-          style="display: flex; flex-direction: row; justify-content: space-between; gap: 3px; padding-left: 5px;">
+          class="user-certificate-control-panel">
           <button id="deleteButton" mat-raised-button
-                  (click)="onDeleteButtonClicked()"
+                  (click)="onDeleteButtonClicked($event)"
                   color="primary">
             <mat-icon>delete</mat-icon>
             <span>{{ "user.certificate.panel.button.delete" | translate }}</span>
           </button>
           <button id="saveButton" mat-raised-button
-                  (click)="onSaveButtonClicked()"
+                  (click)="onSaveButtonClicked($event)"
                   color="primary"
                   [disabled]="!submitButtonEnabled">
             <mat-icon>save</mat-icon>
@@ -30,6 +38,12 @@
           </button>
         </div>
       </div>
+      <smp-warning-panel *ngIf="_credential.certificate?.invalid;"
+                         class="smp-certificate-warning-panel"
+                         [padding]="false"
+                         icon="error"
+                         label="{{ 'user.certificate.panel.label.invalid.certificate' | translate: { reason: _credential.certificate.invalidReason} }}">
+      </smp-warning-panel>
     </div>
   </mat-expansion-panel-header>
   <div class="panel smp-data-panel">
@@ -63,13 +77,17 @@
       <mat-form-field appearance="fill" style="flex-grow: 1">
         <mat-label>{{ "user.certificate.panel.label.validity.dates" | translate }}</mat-label>
         <mat-date-range-input>
-          <input matStartDate formControlName="activeFrom" placeholder="{{ 'user.certificate.panel.placeholder.start.date' | translate }}">
-          <input matEndDate formControlName="expireOn" placeholder="{{ 'user.certificate.panel.placeholder.end.date' | translate }}">
+          <input matStartDate formControlName="activeFrom"
+                 placeholder="{{ 'user.certificate.panel.placeholder.start.date' | translate }}">
+          <input matEndDate formControlName="expireOn"
+                 placeholder="{{ 'user.certificate.panel.placeholder.end.date' | translate }}">
         </mat-date-range-input>
-        <smp-field-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">
+        <smp-field-error
+          *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">
           {{ "user.certificate.panel.label.invalid.start.date" | translate }}
         </smp-field-error>
-        <smp-field-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">
+        <smp-field-error
+          *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">
           {{ "user.certificate.panel.label.invalid.end.date" | translate }}
         </smp-field-error>
       </mat-form-field>

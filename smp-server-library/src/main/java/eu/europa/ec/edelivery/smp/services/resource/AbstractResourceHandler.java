@@ -110,12 +110,13 @@ public class AbstractResourceHandler {
      * @return data handler request data
      */
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
+
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
         if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
         // read and replace properties
-        Map<String, Object> docProp = resourceStorage.getResourceProperties(resource);
+        Map<String, String> docProp = resourceStorage.getResourceProperties(resource);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos, EXPECTED_RESOURCE_CHARSET);
@@ -143,7 +144,7 @@ public class AbstractResourceHandler {
                     resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
 
-        Map<String, Object> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
+        Map<String, String> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos, EXPECTED_RESOURCE_CHARSET);

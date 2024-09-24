@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -46,7 +46,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
     private UIDomainAdminService testInstance;
     @Autowired
     private DomainDao domainDao;
-//     @Autowired
+    //     @Autowired
     @SpyBean
     private SMLIntegrationService smlIntegrationService;
 
@@ -55,7 +55,6 @@ class UIDomainServiceTest extends AbstractServiceTest {
         testUtilsDao.clearData();
         testUtilsDao.createResourceDefinitionsForDomains();
 
-//        smlIntegrationService = Mockito.spy(smlIntegrationService);
         ReflectionTestUtils.setField(testInstance, "smlIntegrationService", smlIntegrationService);
     }
 
@@ -102,9 +101,9 @@ class UIDomainServiceTest extends AbstractServiceTest {
 
     @Test
     void updateSMLDomainData_domainNotFound() {
-        BadRequestException result =  assertThrows(BadRequestException.class, () ->
-                testInstance.updateDomainSmlIntegrationData(-1l, new DomainRO()));
-         assertEquals("Domain does not exist in database!", result.getMessage());
+        BadRequestException result = assertThrows(BadRequestException.class, () ->
+                testInstance.updateDomainSmlIntegrationData(-1L, new DomainRO()));
+        assertEquals("Domain does not exist in database!", result.getMessage());
     }
 
     @Test
@@ -114,9 +113,9 @@ class UIDomainServiceTest extends AbstractServiceTest {
         DomainRO domainRO = new DomainRO();
         domainRO.setSmlSmpId("utestRegistered03");
 
-        BadRequestException result =  assertThrows(BadRequestException.class, () ->
-                    testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-         assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
+        BadRequestException result = assertThrows(BadRequestException.class, () ->
+                testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
+        assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
     }
 
     @Test
@@ -133,9 +132,9 @@ class UIDomainServiceTest extends AbstractServiceTest {
 
         Mockito.doReturn(false).when(smlIntegrationService).isDomainValid(domain);
 
-        BadRequestException result =  assertThrows(BadRequestException.class, () ->
+        BadRequestException result = assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-         assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
+        assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
     }
 
     @Test
@@ -165,7 +164,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    void testGetDomainProperties(){
+    void testGetDomainProperties() {
         DBDomain domain = testUtilsDao.getD1();
         List<DomainPropertyRO> domainROList = testInstance.getDomainProperties(domain.getId());
 
@@ -175,7 +174,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    void testUpdateDomainProperties(){
+    void testUpdateDomainProperties() {
         String newValue = "new value";
         DBDomain domain = testUtilsDao.getD1();
         List<DomainPropertyRO> domainROList = testInstance.getDomainProperties(domain.getId());
@@ -185,7 +184,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
             domainPropertyRO.setValue(newValue);
             domainPropertyRO.setSystemDefault(!domainPropertyRO.isSystemDefault());
         }
-        List<DomainPropertyRO> domainROListUpdated =  testInstance.updateDomainProperties(domain.getId(), domainROList);
+        List<DomainPropertyRO> domainROListUpdated = testInstance.updateDomainProperties(domain.getId(), domainROList);
 
         List<DomainPropertyRO> domainROListUpdated2 = testInstance.getDomainProperties(domain.getId());
         assertEquals(SMPDomainPropertyEnum.values().length, domainROListUpdated2.size());
@@ -204,5 +203,19 @@ class UIDomainServiceTest extends AbstractServiceTest {
         DBDomain result = domainDao.find(domain.getId());
         assertNull(result);
     }
+
+    @Test
+    void deleteDomainMultipleGroups() {
+        DBDomain domain = testUtilsDao.getD1();
+        DBDomain test = domainDao.find(domain.getId());
+        testUtilsDao.createGroup("group1", VisibilityType.PUBLIC, test);
+        testUtilsDao.createGroup("group2", VisibilityType.PRIVATE, test);
+
+        testInstance.deleteDomain(domain.getId());
+
+        DBDomain result = domainDao.find(domain.getId());
+        assertNull(result);
+    }
+
 
 }

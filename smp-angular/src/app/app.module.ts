@@ -101,7 +101,6 @@ import {NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,NGX_MAT_MOMENT_FORMATS, NgxMatMoment
 import {MembershipPanelComponent} from "./common/panels/membership-panel/membership-panel.component";
 import {MemberDialogComponent} from "./common/dialogs/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {MembershipService} from "./common/panels/membership-panel/membership.service";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
 import {UserProfilePanelComponent} from "./common/panels/user-settings-panel/user-profile-panel.component";
@@ -189,9 +188,17 @@ import {
   ReviewDocumentPanelComponent
 } from "./common/panels/review-tasks-panel/review-document-panel/review-document-panel.component";
 import {
-  DocumentMetadataPanelComponent
-} from "./common/panels/document-edit-panel/document-metadata-panel/document-metadata-panel.component";
+  DocumentConfigurationPanelComponent
+} from "./common/panels/document-edit-panel/document-configuration-panel/document-configuration-panel.component";
 
+import {MembershipService} from "./common/services/membership.service";
+import {
+  ReferenceDocumentDialogComponent
+} from "./common/dialogs/reference-document-dialog/reference-document-dialog.component";
+import {
+  ReferenceDocumentService
+} from "./common/services/reference-document.service";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
@@ -225,9 +232,9 @@ import {
     DocumentWizardDialogComponent,
     DocumentEditPanelComponent,
     DocumentEventsPanelComponent,
+    DocumentConfigurationPanelComponent,
     DocumentPropertiesPanelComponent,
     DocumentPropertyDialogComponent,
-    DocumentMetadataPanelComponent,
     DocumentVersionsPanelComponent,
     DomainGroupComponent,
     DomainPanelComponent,
@@ -267,6 +274,7 @@ import {
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
+    ReferenceDocumentDialogComponent,
     ReviewDocumentPanelComponent,
     ReviewTasksComponent,
     ReviewTasksPanelComponent,
@@ -323,6 +331,7 @@ import {
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    MatButtonToggleModule,
     NgxDatatableModule,
     NgxMatDatetimePickerModule,
     NgxMatMomentModule,
@@ -355,6 +364,7 @@ import {
     MembershipService,
     NavigationService,
     PropertyController,
+    ReferenceDocumentService,
     ResourceFilterOptionsService,
     SecurityEventService,
     SecurityService,

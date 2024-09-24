@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.data.model.doc;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
@@ -60,6 +61,11 @@ public class DBDocumentVersionEvent extends BaseEntity {
     @Column(name = "EVENT_TYPE", nullable = false)
     @ColumnDescription(comment = "Document version event type")
     private DocumentVersionEventType eventType = DocumentVersionEventType.CREATE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "EVENT_STATUS", nullable = false)
+    @ColumnDescription(comment = "Document version event type")
+    private DocumentVersionStatusType status = DocumentVersionStatusType.DRAFT;
 
     @Column(name = "EVENT_ON")
     @ColumnDescription(comment = "Date time of the event")
@@ -125,6 +131,14 @@ public class DBDocumentVersionEvent extends BaseEntity {
 
     public void setEventSourceType(EventSourceType eventSourceType) {
         this.eventSourceType = eventSourceType;
+    }
+
+    public DocumentVersionStatusType getStatus() {
+        return status;
+    }
+
+    public void setStatus(DocumentVersionStatusType status) {
+        this.status = status;
     }
 
     public String getDetails() {

@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ContextConfiguration(classes = {UIDocumentService.class, ConversionTestConfig.class, ResourceHandlerService.class,
         OasisSMPResource10.class, OasisSMPResource10Handler.class, OasisSMPSubresource10.class, OasisSMPSubresource10Handler.class, Subresource10Validator.class,})
-public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
+class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIDocumentService testInstance;
@@ -148,7 +148,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId());
         assertNotNull(testDoc.getPayload());
         //when
-        DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc, null);
+        DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc);
         // then
         assertNotNull(result);
     }
@@ -181,7 +181,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         //when
         DocumentRO result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
 
-        Map<String, Object> mapProperties = result.getProperties().stream().collect(Collectors.toMap(DocumentPropertyRO::getProperty, DocumentPropertyRO::getValue));
+        Map<String, String> mapProperties = result.getProperties().stream().collect(Collectors.toMap(DocumentPropertyRO::getProperty, DocumentPropertyRO::getValue));
         String resolved = StringNamedSubstitutor.resolve(result.getPayload(), mapProperties);
         // then
         Assertions.assertThat(resolved).doesNotContain(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());

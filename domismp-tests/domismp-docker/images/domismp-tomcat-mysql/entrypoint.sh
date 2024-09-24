@@ -85,7 +85,7 @@ init_tomcat() {
   rm -rf ${TOMCAT_HOME}/classes
   ln -sf ${TOMCAT_DIR}/classes ${TOMCAT_HOME}/
   # set smp data/security folder
-  mkdir ${DATA_DIR}/smp/
+  mkdir -p ${DATA_DIR}/smp/locales
 
   # sleep a little to avoid mv issues
   sleep 5s
@@ -103,6 +103,8 @@ init_mysql() {
     sleep 3s
     mv /var/lib/mysql ${DATA_DIR}
   fi
+  # set mysql authentication plugin to mysql_native_password
+  printf "\n[mysqld]\nbind-address =  0.0.0.0\ndefault_authentication_plugin = mysql_native_password\n" | tee -a /etc/mysql/my.cnf
 
   rm -rf /var/lib/mysql
   ln -sf ${MYSQL_DATA_DIR} /var/lib/mysql
@@ -119,7 +121,7 @@ init_mysql() {
     echo "[INFO] MySQL ${SMP_DB_SCHEMA}  not found, creating initial DBs"
 
     echo 'Create smp database'
-    mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';drop schema if exists $SMP_DB_SCHEMA;DROP USER IF EXISTS $SMP_DB_USER;  create schema $SMP_DB_SCHEMA;alter database $SMP_DB_SCHEMA charset=utf8; create user $SMP_DB_USER identified by '$SMP_DB_USER_PASSWORD';grant all on $SMP_DB_SCHEMA.* to $SMP_DB_USER;"
+    mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';CREATE USER 'root'@'%' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';drop schema if exists $SMP_DB_SCHEMA;DROP USER IF EXISTS $SMP_DB_USER;  create schema $SMP_DB_SCHEMA;alter database $SMP_DB_SCHEMA charset=utf8; create user $SMP_DB_USER identified by '$SMP_DB_USER_PASSWORD';grant all on $SMP_DB_SCHEMA.* to $SMP_DB_USER;"
 
     if [ -f "/tmp/custom-data/mysql5innodb.sql" ]; then
       echo "Use custom database script! "
@@ -241,7 +243,7 @@ init_smp_properties() {
     echo "# SMP init parameters"
     echo "smp.security.folder=${DATA_DIR}/smp/"
     echo "smp.libraries.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
-    echo "smp.locale.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/locales"
+    echo "smp.locale.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/locales"
     echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
     echo "smp.automation.authentication.external.tls.clientCert.enabled=true"
     echo "bdmsl.integration.enabled=true"

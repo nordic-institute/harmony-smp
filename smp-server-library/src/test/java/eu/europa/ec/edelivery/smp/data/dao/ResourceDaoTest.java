@@ -106,7 +106,7 @@ class ResourceDaoTest extends AbstractBaseDao {
 
         assertTrue(optResult.isPresent());
         assertNotNull(optResult.get().getDocument());
-        assertEquals(docVersion + 1, optResult.get().getDocument().getCurrentVersion());
+        assertEquals(docVersion , optResult.get().getDocument().getCurrentVersion());
         assertEquals(docCount + 1, optResult.get().getDocument().getDocumentVersions().size());
     }
 

@@ -231,12 +231,6 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
     this.onChangeCallback(this.propertyDataSource.data);
   }
 
-
-  public onSaveButtonClicked() {
-    // submit list of properties to the backend
-
-  }
-
   /*
     * reset/reload properties from the server
    */

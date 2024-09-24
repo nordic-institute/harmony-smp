@@ -294,7 +294,6 @@ class CredentialServiceTest extends AbstractJunit5BaseDao {
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.startsWith("Login failed"));
     }
 
-
     @Test
     void testValidateCertificatePolicyLegacyMatchOk() {
         String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";

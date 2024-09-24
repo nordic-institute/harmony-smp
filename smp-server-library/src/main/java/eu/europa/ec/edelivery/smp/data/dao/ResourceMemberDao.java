@@ -31,7 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -112,22 +114,34 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
         }
     }
 
-    public boolean isUserAnyGroupResourceMemberWithRole(Long userId, Long groupId, MembershipRoleType roleType) {
-        LOG.debug("User [{}], group [{}], Role [{}]", userId, groupId, roleType);
-        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT,
+    public boolean isUserAnyGroupsResourceMemberWithRole(Long userId, List<Long> groupId, MembershipRoleType roleType) {
+        LOG.debug("User [{}], groups [{}], Role [{}]", userId, groupId, roleType);
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_ROLE_COUNT,
                 Long.class);
         query.setParameter(PARAM_USER_ID, userId);
-        query.setParameter(PARAM_GROUP_ID, groupId);
+        query.setParameter(PARAM_GROUP_IDS, groupId);
         query.setParameter(PARAM_MEMBERSHIP_ROLE, roleType);
         return query.getSingleResult() > 0;
     }
 
+    public boolean isUserAnyGroupResourceMemberWithRole(Long userId, Long groupId, MembershipRoleType roleType) {
+        LOG.debug("User [{}], group [{}], Role [{}]", userId, groupId, roleType);
+        return isUserAnyGroupsResourceMemberWithRole(userId, Collections.singletonList(groupId), roleType);
+    }
+
     public boolean isUserAnyGroupResourceMember(DBUser user, DBGroup group) {
         LOG.debug("User [{}], group [{}]", user, group);
-        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_COUNT,
+        return isUserAnyGroupsResourceMember(user, Collections.singletonList(group));
+    }
+
+    public boolean isUserAnyGroupsResourceMember(DBUser user, List<DBGroup> groups) {
+        String list = groups.stream().map(DBGroup::getId).map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+        LOG.debug("User [{}], group [{}]", user, list);
+        List<Long> groupIds = groups.stream().map(DBGroup::getId).collect(Collectors.toList());
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_COUNT,
                 Long.class);
         query.setParameter(PARAM_USER_ID, user.getId());
-        query.setParameter(PARAM_GROUP_ID, group.getId());
+        query.setParameter(PARAM_GROUP_IDS, groupIds);
         return query.getSingleResult() > 0;
     }
 

@@ -284,6 +284,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0) not null,
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        REF_DOCUMENT_URL varchar2(1024 char),
         SHARING_ENABLED number(1,0),
         FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID)
@@ -304,6 +305,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CURRENT_VERSION number(10,0),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(255 char),
+        REF_DOCUMENT_URL varchar2(1024 char),
         SHARING_ENABLED number(1,0),
         FK_REF_DOCUMENT_ID number(19,0),
         primary key (ID, REV)
@@ -385,6 +387,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         EVENT_ON timestamp,
         EVENT_SOURCE varchar2(255 char) not null,
         EVENT_TYPE varchar2(255 char) not null,
+        EVENT_STATUS varchar2(255 char) not null,
         EVENT_BY_USERNAME varchar2(64 char),
         FK_DOCUMENT_VERSION_ID number(19,0),
         primary key (ID)
@@ -406,6 +409,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         'Event source UI, API';
 
     comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_TYPE is
+        'Document version event type';
+
+    comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_STATUS is
         'Document version event type';
 
     comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_BY_USERNAME is
@@ -909,9 +915,6 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     alter table SMP_CREDENTIAL 
        add constraint SMP_CRD_USER_NAME_TYPE_IDX unique (CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
-
-    alter table SMP_CREDENTIAL 
-       add constraint SMP_CRD_USER_NAME_RESET_IDX unique (RESET_TOKEN, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
 
     alter table SMP_DOCUMENT_PROPERTY 
        add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);

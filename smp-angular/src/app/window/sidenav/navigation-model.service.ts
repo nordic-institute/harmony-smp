@@ -92,11 +92,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       }
     );
     securityEventService.onLogoutSuccessEvent().subscribe(value => {
-        this.refreshNavigationTree();
+        this.reset();
       }
     );
     securityEventService.onLogoutErrorEvent().subscribe(value => {
-        this.refreshNavigationTree();
+        this.reset();
       }
     );
   }

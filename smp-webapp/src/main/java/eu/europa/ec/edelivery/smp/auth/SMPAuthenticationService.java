@@ -114,7 +114,6 @@ public class SMPAuthenticationService {
             credentialService.delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
             throw e;
         }
-        credentialService.validatePasswordResetToken(resetToken);
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {

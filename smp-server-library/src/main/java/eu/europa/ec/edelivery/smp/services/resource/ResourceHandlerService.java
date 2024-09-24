@@ -70,20 +70,18 @@ public class ResourceHandlerService extends AbstractResourceHandler {
     final GroupDao groupDao;
     final SMLIntegrationService integrationService;
     final DocumentVersionService documentVersionService;
-    private final ResourceDao resourceDao;
 
     public ResourceHandlerService(List<ResourceDefinitionSpi> resourceDefinitionSpiList,
                                   ResourceMemberDao resourceMemberDao,
                                   GroupDao groupDao,
                                   ResourceStorage resourceStorage,
                                   SMLIntegrationService integrationService,
-                                  DocumentVersionService documentVersionService, ResourceDao resourceDao) {
+                                  DocumentVersionService documentVersionService) {
         super(resourceDefinitionSpiList, resourceStorage);
         this.resourceMemberDao = resourceMemberDao;
         this.groupDao = groupDao;
         this.integrationService = integrationService;
         this.documentVersionService = documentVersionService;
-        this.resourceDao = resourceDao;
     }
 
     public void readResource(ResourceRequest resourceRequest,
@@ -178,9 +176,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         if (isNewResource) {
             // associate owners to new resource
             owners.forEach(owner -> resourceMemberDao.setAdminMemberShip(owner, managedResource));
-
             if (managedResource.getGroup() == null) {
-
                 if (resolvedData.getGroup() != null) {
                     managedResource.setGroup(resolvedData.getGroup());
                 } else {
@@ -198,7 +194,6 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                                   ResourceResponse resourceResponse) {
 
         LOG.debug("Handle the CREATE action for resource request [{}]", resourceRequest);
-
         // locate the resource handler
         ResolvedData resolvedData = resourceRequest.getResolvedData();
 

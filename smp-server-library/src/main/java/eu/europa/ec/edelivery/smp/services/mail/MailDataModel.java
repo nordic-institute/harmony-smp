@@ -20,11 +20,17 @@ package eu.europa.ec.edelivery.smp.services.mail;
 
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
+import eu.europa.ec.edelivery.smp.utils.DateTimeUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Mail data model for mail content. The class is used to create mail messages from templates and message
+ * translations. It contains common properties like current date time, SMP instance name, etc.
+ */
 public class MailDataModel {
     private static final String DEFAULT_LANGUAGE = "en";
     public enum CommonProperties {
@@ -33,21 +39,30 @@ public class MailDataModel {
     }
     private final String language;
     private final AlertTypeEnum alertType;
-    Map<String, Object> model = new HashMap<>();
-
+    Map<String, String> model = new HashMap<>();
 
     public MailDataModel(String language, AlertTypeEnum alertType, Map<String, Object> model) {
         this.language = language;
         this.alertType = alertType;
-        this.model.putAll(model);
+        model.forEach((key, value) -> this.model.put(key, valueToString(value)));
     }
 
     public MailDataModel(String language, final DBAlert alert) {
         this.language = language;
         this.alertType = alert.getAlertType();
-        alert.getProperties().forEach((key, prop) ->  this.model.put(key, prop.getValue()));
+        alert.getProperties().forEach((key, prop) ->  this.model.put(key,valueToString(prop.getValue())));
     }
 
+    private String valueToString(Object value) {
+        if (value instanceof OffsetDateTime) {
+            OffsetDateTime odt = (OffsetDateTime) value;
+            return DateTimeUtils.formatOffsetDateTimeWithLocal(odt, getLanguage(), null);
+        }
+        if (value == null) {
+            return "";
+        }
+        return String.valueOf(value);
+    }
     /**
      * Get language of the mail. If not set, default language "en" is used.
      * @return language of the mail or "en" if not set
@@ -60,7 +75,7 @@ public class MailDataModel {
         return alertType;
     }
 
-    public Map<String, Object> getModel() {
+    public Map<String, String> getModel() {
         return model;
     }
 }

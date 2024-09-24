@@ -29,8 +29,8 @@ public class WebConstants {
     public static final int HTTP_RESPONSE_CODE_UPDATED = 200;
     public static final String HTTP_PARAM_DOMAIN = "Domain";
     public static final String HTTP_PARAM_RESOURCE_TYPE = "Resource-Type";
-    public static final String HTTP_PARAM_OWNER_OBSOLETE = "ServiceGroup-Owner";
-    public static final String HTTP_PARAM_OWNER = "Resource-Owner";
+    public static final String HTTP_PARAM_ADMIN_OBSOLETE = "ServiceGroup-Owner";
+    public static final String HTTP_PARAM_ADMIN = "Resource-Admin";
     public static final String HTTP_PARAM_RESOURCE_GROUP = "Resource-Group";
     public static final String HTTP_PARAM_RESOURCE_VISIBILITY = "Resource-Visibility";
 

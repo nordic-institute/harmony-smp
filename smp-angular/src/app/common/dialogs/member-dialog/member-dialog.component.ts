@@ -4,7 +4,6 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {lastValueFrom, Observable} from "rxjs";
 import {SearchUserRo} from "../../model/search-user-ro.model";
-import {MembershipService} from "../../panels/membership-panel/membership.service";
 import {MemberRo} from "../../model/member-ro.model";
 import {DomainRo} from "../../model/domain-ro.model";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
@@ -12,6 +11,7 @@ import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {GroupRo} from "../../model/group-ro.model";
 import {ResourceRo} from "../../model/resource-ro.model";
 import {TranslateService} from "@ngx-translate/core";
+import {MembershipService} from "../../services/membership.service";
 
 
 @Component({
@@ -24,9 +24,7 @@ export class MemberDialogComponent implements OnInit {
 
   message: string;
   messageType: string = "alert-error";
-
   formTitle = "";
-
   currentFilter: string;
 
   _currentMember: MemberRo;

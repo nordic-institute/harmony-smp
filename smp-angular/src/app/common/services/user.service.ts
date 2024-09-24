@@ -4,10 +4,11 @@ import {SmpConstants} from "../../smp.constants";
 import {User} from "../../security/user.model";
 import {AlertMessageService} from "../alert-message/alert-message.service";
 import {SecurityService} from "../../security/security.service";
-import {Observable, Subject} from "rxjs";
+import {lastValueFrom, Observable, Subject} from "rxjs";
 import {CredentialRo} from "../../security/credential.model";
 import {AccessTokenRo} from "../model/access-token-ro.model";
 import {HttpErrorHandlerService} from "../error/http-error-handler.service";
+import {TranslateService} from "@ngx-translate/core";
 
 /**
  * Class handle current user settings such-as profile, credentials, DomiSMP settings... ,
@@ -31,6 +32,7 @@ export class UserService {
     private httpErrorHandlerService: HttpErrorHandlerService,
     private securityService: SecurityService,
     private alertService: AlertMessageService,
+    protected translateService: TranslateService
   ) {
   }
 
@@ -52,13 +54,15 @@ export class UserService {
     }
     this.http.get<CredentialRo>(SmpConstants.REST_PUBLIC_USER_CREDENTIAL_STATUS
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId))
-      .subscribe((response: CredentialRo) => {
-        this.notifyPwdStatusUpdated(response)
-      }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
-          return;
+      .subscribe({
+        next: (response: CredentialRo) => {
+          this.notifyPwdStatusUpdated(response)
+        }, error: (error: any) => {
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
         }
-        this.alertService.error(error.error?.errorDescription)
       });
   }
 
@@ -69,13 +73,15 @@ export class UserService {
     }
     this.http.get<CredentialRo[]>(SmpConstants.REST_PUBLIC_USER_ACCESS_TOKEN_CREDENTIALS
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId))
-      .subscribe((response: CredentialRo[]) => {
-        this.notifyAccessTokensUpdated(response)
-      }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
-          return;
+      .subscribe({
+        next: (response: CredentialRo[]) => {
+          this.notifyAccessTokensUpdated(response)
+        }, error: (error: any) => {
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
         }
-        this.alertService.error(error.error?.errorDescription)
       });
   }
 
@@ -87,14 +93,16 @@ export class UserService {
     this.http.delete<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_ACCESS_TOKEN_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId))
-      .subscribe((response: CredentialRo) => {
-        this.notifyAccessTokenUpdated(response)
-        this.alertService.success("Access token ["+response.name+"] has been deleted!")
-      }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
-          return;
+      .subscribe({
+        next: async (response: CredentialRo) => {
+          this.notifyAccessTokenUpdated(response)
+          this.alertService.success(await lastValueFrom(this.translateService.get("user.access.tokens.success.deleted", {credentialName: response.name})))
+        }, error: (error: any) => {
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
         }
-        this.alertService.error(error.error?.errorDescription)
       });
   }
 
@@ -106,14 +114,16 @@ export class UserService {
     this.http.post<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_ACCESS_TOKEN_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId), credential)
-      .subscribe((response: CredentialRo) => {
-        this.notifyAccessTokenUpdated(response)
-        this.alertService.success("Access token ["+response.name+"] has been updated!")
-      }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
-          return;
+      .subscribe({
+        next: async (response: CredentialRo) => {
+          this.notifyAccessTokenUpdated(response)
+          this.alertService.success(await lastValueFrom(this.translateService.get("user.access.tokens.success.updated", {credentialName: response.name})))
+        }, error: (error: any) => {
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
         }
-        this.alertService.error(error.error?.errorDescription)
       });
   }
 
@@ -125,14 +135,16 @@ export class UserService {
     this.http.post<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId), credential)
-      .subscribe((response: CredentialRo) => {
-        this.notifyCertificateUpdated(response)
-        this.alertService.success("Certificate ["+response.name+"] has been updated!")
-      }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
-          return;
+      .subscribe({
+        next: async (response: CredentialRo) => {
+          this.notifyCertificateUpdated(response)
+          this.alertService.success(await lastValueFrom(this.translateService.get("user.certificate.success.updated", {credentialName: response.name})))
+        }, error: (error: any) => {
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
         }
-        this.alertService.error(error.error?.errorDescription)
       });
   }
 
@@ -144,14 +156,16 @@ export class UserService {
     this.http.delete<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId))
-      .subscribe((response: CredentialRo) => {
-        this.notifyCertificateUpdated(response)
-        this.alertService.success("Certificate ["+response.name+"] has been deleted!")
-      }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
-          return;
+      .subscribe({
+        next: async (response: CredentialRo) => {
+          this.notifyCertificateUpdated(response)
+          this.alertService.success(await lastValueFrom(this.translateService.get("user.certificate.success.deleted", {credentialName: response.name})))
+        }, error: (error: any) => {
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
         }
-        this.alertService.error(error.error?.errorDescription)
       });
   }
 
@@ -174,15 +188,16 @@ export class UserService {
     this.http.put<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId), credential)
-      .subscribe((response: CredentialRo) => {
-        this.notifyCertificateUpdated(response)
-        this.alertService.success("Certificate ["+response.name+"] has been successfully uploaded!")
-      }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
-          return;
+      .subscribe({
+        next: async (response: CredentialRo) => {
+          this.notifyCertificateUpdated(response)
+          this.alertService.success(await lastValueFrom(this.translateService.get("user.certificate.success.uploaded", {credentialName: response.name})))
+        }, error: (error: any) => {
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
         }
-        this.alertService.error(error.error?.errorDescription)
-
       });
   }
 
@@ -199,7 +214,7 @@ export class UserService {
       .subscribe((response: CredentialRo[]) => {
         this.notifyCertificatesUpdated(response)
       }, error => {
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
           return;
         }
         this.alertService.error(error.error?.errorDescription)

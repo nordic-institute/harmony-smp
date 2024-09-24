@@ -164,6 +164,7 @@
         CURRENT_VERSION integer not null,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        REF_DOCUMENT_URL varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         SHARING_ENABLED bit,
         FK_REF_DOCUMENT_ID bigint,
         primary key (ID)
@@ -178,6 +179,7 @@
         CURRENT_VERSION integer,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        REF_DOCUMENT_URL varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         SHARING_ENABLED bit,
         FK_REF_DOCUMENT_ID bigint,
         primary key (ID, REV)
@@ -241,6 +243,7 @@
         EVENT_ON datetime comment 'Date time of the event',
         EVENT_SOURCE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Event source UI, API',
         EVENT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Document version event type',
+        EVENT_STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Document version event type',
         EVENT_BY_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'username identifier of the user who triggered the event',
         FK_DOCUMENT_VERSION_ID bigint,
         primary key (ID)
@@ -609,9 +612,6 @@
 
     alter table SMP_CREDENTIAL 
        add constraint SMP_CRD_USER_NAME_TYPE_IDX unique (CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
-
-    alter table SMP_CREDENTIAL 
-       add constraint SMP_CRD_USER_NAME_RESET_IDX unique (RESET_TOKEN, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
 
     alter table SMP_DOCUMENT_PROPERTY 
        add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);

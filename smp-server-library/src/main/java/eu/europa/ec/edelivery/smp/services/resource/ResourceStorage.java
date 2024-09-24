@@ -63,36 +63,80 @@ public class ResourceStorage {
         this.documentVersionService = documentVersionService;
     }
 
+    /**
+     * Method returns the document content for the resource. If the document has
+     * reference to the document, the content of the document is returned
+     *
+     * @param dbResource resource
+     * @return document content
+     */
+    @Transactional
     public byte[] getDocumentContentForResource(DBResource dbResource) {
         LOG.debug("getDocumentContentForResource: [{}]", dbResource);
-        Optional<DBDocumentVersion> documentVersion = this.documentDao.getCurrentDocumentVersionForResource(dbResource);
+        DBDocument document = documentDao.getDocumentForResource(dbResource).orElseGet(null);
+        return getDocumentContent(document, true);
+    }
+
+    public byte[] getDocumentContent(DBDocument document, boolean followReference) {
+        if (document == null) {
+            LOG.debug("Cam not get bytearray for null document");
+            return null;
+        }
+        DBDocument referenceDocument = document.getReferenceDocument();
+        if (followReference && referenceDocument != null) {
+            if (Boolean.TRUE.equals(referenceDocument.getSharingEnabled())) {
+                // target reference document can not be a reference (prevent cycling)
+                return getDocumentContent(referenceDocument, false);
+            }
+            LOG.warn("Content resolution: Document [{}] has reference document [{}] which is not shared!",document,  document.getReferenceDocument());
+        }
+
+        LOG.debug("getDocumentContent: [{}]", document);
+        Optional<DBDocumentVersion> documentVersion = documentDao.getCurrentDocumentVersionForDocument(document);
         return documentVersion.isPresent() ? documentVersion.get().getContent() : null;
     }
 
     public byte[] getDocumentContentForSubresource(DBSubresource subresource) {
         LOG.debug("getDocumentContentForSubresource: [{}]", subresource);
-        Optional<DBDocumentVersion> documentVersion = documentDao.getCurrentDocumentVersionForSubresource(subresource);
-
-        return documentVersion.isPresent() ? documentVersion.get().getContent() : null;
+        DBDocument document = documentDao.getDocumentForSubresource(subresource).orElseGet(null);
+        return getDocumentContent(document, true);
     }
-
-
     @Transactional
-    public Map<String, Object> getResourceProperties(DBResource resource) {
+    public Map<String, String> getResourceProperties(DBResource resource) {
 
         DBDocument document = documentDao.getDocumentForResource(resource).orElseGet(null);
         if (document == null) {
             LOG.debug("Document not found for resource [{}]", resource);
             return Collections.emptyMap();
         }
-
-        Map<String, Object> documentProperties = new HashMap<>();
+        Map<String, String> documentProperties = getDocumentProperties(document, true);
+        // then overwrite with document properties
         documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
         if (resource.getIdentifierScheme() != null) {
             documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resource.getIdentifierScheme());
         }
-        // add document properties
-        documentProperties.putAll(getDocumentProperties(document));
+        return documentProperties;
+    }
+
+    @Transactional
+    public Map<String, String> getSubresourceProperties(DBResource resource, DBSubresource subresource) {
+
+        DBDocument document = documentDao.getDocumentForSubresource(subresource).orElseGet(null);
+        if (document == null) {
+            LOG.debug("Document not found for subresource [{}]", resource);
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> documentProperties = getDocumentProperties(document, true);
+        // add resource and subresource properties
+        documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
+        if (resource.getIdentifierScheme() != null) {
+            documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resource.getIdentifierScheme());
+        }
+        documentProperties.put(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(), subresource.getIdentifierValue());
+        if (subresource.getIdentifierScheme() != null) {
+            documentProperties.put(SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyName(), subresource.getIdentifierScheme());
+        }
         return documentProperties;
     }
 
@@ -103,42 +147,26 @@ public class ResourceStorage {
      * @param document document
      * @return document properties the key, value map
      */
-    private Map<String, Object> getDocumentProperties(DBDocument document) {
+    private Map<String, String> getDocumentProperties(DBDocument document, boolean followReference) {
         if (document == null) {
             return Collections.emptyMap();
         }
-        Map<String, Object> documentProperties = new HashMap<>();
+
+        Map<String, String> documentProperties = new HashMap<>();
+        DBDocument referenceDocument = document.getReferenceDocument();
+        if (followReference && referenceDocument != null) {
+            if (Boolean.TRUE.equals(referenceDocument.getSharingEnabled())) {
+                // target reference document can not be a reference (prevent cycling)
+                documentProperties.putAll(getDocumentProperties(referenceDocument, false));
+            }
+            LOG.warn("Property resolution: Document [{}] has reference document [{}] which is not shared!",document,  document.getReferenceDocument());
+        }
+        //add/overwrite with document properties
         documentProperties.put(DOCUMENT_NAME.getPropertyName(), document.getName());
         documentProperties.put(DOCUMENT_MIMETYPE.getPropertyName(), document.getMimeType());
-        documentProperties.put(DOCUMENT_VERSION.getPropertyName(), document.getCurrentVersion());
-
-        document.getDocumentProperties().forEach(property -> {
-            documentProperties.put(property.getProperty(), property.getValue());
-        });
-        return documentProperties;
-    }
-
-    @Transactional
-    public Map<String, Object> getSubresourceProperties(DBResource resource, DBSubresource subresource) {
-
-        Map<String, Object> documentProperties = new HashMap<>();
-        DBDocument document = documentDao.getDocumentForSubresource(subresource).orElseGet(null);
-        if (document == null) {
-            LOG.debug("Document not found for subresource [{}]", resource);
-            return Collections.emptyMap();
-        }
-        // add identifiers
-        documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
-        if (resource.getIdentifierScheme() != null) {
-            documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resource.getIdentifierScheme());
-        }
-        documentProperties.put(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(), subresource.getIdentifierValue());
-        if (subresource.getIdentifierScheme() != null) {
-            documentProperties.put(SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyName(), subresource.getIdentifierScheme());
-        }
-
-        // add document properties
-        documentProperties.putAll(getDocumentProperties(document));
+        documentProperties.put(DOCUMENT_VERSION.getPropertyName(), String.valueOf(document.getCurrentVersion()));
+        document.getDocumentProperties().forEach(property ->
+            documentProperties.put(property.getProperty(), property.getValue()));
         return documentProperties;
     }
 
@@ -173,7 +201,9 @@ public class ResourceStorage {
         document.getDocumentVersions().stream()
                 .filter(v -> v.getStatus() == DocumentVersionStatusType.PUBLISHED)
                 .forEach(v -> {v.setStatus(DocumentVersionStatusType.RETIRED);
-                    v.getDocumentVersionEvents().add(documentVersionService.createDocumentVersionEvent(DocumentVersionEventType.RETIRE, EventSourceType.REST_API, null));});
+                    v.getDocumentVersionEvents().add(documentVersionService.createDocumentVersionEvent(DocumentVersionEventType.RETIRE,
+                            DocumentVersionStatusType.RETIRED,
+                            EventSourceType.REST_API, null));});
         managedResource.getDocument().addNewDocumentVersion(version);
         return managedResource;
     }

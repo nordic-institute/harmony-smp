@@ -141,6 +141,19 @@ public class SessionSecurityUtils {
         return null;
     }
 
+    public static Long getSessionUserId() {
+        SMPUserDetails smpUserDetails = getSessionUserDetails();
+        if (smpUserDetails == null) {
+            LOG.warn("No SMPUserDetails object!");
+            return null;
+        }
+        if (smpUserDetails.getUser() == null) {
+            LOG.warn("No User object in SMPUserDetails!");
+            return null;
+        }
+        return smpUserDetails.getUser().getId();
+    }
+
     public static SecurityUtils.Secret getAuthenticationSecret() {
         SMPUserDetails smpUserDetails = getSessionUserDetails();
         if (smpUserDetails == null) {

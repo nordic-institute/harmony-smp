@@ -1,6 +1,6 @@
 import {Component, Inject, Input} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../../../../common/model/domain-ro.model";
 import {AlertMessageService} from "../../../../common/alert-message/alert-message.service";
 import {VisibilityEnum} from "../../../../common/enums/visibility.enum";
@@ -38,8 +38,8 @@ export class GroupDialogComponent {
     this._currentDomain = data.domain;
 
     this.groupForm = formBuilder.group({
-      'name': new FormControl({value: null}),
-      'description': new FormControl({value: null}),
+      'name': new FormControl({value: null},  Validators.maxLength(512)),
+      'description': new FormControl({value: null}, Validators.maxLength(1024)),
       'visibility': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
@@ -117,7 +117,10 @@ export class GroupDialogComponent {
     }, (error) => {
       this.alertService.error(error.error?.errorDescription)
     });
+  }
 
+  public inputDataError = (controlName: string, errorName: string) => {
+    return this.groupForm.controls[controlName].hasError(errorName);
   }
 
   public saveGroup(group: GroupRo) {

@@ -175,6 +175,7 @@ public class TestDBUtils {
         resource.setVisibility(VisibilityType.PUBLIC);
         if (withExtension) {
             DBDocument document = createDBDocument();
+            document.setSharingEnabled(true);
             DBDocumentVersion documentVersion = createDBDocumentVersion(id, sch, statusType);
             document.addNewDocumentVersion(documentVersion);
             resource.setDocument(document);

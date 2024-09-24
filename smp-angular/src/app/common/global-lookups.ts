@@ -116,6 +116,12 @@ export class GlobalLookups {
     return result;
   }
 
+  public getDateFormat(): string {
+    let locale = this.getCurrentLocale();
+    locale = locale ? locale : this.DEFAULT_LOCALE;
+    return getLocaleDateFormat(locale, FormatWidth.Short);
+  }
+
   private format(str, opt_values) {
     if (opt_values) {
       str = str.replace(/\{([^}]+)}/g, function (match, key) {

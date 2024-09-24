@@ -69,6 +69,8 @@ public class UIResourceService {
     private static final String ACTION_RESOURCE_UPDATE = "UpdateResource";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIResourceService.class);
+    public static final String GROUP_DOES_NOT_EXIST = "Group does not exist!";
+    public static final String GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN = "Group does not belong to the given domain!";
 
 
     private final ResourceDao resourceDao;
@@ -110,7 +112,7 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, GROUP_DOES_NOT_EXIST);
         }
 
         DBResourceFilter filter = DBResourceFilter.createBuilder()
@@ -141,7 +143,7 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, GROUP_DOES_NOT_EXIST);
         }
         DBUser user = userDao.find(userId);
         if (user == null) {
@@ -182,7 +184,7 @@ public class UIResourceService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Resource does not belong to the group!");
         }
         if (!Objects.equals(resource.getGroup().getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Group does not belong to the given domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
         }
         DBDomain resourceDomain = resource.getGroup().getDomain();
         if (smlIntegrationService.isSMLIntegrationEnabled() &&
@@ -199,12 +201,12 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, GROUP_DOES_NOT_EXIST);
         }
 
         DBDomain domain = group.getDomain();
         if (!Objects.equals(domain.getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not belong to the given domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
         }
 
         Optional<DBResourceDef> optRedef = resourceDefDao.getResourceDefByIdentifier(resourceRO.getResourceTypeIdentifier());
@@ -230,6 +232,7 @@ public class UIResourceService {
         resource.setIdentifierScheme(resourceIdentifier.getScheme());
         resource.setIdentifierValue(resourceIdentifier.getValue());
         resource.setVisibility(resourceRO.getVisibility());
+        resource.setReviewEnabled(resourceRO.isReviewEnabled());
         resource.setGroup(group);
         resource.setDomainResourceDef(optDoredef.get());
         resource.setReviewEnabled(resourceRO.isReviewEnabled());
@@ -268,11 +271,11 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, GROUP_DOES_NOT_EXIST);
         }
 
         if (!Objects.equals(group.getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, "Group does not belong to the given domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
         }
 
         Optional<DBResourceDef> optRedef = resourceDefDao.getResourceDefByIdentifier(resourceRO.getResourceTypeIdentifier());
@@ -290,9 +293,26 @@ public class UIResourceService {
         DBResource resource = resourceDao.find(resourceId);
         resource.setVisibility(resourceRO.getVisibility());
         if (resourceRO.isReviewEnabled() != null) {
+            Boolean newValue = isTrue(resourceRO.isReviewEnabled());
+            Boolean oldValue = isTrue(resource.isReviewEnabled());
+            // update resource review enabled in case if it was null before
+            resource.setReviewEnabled(newValue);
+            // check if new status is disabled  and changed
+            if (oldValue != newValue && !newValue) {
+                // update all document versions to non review status
+                uiDocumentService.updateToNonReviewStatuses(resource.getDocument());
+                // update statuses for all subresources
+                resource.getSubresources().stream().forEach(subResource ->
+                    uiDocumentService.updateToNonReviewStatuses(subResource.getDocument()));
+            }
             resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
         }
-        return conversionService.convert(resource, ResourceRO.class);
+        ResourceRO resourceROResult = conversionService.convert(resource, ResourceRO.class);
+        if (StringUtils.isNotBlank(resourceRO.getResourceId())) {
+            // return the same encrypted id so the UI can use update old resource
+            resourceROResult.setResourceId(resourceRO.getResourceId());
+        }
+        return resourceROResult;
     }
 
     @Transactional
@@ -389,7 +409,6 @@ public class UIResourceService {
         DBResourceDef domainResourceDef = resource.getDomainResourceDef().getResourceDef();
         DBDocument document = new DBDocument();
 
-        document.setCurrentVersion(1);
         document.setMimeType(domainResourceDef.getMimeType());
         document.setName(domainResourceDef.getName());
         // create first version of the document
@@ -398,6 +417,7 @@ public class UIResourceService {
         version.setStatus(DocumentVersionStatusType.PUBLISHED);
         version.setDocument(document);
         version.setVersion(1);
+        document.setCurrentVersion(1);
         // generate document content
         document.addNewDocumentVersion(version);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -405,5 +425,4 @@ public class UIResourceService {
         version.setContent(baos.toByteArray());
         return document;
     }
-
 }

@@ -249,6 +249,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       status: EntityStatus.NEW,
       smlRegistered: false,
       smlClientCertAuth: false,
+      adminMemberCount: 0,
     }
   }
 

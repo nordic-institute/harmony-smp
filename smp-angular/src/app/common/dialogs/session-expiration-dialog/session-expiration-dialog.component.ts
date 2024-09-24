@@ -10,6 +10,8 @@ export class SessionExpirationDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               public dialogRef: MatDialogRef<SessionExpirationDialogComponent>,
               public securityService: SecurityService) {
+    // Disable the ability to close the dialog by clicking outside of it
+    dialogRef.disableClose = true;
   }
 
   public onExtendSessionClicked() {
@@ -21,6 +23,14 @@ export class SessionExpirationDialogComponent {
   onLogoutClicked() {
     this.securityService.logout();
     this.dialogRef.close();
+  }
+
+  get sessionDurationInMinutes() {
+    return Math.floor(this.data.timeout / 60);
+  }
+
+  get sessionDurationInMinutesReminder() {
+    return this.data.timeout % 60;
   }
 }
 

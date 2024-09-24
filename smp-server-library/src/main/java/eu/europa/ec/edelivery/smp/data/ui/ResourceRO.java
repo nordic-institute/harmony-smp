@@ -37,13 +37,10 @@ public class ResourceRO extends BaseRO {
     private String resourceTypeIdentifier;
 
     private String identifierValue;
-
     private String identifierScheme;
-
     private boolean smlRegistered = false;
-
     private Boolean reviewEnabled;
-
+    private Boolean hasCurrentUserReviewPermission;
     private VisibilityType visibility = VisibilityType.PUBLIC;
 
     public String getResourceId() {
@@ -100,6 +97,14 @@ public class ResourceRO extends BaseRO {
 
     public void setVisibility(VisibilityType visibility) {
         this.visibility = visibility;
+    }
+
+    public Boolean getHasCurrentUserReviewPermission() {
+        return hasCurrentUserReviewPermission;
+    }
+
+    public void setHasCurrentUserReviewPermission(Boolean hasCurrentUserReviewPermission) {
+        this.hasCurrentUserReviewPermission = hasCurrentUserReviewPermission;
     }
 
     @Override

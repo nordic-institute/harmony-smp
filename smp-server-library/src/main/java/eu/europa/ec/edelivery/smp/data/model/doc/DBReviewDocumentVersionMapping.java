@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
  * @author Joze RIHARSIC
  * @since 5.1
  */
-public class DBReviewDocumentVersion implements Serializable {
+public class DBReviewDocumentVersionMapping {
 
     private Long documentId;
     private Long documentVersionId;
@@ -28,10 +28,10 @@ public class DBReviewDocumentVersion implements Serializable {
     private String target;
     private OffsetDateTime lastUpdatedOn;
 
-    public DBReviewDocumentVersion() {
+    public DBReviewDocumentVersionMapping() {
     }
 
-    public DBReviewDocumentVersion(
+    public DBReviewDocumentVersionMapping(
             Long id,
             Long documentId,
             Long resourceId,

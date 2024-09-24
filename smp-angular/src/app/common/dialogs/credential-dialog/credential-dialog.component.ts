@@ -205,7 +205,23 @@ export class CredentialDialogComponent {
     }
     if (this.isCertificateType) {
       credential.certificate = this.certificateData;
+    } else {
+      let dateFrom = this.credentialForm.controls['activeFrom'].value;
+      if (dateFrom) {
+        // make date mutable and the modification
+        dateFrom = new Date(dateFrom);
+        dateFrom.setHours(0, 0, 0, 0);
+      }
+      credential.activeFrom = dateFrom
+      let dateTo = this.credentialForm.controls['expireOn'].value;
+      if (dateTo) {
+        // make date mutable and the modification
+        dateTo = new Date(dateTo);
+        dateTo.setHours(23, 59, 59, 999);
+      }
+      credential.expireOn = dateTo
     }
+
     return credential;
   }
 

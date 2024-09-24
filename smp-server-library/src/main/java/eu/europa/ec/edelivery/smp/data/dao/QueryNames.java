@@ -39,6 +39,8 @@ public class QueryNames {
 
     public static final String QUERY_DOMAIN_BY_USER_ROLES_COUNT = "DBDomain.getByUserAndRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAndRoles";
+    public static final String QUERY_DOMAIN_FOR_USER = "DBDomain.getAllDomainsForUser";
+    public static final String QUERY_DOMAIN_FOR_USER_COUNT = "DBDomain.getAllDomainsForUserCount";
 
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT = "DBDomain.getByUserAndGroupRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES = "DBDomain.getByUserAndGroupRoles";
@@ -95,8 +97,8 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE_COUNT = "DBResourceMember.getByUserAndResourceCount";
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_COUNT = "DBResourceMember.getByUserAndDomainResourceCount";
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_ROLE_COUNT = "DBResourceMember.getByUserAndDomainRoleResourceCount";
-    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT = "DBResourceMember.getByUserAndGroupsResourcesAndRoleCount";
-    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_COUNT = "DBResourceMember.getByUserAndGroupsResourcesCount";
+    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_ROLE_COUNT = "DBResourceMember.getByUserAndGroupsResourcesAndRoleCount";
+    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_COUNT = "DBResourceMember.getByUserAndGroupsResourcesCount";
     public static final String QUERY_RESOURCE_MEMBERS_COUNT = "DBResourceMember.getByResourceCount";
     public static final String QUERY_RESOURCE_MEMBERS_FILTER_COUNT = "DBResourceMember.getByResourceFilterCount";
     public static final String QUERY_RESOURCE_MEMBERS = "DBResourceMember.getByResource";
@@ -119,19 +121,25 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_URL_SEGMENT = "DBResourceDef.getResourceDefByURLSegment";
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER = "DBResourceDef.getResourceDefByIdentifier";
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION = "DBExtResourceDef.getByIdentifierExtension";
+    public static final String QUERY_RESOURCE_DEF_FOR_USER = "DBResourceDef.getAllForUser";
+    public static final String QUERY_RESOURCE_DEF_FOR_USER_COUNT = "DBResourceDef.getAllForUserCount";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";
-    public static final String QUERY_DOCUMENT_BY_RESOURCE_DEF_SHARING = "DBDocument.getForResourceDEfAndSharingEnabled";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES = "DBDocument.getDocumentReferences";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT = "DBDocument.getDocumentReferencesCount";
     public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
-    public static final String QUERY_DOCUMENT_BY_SUBRESOURCE_DEF_SHARING = "DBDocument.getForSubresourceDEfAndSharingEnabled";
-
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES = "DBDocument.getDocumentReferencesForSubresources";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT = "DBDocument.getDocumentReferencesForSubresourcesCount";
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
 
 
+    public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT = "DBDocumentVersion.forCurrentForDocument";
+
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE = "DBDocumentVersion.forCurrentForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE = "DBDocumentVersion.getAllForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER = "DBDocumentVersion.getAllReviewTasksForUser";
+    public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER_COUNT = "DBDocumentVersion.getAllReviewTasksForUserCount";
 
     public static final String QUERY_GROUP_MEMBER_ALL = "DBGroupMember.getAll";
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS_COUNT = "DBGroupMember.getByUserAndGroupsCount";
@@ -172,6 +180,7 @@ public class QueryNames {
 
     public static final String PARAM_RESOURCE_ID = "resource_id";
     public static final String PARAM_RESOURCE_IDS = "resource_ids";
+    public static final String PARAM_RESOURCE_VISIBILITY = "resource_visibility";
     public static final String PARAM_SUBRESOURCE_ID = "subresource_id";
     // resource identifier value
     public static final String PARAM_RESOURCE_IDENTIFIER = "resource_identifier";
@@ -183,12 +192,12 @@ public class QueryNames {
     public static final String PARAM_RESOURCE_FILTER = "resource_filter";
     public static final String PARAM_RESOURCE_DEF_ID = "resource_def_id";
     public static final String PARAM_RESOURCE_DEF_IDENTIFIER = "resource_def_identifier";
-    public static final String PARAM_SUBRESOURCE_DEF_ID = "subresource_def_id";
-
     public static final String PARAM_REVIEW_ENABLED = "review_enabled";
 
+    public static final String PARAM_SUBRESOURCE_DEF_ID = "subresource_def_id";
     public static final String PARAM_SUBRESOURCE_DEF_IDENTIFIER = "subresource_def_identifier";
     public static final String PARAM_DOMAIN_ID = "domain_id";
+    public static final String PARAM_DOMAIN_VISIBILITY = "domain_visibility";
     public static final String PARAM_DOMAIN_CODE = "domain_code";
     public static final String PARAM_DOMAIN_SML_SMP_ID = "sml_smp_id";
 
@@ -199,6 +208,7 @@ public class QueryNames {
     public static final String PARAM_SHARING_ENABLED = "sharing_enabled";
     public static final String PARAM_STATUS = "status";
 
+    public static final String PARAM_GROUP_VISIBILITY = "group_visibility";
     public static final String PARAM_GROUP_ID = "group_id";
     public static final String PARAM_GROUP_IDS = "group_ids";
     public static final String PARAM_MEMBERSHIP_ROLE = "membership_role";

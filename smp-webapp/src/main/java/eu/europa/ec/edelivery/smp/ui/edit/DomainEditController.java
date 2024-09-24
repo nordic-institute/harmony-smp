@@ -19,7 +19,6 @@
 package eu.europa.ec.edelivery.smp.ui.edit;
 
 
-import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -86,7 +85,8 @@ public class DomainEditController {
 
 
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
+            "(@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public ServiceResult<MemberRO> getDomainMemberList(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
@@ -100,7 +100,8 @@ public class DomainEditController {
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
+            "and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public MemberRO putDomainMember(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
@@ -118,7 +119,8 @@ public class DomainEditController {
     }
 
     @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_DELETE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
+            "and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public MemberRO deleteDomainMember(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
@@ -151,14 +153,17 @@ public class DomainEditController {
 
 
     /**
-     * Method returns domain properties with access rights for domain administrators.
+     * Method returns domain properties with access rights for domain administrators
+     * and group administrators to be able to configure new resources according to the domain settings.
      *
      * @param userEncId   encrypted user identifier
      * @param domainEncId the  encrypted domain identifier
      * @return list of domain properties
      */
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
+            "(@smpAuthorizationService.isDomainAdministrator(#domainEncId) " +
+            " or @smpAuthorizationService.isAnyDomainGroupAdministrator(#domainEncId))")
     public List<DomainPropertyRO> getEditDomainPropertyList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId) {
         logAdminAccess("getDomainPropertyList:" + domainEncId);

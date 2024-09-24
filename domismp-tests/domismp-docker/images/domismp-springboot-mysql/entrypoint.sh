@@ -108,6 +108,7 @@ init_smp() {
   # set smp data/security folder
   mkdir -p "${SMP_HOME}/smp/"
   mkdir -p  "${SMP_HOME}/smp-libs"
+  mkdir -p ${DATA_DIR}/smp/locales
   # copy smp keystore with sml authorized sml certificates
   cp /tmp/artefacts/shared-artefacts/smp-logback.xml "${SMP_HOME}/logback.xml"
   cp "/tmp/artefacts/shared-artefacts/smp-keystore-docker-demo.p12" "${SMP_HOME}/smp/smp-keystore-docker-demo.p12"
@@ -127,7 +128,7 @@ init_smp_properties() {
     echo "# SMP init parameters"
     echo "smp.security.folder=${SMP_HOME}/smp/"
     echo "smp.libraries.folder=${SMP_HOME}/smp-libs"
-    echo "smp.locale.folder=${SMP_HOME}/locales"
+    echo "smp.locale.folder=${SMP_HOME}/smp/locales"
     echo "smp.automation.authentication.external.tls.clientCert.enabled=true"
     echo "bdmsl.integration.enabled=false"
     echo "bdmsl.participant.multidomain.enabled=false"

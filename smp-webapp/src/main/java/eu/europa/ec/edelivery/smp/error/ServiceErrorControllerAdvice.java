@@ -19,10 +19,10 @@
 
 package eu.europa.ec.edelivery.smp.error;
 
-import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +44,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
     @Override
-    @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class, SMPResponseStatusException.class, AuthenticationException.class,})
+    @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class,  AuthenticationException.class,})
     public ResponseEntity handleRuntimeException(RuntimeException ex) {
         return super.handleRuntimeException(ex);
     }
@@ -64,16 +64,16 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
         return buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage() + " - Only SMP Admin or owner of given ServiceGroup is allowed to perform this action", ex);
     }
 
-    ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
+    ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, ErrorBusinessCode businessCode, String msg, Exception exception) {
 
         ResponseEntity response = ErrorResponseBuilder.status(status)
                 .businessCode(businessCode)
+                .errorCode(errorCode)
                 .errorDescription(msg)
                 .build();
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
         String logMsg = errorUniqueId == null ? "Null Error ID" : format("UI Error unique ID: %s", errorUniqueId);
-
         LOG.warn(logMsg, exception);
         return response;
     }

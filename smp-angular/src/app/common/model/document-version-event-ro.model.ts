@@ -1,4 +1,5 @@
 import {SearchTableEntity} from "../search-table/search-table-entity.model";
+import {DocumentVersionsStatus} from "../enums/document-versions-status.enum";
 
 export interface DocumentVersionEventRo extends SearchTableEntity {
   eventType: string;
@@ -6,5 +7,6 @@ export interface DocumentVersionEventRo extends SearchTableEntity {
   username: string;
   eventSourceType: string;
   details: string;
+  documentVersionStatus?: DocumentVersionsStatus;
 }
 

@@ -37,10 +37,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-class DomainGuardTest extends AbstractJunit5BaseDao {
+class DomainGroupGuardTest extends AbstractJunit5BaseDao {
 
     @Autowired
-    DomainGuard testInstance;
+    DomainGroupGuard testInstance;
 
     ResourceRequest resourceRequest = Mockito.mock(ResourceRequest.class);
     SMPUserDetails userDetails = Mockito.mock(SMPUserDetails.class);
@@ -132,7 +132,7 @@ class DomainGuardTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    void testCanReadPrivateDomainAnonimous() {
+    void testCanReadPrivateDomainAnonymous() {
         DBDomain domain = Mockito.mock(DBDomain.class);
         when(domain.getVisibility()).thenReturn(VisibilityType.PRIVATE);
         when(userDetails.getUser()).thenReturn(null);
