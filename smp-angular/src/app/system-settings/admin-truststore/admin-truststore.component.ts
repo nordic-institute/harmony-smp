@@ -25,10 +25,11 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
   trustedCertificateList: CertificateRo[];
   private updateTruststoreCertificatesSub: Subscription = Subscription.EMPTY;
   private updateTruststoreCertificateSub: Subscription = Subscription.EMPTY;
+  // purpose of this value is to reset the file input after the file is uploaded
+  inputFileValue: string = '';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-
   constructor(private truststoreService: AdminTruststoreService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
@@ -111,10 +112,11 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
     this.selected = selected;
   }
 
-
   uploadCertificate(event) {
     const file = event.target.files[0];
     this.truststoreService.uploadCertificate$(file);
+    // reset the file input
+    this.inputFileValue = '';
   }
 
   async onDeleteSelectedCertificateClicked() {

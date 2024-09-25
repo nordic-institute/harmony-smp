@@ -30,6 +30,7 @@
     <mat-toolbar-row class="smp-toolbar-row">
       <div class="custom-file-upload">
         <input #fileInput type="file" id="custom-file-upload" accept=".cer,.crt,.pem,.der"
+               [(ngModel)]="inputFileValue"
                (change)="uploadCertificate($event)">
         <button mat-raised-button mat-flat-button color="primary"
                 (click)="fileInput.click()">{{ "admin.truststore.button.add.certificate" | translate }}

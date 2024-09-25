@@ -102,9 +102,8 @@ public class TruststoreAdminController {
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
             String message = "Error occurred while storing the certificate!";
             LOG.error(message, e);
-            creatEmptyResponse(null, EntityROStatus.ERROR, message);
+            return creatEmptyResponse(null, EntityROStatus.ERROR, message);
         }
-        return null;
     }
 
 
