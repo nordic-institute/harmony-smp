@@ -34,34 +34,7 @@ export class ReviewTasksController implements SearchTableController {
   }
 
   public showDetails(row: any): MatDialogRef<any> {
-    return this.dialog.open(ObjectPropertiesDialogComponent, {
-      data: {
-        i18n: "review.edit.dialog.title",
-        object: [{
-          i18n: "review.edit.panel.label.column.review.date",
-          value: row.row?.lastUpdatedOn,
-          type: "dateTime"
-        }, {
-          i18n: "review.edit.panel.label.column.target",
-          value: row.row?.target,
-        }, {
-          i18n: "review.edit.panel.label.column.version",
-          value: row.row?.version,
-        }, {
-          i18n: "review.edit.panel.label.column.resource.scheme",
-          value: row.row?.resourceIdentifierScheme,
-        }, {
-          i18n: "review.edit.panel.label.column.resource.value",
-          value: row.row?.resourceIdentifierValue,
-        }, {
-          i18n: "review.edit.panel.label.column.subresource.scheme",
-          value: row.row?.subresourceIdentifierScheme,
-        }, {
-          i18n: "review.edit.panel.label.column.subresource.value",
-          value: row.row?.subresourceIdentifierValue,
-        }]
-      }
-    });
+    return null;
   }
 
   public edit(row: any): MatDialogRef<any> {
