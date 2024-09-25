@@ -92,4 +92,23 @@
         <packageUrl regex="true">^pkg:maven/joda\-time/joda\-time@.*$</packageUrl>
         <vulnerabilityName>CVE-2024-23080</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: protobuf-java-3.25.1.jar
+   This is the transitive library of the mysql-connector-j:jar:8.4.0: Check if this is needed when using Mysql-connector-java is upgrades.
+   The is added only for the spring boot demo module which is used only for the Demo and testing. Final smp.war artefact does not include this library.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.protobuf/protobuf-java@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-7254</vulnerabilityName>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-webmvc-5.3.39.jar
+    The vulnerability is not exploitable by SMP usage of the library.
+    The application does not serve static resources through the functional web frameworks WebMvc.fn or WebFlux.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-38816</vulnerabilityName>
+    </suppress>
 </suppressions>
