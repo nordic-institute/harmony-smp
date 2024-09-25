@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -49,15 +49,16 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
      * If more than one result exist, it returns IllegalStateException caused by the database data inconsistency. Only one combination of
      * resource identifier must be registered in database for subresource type.
      *
-     * @param resource         for the subresource type
+     * @param resource      for the subresource type
      * @param subresourceId the subresource Identifier Object
      * @return Optional DBSubresource - empty if no metadata found else with DBSubresource objecdt
      */
 
-    public Optional<DBSubresource> getSubResource(Identifier subresourceId, DBResource resource, String subresourceUrlCtx) {
+    public Optional<DBSubresource> getSubResource(Identifier subresourceId, DBResource resource, String subresourceUrlCtx, boolean isCaseSensitive) {
         LOG.info("GetSubresource for subresource identifier [{}], resource: [{}], and service url [{}]", subresourceId, resource, subresourceUrlCtx);
         try {
-            TypedQuery<DBSubresource> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF, DBSubresource.class);
+            TypedQuery<DBSubresource> query = memEManager.createNamedQuery(
+                    isCaseSensitive ? QUERY_SUBRESOURCE_BY_CS_IDENTIFIER_RESOURCE_SUBRESDEF : QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF, DBSubresource.class);
             query.setParameter(IDENTIFIER_VALUE, subresourceId.getValue());
             query.setParameter(IDENTIFIER_SCHEME, subresourceId.getScheme());
             query.setParameter(PARAM_URL_SEGMENT, subresourceUrlCtx);
@@ -74,7 +75,7 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
     /**
      * Method returns list of DBSubresources of the resource for specific subresources definition
      *
-     * @param identifier the resource Identifier Object
+     * @param identifier               the resource Identifier Object
      * @param subresourceDefIdentifier the resource schema
      * @return List of DBSubresources
      */

@@ -47,6 +47,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme")
 @NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
         " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
+        " AND lower(d.identifierValue) = lower(:identifier_value) " +
+        " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR lower(d.identifierScheme) = lower(:identifier_scheme))")
+@NamedQuery(name = QUERY_RESOURCE_BY_CS_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
+        " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
         " AND d.identifierValue = :identifier_value " +
         " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
         " OR d.identifierScheme = :identifier_scheme)")

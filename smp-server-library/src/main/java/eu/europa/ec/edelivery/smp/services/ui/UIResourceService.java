@@ -222,8 +222,13 @@ public class UIResourceService {
                 domain.getDomainCode(),
                 resourceRO.getIdentifierScheme(),
                 resourceRO.getIdentifierValue());
+        boolean isResourceIdentifierCaseSensitive = identifierService.isResourceIdentifierCaseSensitive(resourceIdentifier, domain.getDomainCode());
 
-        Optional<DBResource> existResource = resourceDao.getResource(resourceIdentifier.getValue(), resourceIdentifier.getScheme(), optRedef.get(), group.getDomain());
+        Optional<DBResource> existResource = resourceDao.getResource(resourceIdentifier.getValue(),
+                resourceIdentifier.getScheme(),
+                optRedef.get(),
+                group.getDomain(),
+                isResourceIdentifierCaseSensitive);
         if (existResource.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
         }

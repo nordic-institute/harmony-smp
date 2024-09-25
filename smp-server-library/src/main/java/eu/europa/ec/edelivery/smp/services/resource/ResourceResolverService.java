@@ -134,9 +134,10 @@ public class ResourceResolverService {
         }
 
         Identifier resourceId = identifierService.normalizeParticipantIdentifier(domain.getDomainCode(), currentParameter);
+        boolean isCaseSensitive = identifierService.isResourceIdentifierCaseSensitive(resourceId, domain.getDomainCode());
         // validate identifier
         validateResourceIdentifier(resourceId);
-        DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId);
+        DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId, isCaseSensitive);
         if (resource == null) {
             // the resource must be found because if action is not "create" action nor the last parameter to be resolved
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE
@@ -186,11 +187,13 @@ public class ResourceResolverService {
         }
         String subResourceDefUrl = pathParameters.get(iParameterIndex);
         // test if subresourceDef exists
-        DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
+        DBSubresourceDef subresourceDef = getSubresourceDefinition(resourceDef, subResourceDefUrl);
         Identifier subResourceId = identifierService.normalizeDocumentIdentifier(
                 domain.getDomainCode(),
                 pathParameters.get(++iParameterIndex));
-        DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
+        boolean isSubResourceCaseSensitive = identifierService.isSubresourceIdentifierCaseSensitive(subResourceId, domain.getDomainCode());
+
+        DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId, isSubResourceCaseSensitive);
         LOG.debug("Got subresource [{}]", subresource);
         if (subresource == null) {
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
@@ -302,10 +305,10 @@ public class ResourceResolverService {
         return resourceDefs.get(0);
     }
 
-    public DBResource resolveResourceIdentifier(DBDomain domain, DBResourceDef resourceDef, Identifier resourceIdentifier) {
+    public DBResource resolveResourceIdentifier(DBDomain domain, DBResourceDef resourceDef, Identifier resourceIdentifier, boolean isCaseSensitive) {
         LOG.info("Resolve resourceIdentifier for parameter [{}]", resourceIdentifier);
         // if domain is null get default domain
-        Optional<DBResource> optResource = resourceDao.getResource(resourceIdentifier.getValue(), resourceIdentifier.getScheme(), resourceDef, domain);
+        Optional<DBResource> optResource = resourceDao.getResource(resourceIdentifier.getValue(), resourceIdentifier.getScheme(), resourceDef, domain, isCaseSensitive);
         return optResource.orElse(null);
     }
 
@@ -352,9 +355,10 @@ public class ResourceResolverService {
      * @param subResourceId
      * @return
      */
-    public DBSubresource resolveSubResourceIdentifier(DBResource resource, String subresourceDefCtx, Identifier subResourceId) {
+    public DBSubresource resolveSubResourceIdentifier(DBResource resource, String subresourceDefCtx, Identifier subResourceId, boolean isCaseSensitive) {
+
         LOG.info("Resolve subResourceIdentifier for doctType [{}] identifier [{}]", subresourceDefCtx, subResourceId);
-        Optional<DBSubresource> optSubResource = subresourceDao.getSubResource(subResourceId, resource, subresourceDefCtx);
+        Optional<DBSubresource> optSubResource = subresourceDao.getSubResource(subResourceId, resource, subresourceDefCtx, isCaseSensitive);
         return optSubResource.orElse(null);
     }
 
@@ -382,7 +386,7 @@ public class ResourceResolverService {
         return subresource;
     }
 
-    public DBSubresourceDef getSubresource(DBResourceDef resourceDef, String urlPathSegment) {
+    public DBSubresourceDef getSubresourceDefinition(DBResourceDef resourceDef, String urlPathSegment) {
         return resourceDef.getSubresources()
                 .stream()
                 .filter(subresourceDef -> StringUtils.equals(subresourceDef.getUrlSegment(), urlPathSegment))

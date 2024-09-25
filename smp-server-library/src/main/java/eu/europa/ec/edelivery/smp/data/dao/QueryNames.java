@@ -81,6 +81,7 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER = "DBDomainResourceDef.getByDomainIdAdResDefIdentifier";
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF = "DBDomainResourceDef.getByDomainResDef";
     public static final String QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN = "DBResource.getResByIdentifierAndResourceDefAndDomain";
+    public static final String QUERY_RESOURCE_BY_CS_IDENTIFIER_RESOURCE_DEF_DOMAIN = "DBResource.getResByCSIdentifierAndResourceDefAndDomain";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_COUNT = "DBResource.getResByDomainIdCount";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT = "DBResource.getResByDomainIdAndResourceDefCount";
 
@@ -107,6 +108,7 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE= "DBResourceMember.getByUserAndResource";
 
     public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF = "DBSubresource.getByIdentifierAndResourceAndSubresourceDef";
+    public static final String QUERY_SUBRESOURCE_BY_CS_IDENTIFIER_RESOURCE_SUBRESDEF = "DBSubresource.getByCSIdentifierAndResourceAndSubresourceDef";
 
     public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID = "DBSubresource.getByIdentifierAndResourceId";
     public static final String QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF = "DBSubresource.getAllForResourceAndTypeIdentifier";

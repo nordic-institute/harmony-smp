@@ -42,6 +42,12 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE", comment = "Service metadata")
 @NamedQuery(name = QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF, query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
         " AND d.subresourceDef.urlSegment=:url_segment" +
+        " AND lower(d.identifierValue) = lower(:identifier_value) " +
+        " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR lower(d.identifierScheme) = lower(:identifier_scheme))"
+)
+@NamedQuery(name = QUERY_SUBRESOURCE_BY_CS_IDENTIFIER_RESOURCE_SUBRESDEF, query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
+        " AND d.subresourceDef.urlSegment=:url_segment" +
         " AND d.identifierValue = :identifier_value " +
         " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
         " OR d.identifierScheme = :identifier_scheme)"

@@ -45,7 +45,7 @@ class SubresourceDaoTest extends AbstractBaseDao {
     void getSubResource() {
         Identifier suberesId = new Identifier(TEST_DOC_ID_1,TEST_DOC_SCHEMA_1 );
         Optional<DBSubresource> subresource = testInstance.getSubResource(suberesId,
-                testUtilsDao.getResourceD1G1RD1(), TEST_SUBRESOURCE_DEF_SMP10_URL);
+                testUtilsDao.getResourceD1G1RD1(), TEST_SUBRESOURCE_DEF_SMP10_URL, false);
 
         assertTrue(subresource.isPresent());
     }
@@ -54,7 +54,7 @@ class SubresourceDaoTest extends AbstractBaseDao {
     void getSubResourceWrongResource() {
         Identifier suberesId = new Identifier(TEST_DOC_ID_1,TEST_DOC_SCHEMA_1 );
         Optional<DBSubresource> subresource = testInstance.getSubResource(suberesId,
-                testUtilsDao.getResourceD2G1RD1(), TEST_SUBRESOURCE_DEF_SMP10_URL);
+                testUtilsDao.getResourceD2G1RD1(), TEST_SUBRESOURCE_DEF_SMP10_URL, false);
 
         assertFalse(subresource.isPresent());
     }

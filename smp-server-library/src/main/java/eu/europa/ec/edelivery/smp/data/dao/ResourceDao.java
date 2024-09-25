@@ -86,7 +86,7 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     /**
-     * The method returns DBResource for the participant identifier, domain, and resource type. If the resource does not exist, it returns an empty Option.
+     * The method returns DBResource for the participant case insenstive identifier, domain, and resource type. If the resource does not exist, it returns an empty Option.
      * If more than one result exist, it returns IllegalStateException caused by database data inconsistency. Only one combination of
      * participant identifier must be registered in database for the domain and the resource type.
      *
@@ -95,9 +95,23 @@ public class ResourceDao extends BaseDao<DBResource> {
      * @return DBResource from the database
      */
     public Optional<DBResource> getResource(String identifierValue, String identifierSchema, DBResourceDef resourceDef, DBDomain domain) {
-        LOG.debug("Get resource (identifier [{}], scheme [{}])", identifierValue, identifierSchema);
+        return getResource(identifierValue, identifierSchema, resourceDef, domain, false);
+    }
+    /**
+     * The method returns DBResource for the participant identifier, domain, and resource type. If the resource does not exist, it returns an empty Option.
+     * If more than one result exist, it returns IllegalStateException caused by database data inconsistency. Only one combination of
+     * participant identifier must be registered in database for the domain and the resource type.
+     *
+     * @param identifierValue  resource identifier value
+     * @param identifierSchema resource identifier schema
+     * @return DBResource from the database
+     */
+    public Optional<DBResource> getResource(String identifierValue, String identifierSchema, DBResourceDef resourceDef, DBDomain domain, boolean isCaseSenstive) {
+        LOG.debug("Get resource (identifier [{}], scheme [{}] for case sensitive identifier [{}])", identifierValue, identifierSchema, isCaseSenstive);
         try {
-            TypedQuery<DBResource> query = memEManager.createNamedQuery(QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, DBResource.class);
+            TypedQuery<DBResource> query = memEManager.createNamedQuery(isCaseSenstive?
+                    QUERY_RESOURCE_BY_CS_IDENTIFIER_RESOURCE_DEF_DOMAIN:
+                    QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, DBResource.class);
             query.setParameter(PARAM_DOMAIN_ID, domain.getId());
             query.setParameter(PARAM_RESOURCE_DEF_ID, resourceDef.getId());
             query.setParameter(IDENTIFIER_VALUE, identifierValue);

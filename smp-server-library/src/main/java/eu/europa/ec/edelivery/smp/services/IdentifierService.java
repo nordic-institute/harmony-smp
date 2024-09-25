@@ -96,4 +96,30 @@ public class IdentifierService {
     private IdentifierFormatter getResourceIdentifierFormatter(final String domainCode) {
         return identifierFormatterService.getResourceIdentifierFormatter(domainCode);
     }
+
+    /**
+     * Check if the identifier is case sensitive or not.
+     *
+     * @param normalizedIdentifier the normalized identifier to check. The identifier must already have defined the scheme.
+     * @param domainCode the domain code
+     * @return true if the identifier is case sensitive, false otherwise
+     */
+    public boolean isResourceIdentifierCaseSensitive(final Identifier normalizedIdentifier, final String domainCode) {
+
+        IdentifierFormatter identifierFormatter =  identifierFormatterService.getResourceIdentifierFormatter(domainCode);
+        return !identifierFormatter.isCaseInsensitiveSchema(normalizedIdentifier.getScheme());
+    }
+
+    /**
+     * Check if the identifier is case sensitive or not.
+     *
+     * @param normalizedIdentifier the normalized identifier to check. The identifier must already have defined the scheme.
+     * @param domainCode the domain code
+     * @return true if the identifier is case sensitive, false otherwise
+     */
+    public boolean isSubresourceIdentifierCaseSensitive(final Identifier normalizedIdentifier, final String domainCode) {
+
+        IdentifierFormatter identifierFormatter =  identifierFormatterService.getSubresourceIdentifierFormatter(domainCode);
+        return !identifierFormatter.isCaseInsensitiveSchema(normalizedIdentifier.getScheme());
+    }
 }
