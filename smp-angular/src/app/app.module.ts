@@ -28,6 +28,7 @@ import {CredentialDialogComponent} from "./common/dialogs/credential-dialog/cred
 import {DataPanelComponent} from "./common/panels/data-panel/data-panel.component";
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from "@angular/material/core";
 import {DatePipe} from './custom-date/date.pipe';
+import {DatePipe as AngularDatePipe} from '@angular/common';
 import {DefaultPasswordDialogComponent} from './security/default-password-dialog/default-password-dialog.component';
 import {DialogComponent} from './common/dialogs/dialog/dialog.component';
 import {DomainPanelComponent} from "./system-settings/admin-domain/domain-panel/domain-panel.component";
@@ -350,6 +351,7 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
     AuthorizedGuard,
     CertificateService,
     DatePipe,
+    AngularDatePipe,
     DnsToolsService,
     DomainService,
     DownloadService,

@@ -17,9 +17,8 @@ import {HttpClient} from '@angular/common/http';
 import {GlobalLookups} from "../../global-lookups";
 import {SearchTableComponent} from "../../search-table/search-table.component";
 import {SecurityService} from "../../../security/security.service";
-import {
-  ObjectPropertiesDialogComponent
-} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 /**
  * This is a generic alert panel component for previewing alert list
@@ -49,7 +48,8 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
               protected http: HttpClient,
               protected alertService: AlertMessageService,
               public dialog: MatDialog,
-              private changeDetector: ChangeDetectorRef) {
+              private changeDetector: ChangeDetectorRef,
+              private translateService: TranslateService) {
   }
 
   ngOnInit() {
@@ -60,57 +60,57 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
     this.changeDetector.detectChanges();
   }
 
-  initColumns() {
+  async initColumns() {
     this.columnPicker.allColumns = [
       {
-        name: 'Alert date',
-        title: "Alert date",
+        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.date")),
+        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.date")),
         prop: 'reportingTime',
         showInitially: true,
         maxWidth: 250,
         cellTemplate: this.dateTimeColumn,
       },
       {
-        name: 'Alert level',
-        title: "Alert level.",
+        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.level")),
+        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.level")),
         prop: 'alertLevel',
         showInitially: true,
         maxWidth: 100,
 
       },
       {
-        name: 'For User',
-        title: "For User",
+        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.for.user")),
+        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.for.user")),
         prop: 'username',
         cellTemplate: this.forUser,
         maxWidth: 200,
         showInitially: true,
       },
       {
-        name: 'Credential type',
-        title: "Credential type.",
+        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.credential.type")),
+        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.credential.type")),
         prop: 'alertDetails',
         maxWidth: 200,
         cellTemplate: this.credentialType,
         showInitially: true,
       },
       {
-        name: 'Alert type',
-        title: "Alert type.",
+        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.type")),
+        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.type")),
         prop: 'alertType',
         cellTemplate: this.truncateText,
         showInitially: true,
       },
       {
-        name: 'Alert status',
-        title: "Alert status.",
+        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.status")),
+        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.status")),
         prop: 'alertStatus',
         showInitially: true,
         maxWidth: 100,
       },
       {
-        name: 'Status desc.',
-        title: "Status desc.",
+        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.status.description")),
+        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.status.description")),
         prop: 'alertStatusDesc',
         cellTemplate: this.truncateText,
         showInitially: true,
@@ -123,17 +123,6 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
 
   ngAfterViewInit() {
     this.initColumns();
-  }
-
-
-  details(row: any) {
-    this.dialog.open(ObjectPropertiesDialogComponent, {
-      data: {
-        title: "Alert details",
-        object: row.alertDetails,
-
-      }
-    });
   }
 
   // for dirty guard...

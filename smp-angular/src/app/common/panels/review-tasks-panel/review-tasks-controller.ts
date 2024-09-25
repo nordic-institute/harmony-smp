@@ -34,12 +34,7 @@ export class ReviewTasksController implements SearchTableController {
   }
 
   public showDetails(row: any): MatDialogRef<any> {
-    return this.dialog.open(ObjectPropertiesDialogComponent, {
-      data: {
-        title: "Review tasks details",
-        object: row,
-      }
-    });
+    return null;
   }
 
   public edit(row: any): MatDialogRef<any> {
