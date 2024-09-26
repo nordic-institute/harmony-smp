@@ -49,7 +49,7 @@ services:
 #      - "7102:7102"
 
   mail-service:
-    image: inbucket/inbucket:3.1.0
+    image: inbucket/inbucket:3.0.0
     hostname: mail-server.smp.local
 #    ports:
 #      - "9005:9000"
