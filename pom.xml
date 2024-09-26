@@ -902,7 +902,11 @@ See the Licence for the specific language governing permissions and limitations 
         <profile>
             <!-- Update license  eupl-1.2 headers to all files which matches filter bellow.
             Note if processStartTag, processEndTag does not match the values in plugin configuration, the license will be added
-             twice. Manually check all changed files!-->
+             twice. Manually check all changed files!
+
+            NOTE: do not forget to run the command before the release:
+            mvn clean process-resources -Pupdate-license-headers
+             -->
             <id>update-license-headers</id>
             <build>
                 <plugins>
@@ -962,7 +966,8 @@ See the Licence for the specific language governing permissions and limitations 
 
             mvn clean process-resources -Plicense-generate-notice
 
-            NOTE: do not forget to commit changed NOTICE.md and third party licenses!
+            NOTE: do not forget to regenerate the NOTICE.md file when adding new dependencies or updating the existing ones
+            and before the release!
             -->
             <id>license-generate-notice</id>
             <build>
