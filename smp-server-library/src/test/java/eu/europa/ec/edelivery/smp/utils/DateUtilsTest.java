@@ -32,10 +32,10 @@ class DateUtilsTest {
     // but the expected date/time separators are the smae
     @ParameterizedTest
     @CsvSource({
-            "2021-06-01T12:00:00Z, DE, '01.06.(20)?21,? 12:00:00 UTC'",
-            "2021-06-01T12:00:00Z, IT, '01/06/(20)?21,? 12:00:00 UTC'",
-            "2007-12-03T10:15:30+01:00, FR, '03/12/(20)?07,? 09:15:30 UTC'",
-            "2021-06-01T12:00:00+02:00, SL, '1. 06. (20)?21,? 10:00:00 UTC'",
+            "2021-10-15T12:00:00Z, DE, '15.10.(20)?21,? 12:00:00 UTC'",
+            "2021-10-15T12:00:00Z, IT, '15/10/(20)?21,? 12:00:00 UTC'",
+            "2007-12-15T10:15:30+01:00, FR, '15/12/(20)?07,? 09:15:30 UTC'",
+            "2021-11-15T12:00:00+02:00, SL, '15. 11. (20)?21,? 10:00:00 UTC'",
     })
     void testFormatOffsetDateTimeAsLocalFormat(String offsetDateTimeStr, String locale, String expectedPattern) {
         // given
