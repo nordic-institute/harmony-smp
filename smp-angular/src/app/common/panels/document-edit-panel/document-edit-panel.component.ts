@@ -750,9 +750,15 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       || this.isDirty();
   }
 
-  get reviewActionButtonDisabled(): boolean {
+  get reviewApproveButtonDisabled(): boolean {
     return !this.reviewEnabled
       || this.documentForm.controls['documentVersionStatus']?.value !== DocumentVersionsStatus.UNDER_REVIEW
+  }
+
+  get reviewRejectButtonDisabled(): boolean {
+    let status = this.documentForm.controls['documentVersionStatus']?.value
+    return !this.reviewEnabled
+      || status !== DocumentVersionsStatus.UNDER_REVIEW && status !== DocumentVersionsStatus.APPROVED;
   }
 
   get publishButtonDisabled(): boolean {
