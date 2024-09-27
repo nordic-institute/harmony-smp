@@ -52,8 +52,8 @@ See the Licence for the specific language governing permissions and limitations 
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.15-SNAPSHOT</edelivery.ssl-auth.version>
-        <edelivery.dynamic-discovery-client.version>2.4-SNAPSHOT</edelivery.dynamic-discovery-client.version>
+        <edelivery.ssl-auth.version>1.15</edelivery.ssl-auth.version>
+        <edelivery.dynamic-discovery-client.version>2.3</edelivery.dynamic-discovery-client.version>
         <bdmsl-api.version>4.3</bdmsl-api.version>
         <!-- plugin versions -->
         <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
