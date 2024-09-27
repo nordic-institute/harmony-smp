@@ -178,9 +178,9 @@ public class ResourceEditController {
      */
 
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and" +
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
             " (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or @smpAuthorizationService.isResourceAdministrator(#resourceEncId))")
-    public ServiceResult<MemberRO> getGroupMemberList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public ServiceResult<MemberRO> getResourceMemberList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                       @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                                       @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
                                                       @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
@@ -195,14 +195,15 @@ public class ResourceEditController {
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
-    public MemberRO putGroupMember(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
+            " (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or @smpAuthorizationService.isResourceAdministrator(#resourceEncId))")
+    public MemberRO addUpdateMemberToResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                    @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                    @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
                                    @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                    @RequestBody MemberRO memberRO) {
 
-        LOG.debug("Add member to group");
+        LOG.debug("Add/Update resource member");
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         Long memberId = memberRO.getMemberId() == null ? null : SessionSecurityUtils.decryptEntityId(memberRO.getMemberId());
@@ -214,15 +215,16 @@ public class ResourceEditController {
     }
 
     @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_DELETE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
-    public MemberRO deleteDomainMember(
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
+            " (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or @smpAuthorizationService.isResourceAdministrator(#resourceEncId))")
+    public MemberRO deleteMemberFromResource(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
             @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
             @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
             @PathVariable(PATH_PARAM_ENC_MEMBER_ID) String memberEncId
     ) {
-        LOG.info("Delete member from group");
+        LOG.info("Delete member from resource");
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         Long memberId = SessionSecurityUtils.decryptEntityId(memberEncId);
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);

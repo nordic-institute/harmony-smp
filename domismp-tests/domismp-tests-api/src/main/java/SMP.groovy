@@ -571,7 +571,7 @@ class SMP implements  AutoCloseable
 	}
 	
 //---------------------- Extract response parameters ----------------------
-// To be deprecated in the future: use instead "retrieveResponseParameters" function
+// To be depcrecated in the future: use instead "retrieveResponseParameters" function
 	def extractResponseParameters(String testType){
 		def headerFound = 0;
 		def urlRefCounter = 0;
@@ -665,7 +665,7 @@ class SMP implements  AutoCloseable
 		extractRequestParameters(testType,testStepName);
 		debugLog("After extractRequestParameters(testType,testStepName)", log)
 		extractResponseParameters(testType);
-		debugLog("After extractResponseParameters(testType)", log)
+		debugLog("After extractResponseParameters($testType)", log)
 		switch(testType.toLowerCase()){
 			case "servicegroup":
 				if(expectedResult.toLowerCase()=="success"){
@@ -725,12 +725,17 @@ class SMP implements  AutoCloseable
 				assert(requestDataTable[0][0]==responseDataTable[0][0]), locateTest()+"Error: in ServiceMetadata returned certificate is ------"+responseDataTable[1][0]+"------ instead of ------"+requestDataTable[1][0]+"------.";
 				break;
 			case "signature":
+				debugLog("Start SMP signature verification ...", log)
+				debugLog("Start extracting signature algorithm ...", log)
 				sigAlgo = extractNodeValue("SignatureMethod", tempoString,null, "Algorithm");
+				debugLog("Signature algorithm=\"$sigAlgo\"", log)
 				assert(sigAlgo!= "0"), locateTest()+"Error: Signature Algorithm couldn't be extracted from the response."
 				assert(SIGNATURE_ALGORITHM==sigAlgo), locateTest()+"Error: Signature Algorithm is "+sigAlgo+" instead of "+SIGNATURE_ALGORITHM+".";
 				// Verify the SMP signature validity
+				debugLog("Start SMP signature validation ...", log)
 				def Boolean validResult = validateSignature(returnDOMDocument(tempoString));
 				assert (validResult == true),locateTest()+"Error: Signature of the SMP is not valid.";
+				debugLog("SMP signature successfully validated.", log)
 				validResult =false;
 
 				// TODO: Enable the extension signature validation.
@@ -1872,7 +1877,304 @@ class SMP implements  AutoCloseable
 		return false
 	}
 	
+//=========================================================================
+//============================ Users functions ============================
+//=========================================================================
+
+//------------------- retrieve metadata for all users ---------------------
+	def static getAllUsersMetadata(log, context, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getAllUsersMetadata\".", log)
+		debugLog("  getAllUsersMetadata  [][]  Get json list of all users metadata ...", log)
+		def userIdent=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/internal/rest/user/$userIdent/search"
+		
+		commandString=["curl", urlToSMP+urlExt,
+                                    "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                    "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                    "-X", "GET",
+                                    "-v"]	
+										 
+		commandResult=runCommandInShell(log, commandString)
+			
+        assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:getAllUsersMetadata: Error while trying to retrieve all users metadata. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		debugLog("  getAllUsersMetadata  [][]  Users metadata retrieved successfully.", log)	
+		return commandResult[0]
+	}
+//---------------------- get single user Metadata -------------------------
+	def static getUserMetadata(log, context, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getUserMetadata\".", log)
+		debugLog("  getUserMetadata  [][]  Get metadata for user \"$username\" ...", log)
+		def jsonSlurper = new JsonSlurper()
+		def userMeta=null
+		
+		def dataMap=jsonSlurper.parseText(getAllUsersMetadata(log, context, authenticationUser, authenticationPwd))
+		
+		dataMap.serviceEntities.each{ use ->
+			if(use.username.toLowerCase().equals(username.toLowerCase())){
+				debugLog("  getUserMetadata  [][]  User \"$username\" found.", log)
+				userMeta=use
+			}
+		}
+		
+		return userMeta
+	}
+
+//------------------------- get single user Id ----------------------------
+	def static getUserId(log, context, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getUserId\".", log)
+		debugLog("  getUserId  [][]  Get userId for username \"$username\" ...", log)
+
+		def dataMap=getUserMetadata(log, context, username, authenticationUser, authenticationPwd)
+		
+		assert(dataMap!=null),"Error:getUserId: Error while trying to retrieve userId for user $username: metadata returned is null"	
+		return dataMap.userId
+	}
 	
+//-------------------------- retrieve user Id -----------------------------
+	def static retrieveUserId(log, context, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"retrieveUserId\".", log)
+		debugLog("  retrieveUserId  [][]  Retrieve userId for username \"$username\" ...", log)
+		
+		def userIdent=null
+		def usId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def dataMap=null
+		def jsonSlurper = new JsonSlurper()
+
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID
+		usId=getUserId(log, context, username)
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/internal/rest/user/$userIdent/$usId/retrieve"
+		
+        commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-v"]	
+										 
+		commandResult=runCommandInShell(log, commandString)
+		        assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:retrieveUserId: Error while trying to retrieving metadata for user $username. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+		debugLog("  retrieveUserId  [][]  Metadata retrieved successfully.", log)	
+		dataMap=jsonSlurper.parseText(commandResult[0])
+		
+		return dataMap.userId
+	}
+
+//---------------------------- get users List -----------------------------
+	def static getUsersList(log, context, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"getUsersList\".", log)
+		debugLog("  getUsersList  [][]  Get all users list ...", log)
+		def usList=[]
+		def jsonSlurper = new JsonSlurper()
+		
+		def dataMap=jsonSlurper.parseText(getAllUsersMetadata(log, context, authenticationUser, authenticationPwd))
+		dataMap.serviceEntities.each{ use ->
+			usList<<use.username
+		}		
+		return usList
+	}
+
+
+
+//----------------------- check if a user exists --------------------------
+	def static boolean userExists(log, context, username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"userExists\".", log)
+		debugLog("  userExists  [][]  Check if user \"$username\" exists ...", log)
+		
+		def dataMap=getUsersList(log, context, authenticationUser, authenticationPwd)
+		if(dataMap*.toLowerCase().contains(username.toLowerCase())){
+			debugLog("  userExists  [][]  User \"$username\" exists.", log)
+			return true
+		}
+		debugLog("  userExists  [][]  User \"$username\" does not exist.", log)
+		return false
+	}
+
+//----------------------------- Create a user -----------------------------
+	def static createUser(log, context, String username, String role="USER", String smpTheme="default_theme", String smpLocale="en", authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"createUser\".", log)
+		debugLog("  createUser  [][]  Creating user \"$username\" ...", log)
+		def json=null
+		def userIdent=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=userExists(log, context, username, authenticationUser, authenticationPwd)
+		
+		if(!exists){
+			json=ifWindowsEscapeJsonString('{\"active\":true, \"username\":\"' + "${username}" + '\", \"role\":\"' + "${role}" + '\",\"smpTheme\":\"' + "${smpTheme}" + '\",\"smpLocale\":\"' + "${smpLocale}"+ '\"	}')
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/internal/rest/user/$userIdent/create"
+		
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "--data", json,
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:createUser: Error while trying to create user $username. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  createUser  [][]  User \"$username\" created successfully.", log)	
+		}else{
+			debugLog("  createUser  [][]  User \"$username\" already exists: skip the creation ...", log)
+		}
+	}	
+
+//----------------------------- Delete a user -----------------------------
+	def static deleteUser(log, context, String username, authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"deleteUser\".", log)
+		debugLog("  deleteUser  [][]  Deleting user \"$username\" ...", log)
+		def userIdent=null
+		def userId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=userExists(log, context, username, authenticationUser, authenticationPwd)
+
+		if(exists){
+			userId=retrieveUserId(log, context, username, authenticationUser, authenticationPwd)
+			xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+			userIdent=USERID		
+			urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+			urlExt="/ui/internal/rest/user/$userIdent/$userId/delete"
+			try{
+				commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "DELETE",
+                                         "-v"]	
+										 
+				commandResult=runCommandInShell(log, commandString)
+			}finally{
+				XSFRTOKEN=null
+			}
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:deleteUser: Error while trying to delete user $username. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+
+			debugLog("  deleteUser  [][]  User \"$username\" successfully deleted.", log)	
+		}else{
+			debugLog("  deleteUser  [][]  User \"$username\" does not exist: skip the deletion ...", log)
+		}
+	}
+
+//----------------------------- Create a user -----------------------------
+	def static UpdateUserPasswordFor(log, context, String username, String oldPass="123456", String newPass="DomibusEdel-12345", String outcome="success", String message="",authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"UpdateUserPasswordFor\".", log)
+		debugLog("  UpdateUserPasswordFor  [][]  Updating password for user \"$username\" from \"$oldPass\" to \"$newPass\" ...", log)
+		def json=null
+		def userIdent=null
+		def usId=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+		def exists=userExists(log, context, username, authenticationUser, authenticationPwd)
+		
+		assert(exists),"Error:UpdateUserPasswordFor: User $username does not exist ..."
+
+		
+		json=ifWindowsEscapeJsonString('{\"currentPassword\":\"' + "${oldPass}" + '\", \"newPassword\":\"' + "${newPass}" + '\"	}')
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID
+		usId=retrieveUserId(log, context, username, authenticationUser, authenticationPwd)
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/internal/rest/user/$userIdent/change-password-for/$usId"
+		
+		try{
+			commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "--data", json,
+                                         "-v"]	
+										 
+			commandResult=runCommandInShell(log, commandString)
+		}finally{
+			XSFRTOKEN=null
+		}
+		if(outcome.toLowerCase().equals("success")){
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:UpdateUserPasswordFor: Error while trying to update the password for the user \"$username\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  UpdateUserPasswordFor  [][]  Password for user \"$username\" updated successfully.", log)
+		}else{
+			assert(!(commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/)),"Error:UpdateUserPasswordFor: Error while running command to update the password for the user \"$username\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			if(!message.equals("")){
+				assert(commandResult[1].contains(message)),"Error:UpdateUserPasswordFor: Error while running command to update the password for the user \"$username\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			}
+			debugLog("  UpdateUserPasswordFor  [][]  Password for user \"$username\" was not updated (as expected).", log)
+		}
+			
+	}	
+	
+//----------------------------- Create a user -----------------------------
+	def static UpdateUserPassword(log, context, String username, String oldPass="123456", String newPass="DomibusEdel-12345", String outcome="success", String message="",authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+		debugLog("Calling \"UpdateUserPassword\".", log)
+		debugLog("  UpdateUserPassword  [][]  Updating password for user \"$username\" from \"$oldPass\" to \"$newPass\" ...", log)
+		def json=null
+		def userIdent=null
+		def xsrf_token=null
+		def urlToSMP=null
+		def urlExt=null
+		def commandString=null
+		def commandResult=null 
+
+		
+		json=ifWindowsEscapeJsonString('{\"currentPassword\":\"' + "${oldPass}" + '\", \"newPassword\":\"' + "${newPass}" + '\"	}')
+		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
+		userIdent=USERID
+		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
+		urlExt="/ui/public/rest/user/$userIdent/change-password"
+		
+		try{
+			commandString=["curl", urlToSMP+urlExt,
+                                         "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
+                                         "-H", "Content-Type: application/json",
+                                         "-H","X-XSRF-TOKEN: " + xsrf_token,
+                                         "-X", "PUT",
+                                         "--data", json,
+                                         "-v"]	
+										 
+			commandResult=runCommandInShell(log, commandString)
+		}finally{
+			XSFRTOKEN=null
+		}
+		if(outcome.toLowerCase().equals("success")){
+			assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:UpdateUserPassword: Error while trying to update the password for the user \"$username\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			debugLog("  UpdateUserPassword  [][]  Password for user \"$username\" updated successfully.", log)
+		}else{
+			assert(!(commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/)),"Error:UpdateUserPassword: Error while running command to update the password for the user \"$username\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			if(!message.equals("")){
+				assert(commandResult[0].contains(message)),"Error:UpdateUserPassword: Error while running command to update the password for the user \"$username\". CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
+			}
+			debugLog("  UpdateUserPassword  [][]  Password for user \"$username\" was not updated (as expected).", log)
+		}
+			
+	}
 //=========================================================================
 //========================= Curl command functions ========================
 //=========================================================================
@@ -2053,43 +2355,76 @@ class SMP implements  AutoCloseable
 
 //------------------------ Decode X509 Certificate ------------------------
 	def Certificate decodeX509Certificate(Document doc){
-		def Certificate cert = null;
-		def String certMessage = null;
+		def Certificate cert = null
+		def String certMessage = null
 
 		// Check Certificate
-		def Element smpSig = findElement(doc,"X509Certificate","SMP",null);
-		assert (smpSig != null),locateTest()+"Error: SMP X509Certificate Signature not found in the response.";
+		def Element smpCert = findElement(doc,"X509Certificate","SMP",null)
+		assert (smpCert != null),locateTest()+"Error: SMP X509Certificate Signature not found in the response."
 
-		certMessage=smpSig.getTextContent();
-		def CertificateFactory cf = CertificateFactory.getInstance("X509");
-		//def InputStream is = new ByteArrayInputStream(new sun.misc.BASE64Decoder().decodeBuffer(certMessage));
-		def InputStream is = Base64.decoder.decode(certMessage);
-		cert =cf.generateCertificate(is);
-		return (cert);
+		certMessage=smpCert.getTextContent()
+		debugLog("decodeX509Certificate	[][] smpCert="+smpCert, log)
+		debugLog("decodeX509Certificate	[][] certMessage="+certMessage, log)
+		def CertificateFactory cf = CertificateFactory.getInstance("X509")
+		def InputStream is = new ByteArrayInputStream(Base64.getMimeDecoder().decode(certMessage))
+		cert =cf.generateCertificate(is)
+		return (cert)
 	}
 
 //--------------------------- Validate Signature --------------------------
 	def Boolean validateSignature(Document doc){
-		def Boolean validFlag = true;
-
+		def Boolean coreValidity = true;
+		def Boolean svValidity = true;
+		def Boolean refValidity = true;
+		def PublicKey publicKey=null
+		def XMLSignatureFactory fac=null
+		def DOMValidateContext valContext=null 
+		def XMLSignature signature=null 
+		
+		debugLog("Entering function \"validateSignature\".", log)
 		// Find the signature of the SMP node to extract the signature algorithm
 		def Element smpSig = findElement(doc,"Signature","SMP",SIGNATURE_XMLNS);
 		assert (smpSig != null),locateTest()+"Error: SMP Signature not found in the response.";
-
-		def PublicKey publicKey = decodeX509Certificate(doc).getPublicKey();
-		def XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
-		def DOMValidateContext valContext = new DOMValidateContext(publicKey, smpSig);
-		valContext.setProperty("javax.xml.crypto.dsig.cacheReference", Boolean.TRUE);
-
-		// Unmarshal the XMLSignature.
-		def XMLSignature signature = fac.unmarshalXMLSignature(valContext);
-		try {
-			validFlag = signature.validate(valContext);
+		try{
+			publicKey = decodeX509Certificate(doc).getPublicKey();
 		}catch(Exception ex) {
-			assert (0),"-- validateSignature function -- Error occurred while trying to validate the signature: "+ex;
+			assert (0),"validateSignature	[][] Error occurred while trying to get the public key: "+ex;
 		}
 
-		return (validFlag);
+		fac=XMLSignatureFactory.getInstance("DOM");
+		
+		try{
+			valContext=new DOMValidateContext(publicKey, smpSig);
+		}catch(Exception ex) {
+			assert (0),"validateSignature	[][] Error occurred while trying to get the context: "+ex;
+		}
+		valContext.setProperty("javax.xml.crypto.dsig.cacheReference", Boolean.TRUE);
+		// Unmarshal the XMLSignature.
+		try{
+			signature=fac.unmarshalXMLSignature(valContext);
+		}catch(Exception ex) {
+			assert (0),"validateSignature	[][] Error occurred while trying to unmarshal the xml signature: "+ex;
+		}		
+		try{
+			coreValidity = signature.validate(valContext);
+		}catch(Exception ex) {
+			assert (0),"validateSignature	[][] Error occurred while trying to validate the signature: "+ex;
+		}
+		debugLog("validateSignature	[][] core validation="+coreValidity, log)
+		// Check core validation status
+        if (coreValidity == false) {
+			debugLog("validateSignature	[][] Signature failed core validation ...", log)
+            svValidity=signature.getSignatureValue().validate(valContext)
+			debugLog("validateSignature	[][] Signature value validation status: "+svValidity, log)
+            // check the validation status of each Reference
+			signature.getSignedInfo().getReferences().each{ ref ->
+				InputStream is2= ref.getDigestInputStream()
+				debugLog("validateSignature	[][] Reference \"$ref\" content="+is2, log)
+				refValidity=ref.validate(valContext)
+				debugLog("validateSignature	[][] Reference \"$ref\" validation status: "+svValidity, log)
+			}
+        }		
+		return (coreValidity);
 	}
 
 //-------------------- Validate Signature Extension -----------------------
