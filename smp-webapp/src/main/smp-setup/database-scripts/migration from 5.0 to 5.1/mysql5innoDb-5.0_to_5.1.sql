@@ -1,3 +1,4 @@
+-- update existing tables with new columns
 ALTER TABLE SMP_CREDENTIAL
     ADD RESET_EXPIRE_ON datetime comment 'Date time when reset token will expire',
     ADD RESET_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Reset token for credential reset';
@@ -16,6 +17,23 @@ ALTER TABLE SMP_DOCUMENT_AUD
     ADD SHARING_ENABLED bit,
     ADD FK_REF_DOCUMENT_ID bigint;
 
+ALTER TABLE SMP_DOCUMENT_VERSION
+    ADD STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'RETIRED';
+
+ALTER TABLE SMP_DOCUMENT_VERSION_AUD
+    ADD STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin;
+
+ALTER TABLE SMP_RESOURCE
+    ADD REVIEW_ENABLED bit;
+ALTER TABLE SMP_RESOURCE_AUD
+    ADD REVIEW_ENABLED bit;
+
+ALTER TABLE SMP_RESOURCE_MEMBER
+    ADD PERMISSION_REVIEW bit comment 'User permission to review the resource document';
+ALTER TABLE SMP_RESOURCE_MEMBER_AUD
+    ADD PERMISSION_REVIEW bit;
+
+-- Create new tables
 create table SMP_DOCUMENT_PROPERTY (
    ID bigint not null auto_increment comment 'Unique document property id',
     CREATED_ON datetime not null,
@@ -41,12 +59,6 @@ create table SMP_DOCUMENT_PROPERTY_AUD (
     FK_DOCUMENT_ID bigint,
     primary key (ID, REV)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-ALTER TABLE SMP_DOCUMENT_VERSION
-    ADD STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'RETIRED';
-ALTER TABLE SMP_DOCUMENT_VERSION_AUD
-    ADD STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin;
-
 
 create table SMP_DOCUMENT_VERSION_EVENT (
    ID bigint not null auto_increment comment 'Unique document version event identifier',
@@ -88,17 +100,7 @@ create table SMP_DOMAIN_CONFIGURATION_AUD (
     primary key (ID, REV)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE SMP_RESOURCE
-    ADD REVIEW_ENABLED bit;
-ALTER TABLE SMP_RESOURCE_AUD
-    ADD REVIEW_ENABLED bit;
-
-ALTER TABLE SMP_RESOURCE_MEMBER
-    ADD PERMISSION_REVIEW bit comment 'User permission to review the resource document';
-ALTER TABLE SMP_RESOURCE_MEMBER_AUD
-    ADD PERMISSION_REVIEW bit;
-
-
+-- create constraints and indexes
 alter table SMP_DOCUMENT_PROPERTY
        add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);
 
@@ -137,9 +139,11 @@ alter table SMP_DOMAIN_CONFIGURATION_AUD
    foreign key (REV)
    references SMP_REV_INFO (id);
 
-
+-- ----------------------------------------------
 -- update SMP_DOCUMENT_VERSION STATUS  to RETIRED and current versions to PUBLISHED AND set it to  NOT NULL
 UPDATE SMP_DOCUMENT_VERSION DV
     JOIN SMP_DOCUMENT DOC
        ON DOC.ID = DV.FK_DOCUMENT_ID AND DOC.CURRENT_VERSION = DV.VERSION
     SET STATUS = 'PUBLISHED';
+
+commit;

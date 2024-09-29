@@ -20,14 +20,22 @@ ALTER TABLE SMP_DOCUMENT_AUD ADD REF_DOCUMENT_URL varchar2(1024 char);
 ALTER TABLE SMP_DOCUMENT_AUD ADD SHARING_ENABLED number(1,0);
 ALTER TABLE SMP_DOCUMENT_AUD ADD FK_REF_DOCUMENT_ID number(19,0);
 
+ALTER TABLE SMP_RESOURCE ADD REVIEW_ENABLED number(1,0);
+ALTER TABLE SMP_RESOURCE_AUD ADD REVIEW_ENABLED number(1,0);
+
+ALTER TABLE SMP_RESOURCE_MEMBER ADD PERMISSION_REVIEW number(1,0);
+comment on column SMP_RESOURCE_MEMBER.PERMISSION_REVIEW is
+        'User permission to review the resource document';
+ALTER TABLE SMP_RESOURCE_MEMBER_AUD ADD PERMISSION_REVIEW number(1,0);
+
 create table SMP_DOCUMENT_PROPERTY (
-   ID number(19,0) not null,
+    ID number(19,0) not null,
     CREATED_ON timestamp not null,
     LAST_UPDATED_ON timestamp not null,
     DESCRIPTION varchar2(4000 char),
     PROPERTY_NAME varchar2(255 char),
     PROPERTY_TYPE varchar2(64 char),
-   PROPERTY_VALUE varchar2(1024 char),
+    PROPERTY_VALUE varchar2(1024 char),
     FK_DOCUMENT_ID number(19,0),
     primary key (ID)
 );
@@ -39,7 +47,7 @@ comment on column SMP_DOCUMENT_PROPERTY.DESCRIPTION is
     'Property description';
 
 create table SMP_DOCUMENT_PROPERTY_AUD (
-   ID number(19,0) not null,
+    ID number(19,0) not null,
     REV number(19,0) not null,
     REVTYPE number(3,0),
     CREATED_ON timestamp,
@@ -59,18 +67,18 @@ comment on column SMP_DOCUMENT_VERSION.STATUS is
 ALTER TABLE SMP_DOCUMENT_VERSION_AUD ADD STATUS varchar2(255 char);
 
 create table SMP_DOCUMENT_VERSION_EVENT (
-       ID number(19,0) not null,
-        CREATED_ON timestamp not null,
-        LAST_UPDATED_ON timestamp not null,
-        DETAILS varchar2(1024 char),
-        EVENT_ON timestamp,
-        EVENT_SOURCE varchar2(255 char) not null,
-        EVENT_TYPE varchar2(255 char) not null,
-        EVENT_STATUS varchar2(255 char) not null,
-        EVENT_BY_USERNAME varchar2(64 char),
-        FK_DOCUMENT_VERSION_ID number(19,0),
-        primary key (ID)
-    );
+    ID number(19,0) not null,
+    CREATED_ON timestamp not null,
+    LAST_UPDATED_ON timestamp not null,
+    DETAILS varchar2(1024 char),
+    EVENT_ON timestamp,
+    EVENT_SOURCE varchar2(255 char) not null,
+    EVENT_TYPE varchar2(255 char) not null,
+    EVENT_STATUS varchar2(255 char) not null,
+    EVENT_BY_USERNAME varchar2(64 char),
+    FK_DOCUMENT_VERSION_ID number(19,0),
+    primary key (ID)
+);
 
 comment on table SMP_DOCUMENT_VERSION_EVENT is
     'Document version Events.';
@@ -90,16 +98,16 @@ comment on column SMP_DOCUMENT_VERSION_EVENT.EVENT_BY_USERNAME is
     'username identifier of the user who triggered the event';
 
 create table SMP_DOMAIN_CONFIGURATION (
-       ID number(19,0) not null,
-        CREATED_ON timestamp not null,
-        LAST_UPDATED_ON timestamp not null,
-        DESCRIPTION varchar2(4000 char),
-        PROPERTY_NAME varchar2(512 char) not null,
-        SYSTEM_DEFAULT number(1,0) not null,
-        PROPERTY_VALUE varchar2(4000 char),
-        FK_DOMAIN_ID number(19,0) not null,
-        primary key (ID)
-    );
+    ID number(19,0) not null,
+    CREATED_ON timestamp not null,
+    LAST_UPDATED_ON timestamp not null,
+    DESCRIPTION varchar2(4000 char),
+    PROPERTY_NAME varchar2(512 char) not null,
+    SYSTEM_DEFAULT number(1,0) not null,
+    PROPERTY_VALUE varchar2(4000 char),
+    FK_DOMAIN_ID number(19,0) not null,
+    primary key (ID)
+);
 comment on table SMP_DOMAIN_CONFIGURATION is
     'SMP domain configuration';
 comment on column SMP_DOMAIN_CONFIGURATION.ID is
@@ -128,15 +136,7 @@ create table SMP_DOMAIN_CONFIGURATION_AUD (
     primary key (ID, REV)
 );
 
-ALTER TABLE SMP_RESOURCE ADD REVIEW_ENABLED number(1,0);
-ALTER TABLE SMP_RESOURCE_AUD ADD REVIEW_ENABLED number(1,0);
-
-ALTER TABLE SMP_RESOURCE_MEMBER ADD PERMISSION_REVIEW number(1,0);
-comment on column SMP_RESOURCE_MEMBER.PERMISSION_REVIEW is
-        'User permission to review the resource document';
-
-ALTER TABLE SMP_RESOURCE_MEMBER_AUD ADD PERMISSION_REVIEW number(1,0);
-
+-- create constraints and indexes
 alter table SMP_DOCUMENT_PROPERTY
        add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);
 
@@ -175,13 +175,13 @@ alter table SMP_DOMAIN_CONFIGURATION_AUD
    foreign key (REV)
    references SMP_REV_INFO;
 
-
+-- ----------------------------------------------
 -- update SMP_DOCUMENT_VERSION STATUS  to RETIRED and current versions to PUBLISHED AND set it to  NOT NULL
 UPDATE SMP_DOCUMENT_VERSION  DV
     SET STATUS = 'PUBLISHED'
     where EXISTS (SELECT DOC.id from SMP_DOCUMENT DOC where DOC.ID = DV.FK_DOCUMENT_ID
-    AND DOC.CURRENT_VERSION = DV.VERSION )
+    AND DOC.CURRENT_VERSION = DV.VERSION );
 
-
+commit;
 
 
