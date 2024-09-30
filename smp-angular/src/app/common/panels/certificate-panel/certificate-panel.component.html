@@ -1,46 +1,40 @@
 <div id="certificate-panel" class="mat-elevation-z2">
-  <h3>Selected certificate data</h3>
-  <mat-form-field *ngIf="certificate?.invalidReason">
-    <mat-label>Error message</mat-label>
-    <input matInput placeholder="Error message"
-           [value]="certificate?.invalidReason"
-           readonly>
-  </mat-form-field>
+  <h3>{{ "certificate.panel.title" | translate }}</h3>
   <div style="display: flex;flex-direction: row;flex:1 1">
     <mat-form-field *ngIf="!!this.certificate?.publicKeyType"  style="flex:1 1">
-      <mat-label>Public key type</mat-label>
-      <input matInput placeholder="Public key type"
+      <mat-label>{{ "certificate.panel.label.public.key.type" | translate }}</mat-label>
+      <input matInput placeholder="{{ 'certificate.panel.placeholder.public.key.type' | translate }}"
              id="publicKeyType_id"
              [value]="certificate?.publicKeyType"
              readonly>
     </mat-form-field>
     <mat-form-field *ngIf="!!this.certificate?.alias"  style="flex:1 1">
-      <mat-label>Alias</mat-label>
-      <input matInput placeholder="Alias"
+      <mat-label>{{ "certificate.panel.label.alias" | translate }}</mat-label>
+      <input matInput placeholder="{{ 'certificate.panel.placeholder.alias' | translate }}"
              id="alias_id"
              [value]="certificate?.alias"
              readonly>
     </mat-form-field>
   </div>
   <mat-form-field>
-    <mat-label>SMP certificate ID</mat-label>
-    <input matInput placeholder="SMP certificate ID"
+    <mat-label>{{ "certificate.panel.label.smp.certificate.id" | translate }}</mat-label>
+    <input matInput placeholder="{{ 'certificate.panel.placeholder.smp.certificate.id' | translate }}"
            id="certificateId_id"
            [value]="certificate?.certificateId"
            resizeable="true" readonly>
   </mat-form-field>
   <mat-form-field>
-    <mat-label>Subject Name</mat-label>
-    <input matInput placeholder="Subject Name"
+    <mat-label>{{ "certificate.panel.label.subject.name" | translate }}</mat-label>
+    <input matInput placeholder="{{ 'certificate.panel.placeholder.subject.name' | translate }}"
            id="subject_id"
            [value]="certificate?.subject"
            readonly>
   </mat-form-field>
   <div style="display: flex;flex-direction: row;flex-grow: 1">
     <mat-form-field style="flex-grow: 1">
-      <mat-label>Valid from date</mat-label>
+      <mat-label>{{ "certificate.panel.label.valid.from" | translate }}</mat-label>
       <input matInput [ngxMatDatetimePicker]="pickerFromDate"
-             placeholder="Valid from date"
+             placeholder="{{ 'certificate.panel.placeholder.valid.from' | translate }}"
              [value]="certificate?.validFrom"
              readonly>
       <mat-datepicker-toggle matSuffix [for]="pickerFromDate" style="visibility: hidden"></mat-datepicker-toggle>
@@ -50,8 +44,8 @@
       </ngx-mat-datetime-picker>
     </mat-form-field>
     <mat-form-field style="flex-grow: 1">
-      <mat-label>Valid to date</mat-label>
-      <input matInput [ngxMatDatetimePicker]="pickerToDate" placeholder="Valid to date"
+      <mat-label>{{ "certificate.panel.label.valid.to" | translate }}</mat-label>
+      <input matInput [ngxMatDatetimePicker]="pickerToDate" placeholder="{{ 'certificate.panel.placeholder.valid.to' | translate }}"
              [value]="certificate?.validTo"
              readonly>
       <mat-datepicker-toggle matSuffix [for]="pickerToDate" style="visibility: hidden"></mat-datepicker-toggle>
@@ -64,21 +58,21 @@
     </mat-form-field>
   </div>
   <mat-form-field>
-    <mat-label>Issuer</mat-label>
-    <input matInput placeholder="Issuer"
+    <mat-label>{{ "certificate.panel.label.issuer" | translate }}</mat-label>
+    <input matInput placeholder="{{ 'certificate.panel.placeholder.issuer' | translate }}"
            id="issuer_id"
            [value]="certificate?.issuer"
            readonly>
   </mat-form-field>
   <mat-form-field>
-    <mat-label>Serial Number</mat-label>
-    <input matInput placeholder="Serial Number" id="servialNumber_id"
+    <mat-label>{{ "certificate.panel.label.serial.number" | translate }}</mat-label>
+    <input matInput placeholder="{{ 'certificate.panel.placeholder.serial.number' | translate }}" id="servialNumber_id"
            [value]="certificate?.serialNumber"
            readonly>
   </mat-form-field>
   <mat-form-field>
-    <mat-label>Certificate revocation list URL</mat-label>
-    <input matInput placeholder="Certificate revocation list URL" id="clrUrl_id"
+    <mat-label>{{ "certificate.panel.label.crl" | translate }}</mat-label>
+    <input matInput placeholder="{{ 'certificate.panel.placeholder.crl' | translate }}" id="clrUrl_id"
            [value]="certificate?.crlUrl"
            readonly>
   </mat-form-field>

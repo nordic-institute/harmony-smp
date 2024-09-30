@@ -1,25 +1,28 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {EditDomainService} from "./edit-domain.service";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {DomainRo} from "../../common/model/domain-ro.model";
-import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
+import {
+  CancelDialogComponent
+} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {MatTabGroup} from "@angular/material/tabs";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
-
+import {firstValueFrom} from "rxjs";
+import {
+  HttpErrorHandlerService
+} from "../../common/error/http-error-handler.service";
 
 @Component({
-  moduleId: module.id,
   templateUrl: './edit-domain.component.html',
   styleUrls: ['./edit-domain.component.css']
 })
 export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
 
-  membershipType:MemberTypeEnum = MemberTypeEnum.DOMAIN;
+  membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
   displayedColumns: string[] = ['domainCode'];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected: DomainRo;
@@ -34,11 +37,10 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   @ViewChild('domainTabs') domainTabs: MatTabGroup;
 
   constructor(private domainService: EditDomainService,
-              private alertService: AlertMessageService,
+              private httpErrorHandlerService: HttpErrorHandlerService,
               private dialog: MatDialog) {
     this.refreshDomains();
   }
-
 
   ngOnInit(): void {
     // filter predicate for search the domain
@@ -48,7 +50,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
       };
   }
 
-  ngAfterViewInit():void {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     // MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
@@ -60,12 +62,14 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   refreshDomains() {
     this.loading = true;
     this.domainService.getDomainsForDomainAdminUserObservable()
-      .subscribe((result: DomainRo[]) => {
-        this.updateDomainList(result)
-        this.loading = false;
-      }, (error: any) => {
-        this.loading = false;
-        this.alertService.error(error.error?.errorDescription)
+      .subscribe({
+        next: (result: DomainRo[]) => {
+          this.updateDomainList(result)
+          this.loading = false;
+        }, error: (error: any) => {
+          this.loading = false;
+          this.httpErrorHandlerService.handleHttpError(error);
+        }
       });
   }
 
@@ -84,7 +88,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
       }
 
       if (this.isCurrentTabDirty()) {
-        let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+        let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
         canChangeTab.then((canChange: boolean) => {
           if (canChange) {
             // reset
@@ -119,13 +123,12 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   }
 
 
-
   public domainSelected(domainSelected: DomainRo) {
     if (this.selected === domainSelected) {
       return;
     }
     if (this.isCurrentTabDirty()) {
-      let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+      let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
       canChangeTab.then((canChange: boolean) => {
         if (canChange) {
           // reset
@@ -137,12 +140,12 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     }
   }
 
-
   isCurrentTabDirty(): boolean {
     return false;
   }
+
   isDirty(): boolean {
-    return  this.isCurrentTabDirty();
+    return this.isCurrentTabDirty();
   }
 
   get canNotDelete(): boolean {

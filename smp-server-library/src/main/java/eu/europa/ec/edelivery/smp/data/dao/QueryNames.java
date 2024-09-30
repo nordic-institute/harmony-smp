@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao;
 
 public class QueryNames {
@@ -5,6 +23,8 @@ public class QueryNames {
     public static final String QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET = "DBCredential.getUserByCredentialNameTypeAndTarget";
     public static final String QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET = "DBCredential.getUserByUsernameCredentialTypeAndTarget";
     public static final String QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET = "DBCredential.getUserByUserIdCredentialTypeAndTarget";
+    public static final String QUERY_CREDENTIALS_BY_TYPE_RESET_TOKEN = "DBCredential.getCredentialTypeAndResetToken";
+
 
     public static final String QUERY_CREDENTIAL_ALL = "DBCredential.getAll";
     public static final String QUERY_CREDENTIAL_BY_CERTIFICATE_ID = "DBCredential.getCredentialByCertificateId";
@@ -12,12 +32,15 @@ public class QueryNames {
 
 
     public static final String QUERY_DOMAIN_ALL = "DBDomain.getAll";
+    public static final String QUERY_DOMAIN_ALL_CODES = "DBDomain.getAllCodes";
     public static final String QUERY_DOMAIN_CODE = "DBDomain.getDomainByCode";
 
     public static final String QUERY_DOMAIN_SMP_SML_ID = "DBDomain.getDomainBySmlSmpId";
 
     public static final String QUERY_DOMAIN_BY_USER_ROLES_COUNT = "DBDomain.getByUserAndRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAndRoles";
+    public static final String QUERY_DOMAIN_FOR_USER = "DBDomain.getAllDomainsForUser";
+    public static final String QUERY_DOMAIN_FOR_USER_COUNT = "DBDomain.getAllDomainsForUserCount";
 
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT = "DBDomain.getByUserAndGroupRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES = "DBDomain.getByUserAndGroupRoles";
@@ -55,15 +78,14 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_RESOURCE_DEF_ALL = "DBDomainResourceDef.getAll";
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ALL = "DBDomainResourceDef.getAllForDomain";
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_CODE_SEGMENT_URL = "DBDomainResourceDef.getByDomainCodeResDefURL";
-
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER = "DBDomainResourceDef.getByDomainIdAdResDefIdentifier";
-
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF = "DBDomainResourceDef.getByDomainResDef";
-
     public static final String QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN = "DBResource.getResByIdentifierAndResourceDefAndDomain";
+    public static final String QUERY_RESOURCE_BY_CS_IDENTIFIER_RESOURCE_DEF_DOMAIN = "DBResource.getResByCSIdentifierAndResourceDefAndDomain";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_COUNT = "DBResource.getResByDomainIdCount";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT = "DBResource.getResByDomainIdAndResourceDefCount";
 
+    public static final String QUERY_DOMAIN_CONFIGURATION_ALL = "DBDomainConfiguration.getAllForDomain";
 
     public static final String QUERY_RESOURCE_ALL_FOR_USER = "DBResource.getPublicSearch";
 
@@ -76,8 +98,8 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE_COUNT = "DBResourceMember.getByUserAndResourceCount";
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_COUNT = "DBResourceMember.getByUserAndDomainResourceCount";
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_ROLE_COUNT = "DBResourceMember.getByUserAndDomainRoleResourceCount";
-    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT = "DBResourceMember.getByUserAndGroupsResourcesAndRoleCount";
-    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_COUNT = "DBResourceMember.getByUserAndGroupsResourcesCount";
+    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_ROLE_COUNT = "DBResourceMember.getByUserAndGroupsResourcesAndRoleCount";
+    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_COUNT = "DBResourceMember.getByUserAndGroupsResourcesCount";
     public static final String QUERY_RESOURCE_MEMBERS_COUNT = "DBResourceMember.getByResourceCount";
     public static final String QUERY_RESOURCE_MEMBERS_FILTER_COUNT = "DBResourceMember.getByResourceFilterCount";
     public static final String QUERY_RESOURCE_MEMBERS = "DBResourceMember.getByResource";
@@ -86,6 +108,7 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE= "DBResourceMember.getByUserAndResource";
 
     public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF = "DBSubresource.getByIdentifierAndResourceAndSubresourceDef";
+    public static final String QUERY_SUBRESOURCE_BY_CS_IDENTIFIER_RESOURCE_SUBRESDEF = "DBSubresource.getByCSIdentifierAndResourceAndSubresourceDef";
 
     public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID = "DBSubresource.getByIdentifierAndResourceId";
     public static final String QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF = "DBSubresource.getAllForResourceAndTypeIdentifier";
@@ -100,15 +123,25 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_URL_SEGMENT = "DBResourceDef.getResourceDefByURLSegment";
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER = "DBResourceDef.getResourceDefByIdentifier";
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION = "DBExtResourceDef.getByIdentifierExtension";
+    public static final String QUERY_RESOURCE_DEF_FOR_USER = "DBResourceDef.getAllForUser";
+    public static final String QUERY_RESOURCE_DEF_FOR_USER_COUNT = "DBResourceDef.getAllForUserCount";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";
-
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES = "DBDocument.getDocumentReferences";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT = "DBDocument.getDocumentReferencesCount";
+    public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES = "DBDocument.getDocumentReferencesForSubresources";
+    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT = "DBDocument.getDocumentReferencesForSubresourcesCount";
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
 
 
+    public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT = "DBDocumentVersion.forCurrentForDocument";
+
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE = "DBDocumentVersion.forCurrentForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE = "DBDocumentVersion.getAllForSubresource";
+    public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER = "DBDocumentVersion.getAllReviewTasksForUser";
+    public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER_COUNT = "DBDocumentVersion.getAllReviewTasksForUserCount";
 
     public static final String QUERY_GROUP_MEMBER_ALL = "DBGroupMember.getAll";
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS_COUNT = "DBGroupMember.getByUserAndGroupsCount";
@@ -149,6 +182,7 @@ public class QueryNames {
 
     public static final String PARAM_RESOURCE_ID = "resource_id";
     public static final String PARAM_RESOURCE_IDS = "resource_ids";
+    public static final String PARAM_RESOURCE_VISIBILITY = "resource_visibility";
     public static final String PARAM_SUBRESOURCE_ID = "subresource_id";
     // resource identifier value
     public static final String PARAM_RESOURCE_IDENTIFIER = "resource_identifier";
@@ -160,21 +194,27 @@ public class QueryNames {
     public static final String PARAM_RESOURCE_FILTER = "resource_filter";
     public static final String PARAM_RESOURCE_DEF_ID = "resource_def_id";
     public static final String PARAM_RESOURCE_DEF_IDENTIFIER = "resource_def_identifier";
+    public static final String PARAM_REVIEW_ENABLED = "review_enabled";
+
     public static final String PARAM_SUBRESOURCE_DEF_ID = "subresource_def_id";
-
-
     public static final String PARAM_SUBRESOURCE_DEF_IDENTIFIER = "subresource_def_identifier";
     public static final String PARAM_DOMAIN_ID = "domain_id";
+    public static final String PARAM_DOMAIN_VISIBILITY = "domain_visibility";
     public static final String PARAM_DOMAIN_CODE = "domain_code";
     public static final String PARAM_DOMAIN_SML_SMP_ID = "sml_smp_id";
 
     public static final String PARAM_DOMAIN_IDS = "domain_ids";
 
     public static final String PARAM_DOCUMENT_ID = "document_id";
+    public static final String PARAM_DOCUMENT_TYPE = "document_type";
+    public static final String PARAM_SHARING_ENABLED = "sharing_enabled";
+    public static final String PARAM_STATUS = "status";
 
+    public static final String PARAM_GROUP_VISIBILITY = "group_visibility";
     public static final String PARAM_GROUP_ID = "group_id";
     public static final String PARAM_GROUP_IDS = "group_ids";
     public static final String PARAM_MEMBERSHIP_ROLE = "membership_role";
+    public static final String PARAM_PERMISSION_CAN_REVIEW = "permission_can_review";
 
     public static final String PARAM_MEMBERSHIP_ROLES = "membership_roles";
     public static final String PARAM_USER_USERNAME = "username";
@@ -185,10 +225,7 @@ public class QueryNames {
     public static final String PARAM_CREDENTIAL_NAME = "credential_name";
     public static final String PARAM_CREDENTIAL_TYPE = "credential_type";
     public static final String PARAM_CREDENTIAL_TARGET = "credential_target";
-
-
-
-
+    public static final String PARAM_CREDENTIAL_RESET_TOKEN = "reset_token";
 
     private QueryNames() {
     }

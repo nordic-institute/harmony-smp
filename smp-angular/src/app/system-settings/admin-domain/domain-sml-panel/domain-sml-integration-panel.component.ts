@@ -4,13 +4,15 @@ import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {CertificateRo} from "../../user/certificate-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SMLResult} from "../../domain/sml-result.model";
-import {SmlIntegrationService} from "../../domain/sml-integration.service";
 import {GlobalLookups} from "../../../common/global-lookups";
 import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
+import {CertificateRo} from "../../../common/model/certificate-ro.model";
+import {SmlIntegrationService} from "../../../common/services/sml-integration.service";
+import {SMLResult} from "../../../common/model/sml-result.model";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
@@ -70,7 +72,8 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
               protected smlIntegrationService: SmlIntegrationService,
               protected lookups: GlobalLookups,
               private dialog: MatDialog,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
 
     this.domainForm = formBuilder.group({
       'smlSubdomain': new FormControl({
@@ -158,10 +161,8 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     }
 
     if (!this._domain.smlClientKeyAlias ) {
-      console.log("enableSMLRegister 4")
       return false;
     }
-    console.log("enableSMLRegister 5")
     // entity must be first persisted in order to be enabled to register to SML
     return !this._domain.smlRegistered;
   }
@@ -175,24 +176,24 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       return false;
     }
 
-    // entity must be first persisted in order to be enabled to registering to SML
+    // entity must be first persisted in order to be enabled to register to SML
     return this.isDomainRegistered;
   }
 
   get isDomainRegistered():boolean {
-    return this._domain?.smlRegistered;
+    return !!this._domain?.smlRegistered;
   }
 
 
-  smlUnregisterSelectedDomain() {
+  async smlUnregisterSelectedDomain() {
     if (!this._domain) {
       return false;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Unregister domain to SML",
-        description: "Action will unregister domain: [" + this._domain?.domainCode + "] and all its resources from SML.<br/><br/> Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.unregister.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.unregister.confirmation.dialog.description", {domainCode: this._domain?.domainCode}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -201,15 +202,15 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     })
   }
 
-  smlRegisterSelectedDomain() {
+  async smlRegisterSelectedDomain() {
     if (!this._domain) {
       return false;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Register domain to SML",
-        description: "Action will register domain: [" + this._domain?.domainCode + "] and all its service groups to SML. <br/><br/>Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.register.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.register.confirmation.dialog.description", {domainCode: this._domain?.domainCode}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -219,59 +220,52 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   }
 
   smlRegisterDomain(domain: DomainRo) {
-    //this.searchTable.showSpinner = true;
-
-    this.smlIntegrationService.registerDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
-        // this.searchTable.showSpinner = false;
+    this.smlIntegrationService.registerDomainToSML$(domain).toPromise().then(async (res: SMLResult) => {
         if (res) {
           if (res.success) {
-            this.alertService.success("Domain [" + domain.domainCode + "] registered to sml!");
+            this.alertService.success(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.success.register", {domainCode: domain.domainCode})));
             domain.smlRegistered = true;
             this.domain = domain;
           } else {
-            this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, res.errorMessage);
+            this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register", {domainCode: domain.domainCode})), res.errorMessage);
           }
         } else {
-          this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, "Unknown error. Check logs.");
+          this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register", {domainCode: domain.domainCode})),
+            await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register.unknown.error")));
         }
       },
-      err => {
+      async err => {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           return;
         }
-        //  this.searchTable.showSpinner = false;
-        this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, err);
+        this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.register", {domainCode: domain.domainCode})), err);
       }
     )
   }
 
   smlUnregisterDomain(domain: DomainRo) {
-    //  this.searchTable.showSpinner = true;
-    this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
-        // this.searchTable.showSpinner = false;
+
+    this.smlIntegrationService.unregisterDomainToSML$(domain).toPromise().then(async (res: SMLResult) => {
         if (res) {
           if (res.success) {
-            this.alertService.success("Domain [" + domain.domainCode + "] unregistered from sml!");
+            this.alertService.success(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.success.unregister", {domainCode: domain.domainCode})));
             domain.smlRegistered = false;
             this.domain = domain;
           } else {
-            this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, res.errorMessage);
+            this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})), res.errorMessage);
           }
         } else {
-          this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, "Unknown error. Check logs.");
+          this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})),
+            await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister.unknown.error")));
         }
       }
       ,
-      err => {
+      async err => {
         if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           return;
         }
-        // this.searchTable.showSpinner = false;
-        this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, err);
+        this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})), err);
       }
     )
-
   }
-
-
 }

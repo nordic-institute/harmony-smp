@@ -12,6 +12,15 @@ import {SmpConfig} from "../app-config/smp-config.model";
 import {SecurityEventService} from "../security/security-event.service";
 import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
+import {DomainRo} from "./model/domain-ro.model";
+import {Subject} from "rxjs";
+import {
+  FormatWidth,
+  getLocaleDateFormat,
+  getLocaleDateTimeFormat,
+  getLocaleTimeFormat
+} from "@angular/common";
+import StringUtils from "./utils/string-utils";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -19,13 +28,15 @@ import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 
 @Injectable()
 export class GlobalLookups {
+  // global data observers. The components will subscribe to these Subject to get
+  // data updates.
+  private smpInfoUpdateSubject: Subject<SmpInfo> = new Subject<SmpInfo>();
+  private readonly DEFAULT_LOCALE: string = 'fr';
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
-  cachedDomainList: Array<any> = [];
+  cachedDomainList: Array<DomainRo> = [];
   cachedServiceGroupOwnerList: Array<any> = [];
-  cachedCertificateList: Array<any> = [];
-  cachedCertificateAliasList: Array<string> = [];
   cachedApplicationInfo: SmpInfo;
   cachedApplicationConfig?: SmpConfig;
 
@@ -57,8 +68,8 @@ export class GlobalLookups {
       }
     );
     // set default locale
-    dateAdapter.setLocale('fr');
-    ngxMatDateAdapter.setLocale('fr');
+    dateAdapter.setLocale(this.DEFAULT_LOCALE);
+    ngxMatDateAdapter.setLocale(this.DEFAULT_LOCALE);
 
   }
 
@@ -69,15 +80,6 @@ export class GlobalLookups {
 
   public refreshDomainLookupFromPublic() {
     let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN;
-    this.refreshDomainLookup(domainUrl);
-  }
-
-  public refreshDomainLookupForLoggedUser() {
-    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN;
-    // for authenticated admin use internal url which returns more data!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      domainUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED;
-    }
     this.refreshDomainLookup(domainUrl);
   }
 
@@ -97,16 +99,50 @@ export class GlobalLookups {
     });
   }
 
+  getCurrentLocale(): string {
+    if (this.securityService.getCurrentUser() == null) {
+      return this.DEFAULT_LOCALE;
+    }
+    return this.securityService.getCurrentUser().smpLocale;
+  }
+
+  public getDateTimeFormat(withSeconds: boolean = true): string {
+    let locale = this.getCurrentLocale();
+    locale = locale ? locale : this.DEFAULT_LOCALE;
+    let format: string = getLocaleDateTimeFormat(locale, FormatWidth.Short);
+    let fullTime = getLocaleTimeFormat(locale,withSeconds? FormatWidth.Medium:FormatWidth.Short);
+    let fullDate = getLocaleDateFormat(locale, FormatWidth.Short);
+    let result = StringUtils.format(format, [fullTime, fullDate]);
+    return result;
+  }
+
+  public getDateFormat(): string {
+    let locale = this.getCurrentLocale();
+    locale = locale ? locale : this.DEFAULT_LOCALE;
+    return getLocaleDateFormat(locale, FormatWidth.Short);
+  }
+
+  private format(str, opt_values) {
+    if (opt_values) {
+      str = str.replace(/\{([^}]+)}/g, function (match, key) {
+        return (opt_values != null && key in opt_values) ? opt_values[key] : match;
+      });
+    }
+    return str;
+  }
 
   public refreshApplicationInfo() {
 
     this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
-      .subscribe((res: SmpInfo) => {
+      .subscribe({
+        next: (res: SmpInfo): void => {
           this.cachedApplicationInfo = res;
-        }, error => {
-          console.log("getSmpInfo:" + error);
+          this.smpInfoUpdateSubject.next(res);
+        },
+        error: (err: any): void => {
+          console.log("getSmpInfo:" + err);
         }
-      );
+      });
 
   }
 
@@ -117,12 +153,14 @@ export class GlobalLookups {
       console.log("Refresh application configuration is authenticated " + isAuthenticated)
       if (isAuthenticated) {
         this.http.get<SmpConfig>(SmpConstants.REST_PUBLIC_APPLICATION_CONFIG)
-          .subscribe((res: SmpConfig) => {
+          .subscribe({
+            next: (res: SmpConfig): void => {
               this.cachedApplicationConfig = res;
-            }, error => {
-              console.log("getSmpConfig:" + error);
+            },
+            error: (err: any) => {
+              console.log("getSmpConfig:" + err);
             }
-          );
+          });
       }
     });
   }
@@ -134,7 +172,7 @@ export class GlobalLookups {
         .set('page', '-1')
         .set('pageSize', '-1');
 
-      // return only smp and service group admins..
+      // return only smp and resource admins...
       if (this.securityService.isCurrentUserSMPAdmin()) {
         params = params.set('roles', Role.SMP_ADMIN + "," + Role.SERVICE_GROUP_ADMIN);
       }
@@ -162,7 +200,7 @@ export class GlobalLookups {
     this.cachedDomainList = [];
   }
 
-
-
-
+  public onSmpInfoUpdateEvent(): Observable<SmpInfo> {
+    return this.smpInfoUpdateSubject.asObservable();
+  }
 }

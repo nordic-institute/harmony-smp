@@ -1,20 +1,22 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
-import {SmpConstants} from "../../../smp.constants";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {CredentialRo} from "../../../security/credential.model";
-import {UserController} from "../../../system-settings/user/user-controller";
 import {SecurityService} from "../../../security/security.service";
 import {ThemeService} from "../../theme-service/theme.service";
-import {AlertMessageService} from "../../alert-message/alert-message.service";
-import {UserService} from "../../../system-settings/user/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../global-lookups";
 import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
-import {UserRo} from "../../../system-settings/user/user-ro.model";
 import {ApplicationRoleEnum} from "../../enums/application-role.enum";
-
+import {UserRo} from "../../model/user-ro.model";
+import {UserController} from "../../services/user-controller";
 
 @Component({
   selector: 'user-profile-panel',
@@ -27,16 +29,11 @@ export class UserProfilePanelComponent {
   @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
   @Output() onChangeUserPasswordEvent: EventEmitter<UserRo> = new EventEmitter();
 
-
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
-  readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
-  readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-  readonly nullValue: string = SmpConstants.NULL_VALUE;
 
   readonly applicationRoles = Object.keys(ApplicationRoleEnum).map(el => {
     return {key: el, value: ApplicationRoleEnum[el]}
   });
-
 
   userForm: FormGroup;
   userCredentialForm: FormGroup;
@@ -49,13 +46,10 @@ export class UserProfilePanelComponent {
 
   @ViewChild('username', {static: false}) usernameField: ElementRef;
 
-
   constructor(
     private securityService: SecurityService,
     private themeService: ThemeService,
-    private alertService: AlertMessageService,
     private formBuilder: FormBuilder,
-    private userService: UserService,
     private dialog: MatDialog,
     private http: HttpClient,
     private lookups: GlobalLookups,
@@ -65,23 +59,29 @@ export class UserProfilePanelComponent {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
     // set empty form ! do not bind it to current object !
-    this.userForm = formBuilder.group({
+    this.userForm = this.formBuilder.group({
       // common values
       'username': new FormControl({value: '', disabled: true}),
       'role': new FormControl({value: '', disabled: true}),
       'active': new FormControl({value: '', disabled: true}),
-      'emailAddress': new FormControl({value: '', disabled: false}, [Validators.pattern(this.emailPattern),
+      'emailAddress': new FormControl({
+        value: '',
+        disabled: false
+      }, [Validators.pattern(this.emailPattern),
         Validators.maxLength(255)]),
       'fullName': new FormControl({value: '', disabled: false}),
       'smpTheme': new FormControl({value: 'default_theme', disabled: false}),
-      'smpLocale': new FormControl({value: 'fr', disabled: false}),
+      'smpLocale': new FormControl({value: 'en', disabled: false}),
 
     });
 
     this.userCredentialForm = formBuilder.group({
       'passwordUpdatedOn': new FormControl({value: '', disabled: true}),
       'passwordExpireOn': new FormControl({value: '', disabled: true}),
-      'sequentialLoginFailureCount': new FormControl({value: '0', disabled: true}),
+      'sequentialLoginFailureCount': new FormControl({
+        value: '0',
+        disabled: true
+      }),
       'lastFailedLoginAttempt': new FormControl({value: '', disabled: true}),
       'suspendedUtil': new FormControl({value: '', disabled: true}),
     });
@@ -112,7 +112,7 @@ export class UserProfilePanelComponent {
       this.userForm.controls['emailAddress'].setValue(this._managedUserData.emailAddress);
       this.userForm.controls['fullName'].setValue(this._managedUserData.fullName);
       this.userForm.controls['smpTheme'].setValue(!this._managedUserData.smpTheme ? 'default_theme' : this._managedUserData.smpTheme);
-      this.userForm.controls['smpLocale'].setValue(!this._managedUserData.smpLocale ? 'fr' : this._managedUserData.smpLocale);
+      this.userForm.controls['smpLocale'].setValue(!this._managedUserData.smpLocale ? 'en' : this._managedUserData.smpLocale);
       // mark form as pristine
       this.userForm.enable();
       // disable fields
@@ -132,12 +132,11 @@ export class UserProfilePanelComponent {
       this.userForm.controls['emailAddress'].setValue("");
       this.userForm.controls['fullName'].setValue("");
       this.userForm.controls['smpTheme'].setValue('default_theme');
-      this.userForm.controls['smpLocale'].setValue('fr');
+      this.userForm.controls['smpLocale'].setValue('en');
       this.userForm.disable();
     }
     this.userForm.markAsPristine();
   }
-
 
 
   private updatePwdCredential(value: UserRo) {
@@ -152,7 +151,7 @@ export class UserProfilePanelComponent {
     } else {
       this.userCredentialForm.controls['passwordUpdatedOn'].setValue(value.passwordUpdatedOn);
       this.userCredentialForm.controls['passwordExpireOn'].setValue(value.passwordExpireOn);
-      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(!(value.sequentialLoginFailureCount)?"---":value.sequentialLoginFailureCount);
+      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(!(value.sequentialLoginFailureCount) ? "---" : value.sequentialLoginFailureCount);
       this.userCredentialForm.controls['lastFailedLoginAttempt'].setValue(value.lastFailedLoginAttempt);
       this.userCredentialForm.controls['suspendedUtil'].setValue(value.suspendedUtil);
     }
@@ -223,11 +222,11 @@ export class UserProfilePanelComponent {
     return !this._managedUserData?.userId;
   }
 
-  get canChangeRole ():boolean {
+  get canChangeRole(): boolean {
     return !this.isUserDataLoggedInUserData
   }
 
-  get isUserDataLoggedInUserData(){
+  get isUserDataLoggedInUserData() {
     return this.securityService.getCurrentUser()?.userId == this._managedUserData?.userId
   }
 

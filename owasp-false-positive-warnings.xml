@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+<suppressions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd
+              https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[
    file name: spring-security-crypto-5.8.*.jar
+   The data serialized by the application is trusted
+   NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
@@ -11,6 +16,7 @@
     <suppress>
         <notes><![CDATA[
    file name: spring-web-5.3.*.jar
+   CVE-2016-1000027 - The data serialized by the application are from authenticated users and trusted
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
@@ -18,7 +24,9 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: smp.war: spring-core-5.3.*.jar
+   file name: smp.war: spring-core-5.3.31.jar
+   The data serialized by the application are from authenticated users and trusted
+   NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
    ]]></notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
@@ -28,30 +36,11 @@
    ]]></notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
+
     <suppress>
         <notes><![CDATA[
-   file name: spring-aop-5.3.25.jar spring-expression-5.3.25.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(aop|expression)@.*$</packageUrl>
-        <cve>CVE-2023-20861</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: cxf-xjc-runtime-3.3.2.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf\.xjc\-utils/cxf\-xjc\-runtime@.*$</packageUrl>
-        <cve>CVE-2021-4277</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: cxf-rt-bindings-soap-3.5.5.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf\-rt\-bindings\-soap@.*$</packageUrl>
-        <cve>CVE-2022-40705</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: guava-30.1-jre.jar
+        CVE-2020-8908 -  we don't use com.google.common.io.Files.createTempDir()
+        CVE-2023-2976 - we don't use FileBackedOutputStream
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
@@ -59,7 +48,10 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: snakeyaml-1.30.jar part of spring boot - just for demo and testing
+   file name: snakeyaml-1.30.jar
+   The vulnerability is not impacting smp.war,
+   because is part of spring boot - intended only for demo and testing. Also Yaml configuration is not exposed
+   to external users.
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
         <cve>CVE-2022-1471</cve>
@@ -72,9 +64,51 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: bcprov-jdk15on-1.70.jar
+   file name: jackson-databind-2.15.2.jar
+   The vulnerability is not exploitable by SMP usage of the library.
+   NOTE: the vendor's perspective is that this is not a valid vulnerability report, because the steps of constructing
+   a cyclic data structure and trying to serialize it cannot be achieved by an external attacker.
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
-        <vulnerabilityName>CVE-2023-33201</vulnerabilityName>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2023-35116</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: tomcat-embed-websocket-9.0.x.jar
+   The vulnerability is not impacting smp.war,
+   because is part of spring boot - intended only for demo and testing.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+        <cve>CVE-2023-41080</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            File name: joda-time-2.x
+            This is transitive library of the 2WaySec, WSS4J 2.4.x: Check if this is needed when using WSS4J is upgrades
+            and is not directly used by the 2waySSL library.
+            NOTE: Currently the latest version 2.12.7 still report the same issue.
+            This is disputed by multiple third parties who believe  there was not reasonable evidence to determine the existence of a vulnerability.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/joda\-time/joda\-time@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-23080</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: protobuf-java-3.25.1.jar
+   This is the transitive library of the mysql-connector-j:jar:8.4.0: Check if this is needed when using Mysql-connector-java is upgrades.
+   The is added only for the spring boot demo module which is used only for the Demo and testing. Final smp.war artefact does not include this library.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.protobuf/protobuf-java@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-7254</vulnerabilityName>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-webmvc-5.3.39.jar
+    The vulnerability is not exploitable by SMP usage of the library.
+    The application does not serve static resources through the functional web frameworks WebMvc.fn or WebFlux.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-38816</vulnerabilityName>
     </suppress>
 </suppressions>

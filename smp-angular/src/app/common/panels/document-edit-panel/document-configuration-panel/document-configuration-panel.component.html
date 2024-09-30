@@ -1,0 +1,75 @@
+<div id="document-configuration-panel"
+     [formGroup]="documentConfigurationForm">
+
+  <mat-form-field class="form-field-full-width"
+                  subscriptSizing="dynamic"
+                  appearance="fill">
+    <mat-label>{{ "document.configuration.panel.label.name" | translate }}</mat-label>
+    <input matInput id="name_id"
+           formControlName="name"
+           >
+  </mat-form-field>
+  <mat-form-field class="form-field-full-width"
+                  subscriptSizing="dynamic"
+                  appearance="fill">
+    <mat-label>{{ "document.configuration.panel.label.mimetype" | translate }}</mat-label>
+    <input matInput id="mimeType_id"
+           formControlName="mimeType"
+           readonly>
+  </mat-form-field>
+
+  <mat-form-field class="form-field-full-width"
+                  subscriptSizing="dynamic"
+                  appearance="fill">
+    <mat-label>{{ "document.configuration.panel.label.published.version" | translate }}</mat-label>
+    <input matInput id="publishedVersion_id"
+           formControlName="publishedVersion"
+           readonly>
+  </mat-form-field>
+  <mat-checkbox formControlName="sharingEnabled"
+                (change)="onSharingEnabledChanged()"
+                matTooltip="{{ 'document.configuration.panel.tooltip.sharing.enabled' | translate }}"
+                id="sharingEnabled_id">
+    {{ "document.configuration.panel.label.sharing.enabled" | translate }}
+  </mat-checkbox>
+
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button mat-raised-button
+              mat-flat-button color="primary"
+              (click)="onShowSearchDialogClicked()"
+              [disabled]="disableShowReferenceDocumentButton"
+      >{{ "document.configuration.panel.button.reference.select" | translate }}
+      </button>
+
+      <button mat-raised-button
+              color="primary"
+              [disabled]="!hasReferenceDocument"
+              (click)="onClearReferenceDocument()">
+        <mat-icon>delete</mat-icon>
+        <span>{{ "document.configuration.panel.button.reference.clear" | translate }}</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <div class="panel" *ngIf="hasReferenceDocument;else noDataFound">
+    <mat-form-field class="form-field-full-width"
+                    subscriptSizing="dynamic"
+                    appearance="fill">
+      <mat-label>{{ "document.configuration.panel.label.reference.document.name" | translate }}</mat-label>
+      <input matInput id="reference-document-name_id"
+             formControlName="referenceDocumentName"
+             readonly>
+    </mat-form-field>
+    <a *ngIf="hasReferenceDocumentUrl"
+       target="_blank"
+       href="{{getReferencePartialURL()}}">{{ "document.configuration.panel.label.reference.document.open.url" | translate }}</a>
+
+  </div>
+  <ng-template #noDataFound>
+    <div id="no_document-reference_id" style="padding: 1em 0.4px ">
+      {{ "document.configuration.panel.label.reference.document.not.selected" | translate }}
+    </div>
+  </ng-template>
+</div>
+

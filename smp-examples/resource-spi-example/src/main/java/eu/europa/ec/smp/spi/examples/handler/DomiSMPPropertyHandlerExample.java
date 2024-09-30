@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * resource-spi-example
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.smp.spi.examples.handler;
 
 import eu.europa.ec.edelivery.security.utils.CertificateKeyType;
@@ -65,12 +83,10 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
     }
 
     public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
-
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
 
-
         try {
-            String identifierString = smpIdentifierApi.formatResourceIdentifier(identifier);
+            String identifierString = smpIdentifierApi.formatResourceIdentifier(resourceData.getDomainCode(), identifier);
             Properties properties = new Properties();
             properties.setProperty(PROPERTY_IDENTIFIER, identifierString);
             properties.setProperty(PROPERTY_URL, "http://example.local/test");
@@ -142,14 +158,12 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
             inputStream = new BufferedInputStream(inputStream);
         }
         inputStream.mark(Integer.MAX_VALUE - 2);
-        Properties properties = validateAndParse(resourceData);
+        validateAndParse(resourceData);
         try {
             inputStream.reset();
             StreamUtils.copy(inputStream, responseData.getOutputStream());
-            // need to save serviceGroup because of the update on the resource identifier values
-            //reader.serializeNative(cppDocument, responseData.getOutputStream(), true);
         } catch (IOException e) {
-            throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
+            throw new ResourceException(PARSE_ERROR, "Error occurred while storing the resource", e);
         }
     }
 
@@ -187,7 +201,7 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
         if ( !properties.containsKey(PROPERTY_CERTIFICATE)){
             throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_CERTIFICATE + "]" );
         }
-        String identifierString = smpIdentifierApi.formatResourceIdentifier(identifier);
+        String identifierString = smpIdentifierApi.formatResourceIdentifier(resourceData.getDomainCode(), identifier);
         if (!StringUtils.equalsIgnoreCase(properties.getProperty(PROPERTY_IDENTIFIER),identifierString )){
             throw new ResourceException(INVALID_RESOURCE, "Property: [" + PROPERTY_IDENTIFIER + "] does not match value for the resource ["+identifierString+"]" );
         }

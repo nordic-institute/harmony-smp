@@ -1,0 +1,13 @@
+.vertical-spacer {
+  margin-left:5px;
+  width: 10px;
+  border-left: 2px dotted gray
+}
+
+.horizontal-spacer {
+  margin-top:5px;
+  height: 10px;
+  width: 100%;
+  display: block;
+  border-top: 2px dotted gray;
+}

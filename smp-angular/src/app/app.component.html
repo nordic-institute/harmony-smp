@@ -1,3 +1,5 @@
+<alert #alertMessage ></alert>
+<spinner [show]="showSpinner" [size]="150"></spinner>
 <div style="display:flex; flex-direction: column;height: 100%">
   <window-toolbar #windowToolbar/>
   <mat-drawer-container id="smp-window" [hasBackdrop]="false" style="flex: 1 1 auto;">
@@ -5,16 +7,16 @@
       <smp-sidenav #sidenav />
       <div class="collapse-button">
         <button *ngIf="fullMenu" mat-raised-button id="expand_id" (click)="toggleMenu()">
-          <mat-icon matTooltip="Collapse" [matTooltipPosition]="'right'">chevron_left</mat-icon>Collapse sidebar
+          <mat-icon matTooltip="{{ 'app.component.tooltip.collapse' | translate }}" [matTooltipPosition]="'right'">chevron_left</mat-icon>
+          {{ "app.component.button.collapse" | translate }}
         </button>
         <button *ngIf="!fullMenu" mat-raised-button id="collapse_id" (click)="toggleMenu()">
-          <mat-icon matTooltip="Expand" [matTooltipPosition]="'right'">chevron_right</mat-icon>
+          <mat-icon matTooltip="{{ 'app.component.tooltip.expand' | translate }}" [matTooltipPosition]="'right'">chevron_right</mat-icon>
         </button>
       </div>
     </mat-drawer>
     <mat-drawer-content (scroll)="onDrawerContentScroll($event);">
-      <alert #alertMessage></alert>
-        <router-outlet></router-outlet>
+      <router-outlet></router-outlet>
     </mat-drawer-content>
   </mat-drawer-container>
 </div>

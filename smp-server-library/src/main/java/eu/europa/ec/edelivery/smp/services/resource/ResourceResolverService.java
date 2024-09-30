@@ -1,21 +1,43 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.*;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.security.DomainGroupGuard;
 import eu.europa.ec.edelivery.smp.security.ResourceGuard;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -23,13 +45,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SML_INVALID_IDENTIFIER;
 import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.*;
 
 
 /**
@@ -45,9 +67,11 @@ public class ResourceResolverService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceResolverService.class);
 
     final ResourceGuard resourceGuard;
+    final DomainGroupGuard domainGroupGuard;
     final ConfigurationService configurationService;
     final IdentifierService identifierService;
     final DomainDao domainDao;
+    final GroupDao groupDao;
     final ResourceDefDao resourceDefinitionDao;
     final DomainResourceDefDao domainResourceDefDao;
     final ResourceDao resourceDao;
@@ -55,9 +79,11 @@ public class ResourceResolverService {
 
 
     public ResourceResolverService(ResourceGuard resourceGuard,
+                                      DomainGroupGuard domainGroupGuard,
                                    ConfigurationService configurationService,
                                    IdentifierService identifierService,
                                    DomainDao domainDao,
+                                   GroupDao groupDao,
                                    DomainResourceDefDao domainResourceDefDao,
                                    ResourceDefDao resourceDefinitionDao,
                                    ResourceDao resourceDao,
@@ -67,10 +93,12 @@ public class ResourceResolverService {
         this.configurationService = configurationService;
         this.identifierService = identifierService;
         this.domainDao = domainDao;
+        this.groupDao = groupDao;
         this.domainResourceDefDao = domainResourceDefDao;
         this.resourceDefinitionDao = resourceDefinitionDao;
         this.resourceDao = resourceDao;
         this.subresourceDao = subresourceDao;
+        this.domainGroupGuard = domainGroupGuard;
     }
 
     @Transactional
@@ -89,7 +117,8 @@ public class ResourceResolverService {
         // if domain code matches first parameter skip it!
         if (StringUtils.equals(currentParameter, domain.getDomainCode())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "Not enough path parameters to locate resource (The first match the domain)!");
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
+                        "Not enough path parameters to locate resource (The first match the domain)!");
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
@@ -98,59 +127,93 @@ public class ResourceResolverService {
         locationVector.setResourceDef(resourceDef);
         if (StringUtils.equals(currentParameter, resourceDef.getUrlSegment())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "Not enough path parameters to locate resource (The first two match the domain and resource type)!");
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
+                        "Not enough path parameters to locate resource (The first two match the domain and resource type)!");
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
 
-        Identifier resourceId = identifierService.normalizeParticipantIdentifier(currentParameter);
+        Identifier resourceId = identifierService.normalizeParticipantIdentifier(domain.getDomainCode(), currentParameter);
+        boolean isCaseSensitive = identifierService.isResourceIdentifierCaseSensitive(resourceId, domain.getDomainCode());
         // validate identifier
         validateResourceIdentifier(resourceId);
-        DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId);
+        DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId, isCaseSensitive);
         if (resource == null) {
-            // the resource must be found because it is not create action nor the last parameter to be resolved
+            // the resource must be found because if action is not "create" action nor the last parameter to be resolved
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE
                     || pathParameters.size() > iParameterIndex + 1) {
                 throw new SMPRuntimeException(ErrorCode.SG_NOT_EXISTS, resourceId.getValue(), resourceId.getScheme());
             }
             resource = createNewResource(resourceId, resourceDef, domain);
+            // determine the group for the resource
+            DBGroup group = resolveAdminResourceGroup(user.getUser(), domain,
+                    trimToNull(resourceRequest.getResourceGroupParameter()));
+            resource.setVisibility(resourceRequest.getResourceVisibilityParameter());
+            resource.setGroup(group);
+        } else {
+            // initially the GroupGuard checked for all groups on the domain
+            // but now recheck if the user is authorized for the group
+            if (!domainGroupGuard.isUserAuthorizedForGroup(Collections.singletonList(resource.getGroup()),
+                    user, resourceRequest.getAction())) {
+
+                LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on group [{}] in domain [{}]",
+                        resourceRequest.getAction(),
+                        getUsername(user),
+                        resource.getGroup().getGroupName(), domain.getDomainCode());
+                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
+            }
         }
 
         locationVector.setResource(resource);
-        if (resourceGuard.userIsNotAuthorizedForAction(user, resourceRequest.getAction(), resource, domain)) {
-            LOG.info(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]", getUsername(user), resourceRequest.getAction(), resource);
-            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
-        } else {
-            LOG.info(SECURITY_MARKER, "User: [{}] is authorized for action [{}] on the resource [{}]", getUsername(user), resourceRequest.getAction(), resource);
-        }
-
-        if (pathParameters.size() == ++iParameterIndex) {
-            locationVector.setResolved(true);
-            return locationVector;
-        }
-
-        if (pathParameters.size() == iParameterIndex + 2) {
-            String subResourceDefUrl = pathParameters.get(iParameterIndex);
-            // test if subresourceDef exists
-            DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
-
-            Identifier subResourceId = identifierService.normalizeDocumentIdentifier(pathParameters.get(++iParameterIndex));
-            DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
-            LOG.debug("Got subresource [{}]", subresource);
-            if (subresource == null) {
-                if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
-                    throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, resource.getIdentifierValue(), resource.getIdentifierScheme(), resourceId.getValue(), resourceId.getScheme());
-                }
-                subresource = createNewSubResource(subResourceId, resource, subresourceDef);
+        // get ready for next url path parameter.
+        iParameterIndex++;
+        // check if resource is resolved - no more parameters to be resolved
+        locationVector.setResolved(pathParameters.size() == iParameterIndex);
+        if (locationVector.isResolved()) {
+            // validate if user is authorized for action
+            if (resourceGuard.userIsNotAuthorizedForAction(user, resourceRequest.getAction(), resource, domain)) {
+                LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]",
+                        getUsername(user), resourceRequest.getAction(), resource);
+                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
             }
-
-            locationVector.setSubresource(subresource);
-            locationVector.setSubResourceDef(subresourceDef);
-            locationVector.setResolved(true);
             return locationVector;
         }
 
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "Invalid remaining subresource parameters (expected only subresourceDef and subresource identifier)");
+        // resolve subresource - expected exactly two parameters
+        if (pathParameters.size() != iParameterIndex + 2) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
+                    "Invalid remaining subresource parameters (expected only subresourceDef and subresource identifier)");
+
+        }
+        String subResourceDefUrl = pathParameters.get(iParameterIndex);
+        // test if subresourceDef exists
+        DBSubresourceDef subresourceDef = getSubresourceDefinition(resourceDef, subResourceDefUrl);
+        Identifier subResourceId = identifierService.normalizeDocumentIdentifier(
+                domain.getDomainCode(),
+                pathParameters.get(++iParameterIndex));
+        boolean isSubResourceCaseSensitive = identifierService.isSubresourceIdentifierCaseSensitive(subResourceId, domain.getDomainCode());
+
+        DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId, isSubResourceCaseSensitive);
+        LOG.debug("Got subresource [{}]", subresource);
+        if (subresource == null) {
+            if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
+                throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS,
+                        resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                        subResourceId.getValue(), subResourceId.getScheme());
+            }
+            subresource = createNewSubResource(subResourceId, resource, subresourceDef);
+        }
+
+        if (!resourceGuard.userIsAuthorizedForAction(user, resourceRequest.getAction(), subresource)) {
+            LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the subresource resource [{}]",
+                    getUsername(user), resourceRequest.getAction(), subresource);
+            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
+        }
+        locationVector.setSubresource(subresource);
+        locationVector.setSubResourceDef(subresourceDef);
+        locationVector.setResolved(true);
+        return locationVector;
+
     }
 
     /**
@@ -197,7 +260,6 @@ public class ResourceResolverService {
     public DBResourceDef resolveResourceType(DBDomain domain, String headerParameter, String pathParameter) {
         LOG.debug("Resolve ResourceType for domain [{}] for HTTP header [{}] and path parameter [{}]", domain.getDomainCode(), headerParameter, pathParameter);
 
-
         // get single domain
         List<DBResourceDef> resourceDefs = resourceDefinitionDao.getAllResourceDefForDomain(domain);
         if (resourceDefs.isEmpty()) {
@@ -229,19 +291,60 @@ public class ResourceResolverService {
         optResDef = resourceDefs.stream().filter(resdef ->
                 equalsIgnoreCase(resdef.getIdentifier(), domain.getDefaultResourceTypeIdentifier())).findFirst();
         if (optResDef.isPresent()) {
-            LOG.debug("Located default ResourceDef [{}] for domain [{}] by the path parameter [{}]", domain.getDefaultResourceTypeIdentifier(), domain.getDomainCode());
+            LOG.debug("Located default ResourceDef [{}] for domain [{}] by the path parameter [{}]",
+                    domain.getDefaultResourceTypeIdentifier(),
+                    domain.getDomainCode(),
+                    pathParameter);
             return optResDef.get();
         }
         // return first
-        LOG.info("Return first (default) ResourceDef [{}] for domain [{}] by the path parameter [{}]", resourceDefs.get(0).getDomainResourceDefs(), domain.getDomainCode());
+        LOG.info("Return first (default) ResourceDef [{}] for domain [{}] by the path parameter [{}]",
+                resourceDefs.get(0).getDomainResourceDefs(),
+                domain.getDomainCode(),
+                pathParameter);
         return resourceDefs.get(0);
     }
 
-    public DBResource resolveResourceIdentifier(DBDomain domain, DBResourceDef resourceDef, Identifier resourceIdentifier) {
+    public DBResource resolveResourceIdentifier(DBDomain domain, DBResourceDef resourceDef, Identifier resourceIdentifier, boolean isCaseSensitive) {
         LOG.info("Resolve resourceIdentifier for parameter [{}]", resourceIdentifier);
         // if domain is null get default domain
-        Optional<DBResource> optResource = resourceDao.getResource(resourceIdentifier.getValue(), resourceIdentifier.getScheme(), resourceDef, domain);
+        Optional<DBResource> optResource = resourceDao.getResource(resourceIdentifier.getValue(), resourceIdentifier.getScheme(), resourceDef, domain, isCaseSensitive);
         return optResource.orElse(null);
+    }
+
+    /**
+     * Method resolves the group for the given domain, admin user and group name.
+     * If the group name is null/not given, the first group is returned. If the group name is provided
+     * but the user is not admin for the group, the exception is thrown.
+     *
+     * @param user        admin user creating the resource
+     * @param domain      domain where the resource is created
+     * @param domainGroup group name
+     * @return DBGroup for the given domain, user and group name.
+     * @throws SMPRuntimeException if the user is not admin authorized to create the resource for the given group/domain
+     */
+    protected DBGroup resolveAdminResourceGroup(DBUser user, DBDomain domain, String domainGroup) {
+        LOG.debug("Resolve group for domain [{}] and user [{}] and group [{}]", domain.getDomainCode(),
+                user.getUsername(),
+                domainGroup);
+        List<DBGroup> adminListGroup =
+                groupDao.getGroupsByDomainUserIdAndGroupRoles(domain.getId(), user.getId(), MembershipRoleType.ADMIN);
+        if (adminListGroup.isEmpty()) {
+            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
+                    "User [" + user.getUsername() + "] is not admin for any group in domain [" + domain.getDomainCode() + "]");
+        }
+        if (domainGroup == null) {
+            LOG.debug("Set first/default group [{}] for domain [{}]", adminListGroup.get(0).getGroupName(),
+                    domain.getDomainCode());
+            return adminListGroup.get(0);
+        }
+        return groupDao.getGroupsByDomainUserIdAndGroupRoles(domain.getId(), user.getId(), MembershipRoleType.ADMIN)
+                .stream()
+                .filter(group -> equalsIgnoreCase(group.getGroupName(), domainGroup))
+                .findFirst()
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
+                        "User [" + user.getUsername() + "] is not authorized for group ["
+                                + domainGroup + "] in domain [" + domain.getDomainCode() + "]"));
     }
 
     /**
@@ -252,9 +355,10 @@ public class ResourceResolverService {
      * @param subResourceId
      * @return
      */
-    public DBSubresource resolveSubResourceIdentifier(DBResource resource, String subresourceDefCtx, Identifier subResourceId) {
+    public DBSubresource resolveSubResourceIdentifier(DBResource resource, String subresourceDefCtx, Identifier subResourceId, boolean isCaseSensitive) {
+
         LOG.info("Resolve subResourceIdentifier for doctType [{}] identifier [{}]", subresourceDefCtx, subResourceId);
-        Optional<DBSubresource> optSubResource = subresourceDao.getSubResource(subResourceId, resource, subresourceDefCtx);
+        Optional<DBSubresource> optSubResource = subresourceDao.getSubResource(subResourceId, resource, subresourceDefCtx, isCaseSensitive);
         return optSubResource.orElse(null);
     }
 
@@ -282,7 +386,7 @@ public class ResourceResolverService {
         return subresource;
     }
 
-    public DBSubresourceDef getSubresource(DBResourceDef resourceDef, String urlPathSegment) {
+    public DBSubresourceDef getSubresourceDefinition(DBResourceDef resourceDef, String urlPathSegment) {
         return resourceDef.getSubresources()
                 .stream()
                 .filter(subresourceDef -> StringUtils.equals(subresourceDef.getUrlSegment(), urlPathSegment))
@@ -297,8 +401,7 @@ public class ResourceResolverService {
         }
     }
 
-    public String getUsername(UserDetails user){
-        return user ==null? "Anonymous":user.getUsername();
+    public String getUsername(UserDetails user) {
+        return user == null ? "Anonymous" : user.getUsername();
     }
-
 }

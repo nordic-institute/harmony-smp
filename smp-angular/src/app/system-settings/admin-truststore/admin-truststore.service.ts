@@ -5,8 +5,8 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../../smp.constants";
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
-import {CertificateRo} from "../user/certificate-ro.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
+import {CertificateRo} from "../../common/model/certificate-ro.model";
 
 @Injectable()
 export class AdminTruststoreService {

@@ -1,14 +1,20 @@
-/*
- * Copyright 2017 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 package eu.europa.ec.edelivery.smp.data.model.user;
 
@@ -17,7 +23,7 @@ import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
-import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
@@ -30,12 +36,15 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Audited
 @Table(name = "SMP_CREDENTIAL",
         indexes = {
-            @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true),
-        })
+            @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true)
+})
 @org.hibernate.annotations.Table(appliesTo = "SMP_CREDENTIAL", comment = "Credentials for the users")
 @NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u")
 @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
         "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target")
+@NamedQuery(name = QUERY_CREDENTIALS_BY_TYPE_RESET_TOKEN, query = "SELECT c FROM DBCredential c " +
+        "WHERE c.credentialType = :credential_type and c.credentialTarget = :credential_target and c.resetToken=:reset_token")
+
 @NamedQuery(name = QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
         "WHERE c.user.id = :user_id and c.credentialType = :credential_type and c.credentialTarget = :credential_target order by c.id")
 // case-insensitive search
@@ -58,20 +67,18 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 " AND (c.expireAlertOn IS NULL " +
                 "   OR c.expireAlertOn <= c.expireOn " +
                 "   OR c.expireAlertOn < :lastSendAlertDate )")
+// native queries to validate if user is owner of the credential
+@NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",
+        resultSetMapping = "DBCredentialDeleteValidationMapping",
+        query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
+                "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
+                " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
+                " INNER JOIN SMP_RESOURCE_MEMBER SG ON (S.ID = SG.FK_USER_ID) " +
+                " WHERE S.ID IN (:idList)" +
+                " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID")
 
-
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",
-                resultSetMapping = "DBCredentialDeleteValidationMapping",
-                query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
-                        "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
-                        " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
-                        " INNER JOIN SMP_RESOURCE_MEMBER SG ON (S.ID = SG.FK_USER_ID) " +
-                        " WHERE S.ID IN (:idList)" +
-                        " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID"),
-})
 @SqlResultSetMapping(name = "DBCredentialDeleteValidationMapping", classes = {
-        @ConstructorResult(targetClass = DBUserDeleteValidation.class,
+        @ConstructorResult(targetClass = DBUserDeleteValidationMapping.class,
                 columns = {@ColumnResult(name = "id", type = Long.class),
                         @ColumnResult(name = "username", type = String.class),
                         @ColumnResult(name = "certificateId", type = String.class),
@@ -124,18 +131,20 @@ public class DBCredential extends BaseEntity {
     @Column(name = "LAST_FAILED_LOGIN_ON")
     @ColumnDescription(comment = "Last failed login attempt")
     private OffsetDateTime lastFailedLoginAttempt;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "CREDENTIAL_TYPE", nullable = false)
     @ColumnDescription(comment = "Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS")
     private CredentialType credentialType = CredentialType.USERNAME_PASSWORD;
-
-
     @Enumerated(EnumType.STRING)
     @Column(name = "CREDENTIAL_TARGET", nullable = false)
     @ColumnDescription(comment = "Credential target UI, API")
     private CredentialTargetType credentialTarget = CredentialTargetType.UI;
-
+    @Column(name = "RESET_TOKEN", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    @ColumnDescription(comment = "Reset token for credential reset")
+    private String resetToken;
+    @Column(name = "RESET_EXPIRE_ON")
+    @ColumnDescription(comment = "Date time when reset token will expire")
+    private OffsetDateTime resetExpireOn;
 
     @OneToOne(mappedBy = "credential",
             cascade = CascadeType.ALL,
@@ -254,6 +263,22 @@ public class DBCredential extends BaseEntity {
 
     public void setCredentialTarget(CredentialTargetType credentialTarget) {
         this.credentialTarget = credentialTarget;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public OffsetDateTime getResetExpireOn() {
+        return resetExpireOn;
+    }
+
+    public void setResetExpireOn(OffsetDateTime resetExpireOn) {
+        this.resetExpireOn = resetExpireOn;
     }
 
     public DBCertificate getCertificate() {

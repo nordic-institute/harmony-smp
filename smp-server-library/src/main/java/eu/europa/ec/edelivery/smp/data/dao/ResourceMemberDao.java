@@ -1,14 +1,20 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
  *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.data.dao;
@@ -25,7 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -50,12 +58,22 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
     }
 
     public boolean isUserResourceMemberWithRole(Long userId, Long resourceId, MembershipRoleType roleType) {
-        LOG.debug("User id [{}], Domain id [{}], role [{}]", userId, resourceId, roleType);
+        LOG.debug("User id [{}], Resource id [{}], role [{}]", userId, resourceId, roleType);
         TypedQuery<DBResourceMember> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, DBResourceMember.class);
 
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_RESOURCE_ID, resourceId);
         return query.getResultList().stream().anyMatch(member -> member.getRole() == roleType);
+    }
+
+
+    public boolean isUserResourceMemberWithReviewPermission(Long userId, Long resourceId) {
+        LOG.debug("User id [{}], Resource id [{}], with review permission", userId, resourceId);
+        TypedQuery<DBResourceMember> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, DBResourceMember.class);
+
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_RESOURCE_ID, resourceId);
+        return query.getResultList().stream().anyMatch(DBResourceMember::hasPermissionToReview);
     }
 
     public boolean isUserAnyDomainResourceMember(DBUser user, DBDomain domain) {
@@ -96,22 +114,34 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
         }
     }
 
-    public boolean isUserAnyGroupResourceMemberWithRole(Long userId, Long groupId, MembershipRoleType roleType) {
-        LOG.debug("User [{}], group [{}], Role [{}]", userId, groupId, roleType);
-        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT,
+    public boolean isUserAnyGroupsResourceMemberWithRole(Long userId, List<Long> groupId, MembershipRoleType roleType) {
+        LOG.debug("User [{}], groups [{}], Role [{}]", userId, groupId, roleType);
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_ROLE_COUNT,
                 Long.class);
         query.setParameter(PARAM_USER_ID, userId);
-        query.setParameter(PARAM_GROUP_ID, groupId);
+        query.setParameter(PARAM_GROUP_IDS, groupId);
         query.setParameter(PARAM_MEMBERSHIP_ROLE, roleType);
         return query.getSingleResult() > 0;
     }
 
+    public boolean isUserAnyGroupResourceMemberWithRole(Long userId, Long groupId, MembershipRoleType roleType) {
+        LOG.debug("User [{}], group [{}], Role [{}]", userId, groupId, roleType);
+        return isUserAnyGroupsResourceMemberWithRole(userId, Collections.singletonList(groupId), roleType);
+    }
+
     public boolean isUserAnyGroupResourceMember(DBUser user, DBGroup group) {
         LOG.debug("User [{}], group [{}]", user, group);
-        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_COUNT,
+        return isUserAnyGroupsResourceMember(user, Collections.singletonList(group));
+    }
+
+    public boolean isUserAnyGroupsResourceMember(DBUser user, List<DBGroup> groups) {
+        String list = groups.stream().map(DBGroup::getId).map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+        LOG.debug("User [{}], group [{}]", user, list);
+        List<Long> groupIds = groups.stream().map(DBGroup::getId).collect(Collectors.toList());
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUPS_RESOURCES_COUNT,
                 Long.class);
         query.setParameter(PARAM_USER_ID, user.getId());
-        query.setParameter(PARAM_GROUP_ID, group.getId());
+        query.setParameter(PARAM_GROUP_IDS, groupIds);
         return query.getSingleResult() > 0;
     }
 
@@ -145,11 +175,14 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
     }
 
 
-    public DBResourceMember addMemberToResource(DBResource resource, DBUser user, MembershipRoleType role) {
+    public DBResourceMember addMemberToResource(DBResource resource, DBUser user,
+                                                MembershipRoleType role,
+                                                boolean hasPermissionReview) {
         DBResourceMember resourceMember = new DBResourceMember();
         resourceMember.setRole(role);
         resourceMember.setUser(user);
         resourceMember.setResource(resource);
+        resourceMember.setHasPermissionToReview(hasPermissionReview);
         resourceMember = merge(resourceMember);
         return resourceMember;
     }

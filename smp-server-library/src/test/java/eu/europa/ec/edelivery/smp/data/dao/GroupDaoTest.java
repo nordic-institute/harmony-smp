@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
@@ -5,26 +23,26 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class GroupDaoTest extends AbstractBaseDao {
+class GroupDaoTest extends AbstractBaseDao {
 
     @Autowired
     GroupDao testInstance;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         // setup initial data!
         testUtilsDao.clearData();
@@ -35,7 +53,7 @@ public class GroupDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void persistTest() {
+    void persistTest() {
         DBDomain domain = testUtilsDao.getD1();
         int initSize = testInstance.getAllGroupsForDomain(domain).size();
 
@@ -50,7 +68,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void persistDuplicate() {
+    void persistDuplicate() {
         // set
         DBDomain domain = testUtilsDao.getD1();
 
@@ -63,7 +81,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByCodeExists() {
+    void getDomainByCodeExists() {
         // set
         DBDomain domain = testUtilsDao.getD1();
 
@@ -74,7 +92,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByCodeNotExists() {
+    void getDomainByCodeNotExists() {
         // set
         DBDomain domain = testUtilsDao.getD1();
         // test
@@ -83,7 +101,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void removeByDomainCodeExists() {
+    void removeByDomainCodeExists() {
         // set
         DBDomain domain = testUtilsDao.getD1();
 
@@ -98,7 +116,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getGroupsByDomainUserIdAndGroupRolesExists() {
+    void getGroupsByDomainUserIdAndGroupRolesExists() {
 
         List<DBGroup> groups = testInstance.getGroupsByDomainUserIdAndGroupRoles(
                 testUtilsDao.getD1().getId(),
@@ -130,7 +148,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getGroupsByDomainUserIdAndResourceRoles() {
+    void getGroupsByDomainUserIdAndResourceRoles() {
 
         List<DBGroup> groups = testInstance.getGroupsByDomainUserIdAndResourceRoles(
                 testUtilsDao.getD1().getId(),

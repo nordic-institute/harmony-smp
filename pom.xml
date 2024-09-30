@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2017 European Commission | CEF eDelivery
-  ~
-  ~ Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
-  ~ You may not use this work except in compliance with the Licence.
-  ~
-  ~ You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the Licence for the specific language governing permissions and limitations under the Licence.
-  -->
+Copyright 2017-2023 European Commission | CEF eDelivery
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+You may not use this work except in compliance with the Licence.
+
+You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+
+Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the Licence for the specific language governing permissions and limitations under the Licence.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
     <name>SMP</name>
     <version>5.1-SNAPSHOT</version>
+    <licenses>
+        <license>
+            <name>EUPL-2.1</name>
+            <url>https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <modules>
         <module>smp-angular</module>
@@ -27,85 +34,99 @@
         <module>smp-resource-extensions</module>
         <module>smp-webapp</module>
         <module>smp-springboot</module>
-        <module>smp-soapui-tests</module>
+        <module>domismp-tests</module>
         <module>smp-examples</module>
         <module>smp-aggregator</module>
     </modules>
 
     <properties>
+        <prerequisites.maven_min_version>3.5</prerequisites.maven_min_version>
+        <jacocoRemotePort />
+        <jacocoRemoteAddress />
+        <!-- the root/main folder of the project used by aggregation plugins (license).
+        Alternative ${session.executionRootDirectory} -->
+
+        <project.root.baseUri>${maven.multiModuleProjectDirectory}</project.root.baseUri>
+        <!-- Note: domismp application target is JDK 8, but minimal build JDK version must be Java 11 due to domismp-tests modules
+        -->
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.13</edelivery.ssl-auth.version>
-        <edelivery.dynamic-discovery-client.version>2.0</edelivery.dynamic-discovery-client.version>
+        <edelivery.ssl-auth.version>1.15</edelivery.ssl-auth.version>
+        <edelivery.dynamic-discovery-client.version>2.3</edelivery.dynamic-discovery-client.version>
+        <bdmsl-api.version>4.3</bdmsl-api.version>
+        <!-- plugin versions -->
+        <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
+        <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
+        <plugin.jacoco-maven-plugin.version>0.8.11</plugin.jacoco-maven-plugin.version>
+        <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
+        <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
+        <plugin.maven-assembly-plugin.version>3.6.0</plugin.maven-assembly-plugin.version>
+        <plugin.maven-clean-plugin.version>3.3.2</plugin.maven-clean-plugin.version>
+        <plugin.maven-compiler-plugin.version>3.13.0</plugin.maven-compiler-plugin.version>
+        <plugin.maven-dependency-plugin.version>3.6.1</plugin.maven-dependency-plugin.version>
+        <plugin.maven-failsafe-plugin.version>3.1.2</plugin.maven-failsafe-plugin.version>
+        <plugin.maven-jar-plugin.version>3.3.0</plugin.maven-jar-plugin.version>
+        <plugin.maven-release-plugin.version>3.0.1</plugin.maven-release-plugin.version>
+        <plugin.maven-resources-plugin.version>3.3.1</plugin.maven-resources-plugin.version>
+        <plugin.maven-surefire-plugin.version>3.2.2</plugin.maven-surefire-plugin.version>
+        <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
 
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ant-commons-net.version>1.6.5</ant-commons-net.version>
-        <aspectj.version>1.9.9.1</aspectj.version>
-        <bdmsl.api.version>4.1.1</bdmsl.api.version>
-        <build.helper.maven.version>1.9.1</build.helper.maven.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-io.version>2.13.0</commons-io.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-io.version>2.17.0</commons-io.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
-        <commons-net.version>3.9.0</commons-net.version>
-        <commons-validator.version>1.7</commons-validator.version>
-        <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
-        <cxf.version>3.5.6</cxf.version>
-        <ehcache.version>2.10.9.2</ehcache.version>
-        <freemarker.version>2.3.32</freemarker.version>
-        <h2.version>2.1.214</h2.version>
-        <hamcrest-junit.version>2.0.0.0</hamcrest-junit.version>
+        <commons-net.version>3.11.1</commons-net.version>
+        <commons-validator.version>1.9.0</commons-validator.version>
+        <cxf-xjc-runtime.version>3.3.4</cxf-xjc-runtime.version>
+        <cxf.version>3.5.9</cxf.version>
+        <ehcache.version>3.10.8</ehcache.version>
+        <h2.version>2.2.224</h2.version>
         <hamcrest.version>2.2</hamcrest.version>
         <hibernate-jpa.version>1.0.2.Final</hibernate-jpa.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <jackson-databind.version>2.15.2</jackson-databind.version>
-        <jackson.version>2.15.2</jackson.version>
+        <jackson.version>2.17.2</jackson.version>
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
-        <org.glassfish.jaxb.jaxb-runtime.version>2.3.8</org.glassfish.jaxb.jaxb-runtime.version>
+        <org.glassfish.jaxb.jaxb-runtime.version>2.3.9</org.glassfish.jaxb.jaxb-runtime.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
-        <jstl.version>1.2</jstl.version>
-        <junit.version>4.13.2</junit.version>
-        <junit-jupiter.version>5.9.2</junit-jupiter.version>
+        <junit-jupiter.version>5.11.0</junit-jupiter.version>
         <junit-platform-surefire-provider.version>1.3.2</junit-platform-surefire-provider.version>
         <junitparams.version>1.1.1</junitparams.version>
-        <logback.version>1.2.11</logback.version>
-        <mysql.jdbc.version>8.0.33</mysql.jdbc.version>
-        <metro.version>2.2.1-1</metro.version>
-        <mockito.version>4.10.0</mockito.version>
-        <org.apache.santuario.xmlsec.version>2.3.3</org.apache.santuario.xmlsec.version>
-        <orika.version>1.5.4</orika.version>
-        <servlet-api.version>3.0.1</servlet-api.version>
+        <!-- Use logback 1.2.x because is the one used by springboot 5.7. Changing to 1.3+ will break springboot logging. -->
         <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.2.13</logback.version>
+        <mysql.jdbc.version>8.4.0</mysql.jdbc.version>
+        <metro.version>2.2.1-1</metro.version>
+        <mockito.version>4.11.0</mockito.version>
+        <jakarta.servlet-api.version>4.0.2</jakarta.servlet-api.version>
+
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring-boot.version>2.7.12</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.75</spring-boot.tomcat.version>
-        <spring.security.version>5.8.4</spring.security.version>
-        <spring.version>5.3.28</spring.version>
-        <xmlunit.version>2.9.0</xmlunit.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <spring-boot.tomcat.version>9.0.95</spring-boot.tomcat.version>
+        <spring.security.version>5.8.14</spring.security.version>
+        <spring.version>5.3.39</spring.version>
+        <xmlunit.version>2.10.0</xmlunit.version>
 
         <!-- plugins -->
-        <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
-        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-
+        <plugin.frontend-maven-plugin.version>1.15.0</plugin.frontend-maven-plugin.version>
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
         <sonar.language>java</sonar.language>
-
+        <jacoco.append>true</jacoco.append>
         <sonar.binaries>target/classes</sonar.binaries>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+
         <sonar.exclusions>
             **/target/**,
             **/smp-angular/node_modules/**,
@@ -116,15 +137,18 @@
         <sonar.coverage.exclusions>
             **/*Entity.java,
             **/*RO.java,
+            **/DB*.java,
             **/*Exception.java,
             **/*Types.java,
             **/*Constants.java,
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
-        <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
-        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</release.arguments>
+        <plugin.sonar-maven-plugin.version>3.5.0.1254</plugin.sonar-maven-plugin.version>
+        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
+        </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
     </properties>
+
 
     <scm>
         <developerConnection>scm:git:https://ec.europa.eu/digital-building-blocks/code/scm/edelivery/smp.git
@@ -186,13 +210,20 @@
             <dependency>
                 <groupId>eu.europa.ec.bdmsl</groupId>
                 <artifactId>bdmsl-api</artifactId>
-                <version>${bdmsl.api.version}</version>
+                <version>${bdmsl-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-frontend-jaxws</artifactId>
                 <version>${cxf.version}</version>
             </dependency>
+            <!-- Ehcache -->
+            <dependency>
+                <groupId>org.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http</artifactId>
@@ -229,16 +260,6 @@
                 <version>${httpclient.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.freemarker</groupId>
-                <artifactId>freemarker</artifactId>
-                <version>${freemarker.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>eu.europa.ec.cipa</groupId>
-                <artifactId>cipa-edelivery-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>
                 <artifactId>hibernate-jpa-2.1-api</artifactId>
                 <version>${hibernate-jpa.version}</version>
@@ -264,13 +285,13 @@
                 <version>${h2.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.santuario</groupId>
-                <artifactId>xmlsec</artifactId>
-                <version>${org.apache.santuario.xmlsec.version}</version>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
+                <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
@@ -337,6 +358,18 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-cas</artifactId>
                 <version>${spring.security.version}</version>
+                <exclusions>
+                    <!-- exclude old org.bouncycastle:bcprov-jdk15on:jar:1.64 to use bcprov-jdk18on
+                     Check if this is needed when upgrading the library! -->
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcpkix-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -405,13 +438,13 @@
                 <version>${aspectj.version}</version>
             </dependency>
             <dependency>
-                <groupId>ma.glasnost.orika</groupId>
-                <artifactId>orika-core</artifactId>
-                <version>${orika.version}</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
+                <artifactId>logback-core</artifactId>
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
@@ -446,42 +479,11 @@
                 <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
             <!-- Jackson-->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson-databind.version}</version>
-                <!-- exclude them and then manually include the same version! fix for the springboot
-                 (current springboot uses 2.13.4! and maven upgrade just direct dependencies and not transit
-                  dependencies with latest version!! ) >
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-annotations</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jsr310</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jdk8</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.module</groupId>
-                        <artifactId>jackson-module-parameter-names</artifactId>
-                    </exclusion>
-                </exclusions-->
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -517,24 +519,9 @@
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>jstl</artifactId>
-                <version>${jstl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.ehcache</groupId>
-                <artifactId>ehcache</artifactId>
-                <version>${ehcache.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springmodules</groupId>
                 <artifactId>spring-modules-jakarta-commons</artifactId>
                 <version>${spring-modules-jakarta-commons.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ant</groupId>
-                <artifactId>ant-commons-net</artifactId>
-                <version>${ant-commons-net.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>
@@ -567,16 +554,10 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${servlet-api.version}</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${jakarta.servlet-api.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>pl.pragmatists</groupId>
-                <artifactId>JUnitParams</artifactId>
-                <version>${junitparams.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.xmlunit</groupId>
@@ -594,12 +575,6 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest</artifactId>
                 <version>${hamcrest.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-junit</artifactId>
-                <version>${hamcrest-junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <!-- Test dependencies -->
@@ -627,12 +602,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-inline</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit-jupiter.version}</version>
@@ -651,29 +620,29 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
+                    <version>${plugin.maven-surefire-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${maven-failsafe-plugin.version}</version>
+                    <version>${plugin.maven-failsafe-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>${jacoco.maven.plugin.version}</version>
+                    <version>${plugin.jacoco-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>${sonar.maven.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>${build.helper.maven.version}</version>
+                    <version>${plugin.sonar-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.cxf</groupId>
@@ -683,17 +652,27 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>${plugin.maven-war-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${plugin.maven-resources-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.8</version>
+                    <version>${plugin.maven-antrun-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>${plugin.maven-dependency-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${plugin.maven-assembly-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
@@ -703,48 +682,87 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>${plugin.maven-clean-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>${plugin.maven-compiler-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>${plugin.maven-jar-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
-                    <version>${frontend-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-plugin.version}</version>
+                    <version>${plugin.frontend-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>${prerequisites.maven_min_version}</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <dependencies>
-                    <!-- Force using the latest JUnit 47 provider -->
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
-                    </dependency>
-                </dependencies>
+                <configuration>
+                    <systemPropertyVariables>
+                        <!-- build directory for test logging -->
+                        <buildDirectory>${project.build.directory}</buildDirectory>
+                    </systemPropertyVariables>
+                    <!-- make sure methods are  always run in same order -->
+                    <runOrder>alphabetical</runOrder>
+                    <argLine>-ea ${argLine}</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <!-- build directory for test logging -->
+                        <buildDirectory>${project.build.directory}</buildDirectory>
+                    </systemPropertyVariables>
 
+                    <!-- ... fool Sonar to show test success for both unit and integration tests together by
+                    instructing Failsafe to store its test reports to the same directory as Surefire instead of
+                    the default failsafe-reports.
+
+                    See https://jira.sonarsource.com/browse/SONAR-7526 -->
+
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                    <runOrder>alphabetical</runOrder>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- jacoco start -->
             <plugin>
@@ -764,6 +782,16 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>jacoco-agent-it</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${jacoco.report.it}</destFile>
+                            <propertyName>failsafeArgLine</propertyName>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -773,7 +801,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${plugin.maven-release-plugin.version}</version>
                 <configuration>
                     <arguments>-DusePreInstallNpm -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true
                         -Dmaven.test.skip=true
@@ -795,9 +823,10 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.2.1</version>
+                        <version>${plugin.dependency-check-maven.version}</version>
                         <inherited>false</inherited>
                         <configuration>
+                            <nvdApiServerId>edelivery-owasp</nvdApiServerId>
                             <skipProvidedScope>true</skipProvidedScope>
                             <skipRuntimeScope>true</skipRuntimeScope>
                             <!-- Disable .Net Assembly Analyzer -->
@@ -827,7 +856,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
-                        <version>2.0.0</version>
+                        <version>${plugin.license-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>download-licenses</id>
@@ -867,6 +896,182 @@
                             <excludedGroups>eu.europa.ec.*</excludedGroups>
                         </configuration>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Update license  eupl-1.2 headers to all files which matches filter bellow.
+            Note if processStartTag, processEndTag does not match the values in plugin configuration, the license will be added
+             twice. Manually check all changed files!
+
+            NOTE: do not forget to run the command before the release:
+            mvn clean process-resources -Pupdate-license-headers
+             -->
+            <id>update-license-headers</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>update-license</id>
+                                <goals>
+                                    <goal>update-file-header</goal>
+                                </goals>
+                                <phase>process-sources</phase>
+                                <configuration>
+                                    <licenseResolver>file://${project.root.baseUri}/license</licenseResolver>
+                                    <licenseName>eupl-1.2</licenseName>
+                                    <inceptionYear>2017</inceptionYear>
+                                    <organizationName>European Commission | eDelivery | DomiSMP</organizationName>
+                                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                                    <processStartTag>#START_LICENSE#</processStartTag>
+                                    <processEndTag>#END_LICENSE#</processEndTag>
+                                    <sectionDelimiter>%%</sectionDelimiter>
+                                    <extraExtensions>
+                                        <xjb>xml</xjb>
+                                    </extraExtensions>
+                                    <includes>
+                                        <include>**/*.java</include>
+                                        <include>**/*.xml</include>
+                                        <include>**/*.xsd</include>
+                                        <include>**/*.xjb</include>
+                                        <include>**/*.properties</include>
+                                        <include>**/*.txt</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/src/main/resources/xsd/**</exclude>
+                                    </excludes>
+                                    <roots>
+                                        <root>src/main</root>
+                                        <root>src/test</root>
+                                    </roots>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Generate NOTICE.md file from licenses.xml
+            The plugin will download all licenses from the dependencies and
+            generate a target/generated-resources/licenses.xml file with
+            org.codehaus.mojo:license-maven-plugin.
+            Then it will transform the licenses.xml file to a NOTICE.md file
+            with org.codehaus.mojo:xml-maven-plugin and the licenses/config/license.xsl stylesheet.
+
+            To generate the NOTICE.md file, run the following command:
+
+            mvn clean process-resources -Plicense-generate-notice
+
+            NOTE: do not forget to regenerate the NOTICE.md file when adding new dependencies or updating the existing ones
+            and before the release!
+            -->
+            <id>license-generate-notice</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>${plugin.license-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>download-licenses</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>aggregate-download-licenses</goal>
+                                    <goal>aggregate-add-third-party</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <extendedInfo>true</extendedInfo>
+                            <cleanLicensesOutputDirectory>true</cleanLicensesOutputDirectory>
+                            <removeOrphanLicenseFiles>true</removeOrphanLicenseFiles>
+                            <excludedGroups>com.smartbear.*|eu.europa.ec.*</excludedGroups>
+                            <excludeTransitiveDependencies>true</excludeTransitiveDependencies>
+                            <excludedScopes>test</excludedScopes>
+                            <includeTransitiveDependencies>false</includeTransitiveDependencies>
+                            <sortArtifactByName>true</sortArtifactByName>
+                            <licenseMerges>
+                                <licenseMerge>Apache-2.0|Apache License, Version 2.0|Apache License 2.0|The Apache Software License, Version 2.0|Apache Public License 2.0|Apache 2|Apache License, version 2.0|The Apache License, Version 2.0|Apache 2.0</licenseMerge>
+                                <!--  Common Public License Version 1.0|CPL was replaced by Eclipse Public License -->
+                                <licenseMerge>EPL-2.0|EPL 2.0|Eclipse Public License 2.0</licenseMerge>
+                                <licenseMerge>EPL-1.0| (EPL-1.0)|Eclipse Public License (EPL) v1.0|Eclipse Public License (EPL), Version 1.0|Eclipse Public License - v 1.0|Eclipse Public License 1.0|EDL 1.0|Common Public License Version 1.0|CPL</licenseMerge>
+                                <licenseMerge>GPL-2.0-or-later|The GNU General Public License, v2 with Universal FOSS Exception, v1.0</licenseMerge>
+                                <licenseMerge>MIT|The MIT License|MIT License</licenseMerge>
+                                <licenseMerge>BSD-3-Clause|BSD license (all versions)|BSD License|The BSD License|BSD 3-clause New License|BSD Licence 3|BSD-Style License|New BSD License|Eclipse Distribution License - v 1.0|Eclipse Distribution License (EDL), Version 1.0</licenseMerge>
+                                <licenseMerge>LGPL-2.1+|GNU Library General Public License v2.1 or later|GNU Lesser General Public License</licenseMerge>
+                                <licenseMerge>CDDL-1.1|Dual license consisting of the CDDL v1.1 and GPL v2|CDDL + GPLv2 with classpath exception|CDDL/GPLv2+CE|CDDL+GPL License</licenseMerge>
+                                <licenseMerge>CDDL-1.0|Common Development and Distribution License (CDDL)|Common Development and Distribution License (CDDL) v1.0|Common Development and Distribution|CDDL 1.1|</licenseMerge>
+                            </licenseMerges>
+                            <excludedLicenses>
+                                <excludedLicense>Unknown license</excludedLicense>
+                                <excludedLicense>licenseB</excludedLicense>
+                            </excludedLicenses>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>xml-maven-plugin</artifactId>
+                        <version>1.1.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>transform</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <catalogHandling>local</catalogHandling>
+                            <catalogs>
+                                <catalog>license/third-party-licenses/Apache-2.0.txt</catalog>
+                            </catalogs>
+                            <transformationSets>
+                                <transformationSet>
+                                    <dir>target/generated-resources/</dir>
+                                    <includes>
+                                        <include>licenses.xml</include>
+                                    </includes>
+                                    <stylesheet>license/config/license.xsl</stylesheet>
+                                    <outputDir>./</outputDir>
+
+
+                                    <fileMappers>
+                                        <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+                                            <pattern>licenses.xml</pattern>
+                                            <replacement>Notice.md</replacement>
+                                        </fileMapper>
+                                    </fileMappers>
+                                    <parameters>
+                                        <parameter>
+                                            <!-- This is external stylesheet parameter set in pom.xml plugin configuration
+                                            to include the licenses in the notice file. The value of this parameter is a
+                                            comma separated list of licenses as exampled: Apache-2.0,MIT.
+                                            Make sure to include the license files in the license/third-party-licenses/${license}.txt
+                                            -->
+                                            <name>IncludeLicenses</name>
+                                            <value>Apache-2.0,BSD-2-Clause,EPL-1.0,EPL-2.0,GPL-2.0-or-later,LGPL-2.1+,MIT</value>
+                                        </parameter>
+                                    </parameters>
+                                </transformationSet>
+                            </transformationSets>
+                        </configuration>
+                        <dependencies>
+                            <!-- Enable XSLT 2.0 with this dependency -->
+                            <dependency>
+                                <groupId>net.sf.saxon</groupId>
+                                <artifactId>Saxon-HE</artifactId>
+                                <version>12.4</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
                 </plugins>
             </build>
         </profile>

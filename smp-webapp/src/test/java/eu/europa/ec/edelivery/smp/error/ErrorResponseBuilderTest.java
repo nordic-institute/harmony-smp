@@ -1,21 +1,27 @@
-/*
- * Copyright 2017 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.error;
 
 import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.xml.sax.SAXException;
 
@@ -25,14 +31,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Created by migueti on 06/01/2017.
  */
-public class ErrorResponseBuilderTest {
+class ErrorResponseBuilderTest {
 
     private final Pattern PATTERN = Pattern.compile(".*?(:).*?(:).*?(:)([A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12})", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
@@ -41,7 +47,7 @@ public class ErrorResponseBuilderTest {
     private final String DEFAULT_ERROR_DESCRIPTION = "Unexpected technical error occurred.";
 
     @Test
-    public void testDifferentErrorIds() throws ParserConfigurationException, IOException, SAXException {
+    void testDifferentErrorIds() throws ParserConfigurationException, IOException, SAXException {
         ResponseEntity result1 = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR).build();
         ResponseEntity result2 = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR).build();
 
@@ -61,7 +67,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testDifferentErrorIdsWithBusinessCodeAndErrorDescription() throws ParserConfigurationException, IOException, SAXException {
+    void testDifferentErrorIdsWithBusinessCodeAndErrorDescription() throws ParserConfigurationException, IOException, SAXException {
         ResponseEntity result1 = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR).businessCode(OTHER_ERROR).errorDescription("Business Error Description").build();
         ResponseEntity result2 = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR).businessCode(OTHER_ERROR).errorDescription("Business Error Description").build();
 
@@ -83,7 +89,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testBusinessCode() throws ParserConfigurationException, IOException, SAXException {
+    void testBusinessCode() throws ParserConfigurationException, IOException, SAXException {
         final ErrorBusinessCode BC_BUSINESS_CODE = MISSING_FIELD;
         ResponseEntity result = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR).businessCode(BC_BUSINESS_CODE).build();
 
@@ -95,7 +101,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testErrorDescription() throws ParserConfigurationException, IOException, SAXException {
+    void testErrorDescription() throws ParserConfigurationException, IOException, SAXException {
         final String STR_ERROR_DESCRIPTION = "Business Error Description";
         ResponseEntity result = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR).errorDescription(STR_ERROR_DESCRIPTION).build();
 
@@ -107,7 +113,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testBuildWithStatus() throws IOException, SAXException, ParserConfigurationException {
+    void testBuildWithStatus() throws IOException, SAXException, ParserConfigurationException {
         ResponseEntity result = ErrorResponseBuilder.status(BAD_REQUEST).build();
 
         assertNotNull(result);
@@ -118,7 +124,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testBuildTwoInstancesWithStatus() throws IOException, SAXException, ParserConfigurationException {
+    void testBuildTwoInstancesWithStatus() throws IOException, SAXException, ParserConfigurationException {
         ResponseEntity result1 = ErrorResponseBuilder.status(BAD_REQUEST).build();
         ResponseEntity result2 = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR).build();
 
@@ -135,7 +141,7 @@ public class ErrorResponseBuilderTest {
         assertEquals(INTERNAL_SERVER_ERROR.value(), result2.getStatusCodeValue());
     }
 
-    private String checkXmlError(ErrorResponse errorResponse, ErrorBusinessCode errorBusinessCode, String errorDescription) throws ParserConfigurationException, IOException, SAXException {
+    private String checkXmlError(ErrorResponse errorResponse, ErrorBusinessCode errorBusinessCode, String errorDescription) {
         assertNotNull(errorResponse);
 
         assertEquals(errorBusinessCode.toString(), errorResponse.getBusinessCode());

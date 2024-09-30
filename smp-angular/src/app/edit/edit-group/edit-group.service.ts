@@ -13,7 +13,6 @@ import {DomainRo} from "../../common/model/domain-ro.model";
 @Injectable()
 export class EditGroupService {
 
-
   constructor(
     private http: HttpClient,
     private securityService: SecurityService) {
@@ -78,15 +77,5 @@ export class EditGroupService {
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
       .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group?.groupId), resource);
-  }
-
-  updateResourceForGroup(resource: ResourceRo, group: GroupRo, domain: DomainRo): Observable<ResourceRo> {
-    const currentUser: User = this.securityService.getCurrentUser();
-
-    return this.http.post<ResourceRo>(SmpConstants.REST_EDIT_RESOURCE_UPDATE
-      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
-      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
-      .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group?.groupId)
-      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), resource);
   }
 }

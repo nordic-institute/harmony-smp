@@ -1,7 +1,25 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,12 +31,12 @@ import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPEnvironmentPropertiesTest {
+class SMPEnvironmentPropertiesTest {
 
     @Test
-    public void testUpdateDeprecatedValues() {
+    void testUpdateDeprecatedValues() {
         String testValue = "test";
         Properties prop = new Properties();
         prop.setProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty(), testValue);
@@ -30,7 +48,7 @@ public class SMPEnvironmentPropertiesTest {
     }
 
     @Test
-    public void readPropertiesFromFile() throws IOException {
+    void readPropertiesFromFile() throws IOException {
         String value = UUID.randomUUID().toString();
         Path propertyPath =Paths.get("target","testReadPropertiesFromFile.properties");
         Files.write(propertyPath,("test="+value).getBytes(), StandardOpenOption.CREATE);
@@ -43,7 +61,7 @@ public class SMPEnvironmentPropertiesTest {
     }
 
     @Test
-    public void readPropertiesFromClasspath() throws IOException {
+    void readPropertiesFromClasspath() {
         String classpath = "/test-smp.config.properties";
         SMPEnvironmentProperties testInstance = SMPEnvironmentProperties.getInstance();
         // when
@@ -54,7 +72,7 @@ public class SMPEnvironmentPropertiesTest {
     }
 
     @Test
-    public void getEnvProperties() {
+    void getEnvProperties() {
         SMPEnvironmentProperties testInstance = SMPEnvironmentProperties.getInstance();
         Properties properties = testInstance.getEnvProperties();
 
@@ -62,7 +80,7 @@ public class SMPEnvironmentPropertiesTest {
     }
 
     @Test
-    public void getEnvPropertiesForNull() {
+    void getEnvPropertiesForNull() {
         SMPEnvironmentProperties testInstance = SMPEnvironmentProperties.getInstance();
         String value = testInstance.getEnvPropertyValue(SMPEnvPropertyEnum.LOG_CONFIGURATION_FILE);
         assertNull(value);
@@ -74,14 +92,14 @@ public class SMPEnvironmentPropertiesTest {
 
 /*
     @Test
-    public void getFileProperties() {
+    void getFileProperties() {
         Properties result = SMPEnvironmentProperties.getFileProperties("/test-smp.config.properties");
         assertNotNull(result);
         assertEquals("This property is from custom file",result.getProperty("test.read.property"));
     }
 
     @Test
-    public void getFilePropertiesLegacyFallback() {
+    void getFilePropertiesLegacyFallback() {
         Properties result = SMPEnvironmentProperties.getFileProperties("/prop-not-exists.properties");
         assertNotNull(result);
         // in the legacy fallback file the property is defined as: ${jdbc.user}
@@ -90,7 +108,7 @@ public class SMPEnvironmentPropertiesTest {
 
 
     @Test
-    public void updateLogConfigurationSetLogFolderProperty(){
+    void updateLogConfigurationSetLogFolderProperty(){
         String newFolderVal = "NewVal-"+ UUID.randomUUID().toString();
         String currVal = System.getProperty(PROPERTY_LOG_FOLDER);
         SMPEnvironmentProperties.updateLogConfiguration(newFolderVal, null, null);

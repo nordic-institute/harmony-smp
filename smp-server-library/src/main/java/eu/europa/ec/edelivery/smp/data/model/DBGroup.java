@@ -1,14 +1,20 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.data.model;
@@ -16,14 +22,12 @@ package eu.europa.ec.edelivery.smp.data.model;
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,11 +143,16 @@ public class DBGroup extends BaseEntity {
         return this.groupMembers;
     }
 
+    /**
+     * Print the group information. To prevent lazy initialization which throws error
+     * for detached entities, the domain prints just a domain id.
+     * @return string information of the group
+     */
     @Override
     public String toString() {
         return "DBGroup{" +
                 "id=" + id +
-                ", domain=" + domain +
+                ", domain=" + (domain != null ? domain.getId() : null) +
                 ", groupName='" + groupName + '\'' +
                 '}';
     }
@@ -151,14 +160,11 @@ public class DBGroup extends BaseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
-
         DBGroup group = (DBGroup) o;
-
         return new EqualsBuilder().appendSuper(super.equals(o))
                 .append(id, group.id)
-                .append(domain, group.domain)
+                .append(domain.id, group.domain.id) // to prevent lazy initialization
                 .append(groupName, group.groupName)
                 .append(groupDescription, group.groupDescription)
                 .append(visibility, group.visibility)
@@ -169,7 +175,7 @@ public class DBGroup extends BaseEntity {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode()).append(id)
-                .append(domain)
+                .append(domain != null ? domain.getId() : null) // to prevent lazy initialization
                 .append(groupName)
                 .toHashCode();
     }

@@ -1,0 +1,26 @@
+<div style="display: flex;flex-direction: row;height: 100%">
+  <div *ngIf="expandPanel" id="expand-panel_id">
+    <ng-content></ng-content>
+  </div>
+  <!-- table Toolbar -->
+  <div style="width: 32px">
+    <button class="button-deselected"
+            attr.aria-label="{{ 'expandable.panel.label.expand.collapse' | translate }}"
+            matTooltip="{{ 'document.properties.panel.tooltip.expand.collapse' | translate }}"
+            (click)="onToggleExpandButtonClicked()">
+      <mat-icon *ngIf="expandPanel">chevron_left</mat-icon>
+      <mat-icon *ngIf="!expandPanel">chevron_right</mat-icon>
+    </button>
+    <ng-container *ngFor="let item of expandableItems; let i = index;">
+      <tool-button-spacer *ngIf="item.showButtonSpacer" [vertical]="false"></tool-button-spacer>
+      <button [class]="getButtonClass(i)"
+            (click)="selectItem(item, i)"
+            (dblclick)="onDoubleClick(item, i)"
+            [matTooltip]="item.title">
+      <mat-icon *ngIf="item.icon">{{ item.icon }}</mat-icon>
+      <span *ngIf="showButtonLabel"
+            class="vertical-button-label">{{ item.buttonLabel }}</span>
+    </button>
+    </ng-container>
+  </div>
+</div>

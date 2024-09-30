@@ -1,12 +1,32 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.*;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
+import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
@@ -20,16 +40,21 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
+import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 /**
  * @author Joze Rihtarsic
@@ -44,6 +69,8 @@ public class UIResourceService {
     private static final String ACTION_RESOURCE_UPDATE = "UpdateResource";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIResourceService.class);
+    public static final String GROUP_DOES_NOT_EXIST = "Group does not exist!";
+    public static final String GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN = "Group does not belong to the given domain!";
 
 
     private final ResourceDao resourceDao;
@@ -56,13 +83,16 @@ public class UIResourceService {
     private final IdentifierService identifierService;
     private final ConversionService conversionService;
     private final SMLIntegrationService smlIntegrationService;
+    private final UIDocumentService uiDocumentService;
+    private final DocumentVersionService documentVersionService;
 
 
     public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao,
                              DomainResourceDefDao domainResourceDefDao, UserDao userDao, GroupDao groupDao,
                              IdentifierService identifierService,
                              ConversionService conversionService,
-                             SMLIntegrationService smlIntegrationService) {
+                             SMLIntegrationService smlIntegrationService,
+                             UIDocumentService uiDocumentService, DocumentVersionService documentVersionService) {
         this.resourceDao = resourceDao;
         this.resourceMemberDao = resourceMemberDao;
         this.resourceDefDao = resourceDefDao;
@@ -72,6 +102,8 @@ public class UIResourceService {
         this.identifierService = identifierService;
         this.conversionService = conversionService;
         this.smlIntegrationService = smlIntegrationService;
+        this.uiDocumentService = uiDocumentService;
+        this.documentVersionService = documentVersionService;
     }
 
 
@@ -80,7 +112,7 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, GROUP_DOES_NOT_EXIST);
         }
 
         DBResourceFilter filter = DBResourceFilter.createBuilder()
@@ -111,7 +143,7 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, GROUP_DOES_NOT_EXIST);
         }
         DBUser user = userDao.find(userId);
         if (user == null) {
@@ -152,7 +184,7 @@ public class UIResourceService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Resource does not belong to the group!");
         }
         if (!Objects.equals(resource.getGroup().getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not belong to the given domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
         }
         DBDomain resourceDomain = resource.getGroup().getDomain();
         if (smlIntegrationService.isSMLIntegrationEnabled() &&
@@ -169,11 +201,12 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, GROUP_DOES_NOT_EXIST);
         }
 
-        if (!Objects.equals(group.getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not belong to the given domain!");
+        DBDomain domain = group.getDomain();
+        if (!Objects.equals(domain.getId(), domainId)) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
         }
 
         Optional<DBResourceDef> optRedef = resourceDefDao.getResourceDefByIdentifier(resourceRO.getResourceTypeIdentifier());
@@ -185,22 +218,31 @@ public class UIResourceService {
         if (!optDoredef.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] is not registered for domain!");
         }
-        Identifier resourceIdentifier = identifierService.normalizeParticipant(resourceRO.getIdentifierScheme(),
+        Identifier resourceIdentifier = identifierService.normalizeParticipant(
+                domain.getDomainCode(),
+                resourceRO.getIdentifierScheme(),
                 resourceRO.getIdentifierValue());
+        boolean isResourceIdentifierCaseSensitive = identifierService.isResourceIdentifierCaseSensitive(resourceIdentifier, domain.getDomainCode());
 
-        Optional<DBResource> existResource = resourceDao.getResource(resourceIdentifier.getValue(),resourceIdentifier.getScheme(), optRedef.get(), group.getDomain());
+        Optional<DBResource> existResource = resourceDao.getResource(resourceIdentifier.getValue(),
+                resourceIdentifier.getScheme(),
+                optRedef.get(),
+                group.getDomain(),
+                isResourceIdentifierCaseSensitive);
         if (existResource.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
         }
-
 
         DBResource resource = new DBResource();
         resource.setIdentifierScheme(resourceIdentifier.getScheme());
         resource.setIdentifierValue(resourceIdentifier.getValue());
         resource.setVisibility(resourceRO.getVisibility());
+        resource.setReviewEnabled(resourceRO.isReviewEnabled());
         resource.setGroup(group);
         resource.setDomainResourceDef(optDoredef.get());
-        DBDocument document = createDocumentForResourceDef(optRedef.get());
+        resource.setReviewEnabled(resourceRO.isReviewEnabled());
+
+        DBDocument document = createDocumentForNewResource(resource);
         resource.setDocument(document);
         resourceDao.persist(resource);
         // create first member as admin user
@@ -220,16 +262,25 @@ public class UIResourceService {
         return conversionService.convert(resource, ResourceRO.class);
     }
 
+    /**
+     * Method allows Group admin and Resource admin to change resource visibility and enable/disable review flow.
+     *
+     * @param resourceRO
+     * @param resourceId
+     * @param groupId
+     * @param domainId
+     * @return
+     */
     @Transactional
     public ResourceRO updateResourceForGroup(ResourceRO resourceRO, Long resourceId, Long groupId, Long domainId) {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, "Group does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, GROUP_DOES_NOT_EXIST);
         }
 
         if (!Objects.equals(group.getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, "Group does not belong to the given domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
         }
 
         Optional<DBResourceDef> optRedef = resourceDefDao.getResourceDefByIdentifier(resourceRO.getResourceTypeIdentifier());
@@ -242,10 +293,31 @@ public class UIResourceService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] is not registered for domain!");
         }
 
-        // at the moment only visibility can be updated for the resource
+        // at the moment only visibility and review enabled
+        // can be updated for the resource
         DBResource resource = resourceDao.find(resourceId);
         resource.setVisibility(resourceRO.getVisibility());
-        return conversionService.convert(resource, ResourceRO.class);
+        if (resourceRO.isReviewEnabled() != null) {
+            Boolean newValue = isTrue(resourceRO.isReviewEnabled());
+            Boolean oldValue = isTrue(resource.isReviewEnabled());
+            // update resource review enabled in case if it was null before
+            resource.setReviewEnabled(newValue);
+            // check if new status is disabled  and changed
+            if (oldValue != newValue && !newValue) {
+                // update all document versions to non review status
+                uiDocumentService.updateToNonReviewStatuses(resource.getDocument());
+                // update statuses for all subresources
+                resource.getSubresources().stream().forEach(subResource ->
+                    uiDocumentService.updateToNonReviewStatuses(subResource.getDocument()));
+            }
+            resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
+        }
+        ResourceRO resourceROResult = conversionService.convert(resource, ResourceRO.class);
+        if (StringUtils.isNotBlank(resourceRO.getResourceId())) {
+            // return the same encrypted id so the UI can use update old resource
+            resourceROResult.setResourceId(resourceRO.getResourceId());
+        }
+        return resourceROResult;
     }
 
     @Transactional
@@ -269,8 +341,17 @@ public class UIResourceService {
         return result;
     }
 
+    /**
+     * Add or update a member to a resource
+     *
+     * @param resourceId resource id to add member to
+     * @param groupId    group id to add member to
+     * @param memberRO   member data
+     * @param memberId   member id (optional) if null then add member, if not null then update member
+     * @return added member RO
+     */
     @Transactional
-    public MemberRO addMemberToResource(Long resourceId, Long groupId, MemberRO memberRO, Long memberId) {
+    public MemberRO addUpdateMemberToResource(Long resourceId, Long groupId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to resource [{}]", memberRO.getUsername(), resourceId);
         validateGroupAndResource(resourceId, groupId, "AddMemberToResource");
 
@@ -281,12 +362,16 @@ public class UIResourceService {
         if (memberId != null) {
             member = resourceMemberDao.find(memberId);
             member.setRole(memberRO.getRoleType());
+            member.setHasPermissionToReview(memberRO.getHasPermissionReview());
         } else {
             DBResource resource = resourceDao.find(resourceId);
             if (resourceMemberDao.isUserResourceMember(user, resource)) {
                 throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add membership", "User [" + memberRO.getUsername() + "] is already a member!");
             }
-            member = resourceMemberDao.addMemberToResource(resource, user, memberRO.getRoleType());
+            member = resourceMemberDao.addMemberToResource(resource, user,
+                    memberRO.getRoleType(),
+                    isTrue(memberRO.getHasPermissionReview())
+            );
         }
         return conversionService.convert(member, MemberRO.class);
     }
@@ -318,12 +403,31 @@ public class UIResourceService {
         return resource;
     }
 
-    public DBDocument createDocumentForResourceDef(DBResourceDef resourceDef) {
+    /**
+     * Create document for new resource. Method is called when GroupAdmin creates new resource via
+     * UI.
+     *
+     * @param resource resource to create document for
+     * @return created document
+     */
+    public DBDocument createDocumentForNewResource(DBResource resource) {
+        DBResourceDef domainResourceDef = resource.getDomainResourceDef().getResourceDef();
         DBDocument document = new DBDocument();
+
+        document.setMimeType(domainResourceDef.getMimeType());
+        document.setName(domainResourceDef.getName());
+        // create first version of the document
+        DBDocumentVersion version = documentVersionService.initializeDocumentVersionByGroupAdmin(EventSourceType.UI);
+        // The first version is always published.
+        version.setStatus(DocumentVersionStatusType.PUBLISHED);
+        version.setDocument(document);
+        version.setVersion(1);
         document.setCurrentVersion(1);
-        document.setMimeType(resourceDef.getMimeType());
-        document.setName(resourceDef.getName());
+        // generate document content
+        document.addNewDocumentVersion(version);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        uiDocumentService.generateDocumentForResource(resource, baos);
+        version.setContent(baos.toByteArray());
         return document;
     }
-
 }

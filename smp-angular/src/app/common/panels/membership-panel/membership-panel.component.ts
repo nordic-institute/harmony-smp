@@ -9,14 +9,15 @@ import {MemberRo} from "../../model/member-ro.model";
 import {finalize} from "rxjs/operators";
 import {TableResult} from "../../model/table-result.model";
 import {MemberDialogComponent} from "../../dialogs/member-dialog/member-dialog.component";
-import {MembershipService} from "./membership.service";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {GroupRo} from "../../model/group-ro.model";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {SearchTableResult} from "../../search-table/search-table-result.model";
 import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {ResourceRo} from "../../model/resource-ro.model";
+import {TranslateService} from "@ngx-translate/core";
+import {MembershipService} from "../../services/membership.service";
 
 
 @Component({
@@ -29,42 +30,64 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   pageSize: number = 10;
   @Input() membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
 
+
   private _domain: DomainRo;
   private _group: GroupRo;
   private _resource: ResourceRo;
 
 
-  displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
+  _displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
+
   data: MemberRo[] = [];
   selectedMember: MemberRo;
   filter: any = {};
   resultsLength = 0;
   isLoadingResults = false;
+  formTitle = "";
   @ViewChild('memberPaginator') paginator: MatPaginator;
 
   constructor(private domainService: AdminDomainService,
               private membershipService: MembershipService,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
+    (async () => await this.updateTitle()) ();
   }
   ngAfterViewInit() {
     this.loadMembershipData();
   }
 
-  get title() {
+  async updateTitle() {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-
-        return "Direct Domain members" + (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")
+        this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.domain", {value: (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")}));
+        break;
       case MemberTypeEnum.GROUP:
-        return "Direct Group members" + (!!this._group ? ": [" + this._group.groupName + "]" : "")
+        this.formTitle =  await lastValueFrom(this.translateService.get("membership.panel.title.group", {value: (!!this._group ? ": [" + this._group.groupName + "]" : "")}));
+        break;
       case MemberTypeEnum.RESOURCE:
-        return "Resource direct members"
+        this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.resource"));
+        break;
     }
   }
 
   get domain(): DomainRo {
     return this._domain;
+  }
+
+  public get membershipCount(): number {
+    return this.resultsLength;
+  }
+
+  public get displayedColumns(): string[] {
+    switch (this.membershipType) {
+      case MemberTypeEnum.DOMAIN:
+        return  ['username', 'fullName', 'roleType'];
+      case MemberTypeEnum.GROUP:
+        return ['username', 'fullName', 'roleType'];
+      case MemberTypeEnum.RESOURCE:
+        return ['username', 'fullName', 'roleType', 'hasPermissionToReview'];
+    }
   }
 
   @Input() set domain(value: DomainRo) {
@@ -173,19 +196,17 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         member: member,
       }
     }).afterClosed().subscribe(value => {
-
       this.refresh();
     });
   }
 
-  public onDeleteSelectedButtonClicked() {
+  public async onDeleteSelectedButtonClicked() {
 
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Remove member",
-        description: "Action will remove member  [" + this.selectedMember.username + "]! " +
-          "<br/><br/>Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.description", {username: this.selectedMember.username}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

@@ -1,14 +1,20 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
  *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.sml;
@@ -21,15 +27,13 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.message.Message;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.MalformedURLException;
@@ -37,19 +41,15 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 08/01/2018.
  */
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlClientFactory.class, SmlConnector.class})
-public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends AbstractServiceIntegrationTest {
+class SmlClientFactoryAuthenticationByClientCertHttpHeader extends AbstractServiceIntegrationTest {
 
     public static final String CLIENT_CERT_HTTP_HEADER = "value_of_ClientCert_HTTP_header";
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
 
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
@@ -60,7 +60,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
     private SmlConnector testInstance;
 
 
-    @Before
+    @BeforeEach
     public void before() throws MalformedURLException {
 
         ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
@@ -69,7 +69,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
     }
 
     @Test
-    public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
+    void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
         //given
         IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
@@ -90,7 +90,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
 
 
     @Test
-    public void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
+    void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
 
         //given
         IManageServiceMetadataWS client = smlClientFactory.createSmp();
@@ -112,17 +112,17 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
 
 
     @Test
-    public void factoryProducesSMPClientNoDefinedAlias() {
+    void factoryProducesSMPClientNoDefinedAlias() {
 
         //given
         IManageServiceMetadataWS client = smlClientFactory.createSmp();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(true);
-
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         // when
-        testInstance.configureClient("changedEndpoint", client, domain);
+        IllegalStateException result = assertThrows(IllegalStateException.class, () -> testInstance.configureClient("changedEndpoint", client, domain));
+
+        MatcherAssert.assertThat(result.getMessage(),
+                CoreMatchers.containsString("SML integration is wrongly configured, at least one authentication option is required"));
     }
 }

@@ -1,6 +1,26 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.identifiers;
 
-import eu.europa.ec.edelivery.smp.identifiers.types.FormatterType;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.AbstractIdentifierFormatter;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.AbstractFormatterType;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.FormatterType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,9 +72,9 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
         boolean schemeMandatory = false;
         Pattern schemeValidationPattern;
         List<String> caseSensitiveSchemas;
-        FormatterType[] formatterTypes = null;
+        List<FormatterType> formatterTypes = null;
 
-        FormatterType defaultFormatter;
+        AbstractFormatterType defaultFormatter;
 
         public Builder schemeMandatory(boolean schemeMandatory) {
             this.schemeMandatory = schemeMandatory;
@@ -75,11 +95,14 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
         }
 
         public Builder addFormatterTypes(FormatterType ... formatterTypes) {
-            this.formatterTypes = formatterTypes;
+            if (this.formatterTypes == null) {
+                this.formatterTypes = new ArrayList<>();
+            }
+            this.formatterTypes.addAll(Arrays.asList(formatterTypes));;
             return this;
         }
 
-        public void setDefaultFormatter(FormatterType defaultFormatter) {
+        public void setDefaultFormatter(AbstractFormatterType defaultFormatter) {
             this.defaultFormatter = defaultFormatter;
         }
 
@@ -88,8 +111,12 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
             identifierFormatter.setSchemeMandatory(schemeMandatory);
             identifierFormatter.setCaseSensitiveSchemas(caseSensitiveSchemas);
             identifierFormatter.setSchemeValidationPattern(schemeValidationPattern);
-            identifierFormatter.addFormatterTypes(formatterTypes);
-            identifierFormatter.setDefaultFormatter(defaultFormatter);
+            if (formatterTypes!=null) {
+                identifierFormatter.addFormatterTypes(formatterTypes.toArray(new FormatterType[0]));
+            }
+            if (defaultFormatter != null) {
+                identifierFormatter.setDefaultFormatter(defaultFormatter);
+            }
             return identifierFormatter;
         }
     }

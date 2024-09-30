@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
@@ -31,6 +49,41 @@ import java.util.TimeZone;
  */
 @Component
 public class X509CertificateToCertificateROConverter implements Converter<X509Certificate, CertificateRO> {
+    /**
+     * Current support for EdEC key is limited and some JCE providers retun OID
+     * instead of SunJCE key name (which was added in JDK 16+).
+     * This enum is used to map OID to key type. When JDK 16+ is required, this enum can be removed.
+     */
+    enum KeyType {
+        ED25519("Ed25519", "1.3.101.112"),
+        ED448("Ed448", "1.3.101.113");
+
+        private final String jceKeyType;
+        private final String keyOid;
+
+        KeyType(String keyType, String oid) {
+            this.jceKeyType = keyType;
+            this.keyOid = oid;
+        }
+
+        public String getJceKeyType() {
+            return jceKeyType;
+        }
+
+        public String getKeyOid() {
+            return keyOid;
+        }
+
+        public static KeyType getKeyTypeByOid(String oid) {
+            for (KeyType kt : KeyType.values()) {
+                if (StringUtils.equals(kt.getKeyOid(), oid)) {
+                    return kt;
+                }
+            }
+            return null;
+        }
+    }
+
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(X509CertificateToCertificateROConverter.class);
     private static final String S_CLIENT_CERT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
@@ -116,12 +169,18 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         }
         return "";
     }
+
+    /**
+     * Get key algorithm from key. Some JCE providers return OID instead of SunJCE key name.
+     * This method tries to map OID to key name.
+     *
+     * @param key
+     * @return JCE key algorithm name
+     */
     public String getKeyAlgorithm(Key key) {
-        if (StringUtils.equals(key.getAlgorithm(), "1.3.101.112")) {
-            return "Ed25519";
-        }
-        if (StringUtils.equals(key.getAlgorithm(), "1.3.101.113")) {
-            return "Ed448";
+        KeyType kt = KeyType.getKeyTypeByOid(key.getAlgorithm());
+        if (kt != null) {
+            return kt.getJceKeyType();
         }
         return key.getAlgorithm();
     }

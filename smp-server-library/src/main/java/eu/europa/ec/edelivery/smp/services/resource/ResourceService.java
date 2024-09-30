@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.resource;
 
 
@@ -16,6 +34,7 @@ import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +42,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_OWNER;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
+ *
  * @author Joze Rihtarsic
  * @since 5.0
  */
@@ -115,19 +135,24 @@ public class ResourceService {
     public void createOrUpdateResource(SMPUserDetails user, ResourceRequest resourceRequest,
                                        ResourceResponse resourceResponse) {
         LOG.debug("Validate owner for CREATE_UPDATE!");
-        DBUser ownerUser = user.getUser();
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         boolean isNewResource = resolvedData.getResource().getId() == null;
         String owner = resourceRequest.getOwnerHttpParameter();
 
         LOG.debug("Resource is new [{}] and owner header is [{}]", isNewResource, owner);
         // the owner can be set via http owner parameter
+        List<DBUser> owners = new ArrayList<>();
+        // legacy behaviour where requestor is the default owner
+        owners.add( user.getUser());
+
         if (isNewResource && isNotBlank(owner)) {
-            ownerUser = findOwner(owner);
+            LOG.debug("Assign Owner [{}] for new resource.", owner);
+            DBUser ownerUser = findOwner(owner);
+            owners.add(ownerUser);
         } else if (isNotBlank(owner)) {
             LOG.warn("Owner [{}] is given for existing resource [{}]. The owner parameter is ignored!", owner, resolvedData.getResource());
         }
-        resourceHandlerService.createResource(ownerUser, resourceRequest, resourceResponse);
+        resourceHandlerService.createResource(owners, resourceRequest, resourceResponse);
     }
 
     protected DBUser findOwner(final String ownerName) {

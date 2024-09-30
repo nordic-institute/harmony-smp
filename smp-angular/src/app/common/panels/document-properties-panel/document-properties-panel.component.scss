@@ -1,0 +1,39 @@
+#document-properties-panel {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 0 1em;
+  min-width: 600px;
+}
+
+#property-table-container {
+  position: relative;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: scroll;
+}
+
+#property-table-container table {
+  width: 100%;
+}
+
+
+.deleted {
+  text-decoration: line-through !important;
+  font-weight: bold;
+}
+
+.table-row-new {
+  color: darkgreen !important;
+  font-weight: bold;
+}
+
+.table-row-updated {
+  font-weight: bold;
+}
+
+.table-row {
+  font-weight: normal;
+}

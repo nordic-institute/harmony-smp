@@ -1,3 +1,22 @@
+eDelivery SMP 5.1
+- added new HTTP headers when creating a new resource:
+    'Resource-Admin' as alternative to ServiceGroup-Owner
+    'Resource-Group': the name of the group: to define to which group in domain the resource belongs to. The group must be in one of the admin's groups. If not given the first group from the list is used.
+    'Resource-Visibility': The visibility of the resource: PUBLIC, PRIVATE. The default value is PUBLIC. Resource visibility can be set only at creation time. To change value of the existing resource it must be done via the UI.
+- added new properties:
+    smp.instance.name: The SMP instance name
+    smp.credentials.reset_request.url: The URL to reset the user password
+    smp.credentials.reset_request.url.validMinutes: The time in minutes the reset request is valid
+    smp.sso.cas.registration.enabled: Enable/Disable automatic user registration from CAS at first login.
+    smp.sso.cas.registration.confirmation.mandatory: Enable/Disable user confirmation after registration from CAS at first login.
+    smp.sso.cas.registration.mapping: The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'
+    bdmsl.integration.dns.zone: The DNS zone/top domain of the SML server.
+    bdmsl.participants.manage.max-count: The maximum number of participants that can be managed by the SMP.
+- deprecated properties:
+    identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate: based on eDelivery SMP 2.0 no need to concatenate ebCore party id in XML responses
+    authentication.blueCoat.enabled - deprecated and replaced with smp.automation.authentication.external.tls.clientCert.enabled
+
+
 eDelivery SMP 5.0
 - removed: bdmsl.participant.multidomain.enabled
 - environment properties have now 'smp.' prefix

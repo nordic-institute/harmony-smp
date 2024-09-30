@@ -1,14 +1,20 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.data.dao;
@@ -16,13 +22,12 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +35,8 @@ import java.util.Optional;
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
-import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 /**
  * The group of resources with shared resource management rights. The user with group admin has rights to create/delete
@@ -42,17 +47,6 @@ import static org.apache.commons.lang3.StringUtils.lowerCase;
  */
 @Repository
 public class GroupDao extends BaseDao<DBGroup> {
-
-    /**
-     * Returns domain records from smp_domain table.
-     *
-     * @return the list of domain records from smp_domain table
-     * @throws IllegalStateException if no domain is configured
-     */
-    public List<DBGroup> getAllGroups() {
-        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_ALL, DBGroup.class);
-        return query.getResultList();
-    }
 
     /**
      * Get group list for domains
@@ -74,9 +68,8 @@ public class GroupDao extends BaseDao<DBGroup> {
     /**
      * Returns the group or Optional.empty() if there is no group for name and domain.
      *
-     * @param name is the group name
+     * @param name   is the group name
      * @param domain where the group is registered
-     *
      * @return the only single record for name  from smp_group table or empty value
      * @throws IllegalStateException if no group is not configured
      */
@@ -87,9 +80,8 @@ public class GroupDao extends BaseDao<DBGroup> {
     /**
      * Returns the group or Optional.empty() if there is no group for name and domain.
      *
-     * @param name is the group name
+     * @param name     is the group name
      * @param domainId where the group is registered
-     *
      * @return the only single record for name  from smp_group table or empty value
      * @throws IllegalStateException if no group is not configured
      */
@@ -102,7 +94,7 @@ public class GroupDao extends BaseDao<DBGroup> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY.getMessage(name,domainId));
+            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY.getMessage(name, domainId));
         }
     }
 
@@ -110,9 +102,8 @@ public class GroupDao extends BaseDao<DBGroup> {
     /**
      * Returns the group or Optional.empty() if there is no group for name and domain code
      *
-     * @param name is the group name
+     * @param name       is the group name
      * @param domainCode where the group is registered
-     *
      * @return the only single record for name  from smp_group table or empty value
      * @throws IllegalStateException if no group is not configured
      */
@@ -125,7 +116,7 @@ public class GroupDao extends BaseDao<DBGroup> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(name,domainCode));
+            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(name, domainCode));
         }
     }
 
@@ -178,8 +169,8 @@ public class GroupDao extends BaseDao<DBGroup> {
         return false;
     }
 
-    public List<MembershipRoleType> toList(MembershipRoleType ... roleTypes){
-        return Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
+    public List<MembershipRoleType> toList(MembershipRoleType... roleTypes) {
+        return Arrays.asList(roleTypes == null || roleTypes.length == 0 || roleTypes[0] == null ? MembershipRoleType.values() : roleTypes);
     }
 
 }

@@ -1,9 +1,9 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content style="width:700px">
   <form [formGroup]="memberForm">
-    <b *ngIf="newMode">You're inviting members to {{inviteTarget}}.</b>
-    <mat-form-field  style="width: 100%">
-      <mat-label>Choose User to invite</mat-label>
+    <b *ngIf="newMode">{{ "member.dialog.label.invite.members" | translate: {target: inviteTarget} }}</b>
+    <mat-form-field  class="form-field-full-width">
+      <mat-label>{{ "member.dialog.label.choose.user" | translate }}</mat-label>
       <input id="member-user" type="text" matInput formControlName="member-user"
              [matAutocomplete]="auto" (keyup)="applyUserFilter($event)"
              required>
@@ -12,35 +12,46 @@
           {{user.username}}
         </mat-option>
       </mat-autocomplete>
-      <mat-hint *ngIf="newMode">Type username or name to locate the user and select user from the list</mat-hint>
+      <mat-hint *ngIf="newMode">{{ "member.dialog.hint.type.username" | translate }}</mat-hint>
     </mat-form-field>
 
 
-    <mat-form-field style="width:100%">
-      <mat-label>Select role for the user</mat-label>
-      <mat-select placeholder="Role for the member"
+    <mat-form-field class="form-field-full-width">
+      <mat-label>{{ "member.dialog.label.select.role.type" | translate }}</mat-label>
+      <select matNativeControl placeholder="{{ 'member.dialog.label.permission.review' | translate }}"
                   formControlName="member-roleType"
                   name="Role type"
-                  matTooltip="Role type for the member."
+                  matTooltip="{{ 'member.dialog.tooltip.role.type' | translate }}"
                   id="member-user_id" required>
-        <mat-option *ngFor="let role of memberRoles"
+        <option *ngFor="let role of memberRoles"
                     [value]="role.value">
           {{role.key}}
-        </mat-option>
-      </mat-select>
-      <mat-hint> Choose member role</mat-hint>
+        </option>
+      </select>
+      <mat-hint>{{ "member.dialog.hint.choose.role" | translate }}</mat-hint>
     </mat-form-field>
+
+    <mat-form-field *ngIf="isResourceMember"  class="form-field-full-width" >
+      <mat-checkbox  formControlName="member-can-review" id="member-user-can-review"
+                     matTooltip="{{ 'member.dialog.tooltip.permission.review' | translate }}"
+      >{{ "member.dialog.label.permission.review" | translate }}
+        <!-- This input is used to make the mat-checkbox as form filed   -->
+        <input matInput style="display: none;">
+      </mat-checkbox>
+      <mat-hint>{{ "member.dialog.hint.can.review" | translate }}</mat-hint>
+    </mat-form-field>
+
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button id="closeDialogButton" mat-raised-button color="primary" (click)="closeDialog()">
     <mat-icon>cancel</mat-icon>
-    <span>Close</span>
+    <span>{{ "member.dialog.button.close" | translate }}</span>
   </button>
   <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
           [disabled]="!submitButtonEnabled">
     <mat-icon>save</mat-icon>
-    <span>Save</span>
+    <span>{{ "member.dialog.button.save" | translate }}</span>
   </button>
 </mat-dialog-actions>
 

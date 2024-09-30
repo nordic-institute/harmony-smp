@@ -15,6 +15,9 @@ td , th {
   max-width: 200px;
 }
 
+.form-field-full-width {
+  width: 100%;
+}
 
 .smp-data-panel-field {
   width: 100% !important;
@@ -44,6 +47,11 @@ td , th {
   padding: 10px !important;
 }
 
+.mat-select {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .text-select {
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -52,24 +60,6 @@ td , th {
   user-select: text;
   word-wrap: break-word !important;
 }
-
-div:before,
-table:before,
-tr:before,
-td:before,
-form:before,
-tbody:before,
-mat-card:before,
-mat-card-content:before,
-.panel:before,
-.selectionCriteria:before,
-table.buttonsRow:before,
-table.buttonsMoveRow,
-mat-input-container:before,
-ngx-datatable span:before {
-  content: " " !important;
-}
-
 
 .ngx-datatable span {
   word-wrap: break-word;
@@ -135,6 +125,11 @@ ngx-datatable span:before {
 .collapse-button {
   position: absolute;
   bottom: 0;
+}
+
+.smp-disabled {
+  pointer-events: none;
+  opacity: 50%;
 }
 
 /*Hamburger button*/
@@ -273,26 +268,8 @@ mat-card {
   margin-top: 0 !important;
 }
 
-/* --- INPUT ---*/
-.panel mat-select, .panel mat-datepicker {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
 .panel mat-select, .panel mat-form-field, .panel mat-datepicker {
-  margin-right: 2%;
-}
-
-@media (max-width: 991px) {
-  .panel mat-form-field, .panel mat-select, .panel mat-datepicker {
-    width: 46%;
-  }
-}
-
-@media (max-width: 767px) {
-  .panel mat-form-field, .panel mat-select, .panel mat-datepicker {
-    width: 100%;
-  }
+  margin-right: 5px;
 }
 
 .mat-select-menu-container,
@@ -331,12 +308,24 @@ mat-card {
   background-color: #03A9F4 !important;
 }
 
+/* mat-tab  set multiline table labels. Check the domain configuration */
+.mat-mdc-tab-labels {
+  flex-flow: row wrap;
+}
+
 /*--------------------------------------------------
     [TABLE]
 ----------------------------------------------------*/
 .mat-mdc-row .mat-mdc-cell {
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
+}
+
+.mat-mdc-table .mdc-data-table__header-row {
+  height: 2.0em;
+}
+.mat-mdc-table .mdc-data-table__row {
+  height: 1.8em;
 }
 
 /*--------------------------------------------------
@@ -356,7 +345,7 @@ mat-card {
 }
 
 .alert-message-warning {
-  background-color: #ff9800;;
+  background-color: #ff9800;
 }
 
 .alert-message-success {

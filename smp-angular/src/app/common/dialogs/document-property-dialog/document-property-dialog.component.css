@@ -1,0 +1,9 @@
+.mat-form-field {
+  width: 100%;
+}
+
+.property-title {
+  font-size: 1em;
+  word-wrap: break-word;
+  font-weight: bold
+}

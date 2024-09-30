@@ -1,20 +1,42 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,15 +63,15 @@ public class ConfigurationService {
 
 
     public Pattern getParticipantIdentifierSchemeRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_VALIDATION_REGEXP);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpPattern() {
-        return configurationDAO.getCachedProperty(PARTC_SCH_VALIDATION_REGEXP);
+        return configurationDAO.getCachedProperty(RESOURCE_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpMessage() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_REGEXP_MSG);
     }
 
     public Pattern getPasswordPolicyRexExp() {
@@ -140,26 +162,34 @@ public class ConfigurationService {
     }
 
     public List<String> getCaseSensitiveDocumentScheme() {
-        return configurationDAO.getCachedPropertyValue(CS_DOCUMENTS);
+        return configurationDAO.getCachedPropertyValue(SUBRESOURCE_CASE_SENSITIVE_SCHEMES);
     }
 
     public List<String> getCaseSensitiveParticipantScheme() {
-        return configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_CASE_SENSITIVE_SCHEMES);
     }
 
 
     public boolean getParticipantSchemeMandatory() {
         // not mandatory by default
-        Boolean value = configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
+        Boolean value = configurationDAO.getCachedPropertyValue(RESOURCE_SCH_MANDATORY);
         return value != null && value;
     }
 
-    public Pattern getParticipantIdentifierSplitRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_SPLIT_REGEXP);
+    public Pattern getParticipantIdentifierTmplSplitRexExp() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP);
     }
 
-    public Pattern getParticipantIdentifierUrnValidationRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_URN_REGEXP);
+    public Pattern getParticipantIdentifierTmplMatchRexExp() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_MATCH_REGEXP);
+    }
+
+    public String getParticipantIdentifierTmplConcatenate() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_CONCATENATE);
+    }
+
+    public String getParticipantIdentifierTmplConcatenateSchemeNull() {
+        return configurationDAO.getCachedPropertyValue(RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME);
     }
 
     public boolean isProxyEnabled() {
@@ -256,6 +286,10 @@ public class ConfigurationService {
         return  configurationDAO.getSecurityFolder();
     }
 
+    public File getLocaleFolder() {
+        return configurationDAO.getLocaleFolder();
+    }
+
     public File getTruststoreFile() {
         return configurationDAO.getCachedPropertyValue(TRUSTSTORE_FILENAME);
     }
@@ -297,6 +331,16 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_PATH);
     }
 
+    public int getSessionTimeoutForRoles(Collection<? extends GrantedAuthority> authorities) {
+        boolean hasAdminRole = false;
+        if (authorities != null) {
+            hasAdminRole = authorities.stream().anyMatch(grantedAuthority ->
+                    StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()));
+        }
+        LOG.debug("Has admin role [{}]", hasAdminRole);
+        return hasAdminRole ? getSessionIdleTimeoutForAdmin(): getSessionIdleTimeoutForUser();
+    }
+
     public Integer getSessionIdleTimeoutForAdmin() {
         return configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
     }
@@ -320,6 +364,20 @@ public class ConfigurationService {
 
     public java.net.URL getCasCallbackUrl() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_CALLBACK_URL);
+    }
+
+    public boolean isCasAutomaticRegistrationEnabledForUserAuthentication() {
+        Boolean value = configurationDAO.getCachedPropertyValue(SSO_CAS_AUTOMATIC_REGISTRATION_ENABLED);
+        return value != null && value;
+    }
+
+    public boolean isCasAutomaticRegistrationConfirmation() {
+        Boolean value = configurationDAO.getCachedPropertyValue(SSO_CAS_AUTOMATIC_REGISTRATION_CONFIRMATION);
+        return value != null && value;
+    }
+
+    public Map<String, String> getCasAutomaticRegistrationDataMapping() {
+        return configurationDAO.getCachedPropertyValue(SSO_CAS_AUTOMATIC_REGISTRATION_PROPERTY_MAPPING);
     }
 
     public String getCasSMPLoginRelativePath() {
@@ -364,6 +422,12 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SML_CUSTOM_NAPTR_SERVICE_PARAMS);
     }
 
+    public int getManageMaxSMLRecordCount() {
+        Integer intVal = configurationDAO.getCachedPropertyValue(SML_MANAGE_MAX_COUNT);
+        return intVal == null ? 10000 : intVal;
+    }
+
+
     public List<String> getCasURLTokenValidationGroups() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
     }
@@ -389,6 +453,36 @@ public class ConfigurationService {
 
     public String getAlertUserLoginFailureSubject() {
         return configurationDAO.getCachedPropertyValue(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT);
+    }
+
+    //-----------------------
+    // user Created
+    public Boolean getAlertUserCreatedEnabled() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_ENABLED);
+    }
+
+    public AlertLevelEnum getAlertUserCreatedLevel() {
+        String level = configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
+    public String getAlertUserCreatedSubject() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_MAIL_SUBJECT);
+    }
+
+    //-----------------------
+    // user updated
+    public Boolean getAlertUserUpdatedEnabled() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_UPDATED_ENABLED);
+    }
+
+    public AlertLevelEnum getAlertUserUpdatedLevel() {
+        String level = configurationDAO.getCachedPropertyValue(ALERT_USER_UPDATED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
+    public String getAlertUserUpdatedSubject() {
+        return configurationDAO.getCachedPropertyValue(ALERT_USER_UPDATED_MAIL_SUBJECT);
     }
 
     //-----------------------
@@ -546,6 +640,17 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_MAIL_SUBJECT);
     }
 
+    public String getSMPInstanceName() {
+        return configurationDAO.getCachedPropertyValue(SMP_INSTANCE_NAME);
+    }
+    // ----
+    public java.net.URL getCredentialsResetUrl() {
+        return configurationDAO.getCachedPropertyValue(CREDENTIALS_RESET_URL);
+    }
+
+    public Integer getCredentialsResetPolicyValidMinutes() {
+        return configurationDAO.getCachedPropertyValue(CREDENTIALS_RESET_POLICY_VALID_DAYS);
+    }
 
     public Integer getAlertCredentialsBatchSize() {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_BATCH_SIZE);
@@ -555,5 +660,11 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
     }
 
+    public String getDefaultDomainConfiguration(SMPDomainPropertyEnum property) {
+        return configurationDAO.getCachedProperty(property.getPropertyEnum());
+    }
 
+    public <T>  T getDefaultDomainConfigurationValue(SMPDomainPropertyEnum property) {
+        return configurationDAO.getCachedPropertyValue(property.getPropertyEnum());
+    }
 }

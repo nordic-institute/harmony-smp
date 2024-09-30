@@ -1,62 +1,83 @@
 <div id="edit-resource-panel" class="mat-elevation-z2">
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
-
       <button id="showResource" mat-raised-button
               color="primary"
-              matTooltip="Show resource"
+              matTooltip="{{ 'resource.details.panel.tooltip.show.resource' | translate }}"
               (click)="onShowButtonDocumentClicked()"
               >
         <mat-icon>article</mat-icon>
-        <span>Edit document</span>
+        <span>{{ "resource.details.panel.button.edit" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
   <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
   <form [formGroup]="resourceForm">
     <mat-form-field style="width:100%">
-      <mat-label>Resource type</mat-label>
-      <mat-select placeholder="Resource type for the resource"
-                  matTooltip="Select type for the resource."
+      <mat-label>{{ "resource.details.panel.label.resource.type" | translate }}</mat-label>
+      <select matNativeControl placeholder="{{ 'resource.details.panel.placeholder.resource.type' | translate }}"
+                  matTooltip="{{ 'resource.details.panel.tooltip.resource.type' | translate }}"
                   id="resourceTypeIdentifier"
                   formControlName="resourceTypeIdentifier"
                   required>
-        <mat-option *ngFor="let resDef of domainResourceDefs"
+        <option *ngFor="let resDef of domainResourceDefs"
                     [value]="resDef.identifier">
           {{resDef.name}} ({{resDef.identifier}})
-        </mat-option>
-      </mat-select>
+        </option>
+      </select>
     </mat-form-field>
-    <mat-form-field  style="width: 100%">
-      <mat-label>Resource identifier</mat-label>
+    <mat-form-field style="width: 100%">
+      <mat-label>{{ "resource.details.panel.label.resource.id" | translate }}</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
              required auto-focus-directive>
     </mat-form-field>
 
-    <mat-form-field  style="width: 100%">
-      <mat-label>Resource scheme</mat-label>
+    <mat-form-field style="width: 100%">
+      <mat-label>{{ "resource.details.panel.label.resource.scheme" | translate }}</mat-label>
       <input id="identifierScheme_id" type="text" matInput
              formControlName="identifierScheme"
       >
     </mat-form-field>
+    <mat-checkbox formControlName="reviewEnabled"
+                  (click)="onReviewEnabledChanged($event)"
+                  matTooltip="{{ 'resource.details.panel.label.resource.review.enabled' | translate }}"
+                  id="reviewEnabled_id">
+      {{ "resource.details.panel.tooltip.resource.review.enabled" | translate }}
+    </mat-checkbox>
+    <smp-warning-panel *ngIf="showReviewEnabledHint"
+                       type="warning"
+                       icon="warning"
+    label="{{ 'resource.details.panel.review.disabled.confirmation.dialog.description' | translate }}"></smp-warning-panel>
     <mat-form-field style="width:100%">
-      <mat-label>Resource visibility</mat-label>
-      <mat-select formControlName="visibility"
-                  matTooltip="Resource visibility."
-                  id="visibility_id" required>
-        <mat-option *ngFor="let visibility of groupVisibilityOptions"
-                    [value]="visibility.value">
-          {{visibility.key}}
-        </mat-option>
-      </mat-select>
+      <mat-label>{{ "resource.details.panel.label.resource.visibility" | translate }}</mat-label>
+      <select matNativeControl formControlName="visibility"
+              matTooltip="{{ 'resource.details.panel.tooltip.resource.visibility' | translate }}"
+              id="visibility_id" required>
+        <option *ngFor="let visibility of groupVisibilityOptions"
+                [value]="visibility.value">
+          {{ visibility.key }}
+        </option>
+      </select>
     </mat-form-field>
-
+    <mat-toolbar class ="mat-elevation-z2">
+      <mat-toolbar-row  class="smp-toolbar-row">
+        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+                [disabled]="!resetButtonEnabled">
+          <mat-icon>refresh</mat-icon>
+          <span>{{ "resource.details.panel.button.reset" | translate }}</span>
+        </button>
+        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+                [disabled]="!submitButtonEnabled">
+          <mat-icon>save</mat-icon>
+          <span>{{ "resource.details.panel.button.save" | translate }}</span>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
     <smp-warning-panel
       type="desc"
       icon="info"
       [label]="visibilityDescription"
     ></smp-warning-panel>
   </form>
-
 </div>

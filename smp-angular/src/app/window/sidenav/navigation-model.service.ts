@@ -15,24 +15,23 @@ import {filter, map} from "rxjs/operators";
 
 let PUBLIC_NAVIGATION_TREE: NavigationNode = {
   code: "home",
-  name: "Home",
+  i18n: "navigation.label.home",
   icon: "home",
   routerLink: "",
   children: [
     {
       code: "search-tools",
-      name: "Search",
+      i18n: "navigation.label.search",
       icon: "search",
-      tooltip: "Search tools",
+      tooltipI18n: "navigation.tooltip.search.tools",
       routerLink: "public",
       children: [
         {
           code: "search-resources",
-          name: "Resources",
+          i18n: "navigation.label.search.resources",
           icon: "find_in_page",
-          tooltip: "Search registered resources",
+          tooltipI18n: "navigation.tooltip.search.resources",
           routerLink: "search-resources",
-
         }
       ]
     }
@@ -46,11 +45,12 @@ let PUBLIC_NAVIGATION_TREE: NavigationNode = {
  */
 export interface NavigationNode {
   code: string;
-  name: string;
+  i18n: string;
   icon?: string;
-  tooltip?: string;
+  tooltipI18n?: string;
   routerLink?: string;
   children?: NavigationNode[];
+  clickable?: boolean;
   selected?: boolean;
   transient?: boolean; // if true then node must be ignored
 }
@@ -74,14 +74,10 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   private selectedPathSubject = new Subject<NavigationNode[]>();
   selected: NavigationNode;
-
   previousSelected: NavigationNode;
-
   selectedPath: NavigationNode[];
 
   private rootNode: NavigationNode = PUBLIC_NAVIGATION_TREE;
-  private userDetailsNode: NavigationNode = null;
-
 
   constructor(protected securityService: SecurityService,
               protected securityEventService: SecurityEventService,
@@ -96,11 +92,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       }
     );
     securityEventService.onLogoutSuccessEvent().subscribe(value => {
-        this.refreshNavigationTree();
+        this.reset();
       }
     );
     securityEventService.onLogoutErrorEvent().subscribe(value => {
-        this.refreshNavigationTree();
+        this.reset();
       }
     );
   }
@@ -111,8 +107,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   select(node: NavigationNode) {
-
     let targetNode = this.findLeaf(node);
+
     if (targetNode === this.selected) {
       console.log("Already selected skip");
       return
@@ -126,13 +122,41 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       this.selected = targetNode
       this.selected.selected = true;
       this.selectedPath = this.findPathForNode(this.selected, this.rootNode);
+      this.markNodesAsClickable(this.selectedPath);
       this.selectedPathSubject.next(this.selectedPath);
-      let navigationPath: string[] = this.getNavigationPath(this.selectedPath);
-      // navigate to selected path
 
+      // navigate to selected path
+      let navigationPath: string[] = this.getNavigationPath(this.selectedPath);
       this.router.navigate(navigationPath);
     } else {
       this.selectedPathSubject.next(null);
+    }
+  }
+
+  private markNodesAsClickable(selectedPath: NavigationNode[]) {
+    if (selectedPath) {
+      // reset all  nodes (maybe some previously marked as non-clickable)
+      selectedPath.forEach(value => value.clickable = true);
+
+      if (selectedPath.length) {
+        let leafIndex = selectedPath.length - 1;
+
+        // mark the selected leaf as non-clickable
+        selectedPath[leafIndex].clickable = false;
+
+        // mark the parent of the first leaf in a menu as non-clickable
+        let parent = this.findParent(selectedPath[leafIndex]);
+        let grandParent = this.findParent(parent);
+        if (parent && parent.children && parent.children[0] == selectedPath[leafIndex] && grandParent == this.rootNode) {
+          parent.clickable = false;
+        }
+
+        // mark the root parent as non-clickable when selecting the very first leaf in a three level tree
+        let userRootLeaf = this.getDeepestLeaf(this.rootNode);
+        if (userRootLeaf == selectedPath[leafIndex] && selectedPath.length == 3) {
+          this.rootNode.clickable = false;
+        }
+      }
     }
   }
 
@@ -140,14 +164,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     this.select(this.previousSelected)
   }
 
-
   public reset() {
     this.rootNode = PUBLIC_NAVIGATION_TREE;
     this.data = this.rootNode.children;
     this.select(this.rootNode)
-
   }
-
 
   protected getNavigationPath(path: NavigationNode[]): string [] {
     return path.map(node => node.routerLink);
@@ -163,12 +184,31 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   protected noTargetChildren(targetNode: NavigationNode): boolean {
-    if (!targetNode || !targetNode.children || targetNode.children.length == 0) {
-      return true;
+    return this.findSiblings(targetNode).length == 0;
+  }
+
+  protected findSiblings(node: NavigationNode): NavigationNode[] {
+    if (!node || !node.children || node.children.length == 0) {
+      return [];
     }
 
-    let nonTransient = targetNode.children.filter(node => !node.transient);
-    return nonTransient.length == 0;
+    return node.children.filter(node => !node.transient);
+  }
+
+  protected findParent(node: NavigationNode): NavigationNode {
+    let path = this.findPathForNode(node, this.rootNode);
+    if (path) {
+      let parentIndex = path.indexOf(node) - 1;
+      return path[parentIndex];
+    }
+    return null;
+  }
+
+  private getDeepestLeaf(currentNode: NavigationNode): NavigationNode {
+    if (this.noTargetChildren(currentNode)) {
+      return currentNode;
+    }
+    return this.getDeepestLeaf(currentNode.children[0]);
   }
 
   /**
@@ -212,21 +252,20 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
    */
   public refreshNavigationTree() {
     this.securityService.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
-      console.log("Refresh application configuration is authenticated " + isAuthenticated)
-      if (!isAuthenticated) {
-        this.reset();
-      } else {
-
+      console.log("Refresh navigation tree [is authenticated: " + isAuthenticated + "]")
+      if (isAuthenticated) {
         const currentUser: User = this.securityService.getCurrentUser();
         // get navigation for user
         let navigationObserver = this.http.get<NavigationNode>(SmpConstants.REST_PUBLIC_USER_NAVIGATION_TREE.replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId));
 
-        navigationObserver.subscribe((userRootNode: NavigationNode) => {
-          this.setNavigationTree(userRootNode)
-        }, (error: any) => {
-          // check if unauthorized
-          // just console try latter
-          console.log("Error occurred while retrieving the navigation model for the user[" + error + "]");
+        navigationObserver.subscribe({
+          next: (userRootNode: NavigationNode) => {
+            this.setNavigationTree(userRootNode)
+          }, error: (error: any) => {
+            // check if unauthorized
+            // just console try latter
+            console.log("Error occurred while retrieving the navigation model for the user[" + error + "]");
+          }
         });
       }
     });
@@ -239,10 +278,13 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   setNavigationTreeByPath(path: string[], userRootNode: NavigationNode) {
-    // find the node by the navigation
+    this.rootNode = userRootNode;
+    this.data = this.rootNode?.children;
+    this.selectStartNode(path, userRootNode);
+  }
 
+  private selectStartNode(path: string[], userRootNode: NavigationNode) {
     let startNode = userRootNode;
-
     for (let index in path) {
       let pathSegment = path[index];
       // the first node is empty - skip all empty nodes
@@ -253,17 +295,12 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
         }
       }
     }
-
-    this.rootNode = userRootNode;
-    this.data = this.rootNode?.children;
     this.select(startNode);
   }
-
 
   getSelectedPathObservable(): Observable<NavigationNode[]> {
     return this.selectedPathSubject.asObservable();
   }
-
 
   /** Add node as child of parent */
   public add(node: NavigationNode, parent: NavigationNode) {
@@ -275,7 +312,12 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   /** Remove node from tree */
   public remove(node: NavigationNode) {
-    const newTreeData = {code: "home", name: "Home", icon: "home", children: this.data};
+    const newTreeData: NavigationNode = {
+      code: "home",
+      i18n: "navigation.label.home",
+      icon: "home",
+      children: this.data
+    };
     this._remove(node, newTreeData);
     this.data = newTreeData.children;
   }
@@ -288,13 +330,13 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   protected _add(newNode: NavigationNode, parent: NavigationNode, tree: NavigationNode) {
     if (tree === parent) {
       console.log(
-        `replacing children array of '${parent.name}', adding ${newNode.name}`
+        `replacing children array of '${parent.i18n}', adding ${newNode.i18n}`
       );
       tree.children = [...tree.children!, newNode];
       return true;
     }
     if (!tree.children) {
-      console.log(`reached leaf node '${tree.name}', backing out`);
+      console.log(`reached leaf node '${tree.i18n}', backing out`);
       return false;
     }
     return this.update(tree, this._add.bind(this, newNode, parent));
@@ -310,7 +352,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
         ...tree.children.slice(0, i),
         ...tree.children.slice(i + 1)
       ];
-      console.log(`found ${node.name}, removing it from`, tree);
+      console.log(`found ${node.i18n}, removing it from`, tree);
       return true;
     }
     return this.update(tree, this._remove.bind(this, node));
@@ -321,7 +363,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
     tree.children!.find((node, i) => {
       if (predicate(node)) {
-        console.log(`creating new node for '${node.name}'`);
+        console.log(`creating new node for '${node.i18n}'`);
         updatedTree = {...node};
         updatedIndex = i;
         return true;
@@ -330,7 +372,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     });
 
     if (updatedTree!) {
-      console.log(`replacing node '${tree.children![updatedIndex!].name}'`);
+      console.log(`replacing node '${tree.children![updatedIndex!].i18n}'`);
       tree.children![updatedIndex!] = updatedTree!;
       return true;
     }
@@ -340,13 +382,9 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   public navigateToLogin(): void {
     this.securityService.clearLocalStorage()
     this.reset();
-    let node: NavigationNode = this.createNew();
+    let node: NavigationNode = this.createLoginNode();
     this.rootNode.children.push(node);
     this.select(node);
-
-    //this.reset();
-    //this.router.navigate(['/login'], {queryParams: {returnUrl: this.router.url}});
-    //this.router.parseUrl('/login');
   }
 
   public navigateToHome(): void {
@@ -358,24 +396,22 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     if (this.selectedPath?.length > 0) {
       this.select(this.selectedPath[this.selectedPath.length - 1]);
     }
-
-
   }
 
   public navigateToUserDetails(): void {
     this.setNavigationTreeByPath(['user-settings', 'user-profile'], this.rootNode)
   }
 
-
-  public createNew(): NavigationNode {
+  public createLoginNode(): NavigationNode {
     return {
       code: "login",
       icon: "login",
-      name: "Login",
+      i18n: "navigation.label.login",
       routerLink: "login",
+      clickable: true,
       selected: true,
-      tooltip: "",
-      transient: true,
+      tooltipI18n: "",
+      transient: true
     }
   }
 

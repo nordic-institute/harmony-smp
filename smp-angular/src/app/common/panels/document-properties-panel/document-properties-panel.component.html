@@ -1,0 +1,71 @@
+<div style="display:flex; flex-grow: 1; flex-direction: column">
+      <mat-toolbar *ngIf="shotToolbar"
+        class="mat-elevation-z2"
+                   style="flex-grow: 0;">
+        <mat-toolbar-row class="smp-toolbar-row">
+          <button id="createButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.create' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.create' | translate }}"
+                  (click)="onCreateProperty()">
+            <mat-icon>add</mat-icon>
+          </button>
+          <button id="editButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.edit' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.edit' | translate }}"
+                  (click)="onEditSelectedProperty()"
+                  [disabled]="editButtonDisabled">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button id="deleteButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.delete.remove' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.delete.remove' | translate }}"
+                  (click)="onDeleteSelectedProperty()"
+                  [disabled]="deleteButtonDisabled"
+          >
+            <mat-icon>remove</mat-icon>
+          </button>
+          <tool-button-spacer></tool-button-spacer>
+          <button id="resetButton" mat-mini-fab attr.aria-label="{{ 'document.properties.panel.label.reset' | translate }}"
+                  matTooltip="{{ 'document.properties.panel.tooltip.reset' | translate }}"
+                  (click)="onResetButtonClicked()"
+                  color="primary"
+                  [disabled]="!cancelButtonEnabled">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </mat-toolbar-row>
+      </mat-toolbar>
+      <mat-form-field style="width: 100%">
+        <mat-label>{{ "document.properties.panel.label.filter" | translate }}</mat-label>
+        <input matInput (keyup)="applyFilter($event)" #input>
+      </mat-form-field>
+      <div id="property-table-container">
+        <table #DocumentPropertyTable mat-table class="mat-elevation-z1"
+               style="max-height: 100%;flex-grow: 1;"
+               id="document-property-table"
+               [dataSource]="propertyDataSource" matSort>
+
+          <ng-container matColumnDef="property">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "document.properties.panel.label.property" | translate }}</th>
+            <td mat-cell *matCellDef="let row"
+                [matTooltip]="row.desc">{{ row.property }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "document.properties.panel.label.value" | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ getTableRowValue(row) }}</td>
+          </ng-container>
+          <tr mat-header-row
+              *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+          <tr mat-row
+              *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+              (click)="propertySelected(row)"
+              (dblclick)="onEditSelectedProperty()"
+              [ngClass]="getRowClass(row, odd)"
+          ></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="2">{{ "document.properties.panel.label.no.properties.found" | translate }}</td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]" showFirstLastButtons
+                     [pageSize]="10" [length]="propertyDataSource.data?.length"
+                     attr.aria-label="{{ 'document.properties.panel.label.select.page' | translate }}"></mat-paginator>
+
+    </div>

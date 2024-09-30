@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
@@ -7,17 +25,14 @@ import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_IDENTIFIERS;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -26,7 +41,7 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class UserDaoIntegrationTest extends AbstractBaseDao {
+class UserDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     UserDao testInstance;
@@ -38,7 +53,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     ResourceDao serviceGroupDao;
 
     @Test
-    public void persistUserWithoutIdentifier() {
+    void persistUserWithoutIdentifier() {
         // set
         DBUser u = new DBUser();
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.persistFlushDetach(u));
@@ -47,7 +62,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void persistUserWithUsername() {
+    void persistUserWithUsername() {
         // set
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
 
@@ -63,7 +78,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void persistUserWithoutCredentials() {
+    void persistUserWithoutCredentials() {
 
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
         assertTrue(u.getUserCredentials().isEmpty());
@@ -81,7 +96,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
     @Test
     @Transactional
-    public void persistUserWithUsernamePasswordCredential() {
+    void persistUserWithUsernamePasswordCredential() {
         // set
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_2);
         DBCredential credential = TestDBUtils.createDBCredential(TestConstants.USERNAME_2);
@@ -106,7 +121,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
     @Test
     @Transactional
-    public void persistUserWithCertificate() {
+    void persistUserWithCertificate() {
         // set
         DBUser u = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_1);
         DBCredential credential = u.getUserCredentials().get(0);
@@ -134,7 +149,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findCertUserByIdentifier() {
+    void findCertUserByIdentifier() {
         // set
         DBUser u = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_1);
 
@@ -150,7 +165,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
     @Test
     @Transactional
-    public void findUsernameUserByIdentifier() {
+    void findUsernameUserByIdentifier() {
         // set
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
         DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(u, null, null, null);
@@ -167,7 +182,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void deleteUserWithCertificate() {
+    void deleteUserWithCertificate() {
         // given
         DBUser u = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_1);
         DBCredential credential = u.getUserCredentials().get(0);
@@ -184,7 +199,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findBlankUsernameUser() {
+    void findBlankUsernameUser() {
         // set
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
 
@@ -203,7 +218,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findNotExistsUsernameUser() {
+    void findNotExistsUsernameUser() {
         // set
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
 
@@ -216,7 +231,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findCaseInsensitiveUsernameUser() {
+    void findCaseInsensitiveUsernameUser() {
         // set
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1.toLowerCase());
 
@@ -228,6 +243,5 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
         assertTrue(ou.isPresent());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
-
     }
 }

@@ -1,15 +1,33 @@
 import {Component, Input,} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
-import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {
+  BeforeLeaveGuard
+} from "../../../window/sidenav/navigation-on-leave-guard";
 import {GroupRo} from "../../../common/model/group-ro.model";
 import {ResourceRo} from "../../../common/model/resource-ro.model";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "../../../common/alert-message/alert-message.service";
 import {DomainRo} from "../../../common/model/domain-ro.model";
-import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditResourceService} from "../edit-resource.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
-import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {
+  NavigationNode,
+  NavigationService
+} from "../../../window/sidenav/navigation-model.service";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
+import {
+  WindowSpinnerService
+} from "../../../common/services/window-spinner.service";
+import {EditResourceController} from "../edit-resource.controller";
+import {
+  ConfirmationDialogComponent
+} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 
 @Component({
@@ -18,13 +36,13 @@ import {NavigationNode, NavigationService} from "../../../window/sidenav/navigat
   styleUrls: ['./resource-details-panel.component.scss']
 })
 export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
-
   readonly groupVisibilityOptions = Object.keys(VisibilityEnum)
     .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
 
-  title: string = "Resources";
+  title = "";
+  visibilityDescription = "";
   private _resource: ResourceRo;
   @Input() private group: GroupRo;
   @Input() domain: DomainRo;
@@ -34,17 +52,23 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
 
   constructor(private editResourceService: EditResourceService,
+              private editResourceController: EditResourceController,
               private navigationService: NavigationService,
               private alertService: AlertMessageService,
+              private windowSpinnerService: WindowSpinnerService,
               private dialog: MatDialog,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
     this.resourceForm = formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
       'visibility': new FormControl({value: null}),
       'resourceTypeIdentifier': new FormControl({value: null}),
+      'reviewEnabled': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
+    this.translateService.get("resource.details.panel.title").subscribe(value => this.title = value);
+    (async () => await this.updateVisibilityDescription())();
   }
 
   get resource(): ResourceRo {
@@ -53,6 +77,7 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     resource.identifierValue = this.resourceForm.get('identifierValue').value;
     resource.resourceTypeIdentifier = this.resourceForm.get('resourceTypeIdentifier').value;
     resource.visibility = this.resourceForm.get('visibility').value;
+    resource.reviewEnabled = this.resourceForm.get('reviewEnabled').value;
     return resource;
   }
 
@@ -64,34 +89,41 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       this.resourceForm.controls['identifierScheme'].setValue(value.identifierScheme);
       this.resourceForm.controls['resourceTypeIdentifier'].setValue(value.resourceTypeIdentifier);
       this.resourceForm.controls['visibility'].setValue(value.visibility);
+      this.resourceForm.controls['reviewEnabled'].setValue(value.reviewEnabled);
+      // only allow visibility and reviewEnabled changes for group-admin and resource-admin
+      this.resourceForm.controls['visibility'].enable();
+      this.resourceForm.controls['reviewEnabled'].enable();
 
     } else {
       this.resourceForm.controls['identifierValue'].setValue("");
       this.resourceForm.controls['identifierScheme'].setValue("");
       this.resourceForm.controls['resourceTypeIdentifier'].setValue("");
       this.resourceForm.controls['visibility'].setValue("");
+      this.resourceForm.controls['reviewEnabled'].setValue(false);
     }
+    (async () => await this.updateVisibilityDescription())();
     this.resourceForm.markAsPristine();
   }
 
-  onShowButtonDocumentClicked() {
+  async onShowButtonDocumentClicked() {
     // set selected resource
     this.editResourceService.selectedResource = this.resource;
 
-    let node: NavigationNode = this.createNew();
+    let node: NavigationNode = await this.createNewDocumentNavigationNode();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
   }
 
-  public createNew(): NavigationNode {
+  public async createNewDocumentNavigationNode() {
     return {
       code: "resource-document",
       icon: "note",
-      name: "Edit resource document",
+      name: await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.name")),
       routerLink: "resource-document",
       selected: true,
       tooltip: "",
-      transient: true
+      transient: true,
+      i18n: "navigation.label.edit.resource.document"
     }
   }
 
@@ -99,16 +131,75 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     return false;
   }
 
-  get visibilityDescription(): string {
+  async updateVisibilityDescription() {
     if (this.resourceForm.get('visibility').value == VisibilityEnum.Private) {
-      return "The private resource is accessible only to the resource members!"
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private"));
+    } else if (this.group?.visibility == VisibilityEnum.Private) {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private.group"));
+    } else if (this.domain?.visibility == VisibilityEnum.Private) {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.private.domain"));
+    } else {
+      this.visibilityDescription = await lastValueFrom(this.translateService.get("resource.details.panel.label.resource.visibility.public"));
     }
-    if (this.group.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private group. Only the group members and group resource members can access the resource!"
+  }
+
+  get submitButtonEnabled(): boolean {
+    return this.resourceForm.valid && this.resourceForm.dirty;
+  }
+
+  get resetButtonEnabled(): boolean {
+    return this.resourceForm.dirty;
+  }
+
+  public onSaveButtonClicked(): void {
+    this.windowSpinnerService.showSpinner = true;
+    let updatedResource: ResourceRo = this.resource;
+    this.editResourceService.updateResourceForGroup(updatedResource, this.group, this.domain).subscribe({
+      next: (result: ResourceRo): void => {
+        try {
+          if (!!result) {
+            this.alertService.successForTranslation("resource.details.panel.alert.resource.saved");
+            this.editResourceController.selectedResourceUpdated(result);
+            this.resource = result;
+            this.resourceForm.markAsPristine();
+          }
+        } finally {
+          this.windowSpinnerService.showSpinner = false;
+        }
+      }, error: (err: any): void => {
+        this.alertService.error(err.error?.errorDescription)
+        this.windowSpinnerService.showSpinner = false;
+      }
+    });
+  }
+
+  public onResetButtonClicked() {
+    this.resourceForm.reset(this._resource);
+  }
+
+  async onReviewEnabledChanged(event: any) {
+    let newReviewEnabled: boolean = event.target.checked;
+    let showWarning: boolean = this._resource?.reviewEnabled && !newReviewEnabled;
+
+
+    if (showWarning) {
+      this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: await lastValueFrom(this.translateService.get("resource.details.panel.review.disabled.confirmation.dialog.title")),
+          description: await lastValueFrom(this.translateService.get("resource.details.panel.review.disabled.confirmation.dialog.description"))
+        }
+      }).afterClosed().subscribe(result => {
+        if (!result) {
+          // prevent default does not work in case of "async"
+          this.resourceForm.controls['reviewEnabled'].setValue(true);
+          this.resourceForm.controls['reviewEnabled'].markAsPristine();
+        }
+      });
     }
-    if (this.domain.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private domain. Only the domain members, domain group members and its resource members can access the resource!"
-    }
-    return "The resource is public on the public group and the public domain. The resource data is accessible to all users."
+  }
+
+  get showReviewEnabledHint(): boolean {
+    return this._resource?.reviewEnabled === true
+      && this.resourceForm.get('reviewEnabled').value !== true;
   }
 }

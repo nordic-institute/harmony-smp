@@ -1,8 +1,28 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.resource;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
+import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
@@ -49,16 +69,19 @@ public class ResourceHandlerService extends AbstractResourceHandler {
     final ResourceMemberDao resourceMemberDao;
     final GroupDao groupDao;
     final SMLIntegrationService integrationService;
+    final DocumentVersionService documentVersionService;
 
     public ResourceHandlerService(List<ResourceDefinitionSpi> resourceDefinitionSpiList,
                                   ResourceMemberDao resourceMemberDao,
                                   GroupDao groupDao,
                                   ResourceStorage resourceStorage,
-                                  SMLIntegrationService integrationService) {
+                                  SMLIntegrationService integrationService,
+                                  DocumentVersionService documentVersionService) {
         super(resourceDefinitionSpiList, resourceStorage);
         this.resourceMemberDao = resourceMemberDao;
         this.groupDao = groupDao;
         this.integrationService = integrationService;
+        this.documentVersionService = documentVersionService;
     }
 
     public void readResource(ResourceRequest resourceRequest,
@@ -89,19 +112,19 @@ public class ResourceHandlerService extends AbstractResourceHandler {
 
         ResourceHandlerSpi handlerSpi = getSubresourceHandler(resolvedSubresource.getSubresourceDef(), resolvedData.getResourceDef());
         // generate request and respond
-        RequestData requestData = buildRequestDataForSubResource(resolvedData.getDomain(), resolvedData.getResource(), resolvedData.getSubresource());
+        RequestData requestData = buildRequestDataForSubResource(resolvedData.getDomain(), resolvedData.getResource(),
+                resolvedData.getSubresource());
         ResponseData responseData = new SpiResponseData(resourceResponse.getOutputStream());
         // handle data
         handleReadResource(handlerSpi, requestData, responseData, resourceResponse);
     }
 
     @Transactional
-    public void createResource(DBUser user, ResourceRequest resourceRequest,
+    public void createResource(List<DBUser> owners, ResourceRequest resourceRequest,
                                ResourceResponse resourceResponse) {
 
         LOG.debug("Handle the CREATE action for resource request [{}]", resourceRequest);
         // locate the resource handler
-
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         DBResource resource = resolvedData.getResource();
         DBDomain domain = resolvedData.getDomain();
@@ -134,8 +157,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
             }
         }
         // set headers to response
-        responseData.getHttpHeaders().entrySet().stream()
-                .forEach(entry -> resourceResponse.setHttpHeader(entry.getKey(), entry.getValue()));
+        responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
         // determinate status before resource is stored to database!
         resourceResponse.setHttpStatus(getHttpStatusForCreateUpdate(isNewResource, responseData));
 
@@ -147,14 +169,14 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                     () -> resolvedData.getResourceDef().getMimeType()));
         }
         // create new document version
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
+        DBDocumentVersion documentVersion = documentVersionService.initializeDocumentVersionByGroupAdmin(EventSourceType.REST_API);
         documentVersion.setContent(baos.toByteArray());
         DBResource managedResource = resourceStorage.addDocumentVersionForResource(resource, documentVersion);
 
         if (isNewResource) {
-            resourceMemberDao.setAdminMemberShip(user, managedResource);
+            // associate owners to new resource
+            owners.forEach(owner -> resourceMemberDao.setAdminMemberShip(owner, managedResource));
             if (managedResource.getGroup() == null) {
-
                 if (resolvedData.getGroup() != null) {
                     managedResource.setGroup(resolvedData.getGroup());
                 } else {
@@ -172,7 +194,6 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                                   ResourceResponse resourceResponse) {
 
         LOG.debug("Handle the CREATE action for resource request [{}]", resourceRequest);
-
         // locate the resource handler
         ResolvedData resolvedData = resourceRequest.getResolvedData();
 
@@ -205,8 +226,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
             }
         }
         // set headers to response
-        responseData.getHttpHeaders().entrySet().stream()
-                .forEach(entry -> resourceResponse.setHttpHeader(entry.getKey(), entry.getValue()));
+        responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
         // determinate status before resource is stored to database!
         resourceResponse.setHttpStatus(getHttpStatusForCreateUpdate(isNewResource, responseData));
 
@@ -218,7 +238,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                     () -> resolvedData.getResourceDef().getMimeType()));
         }
         // create new document version
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
+        DBDocumentVersion documentVersion = documentVersionService.initializeDocumentVersionByGroupAdmin(EventSourceType.REST_API);
         documentVersion.setContent(baos.toByteArray());
         resourceStorage.addDocumentVersionForSubresource(resolvedSubresource, documentVersion);
 
@@ -232,7 +252,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         // locate the resource handler
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         DBResource resource = resolvedData.getResource();
-        integrationService.unregisterParticipant(resource, resolvedData.domain);
+        integrationService.unregisterParticipant(resource, resolvedData.getDomain());
         resourceStorage.deleteResource(resource);
     }
 

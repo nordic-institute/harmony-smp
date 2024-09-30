@@ -2,9 +2,11 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'tool-button-spacer',
+  styleUrls: ['./spacer.component.css'],
   template:
-    `<span style="margin-left:5px; width: 10px;border-left: solid black">&nbsp;</span>
+    `<span [ngClass]="vertical?'vertical-spacer':'horizontal-spacer'">&nbsp;</span>
     `
 })
 export class SpacerComponent {
+  @Input() vertical: boolean=true;
 }

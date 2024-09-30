@@ -1,0 +1,44 @@
+@use '../../../../_smp-theme-helper' as smp;
+
+@mixin set-component-colors($theme) {
+
+  .button-selected {
+    padding: 3px 3px !important;
+    border-radius: 15%;
+    background-color: smp.get-theme-color($theme, primary, 500) !important;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.2), 0 1px 2px 0 rgba(0,0,0,0.2);
+    color: smp.get-theme-color($theme, primary, 500-contrast) !important;
+    border-style: none;
+  }
+
+  .button-deselected :hover {
+    background-color: smp.get-theme-color($theme, primary, 800, 0.5) !important;
+    color: smp.get-theme-color($theme, primary, 500-contrast) !important;
+  }
+
+  .button-deselected {
+    padding: 1px 3px !important;
+    border-radius: 15%;
+    background: transparent;
+    color: smp.get-theme-color($theme, primary, 500-contrast) !important;
+    border-style: none;
+  }
+
+}
+
+#expand-panel_id {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 0 1em;
+  min-width: 600px;
+}
+
+.vertical-button-label {
+  font-size: 0.8em;
+  min-height: 100px;
+  writing-mode: vertical-rl;
+}
+
+
+

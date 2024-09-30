@@ -11,7 +11,8 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
@@ -38,6 +39,10 @@
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
             <artifactId>edelivery-springsecurity-2-way-ssl-auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.dynamic-discovery</groupId>
+            <artifactId>dynamic-discovery-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -76,8 +81,9 @@
             <artifactId>spring-context-support</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
+            <!-- added only for tool: org.springframework.web.servlet.support.ServletUriComponentsBuilder -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>
@@ -145,21 +151,18 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.santuario</groupId>
-            <artifactId>xmlsec</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
-
-        <!-- Tests -->
         <dependency>
-            <groupId>pl.pragmatists</groupId>
-            <artifactId>JUnitParams</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -187,7 +190,15 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Test dependencies -->
+        <!-- oasis SMP 1.0 for testing  SPI -->
+        <dependency>
+            <groupId>eu.europa.ec.edelivery</groupId>
+            <artifactId>oasis-smp-spi</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -215,50 +226,40 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-junit</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
         <plugins>
-        <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>generate-ddl</id>
-                    <phase>process-classes</phase>
-                    <goals>
-                        <goal>run</goal>
-                    </goals>
-                    <configuration>
-                        <target>
-                            <!-- ANT Task definition
-                            Class generates ddl scripts
-                                1. Parameter: comma separated hibernate database dialects
-                                2. script version
-                                3. export scripts.-->
-                            <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator" fork="true" failonerror="true">
-                                <arg value="org.hibernate.dialect.MySQL5InnoDBDialect,org.hibernate.dialect.Oracle10gDialect" />
-                                <arg value="${project.version}" />
-                                <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts" />
-                                <!-- reference to the passed-in classpath reference -->
-                                <classpath refid="maven.compile.classpath" />
-                            </java>
-                        </target>
-                    </configuration>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-ddl</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- ANT Task definition
+                                Class generates ddl scripts
+                                    1. Parameter: comma separated hibernate database dialects
+                                    2. script version
+                                    3. export scripts.-->
+                                <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator"
+                                      fork="true" failonerror="true">
+                                    <arg value="org.hibernate.dialect.MySQL5InnoDBDialect,org.hibernate.dialect.Oracle10gDialect"/>
+                                    <arg value="${project.version}"/>
+                                    <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts"/>
+                                    <!-- reference to the passed-in classpath reference -->
+                                    <classpath refid="maven.compile.classpath"/>
+                                </java>
+                            </target>
+                        </configuration>
 
-                </execution>
-            </executions>
-        </plugin>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

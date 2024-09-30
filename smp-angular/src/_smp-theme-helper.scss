@@ -2,7 +2,10 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-
+@function get-theme-type($smp-theme ) {
+  $color-config: mat.get-color-config($smp-theme);
+  @return map.get($color-config, type);
+}
 
 @function get-theme-color($smp-theme, $color: primary, $hue: null,  $opacity: null ) {
   $color-config: mat.get-color-config($smp-theme);

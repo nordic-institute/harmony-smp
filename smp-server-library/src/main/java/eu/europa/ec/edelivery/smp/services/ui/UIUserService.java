@@ -1,7 +1,24 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
-import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
@@ -9,7 +26,7 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -22,6 +39,8 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.CredentialService;
+import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +59,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * Service for user management in UI. It provides methods for user CRUD operations and user credential management.
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -50,24 +68,30 @@ import java.util.stream.Collectors;
 public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIUserService.class);
+    private static final String USER_ID_REQUEST_TYPE = "UserId";
 
-    private UserDao userDao;
+    private final UserDao userDao;
+    private final CredentialService credentialService;
     CredentialDao credentialDao;
-    private ConfigurationService configurationService;
-    private ConversionService conversionService;
-
-    private UITruststoreService truststoreService;
+    private final ConfigurationService configurationService;
+    private final ConversionService conversionService;
+    private final CredentialsAlertService alertService;
+    private final UITruststoreService truststoreService;
 
     public UIUserService(UserDao userDao,
                          CredentialDao credentialDao,
                          ConfigurationService configurationService,
                          ConversionService conversionService,
-                         UITruststoreService truststoreService) {
+                         UITruststoreService truststoreService,
+                         CredentialsAlertService alertService,
+                         CredentialService credentialService) {
         this.userDao = userDao;
         this.credentialDao = credentialDao;
         this.configurationService = configurationService;
         this.conversionService = conversionService;
         this.truststoreService = truststoreService;
+        this.alertService = alertService;
+        this.credentialService = credentialService;
     }
 
     @Override
@@ -78,18 +102,17 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     /**
      * Method returns user resource object list for  UI list page.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @param filter
+     * @param page      - page number
+     * @param pageSize  - page size
+     * @param sortField - sort field
+     * @param sortOrder - sort order
+     * @param filter    - filter object
      * @return ServiceResult with list
      */
     @Transactional
     @Override
     public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
-        ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
-        return resUsers;
+        return super.getTableList(page, pageSize, sortField, sortOrder, filter);
     }
 
     public AccessTokenRO createAccessTokenForUser(Long userId, CredentialRO credInit) {
@@ -97,11 +120,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
 
-        Boolean testMode = SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode();
-
+        boolean testMode = SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode();
         AccessTokenRO token = generateAccessToken(testMode);
         OffsetDateTime generatedTime = token.getGeneratedOn();
         OffsetDateTime expireOnTime = generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays());
@@ -141,7 +163,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         CertificateRO certificate = credential.getCertificate();
         if (certificate == null || StringUtils.isBlank(certificate.getCertificateId())) {
@@ -192,7 +214,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(authorizedUserId);
         DBCredential dbAuthorizedCredentials = dbCredential.orElseThrow(() ->
-                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id"));
+                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id"));
 
         DBUser authorizedUser = dbAuthorizedCredentials.getUser();
 
@@ -224,9 +246,18 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     protected DBUser updateUsernamePasswordForUser(Long userID, String password, boolean adminUpdate) {
         Optional<DBCredential> optCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(userID);
 
-        DBCredential dbCredential = optCredential.orElse(createCredentialsForUser(userID,
+        DBCredential dbCredential = optCredential.orElse(credentialService.createCredentialsForUser(userID,
                 CredentialType.USERNAME_PASSWORD,
                 CredentialTargetType.UI));
+
+        // check if new password is the same as the old one
+        // but allow admin to overwrite it
+        if (!adminUpdate
+                && StringUtils.isNotBlank(dbCredential.getValue())
+                && BCrypt.checkpw(password, dbCredential.getValue())) {
+            LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", userID);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
+        }
 
         dbCredential.setValue(BCryptPasswordHash.hashPassword(password));
         OffsetDateTime currentTime = OffsetDateTime.now();
@@ -234,40 +265,20 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setActiveFrom(currentTime);
         dbCredential.setExpireOn(adminUpdate ? null :
                 currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
+        // clear reset token if exists
+        dbCredential.setResetToken(null);
+        dbCredential.setResetExpireOn(null);
 
         // clear failed attempts
         dbCredential.setLastFailedLoginAttempt(null);
         dbCredential.setSequentialLoginFailureCount(null);
-        // if the credentials are not managed by the session , e.g. new  - the persist it
-        if (dbCredential.getId()==null) {
+        // if the credentials are not managed by the session , e.g. "new" then persist it
+        if (dbCredential.getId() == null) {
             credentialDao.persist(dbCredential);
         }
+        // submit mail with reset token
+        alertService.alertCredentialChanged(dbCredential);
         return dbCredential.getUser();
-    }
-
-
-    /**
-     * Method creates Username/passwords credentials for the user with given userId.
-     * The method must be called inside active transactions.
-     *
-     * @param userID               to change/create username-password credentials
-     * @param credentialType       the credential type
-     * @param credentialTargetType the credential target
-     */
-    protected DBCredential createCredentialsForUser(Long userID, CredentialType credentialType, CredentialTargetType credentialTargetType) {
-
-        DBUser dbUserToUpdate = userDao.find(userID);
-        if (dbUserToUpdate == null) {
-            LOG.error("Can not update user password because user,[{}] does not exist!", userID);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id to update!");
-        }
-        DBCredential credential = new DBCredential();
-        credential.setUser(dbUserToUpdate);
-        credential.setName(dbUserToUpdate.getUsername());
-        credential.setCredentialType(credentialType);
-        credential.setCredentialTarget(credentialTargetType);
-
-        return credential;
     }
 
     /**
@@ -295,7 +306,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user profile data on managed db entity. (For now Just email, name and theme)
@@ -310,7 +321,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user data by admin
@@ -320,6 +331,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
         dbUser.setSmpLocale(user.getSmpLocale());
+        alertService.alertUserUpdated(dbUser);
     }
 
     @Transactional
@@ -327,7 +339,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         Optional<DBUser> testUser = userDao.findUserByUsername(user.getUsername());
         if (testUser.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CreateUser", "User with username ["+user.getUsername()+"] already exists!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CreateUser", "User with username [" + user.getUsername() + "] already exists!");
         }
         DBUser dbUser = new DBUser();
         // update user data by admin
@@ -337,8 +349,17 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
         dbUser.setSmpLocale(user.getSmpLocale());
+        return createDBUser(dbUser);
+    }
+
+    @Transactional
+    public UserRO createDBUser(DBUser dbUser) {
         userDao.persistFlushDetach(dbUser);
-        return conversionService.convert(dbUser, UserRO.class);
+        UserRO userRO =  conversionService.convert(dbUser, UserRO.class);
+        if (StringUtils.isNotBlank(userRO.getEmailAddress())){
+            alertService.alertUserCreated(dbUser);
+        }
+        return userRO;
     }
 
     @Transactional
@@ -346,7 +367,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not delete user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         userDao.remove(dbUser);
         return conversionService.convert(dbUser, UserRO.class);
@@ -367,10 +388,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Transactional(readOnly = true)
     public UserRO getUserById(Long userId) {
         DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
-        UserRO result =  convertToRo(user);
-
-        return result;
-
+        return convertToRo(user);
     }
 
     public List<CredentialRO> getUserCredentials(Long userId,
@@ -381,12 +399,11 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         List<DBCredential> credentialROs = credentialDao
                 .findUserCredentialForByUserIdTypeAndTarget(userId, credentialType, credentialTargetType);
 
-        List<CredentialRO> credentialROList = credentialROs.stream().map(this::convertAndValidateCertificateCredential)
+        return credentialROs.stream().map(this::convertAndValidateCertificateCredential)
                 .collect(Collectors.toList());
-        return credentialROList;
     }
 
-    public CredentialRO convertAndValidateCertificateCredential(DBCredential credential){
+    public CredentialRO convertAndValidateCertificateCredential(DBCredential credential) {
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
         if (credential.getCertificate() != null) {
             DBCertificate dbCert = credential.getCertificate();
@@ -396,7 +413,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 certificateRO = truststoreService.getCertificateData(dbCert.getPemEncoding(), true, false);
 
             } else {
-                 certificateRO = conversionService.convert(credential.getCertificate(), CertificateRO.class);
+                certificateRO = conversionService.convert(credential.getCertificate(), CertificateRO.class);
             }
             credentialRO.setCertificate(certificateRO);
         }
@@ -427,14 +444,14 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         validateCredentials(credential, userId, credentialType, credentialTargetType);
         credentialDao.remove(credential);
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
-        credentialRO.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+        credentialRO.setStatus(EntityROStatus.REMOVED.getStatusNumber());
 
         return credentialRO;
     }
 
     protected void validateCredentials(DBCredential credential, Long userId, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         if (credential == null) {
-            LOG.warn("Can not delete credential for ID [{}], because it does not exists!");
+            LOG.warn("Can not delete credential for ID [{}], because it does not exists!", userId);
             throw new BadRequestException(ErrorBusinessCode.UNAUTHORIZED, "Credential does not exist!");
         }
         // validate data
@@ -477,6 +494,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         credentialResultRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
 
+        alertService.alertCredentialChanged(credential);
+
         return credentialResultRO;
     }
 
@@ -518,7 +537,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      */
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
         List<Long> idList = dev.getListIds().stream().map(SessionSecurityUtils::decryptEntityId).collect(Collectors.toList());
-        List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(idList);
+        List<DBUserDeleteValidationMapping> lstMessages = userDao.validateUsersForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         StringWriter sw = new StringWriter();
         sw.write("Could not delete user with ownerships! ");
@@ -533,7 +552,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dev.setStringMessage(sw.toString());
         return dev;
     }
-
 
     @Override
     public DBUser convertFromRo(UserRO d) {

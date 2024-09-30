@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
@@ -8,15 +26,12 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.StringUtils;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.convert.ConversionService;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -29,8 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 4.1
  */
 
-@RunWith(MockitoJUnitRunner.class)
-public class DBUserToUserROConverterTest {
+@ExtendWith(MockitoExtension.class)
+class DBUserToUserROConverterTest {
 
     private DBUser source;
 
@@ -43,7 +58,7 @@ public class DBUserToUserROConverterTest {
     private DBUserToUserROConverter converter = new DBUserToUserROConverter(credentialDao, configurationService);
 
     @Test
-    public void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {
+    void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {
         givenAnExistingCertificateOnlyUser();
 
         whenConvertingTheExistingUser();
@@ -52,12 +67,12 @@ public class DBUserToUserROConverterTest {
     }
 
     @Test
-    public void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordThatHasBeenRecentlyReset() {
+    void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordThatHasBeenRecentlyReset() {
         givenAnExistingUserHavingAPasswordThatHasJustBeenReset();
         List<DBCredential> credentialList = source.getUserCredentials();
         Mockito.doReturn(credentialList).when(credentialDao).findUserCredentialForByUserIdTypeAndTarget(Mockito.any(),
-                        Mockito.any(CredentialType.class),
-                        Mockito.any(CredentialTargetType.class));
+                Mockito.any(CredentialType.class),
+                Mockito.any(CredentialTargetType.class));
 
         whenConvertingTheExistingUser();
 
@@ -66,7 +81,7 @@ public class DBUserToUserROConverterTest {
     }
 
     @Test
-    public void returnsThePasswordAsNotExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedNoLongerThanThreeMonthsAgo() {
+    void returnsThePasswordAsNotExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedNoLongerThanThreeMonthsAgo() {
         givenAnExistingUserHavingAPasswordThatChangedNoLongerThanThreeMonthsAgo();
 
         whenConvertingTheExistingUser();
@@ -75,7 +90,7 @@ public class DBUserToUserROConverterTest {
     }
 
     @Test
-    public void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedMoreThanThreeMonthsAgo() {
+    void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedMoreThanThreeMonthsAgo() {
         givenAnExistingUserHavingAPasswordThatChangedMoreThanThreeMonthsAgo();
         List<DBCredential> credentialList = source.getUserCredentials();
         Mockito.doReturn(credentialList).when(credentialDao).findUserCredentialForByUserIdTypeAndTarget(Mockito.any(),
@@ -110,8 +125,8 @@ public class DBUserToUserROConverterTest {
         Optional<DBCredential> optCertCred = source.getUserCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.CERTIFICATE).findFirst();
 
         if (StringUtils.isNotBlank(password)) {
-            DBCredential credential =optUserPassCred.orElse(new DBCredential());
-            if (credential.getUser()==null){
+            DBCredential credential = optUserPassCred.orElse(new DBCredential());
+            if (credential.getUser() == null) {
                 credential.setUser(source);
                 credential.setCredentialType(CredentialType.USERNAME_PASSWORD);
                 source.getUserCredentials().add(credential);
@@ -123,9 +138,9 @@ public class DBUserToUserROConverterTest {
             source.getUserCredentials().remove(optUserPassCred.get());
         }
 
-        if (certificate!=null) {
-            DBCredential credential =optCertCred.orElse(new DBCredential());
-            if (credential.getUser()==null){
+        if (certificate != null) {
+            DBCredential credential = optCertCred.orElse(new DBCredential());
+            if (credential.getUser() == null) {
                 credential.setUser(source);
                 credential.setCredentialType(CredentialType.CERTIFICATE);
                 source.getUserCredentials().add(credential);

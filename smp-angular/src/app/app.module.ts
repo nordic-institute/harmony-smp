@@ -1,12 +1,13 @@
 import 'hammerjs';
 import {AccessTokenPanelComponent} from "./user-settings/user-access-tokens/access-token-panel/access-token-panel.component";
+import {AlertPanelComponent} from "./common/panels/alert-panel/alert-panel.component";
+import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.component";
 import {AdminDomainComponent} from "./system-settings/admin-domain/admin-domain.component";
 import {AdminDomainService} from "./system-settings/admin-domain/admin-domain.service";
 import {AdminKeystoreComponent} from "./system-settings/admin-keystore/admin-keystore.component";
 import {AdminKeystoreService} from "./system-settings/admin-keystore/admin-keystore.service";
 import {AdminTruststoreComponent} from "./system-settings/admin-truststore/admin-truststore.component";
 import {AdminTruststoreService} from "./system-settings/admin-truststore/admin-truststore.service";
-import {AlertComponent} from "./alert/alert.component";
 import {AlertMessageComponent} from './common/alert-message/alert-message.component';
 import {AlertMessageService} from './common/alert-message/alert-message.service';
 import {AppComponent} from './app.component';
@@ -20,7 +21,6 @@ import {CancelDialogComponent} from './common/dialogs/cancel-dialog/cancel-dialo
 import {CapitalizeFirstPipe} from './common/capitalize-first.pipe';
 import {CertificateDialogComponent} from "./common/dialogs/certificate-dialog/certificate-dialog.component";
 import {CertificatePanelComponent} from "./common/panels/certificate-panel/certificate-panel.component";
-import {CertificateService} from './system-settings/user/certificate.service';
 import {ClearInvalidDirective} from './custom-date/clear-invalid.directive';
 import {ColumnPickerComponent} from './common/column-picker/column-picker.component';
 import {ConfirmationDialogComponent} from './common/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -28,10 +28,9 @@ import {CredentialDialogComponent} from "./common/dialogs/credential-dialog/cred
 import {DataPanelComponent} from "./common/panels/data-panel/data-panel.component";
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from "@angular/material/core";
 import {DatePipe} from './custom-date/date.pipe';
+import {DatePipe as AngularDatePipe} from '@angular/common';
 import {DefaultPasswordDialogComponent} from './security/default-password-dialog/default-password-dialog.component';
 import {DialogComponent} from './common/dialogs/dialog/dialog.component';
-import {DomainComponent} from './system-settings/domain/domain.component';
-import {DomainDetailsDialogComponent} from './system-settings/domain/domain-details-dialog/domain-details-dialog.component';
 import {DomainPanelComponent} from "./system-settings/admin-domain/domain-panel/domain-panel.component";
 import {DomainResourceTypePanelComponent} from "./system-settings/admin-domain/domain-resource-type-panel/domain-resource-type-panel.component";
 import {DomainSelectorComponent} from './common/domain-selector/domain-selector.component';
@@ -47,13 +46,11 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FooterComponent} from './window/footer/footer.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {GlobalLookups} from './common/global-lookups';
-import {HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {HttpEventService} from './http/http-event.service';
 import {InformationDialogComponent} from "./common/dialogs/information-dialog/information-dialog.component";
 import {IsAuthorized} from './security/is-authorized.directive';
-import {KeystoreEditDialogComponent} from "./system-settings/domain/keystore-edit-dialog/keystore-edit-dialog.component";
 import {KeystoreImportDialogComponent} from "./system-settings/admin-keystore/keystore-import-dialog/keystore-import-dialog.component";
-import {KeystoreService} from "./system-settings/domain/keystore.service";
 import {LoginComponent} from './login/login.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
@@ -82,22 +79,13 @@ import {NgModule} from '@angular/core';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {ObjectPropertiesDialogComponent} from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
 import {PasswordChangeDialogComponent} from "./common/dialogs/password-change-dialog/password-change-dialog.component";
-import {PropertyComponent} from "./system-settings/property/property.component";
-import {PropertyDetailsDialogComponent} from "./system-settings/property/property-details-dialog/property-details-dialog.component";
 import {ResourceDetailsDialogComponent} from "./system-settings/admin-extension/resource-details-dialog/resource-details-dialog.component";
 import {RowLimiterComponent} from './common/row-limiter/row-limiter.component';
 import {SaveDialogComponent} from './common/dialogs/save-dialog/save-dialog.component';
 import {SearchTableComponent} from './common/search-table/search-table.component';
 import {SecurityEventService} from './security/security-event.service';
 import {SecurityService} from './security/security.service';
-import {ServiceGroupDetailsDialogComponent} from './service-group-edit/service-group-details-dialog/service-group-details-dialog.component';
-import {ServiceGroupEditComponent} from './service-group-edit/service-group-edit.component';
-import {ServiceGroupExtensionWizardDialogComponent} from './service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component';
-import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
-import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
-import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
 import {SidenavComponent} from './window/sidenav/sidenav.component';
-import {SmlIntegrationService} from "./system-settings/domain/sml-integration.service";
 import {SmpInfoService} from './app-info/smp-info.service';
 import {SpacerComponent} from "./common/components/spacer/spacer.component";
 import {SpinnerComponent} from './common/components/spinner/spinner.component';
@@ -106,9 +94,7 @@ import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
 import {UserCertificatePanelComponent} from "./user-settings/user-certificates/user-certificate-panel/user-certificate-panel.component";
 import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
-import {UserDetailsService} from './system-settings/user/user-details.service';
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
-import {UserService} from './system-settings/user/user.service';
 import {routing} from './app.routes';
 import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {NGX_MAT_DATE_FORMATS,NgxMatDateAdapter,NgxMatDatetimePickerModule} from "@angular-material-components/datetime-picker";
@@ -116,7 +102,6 @@ import {NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,NGX_MAT_MOMENT_FORMATS, NgxMatMoment
 import {MembershipPanelComponent} from "./common/panels/membership-panel/membership-panel.component";
 import {MemberDialogComponent} from "./common/dialogs/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {MembershipService} from "./common/panels/membership-panel/membership.service";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
 import {UserProfilePanelComponent} from "./common/panels/user-settings-panel/user-profile-panel.component";
@@ -134,26 +119,97 @@ import {EditResourceComponent} from "./edit/edit-resources/edit-resource.compone
 import {EditResourceService} from "./edit/edit-resources/edit-resource.service";
 import {ResourceDetailsPanelComponent} from "./edit/edit-resources/resource-details-panel/resource-details-panel.component";
 import {ResourceDocumentPanelComponent} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {DocumentWizardDialogComponent} from "./edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
 import {SubresourcePanelComponent} from "./edit/edit-resources/subresource-panel/subresource-panel.component";
-import {SubresourceDialogComponent} from "./edit/edit-resources/subresource-panel/resource-dialog/subresource-dialog.component";
+import {SubresourceDialogComponent} from "./edit/edit-resources/subresource-panel/subresource-dialog/subresource-dialog.component";
 import {SubresourceDocumentPanelComponent} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
 import {SubresourceDocumentWizardComponent} from "./edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
 import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/smp-warning-panel.component";
 import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
 import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-titled-label.component";
+import {ResourceSearchComponent} from "./resource-search/resource-search.component";
+import {EditResourceController} from "./edit/edit-resources/edit-resource.controller";
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import {CertificateService} from "./common/services/certificate.service";
+import {UserDetailsService} from "./common/services/user-details.service";
+import {UserService} from "./common/services/user.service";
+import {SmlIntegrationService} from "./common/services/sml-integration.service";
+import {PropertyComponent} from "./system-settings/admin-properties/property.component";
+import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
+import {SmpEditorComponent} from "./common/components/smp-editor/smp-editor.component";
+import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
+import {DnsToolsComponent} from "./tools/dns-tools/dns-tools.component";
+import {DnsToolsService} from "./tools/dns-tools/dns-tools.service";
+import {
+  DnsQueryPanelComponent
+} from "./tools/dns-tools/dns-query-panel/dns-query-panel.component";
+import {
+  DomainPropertiesPanelComponent
+} from "./system-settings/admin-domain/domain-properties-panel/domain-properties-panel.component";
+import {
+  PropertyController
+} from "./system-settings/admin-properties/property-controller";
+import {
+  PropertyDetailsDialogComponent
+} from "./common/dialogs/property-details-dialog/property-details-dialog.component";
+import {ResourceFilterOptionsService} from "./common/services/resource-filter-options.service";
+import {HttpSessionInterceptor} from "./http/http-session-interceptor";
+import {
+  SessionExpirationDialogComponent
+} from "./common/dialogs/session-expiration-dialog/session-expiration-dialog.component";
+import {
+  DocumentPropertiesPanelComponent
+} from "./common/panels/document-properties-panel/document-properties-panel.component";
+import {
+  DocumentPropertyDialogComponent
+} from "./common/dialogs/document-property-dialog/document-property-dialog.component";
+import {NgxTranslateModule} from "./translate/translate.module";
+import {WindowSpinnerService} from "./common/services/window-spinner.service";
+import {
+  ExpandablePanelComponent
+} from "./common/panels/expandable-panel-component/expandable-panel.component";
+import {
+  ExpandableItemComponent
+} from "./common/panels/expandable-panel-component/expandable-item-component/expandable-item.component";
+import {
+  DocumentEventsPanelComponent
+} from "./common/panels/document-events-panel/document-events-panel.component";
+import {
+  DocumentVersionsPanelComponent
+} from "./common/panels/document-versions-panel/document-versions-panel.component";
+import {ReviewTasksComponent} from "./edit/review-task/review-tasks.component";
+import {
+  ReviewTasksPanelComponent
+} from "./common/panels/review-tasks-panel/review-tasks-panel.component";
+import {
+  DocumentEditPanelComponent
+} from "./common/panels/document-edit-panel/document-edit-panel.component";
+import {
+  ReviewDocumentPanelComponent
+} from "./common/panels/review-tasks-panel/review-document-panel/review-document-panel.component";
+import {
+  DocumentConfigurationPanelComponent
+} from "./common/panels/document-edit-panel/document-configuration-panel/document-configuration-panel.component";
 
+import {MembershipService} from "./common/services/membership.service";
+import {
+  ReferenceDocumentDialogComponent
+} from "./common/dialogs/reference-document-dialog/reference-document-dialog.component";
+import {
+  ReferenceDocumentService
+} from "./common/services/reference-document.service";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
     AccessTokenPanelComponent,
+    AdminAlertsComponent,
     AdminDomainComponent,
     AdminKeystoreComponent,
     AdminTruststoreComponent,
     AdminUserComponent,
-    AlertComponent,
+    AlertPanelComponent,
     AlertMessageComponent,
     AppComponent,
     AutoFocusDirective,
@@ -164,6 +220,7 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     CertificateDialogComponent,
     CertificatePanelComponent,
     ClearInvalidDirective,
+    SmpEditorComponent,
     ColumnPickerComponent,
     ConfirmationDialogComponent,
     CredentialDialogComponent,
@@ -171,17 +228,26 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     DatePipe,
     DefaultPasswordDialogComponent,
     DialogComponent,
+    DnsToolsComponent,
+    DnsQueryPanelComponent,
     DocumentWizardDialogComponent,
-    DomainComponent,
-    DomainDetailsDialogComponent,
+    DocumentEditPanelComponent,
+    DocumentEventsPanelComponent,
+    DocumentConfigurationPanelComponent,
+    DocumentPropertiesPanelComponent,
+    DocumentPropertyDialogComponent,
+    DocumentVersionsPanelComponent,
     DomainGroupComponent,
     DomainPanelComponent,
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,
+    DomainPropertiesPanelComponent,
     DomainSmlIntegrationPanelComponent,
     EditDomainComponent,
     EditGroupComponent,
     EditResourceComponent,
+    ExpandablePanelComponent,
+    ExpandableItemComponent,
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
     ExtensionPanelComponent,
@@ -190,7 +256,6 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     GroupResourcePanelComponent,
     InformationDialogComponent,
     IsAuthorized,
-    KeystoreEditDialogComponent,
     KeystoreImportDialogComponent,
     LoginComponent,
     ManageMembersDialogComponent,
@@ -202,6 +267,7 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     PasswordChangeDialogComponent,
     PropertyComponent,
     PropertyDetailsDialogComponent,
+    ResetCredentialComponent,
     ResourceDetailsDialogComponent,
     ResourceDetailsPanelComponent,
     ResourceDialogComponent,
@@ -209,12 +275,11 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
-    ServiceGroupDetailsDialogComponent,
-    ServiceGroupEditComponent,
-    ServiceGroupExtensionWizardDialogComponent,
-    ServiceGroupMetadataDialogComponent,
-    ServiceGroupSearchComponent,
-    ServiceMetadataWizardDialogComponent,
+    ReferenceDocumentDialogComponent,
+    ReviewDocumentPanelComponent,
+    ReviewTasksComponent,
+    ReviewTasksPanelComponent,
+    ResourceSearchComponent,
     SidenavComponent,
     SmpFieldErrorComponent,
     SmpLabelComponent,
@@ -227,11 +292,13 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     SubresourceDocumentWizardComponent,
     SubresourcePanelComponent,
     ToolbarComponent,
+    UserAlertsComponent,
     UserAccessTokensComponent,
     UserCertificatePanelComponent,
     UserCertificatesComponent,
     UserProfileComponent,
     UserProfilePanelComponent,
+    SessionExpirationDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -265,13 +332,15 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    MatButtonToggleModule,
     NgxDatatableModule,
     NgxMatDatetimePickerModule,
     NgxMatMomentModule,
     ReactiveFormsModule,
     routing,
     MatAutocompleteModule,
-    CodemirrorModule,
+    ClipboardModule,
+    NgxTranslateModule,
   ],
   providers: [
     AdminDomainService,
@@ -282,18 +351,23 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     AuthorizedGuard,
     CertificateService,
     DatePipe,
+    AngularDatePipe,
+    DnsToolsService,
     DomainService,
-    MembershipService,
     DownloadService,
     EditDomainService,
     EditGroupService,
+    EditResourceController,
     EditResourceService,
-    HttpErrorHandlerService,
     ExtensionService,
     GlobalLookups,
+    HttpErrorHandlerService,
     HttpEventService,
-    KeystoreService,
+    MembershipService,
     NavigationService,
+    PropertyController,
+    ReferenceDocumentService,
+    ResourceFilterOptionsService,
     SecurityEventService,
     SecurityService,
     SmlIntegrationService,
@@ -301,6 +375,7 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     ThemeService,
     UserDetailsService,
     UserService,
+    WindowSpinnerService,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
@@ -311,6 +386,7 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
     {provide: NgxMatDateAdapter, useClass: NgxMatMomentAdapter, deps: [MAT_DATE_LOCALE, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS]},
     {provide: NGX_MAT_DATE_FORMATS, useValue: NGX_MAT_MOMENT_FORMATS},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpSessionInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
 })
