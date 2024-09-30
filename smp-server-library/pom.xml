@@ -11,13 +11,12 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-modules</artifactId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.1-RC1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
@@ -246,13 +245,12 @@
                                     1. Parameter: comma separated hibernate database dialects
                                     2. script version
                                     3. export scripts.-->
-                                <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator"
-                                      fork="true" failonerror="true">
-                                    <arg value="org.hibernate.dialect.MySQL5InnoDBDialect,org.hibernate.dialect.Oracle10gDialect"/>
-                                    <arg value="${project.version}"/>
-                                    <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts"/>
+                                <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator" fork="true" failonerror="true">
+                                    <arg value="org.hibernate.dialect.MySQL5InnoDBDialect,org.hibernate.dialect.Oracle10gDialect" />
+                                    <arg value="${project.version}" />
+                                    <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts" />
                                     <!-- reference to the passed-in classpath reference -->
-                                    <classpath refid="maven.compile.classpath"/>
+                                    <classpath refid="maven.compile.classpath" />
                                 </java>
                             </target>
                         </configuration>
