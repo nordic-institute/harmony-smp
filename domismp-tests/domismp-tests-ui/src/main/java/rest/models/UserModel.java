@@ -102,7 +102,7 @@ public class UserModel {
         userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumericValue(4) + "@automation.com";
         userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumericValue(4);
         userModel.smpTheme = SMPThemes.getRandomTheme();
-        userModel.smpLocale = "English";
+        userModel.smpLocale = "en";
         return userModel;
     }
 
@@ -114,7 +114,7 @@ public class UserModel {
         userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumericValue(4) + "@automation.com";
         userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumericValue(4);
         userModel.smpTheme = SMPThemes.getRandomTheme();
-        userModel.smpLocale = "English";
+        userModel.smpLocale = "en";
         return userModel;
     }
 
@@ -123,7 +123,7 @@ public class UserModel {
         userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumericValue(4) + "@automation.com";
         userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumericValue(4);
         userModel.smpTheme = SMPThemes.getRandomTheme();
-        userModel.smpLocale = "English";
+        userModel.smpLocale = "en";
         return userModel;
     }
 

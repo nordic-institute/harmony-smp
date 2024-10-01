@@ -7,6 +7,16 @@ public class MemberModel {
     private String memberId;
     private String username;
 
+    public boolean isHasPermissionReview() {
+        return hasPermissionReview;
+    }
+
+    public void setHasPermissionReview(boolean hasPermissionReview) {
+        this.hasPermissionReview = hasPermissionReview;
+    }
+
+    private boolean hasPermissionReview = false;
+
     public String getFullName() {
         return fullName;
     }

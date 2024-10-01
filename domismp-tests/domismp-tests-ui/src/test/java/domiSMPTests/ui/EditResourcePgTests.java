@@ -133,6 +133,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis3);
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
         editResourceDocumentPage.getAlertArea().closeAlert();
@@ -158,6 +159,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis2);
         editResourcePage.goToTab("Resource details");
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
         editResourceDocumentPage.getAlertArea().closeAlert();
@@ -181,6 +183,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
         editResourcePage.goToTab("Resource details");
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
         editResourceDocumentPage.getAlertArea().closeAlert();
@@ -212,6 +215,7 @@ public class EditResourcePgTests extends SeleniumTest {
 
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
         editResourceDocumentPage.getAlertArea().closeAlert();
