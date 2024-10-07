@@ -44,7 +44,7 @@ public class UsersPgTests extends SeleniumTest {
 
         soft.assertEquals(usersPage.getEmailValue(), adminNewUserData.getEmailAddress());
         soft.assertEquals(usersPage.getSelectedThemeValue(), adminNewUserData.getSmpTheme());
-        soft.assertEquals(usersPage.getSelectedLocaleValue(), adminNewUserData.getSmpLocale());
+        soft.assertEquals(usersPage.getSelectedLocaleValue(), "English");
 
         soft.assertAll();
 

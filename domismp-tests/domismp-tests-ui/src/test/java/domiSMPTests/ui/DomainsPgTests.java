@@ -75,7 +75,7 @@ public class DomainsPgTests extends SeleniumTest {
         domainsPage.getSMLIntegrationTab().registerToSML();
 
         alert = domainsPage.getAlertMessageAndClose();
-        soft.assertEquals(alert, "Domain [" + domainModel.getDomainCode() + "] registered to sml!");
+        soft.assertEquals(alert, "Domain [" + domainModel.getDomainCode() + "] registered to SML!");
 
         //Go to SML
         driver.get(data.getSMLUrl());

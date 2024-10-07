@@ -45,6 +45,7 @@ public class KeystorePgTests extends SeleniumTest {
         if(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", "blue_gw")){
             keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "blue_gw");
             keystorePage.deleteandConfirm();
+            keystorePage.getAlertMessageAndClose();
         }
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
@@ -78,9 +79,16 @@ public class KeystorePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "KEYS-04 SSystem admin is able to import duplicated keystore", priority = 1)
-    public void systemAdminIsAbleToImportDuplicatedKeyStores(){
+    @Test(description = "KEYS-04 SSystem admin is NOT able to import duplicated keystore", priority = 1)
+    public void systemAdminIsNOTAbleToImportDuplicatedKeyStores(){
         String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
+        try{
+            keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "blue_gw");
+            keystorePage.deleteandConfirm();
+        } catch (Exception e) {
+
+        }
+
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
@@ -92,9 +100,9 @@ public class KeystorePgTests extends SeleniumTest {
         keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
+
         String duplicatedAlertMessage = keystorePage.getAlertArea().getAlertMessage();
-        String duplicatedAlias = Utils.getAliasFromMessage(duplicatedAlertMessage);
-        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", duplicatedAlias));
+        soft.assertTrue(duplicatedAlertMessage.contains("The following aliases have been ignored because they were already present in the current keystore:") );
 
         soft.assertAll();
     }

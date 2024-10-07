@@ -139,9 +139,9 @@ public class BaseRestClient {
 
         if (response != 200) {
             log.debug("Connected endpoint returns " + response);
-
+            return false;
         }
-        return (!(response == 401));
+        return true;
     }
 
     public void startSession() {

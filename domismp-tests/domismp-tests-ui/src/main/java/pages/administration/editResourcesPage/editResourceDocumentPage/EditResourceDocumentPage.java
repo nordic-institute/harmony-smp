@@ -15,7 +15,8 @@ import java.util.List;
  */
 public class EditResourceDocumentPage extends DomiSMPPage {
     private final static Logger LOG = LoggerFactory.getLogger(EditResourceDocumentPage.class);
-
+    @FindBy(id = "newVersion_id")
+    private WebElement newVersionBtn;
     @FindBy(id = "GenerateResource_id")
     private WebElement generateBtn;
     @FindBy(id = "validateResource_id")
@@ -66,6 +67,9 @@ public class EditResourceDocumentPage extends DomiSMPPage {
 
 
         return formatedDoc;
+    }
+    public void clickOnNewVersion() {
+        weToDButton(newVersionBtn).click();
     }
     public void clickOnGenerate() {
         weToDButton(generateBtn).click();
