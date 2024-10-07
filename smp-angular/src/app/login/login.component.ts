@@ -40,8 +40,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   loading = false;
   returnUrl: string;
   sub: Subscription;
-  localeSub: Subscription;
-
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -90,8 +88,6 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.router.navigate([this.returnUrl]);
         }
       });
-
-    this.localeSub = this.securityEventService.onLoginSuccessEvent().subscribe(user => user && this.translateService.use(user.smpLocale));
 
     this.securityEventService.onLoginErrorEvent().subscribe(
       async error => {
@@ -176,7 +172,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
-    this.localeSub.unsubscribe();
   }
 
   isUserAuthSSOEnabled(): boolean {
