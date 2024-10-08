@@ -50,6 +50,7 @@ export class SecurityService {
       .subscribe({
         next: (response: User) => {
           this.updateUserDetails(response);
+          this.translateService.use(response?.smpLocale);
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
         error: (error: any) => {
