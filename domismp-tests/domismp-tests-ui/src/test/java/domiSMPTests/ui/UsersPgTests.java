@@ -109,7 +109,6 @@ public class UsersPgTests extends SeleniumTest {
         resetCredentialsPage.clickSetChangePasswordButton();
 
         //Login with new password for Admin
-        new DWait(driver).equals(loginPage.getAlertArea());
         soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"), "Reset password message didn't appear");
         loginPage.login(newAdminUser.getUsername(), newPasswordAfterReset);
         try {
@@ -135,7 +134,6 @@ public class UsersPgTests extends SeleniumTest {
         resetCredentialsPage.clickSetChangePasswordButton();
 
         //Login with new password for User
-        new DWait(driver).equals(loginPage.getAlertArea());
         soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"), "Reset password message didn't appear");
         loginPage.login(newNormalUser.getUsername(), newPasswordAfterReset);
         try {
@@ -144,8 +142,6 @@ public class UsersPgTests extends SeleniumTest {
         } catch (Exception e) {
             soft.assertTrue(false, "User is not logged in!");
         }
-
-
         soft.assertAll();
     }
 
