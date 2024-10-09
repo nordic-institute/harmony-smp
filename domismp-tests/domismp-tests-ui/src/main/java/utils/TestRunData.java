@@ -41,6 +41,8 @@ public class TestRunData {
 
         TEST_DATA_PASSWORD_DEFAULT("test.data.password.default", "QW!@QW!@qw12qw12", "Default password when creating new users"),
         TEST_DATA_PASSWORD_NEW("test.data.password.new", "Test1234!Test1234!", "New Password when changing users password "),
+        MAIL_URL("test.mail.url", "http://localhost:9005/", "Webdriver type: chrome, gecko, edge"),
+
         ;
 
         String propertyName;
@@ -78,12 +80,11 @@ public class TestRunData {
 
         @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer("TestEnvironmentProperty {");
-            sb.append("propertyName='").append(propertyName).append('\'');
-            sb.append(", defaultValue='").append(defaultValue).append('\'');
-            sb.append(", description='").append(description).append('\'');
-            sb.append('}');
-            return sb.toString();
+            String sb = "TestEnvironmentProperty {" + "propertyName='" + propertyName + '\'' +
+                    ", defaultValue='" + defaultValue + '\'' +
+                    ", description='" + description + '\'' +
+                    '}';
+            return sb;
         }
     }
 
