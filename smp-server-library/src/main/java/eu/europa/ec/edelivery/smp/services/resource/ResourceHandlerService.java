@@ -164,7 +164,8 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         if (resource.getDocument() == null) {
             resource.setDocument(new DBDocument());
             // set response data
-            resource.getDocument().setName(resolvedData.getResourceDef().getName());
+            // set left 255 characters of identifier value as name
+            resource.getDocument().setName(StringUtils.left(resource.getIdentifierValue(), 255));
             resource.getDocument().setMimeType(StringUtils.getIfEmpty(responseData.getContentType(),
                     () -> resolvedData.getResourceDef().getMimeType()));
         }
@@ -233,7 +234,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         if (resolvedSubresource.getDocument() == null) {
             resolvedSubresource.setDocument(new DBDocument());
             // set response data
-            resolvedSubresource.getDocument().setName(resolvedData.getResourceDef().getName());
+            resolvedSubresource.getDocument().setName(StringUtils.left(resolvedSubresource.getIdentifierValue(), 255));
             resolvedSubresource.getDocument().setMimeType(StringUtils.getIfEmpty(responseData.getContentType(),
                     () -> resolvedData.getResourceDef().getMimeType()));
         }

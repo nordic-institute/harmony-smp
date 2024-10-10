@@ -37,6 +37,7 @@ import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,7 +142,7 @@ public class UISubresourceService {
         DBDocument document = new DBDocument();
         document.setCurrentVersion(1);
         document.setMimeType(subresourceDef.getMimeType());
-        document.setName(subresourceDef.getName());
+        document.setName(StringUtils.left(subresource.getIdentifierValue(), 255));
 
 
         // create first version of the document
