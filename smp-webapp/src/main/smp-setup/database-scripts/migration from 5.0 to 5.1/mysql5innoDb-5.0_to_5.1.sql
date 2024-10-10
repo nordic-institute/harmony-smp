@@ -41,7 +41,7 @@ create table SMP_DOCUMENT_PROPERTY (
     DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
     PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
     PROPERTY_TYPE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
-    PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+    PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
     FK_DOCUMENT_ID bigint,
     primary key (ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -55,7 +55,7 @@ create table SMP_DOCUMENT_PROPERTY_AUD (
     DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
     PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
     PROPERTY_TYPE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
-    PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+    PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
     FK_DOCUMENT_ID bigint,
     primary key (ID, REV)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

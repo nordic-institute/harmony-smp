@@ -55,6 +55,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * @return document for the resource or empty if not found
      */
     public Optional<DBDocument> getDocumentForResource(DBResource dbResource) {
+        if (dbResource == null || dbResource.getId() == null) {
+            LOG.debug("Can not get document for resource, because resource is not persisted to the database");
+            return Optional.empty();
+        }
         try {
             // expected is only one domain,
             TypedQuery<DBDocument> query = memEManager.createNamedQuery(QUERY_DOCUMENT_FOR_RESOURCE, DBDocument.class);
@@ -74,6 +78,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * @return document for the resource or empty if not found
      */
     public Optional<DBDocument> getDocumentForSubresource(DBSubresource dbSubresource) {
+        if (dbSubresource == null|| dbSubresource.getId() == null) {
+            LOG.debug("Can not get document for subresource, because resource is not persisted to the database");
+            return Optional.empty();
+        }
         try {
             // expected is only one domain,
             TypedQuery<DBDocument> query = memEManager.createNamedQuery(QUERY_DOCUMENT_FOR_SUBRESOURCE, DBDocument.class);
@@ -192,7 +200,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
     public long getDocumentReviewListForUserCount(Long dbUserId) {
         TypedQuery<Long> query = createDocumentReviewListForUserQuery(Long.class, dbUserId);
 
-        return query.getSingleResult().longValue();
+        return query.getSingleResult();
     }
 
     /**

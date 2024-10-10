@@ -35,7 +35,7 @@ create table SMP_DOCUMENT_PROPERTY (
     DESCRIPTION varchar2(4000 char),
     PROPERTY_NAME varchar2(255 char),
     PROPERTY_TYPE varchar2(64 char),
-    PROPERTY_VALUE varchar2(1024 char),
+    PROPERTY_VALUE varchar2(4000 char),
     FK_DOCUMENT_ID number(19,0),
     primary key (ID)
 );
@@ -55,7 +55,7 @@ create table SMP_DOCUMENT_PROPERTY_AUD (
     DESCRIPTION varchar2(4000 char),
     PROPERTY_NAME varchar2(255 char),
     PROPERTY_TYPE varchar2(64 char),
-    PROPERTY_VALUE varchar2(1024 char),
+    PROPERTY_VALUE varchar2(4000 char),
     FK_DOCUMENT_ID number(19,0),
     primary key (ID, REV)
 );
