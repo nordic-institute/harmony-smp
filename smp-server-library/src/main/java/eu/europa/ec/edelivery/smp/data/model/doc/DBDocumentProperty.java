@@ -59,7 +59,7 @@ public class DBDocumentProperty extends BaseEntity {
     @Column(name = "PROPERTY_NAME")
     protected String property;
 
-    @Column(name = "PROPERTY_VALUE", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
+    @Column(name = "PROPERTY_VALUE", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
     private String value;
 
     @Column(name = "DESCRIPTION", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)

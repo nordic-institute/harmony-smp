@@ -73,8 +73,8 @@ public class ResourceStorage {
     @Transactional
     public byte[] getDocumentContentForResource(DBResource dbResource) {
         LOG.debug("getDocumentContentForResource: [{}]", dbResource);
-        DBDocument document = documentDao.getDocumentForResource(dbResource).orElseGet(null);
-        return getDocumentContent(document, true);
+        Optional<DBDocument> document = documentDao.getDocumentForResource(dbResource);
+        return document.isPresent() ? getDocumentContent(document.get(), true) : null;
     }
 
     public byte[] getDocumentContent(DBDocument document, boolean followReference) {
@@ -93,23 +93,23 @@ public class ResourceStorage {
 
         LOG.debug("getDocumentContent: [{}]", document);
         Optional<DBDocumentVersion> documentVersion = documentDao.getCurrentDocumentVersionForDocument(document);
-        return documentVersion.isPresent() ? documentVersion.get().getContent() : null;
+        return documentVersion.map(DBDocumentVersion::getContent).orElse(null);
     }
 
     public byte[] getDocumentContentForSubresource(DBSubresource subresource) {
         LOG.debug("getDocumentContentForSubresource: [{}]", subresource);
-        DBDocument document = documentDao.getDocumentForSubresource(subresource).orElseGet(null);
-        return getDocumentContent(document, true);
+        Optional<DBDocument> document = documentDao.getDocumentForSubresource(subresource);
+        return document.isPresent() ? getDocumentContent(document.get(), true) : null;
     }
     @Transactional
     public Map<String, String> getResourceProperties(DBResource resource) {
 
-        DBDocument document = documentDao.getDocumentForResource(resource).orElseGet(null);
-        if (document == null) {
+        Optional<DBDocument> optDocument = documentDao.getDocumentForResource(resource);
+        if (!optDocument.isPresent()) {
             LOG.debug("Document not found for resource [{}]", resource);
             return Collections.emptyMap();
         }
-        Map<String, String> documentProperties = getDocumentProperties(document, true);
+        Map<String, String> documentProperties = getDocumentProperties(optDocument.get(), true);
         // then overwrite with document properties
         documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
         if (resource.getIdentifierScheme() != null) {
@@ -121,13 +121,13 @@ public class ResourceStorage {
     @Transactional
     public Map<String, String> getSubresourceProperties(DBResource resource, DBSubresource subresource) {
 
-        DBDocument document = documentDao.getDocumentForSubresource(subresource).orElseGet(null);
-        if (document == null) {
+        Optional<DBDocument> optDocument = documentDao.getDocumentForSubresource(subresource);
+        if (!optDocument.isPresent()) {
             LOG.debug("Document not found for subresource [{}]", resource);
             return Collections.emptyMap();
         }
 
-        Map<String, String> documentProperties = getDocumentProperties(document, true);
+        Map<String, String> documentProperties = getDocumentProperties(optDocument.get(), true);
         // add resource and subresource properties
         documentProperties.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resource.getIdentifierValue());
         if (resource.getIdentifierScheme() != null) {

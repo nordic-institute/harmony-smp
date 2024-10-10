@@ -115,26 +115,31 @@ public class AbstractResourceHandler {
         if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
-        // read and replace properties
-        Map<String, String> docProp = resourceStorage.getResourceProperties(resource);
+        return buildRequestDataForResource(domain, resource, new ByteArrayInputStream(content));
+    }
 
+    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
+        Map<String, String> docProp = resourceStorage.getResourceProperties(resource);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos, EXPECTED_RESOURCE_CHARSET);
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
-            return buildRequestDataForResource(domain,
-                    resource,
-                    inputStream);
+            if (inputStream != null && inputStream.available() != 0) {
+                StringNamedSubstitutor.resolve(inputStream, docProp, baos, EXPECTED_RESOURCE_CHARSET);
+            }
+            return new SpiRequestData(domain.getDomainCode(),
+                    SPIUtils.toUrlIdentifier(resource),
+                    new ByteArrayInputStream(baos.toByteArray()));
         } catch (IOException e) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
     }
 
-    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
-        return new SpiRequestData(domain.getDomainCode(),
-                SPIUtils.toUrlIdentifier(resource),
-                inputStream);
-    }
-
+    /**
+     * Build handler RequestData and add resource from the database for the subresource
+     * It reads the content of the subresource from the database and replaces the properties in the document.
+     * @param domain
+     * @param resource
+     * @param subresource
+     * @return
+     */
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource,
                                                       DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
@@ -143,11 +148,24 @@ public class AbstractResourceHandler {
                     subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
                     resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
+        return buildRequestDataForSubResource(domain, resource, subresource, new ByteArrayInputStream(content));
+    }
 
+    /**
+     * Build handler RequestData and add resource from the database. The input stream is used to replace the properties
+     * in the document and the new bytearrays is used as stream  to create the RequestData.
+     * @param domain of the resource
+     * @param resource the parent resource of the subresource
+     * @param subresource an entity with the subresource data
+     * @param inputStream the input stream to replace the properties in the document
+     * @return request data for the subresource
+     */
+    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
         Map<String, String> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
-
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            StringNamedSubstitutor.resolve(new ByteArrayInputStream(content), docProp, baos, EXPECTED_RESOURCE_CHARSET);
+            if (inputStream != null && inputStream.available() != 0) {
+                StringNamedSubstitutor.resolve(inputStream, docProp, baos, EXPECTED_RESOURCE_CHARSET);
+            }
             return new SpiRequestData(domain.getDomainCode(),
                     SPIUtils.toUrlIdentifier(resource),
                     SPIUtils.toUrlIdentifier(subresource),
@@ -155,13 +173,6 @@ public class AbstractResourceHandler {
         } catch (IOException e) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
-    }
-
-    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
-        return new SpiRequestData(domain.getDomainCode(),
-                SPIUtils.toUrlIdentifier(resource),
-                SPIUtils.toUrlIdentifier(subresource),
-                inputStream);
     }
 
     public void handleReadResource(ResourceHandlerSpi handlerSpi, RequestData requestData, ResponseData responseData, ResourceResponse resourceResponse) {
