@@ -9,6 +9,8 @@ import {PropertyValueTypeEnum} from "../property-value-type.enum";
  */
 export class PropertyValueTypeEnumUtil {
 
+  // property name pattern. It must start with a letter and can contain letters, numbers and dots and must not be bigger than 255 characters long!
+  public static readonly PROPERTY_NAME_PATTERN = '^[a-zA-Z][a-zA-Z0-9.]{0,254}$';
 
   static getKeyNames(): Array<string> {
     return Object.keys(PropertyValueTypeEnum).filter(k => typeof PropertyValueTypeEnum[k as any] === "number");
@@ -19,7 +21,6 @@ export class PropertyValueTypeEnumUtil {
   }
 
   static getDescription(enumItem: PropertyValueTypeEnum): string {
-    console.log("Get description for row " + enumItem)
     switch (enumItem) {
       case PropertyValueTypeEnum.STRING:
         return 'String';

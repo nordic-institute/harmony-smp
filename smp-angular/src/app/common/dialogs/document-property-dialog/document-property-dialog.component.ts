@@ -8,12 +8,12 @@ import {
   AbstractControl,
   UntypedFormBuilder,
   UntypedFormControl,
-  UntypedFormGroup
+  UntypedFormGroup, Validators
 } from "@angular/forms";
 import {
   AlertMessageService
-} from "../../../common/alert-message/alert-message.service";
-import {EntityStatus} from "../../../common/enums/entity-status.enum";
+} from "../../alert-message/alert-message.service";
+import {EntityStatus} from "../../enums/entity-status.enum";
 import {HttpClient} from "@angular/common/http";
 import {DocumentPropertyRo} from "../../model/document-property-ro.model";
 import {PropertyValueTypeEnum} from "../../enums/property-value-type.enum";
@@ -32,6 +32,7 @@ export class DocumentPropertyDialogComponent {
 
   public propertyTypes: string[] = Object.keys(PropertyValueTypeEnum)
   protected readonly PropertyValueTypeEnum = PropertyValueTypeEnum;
+  // regular expression pattern must start with a letter and contain only letters, numbers and dots and must not be bigger than 255 characters  long
   formTitle = "";
   current: DocumentPropertyRo;
   propertyForm: UntypedFormGroup;
@@ -46,7 +47,10 @@ export class DocumentPropertyDialogComponent {
     }
 
     return (c: AbstractControl): { [key: string]: any } => {
-      if (c.value && c.value !== exception && list.includes(c.value))
+      console.log("Check if value is in list: " + c.value + " type: " + typeof c.value);
+      let inputVal = typeof  c?.value?.trim === "function" ? c.value.trim().toLowerCase() : c.value;
+      if (inputVal&& inputVal !== exception
+        && list.includes(inputVal))
         return {'notInList': {valid: false}};
       return null;
     }
@@ -68,8 +72,8 @@ export class DocumentPropertyDialogComponent {
     (async () => this.updateFormTitle())();
 
     this.propertyForm = fb.group({
-      'property': new UntypedFormControl({value: '', readonly: true}, [
-        this.notInList(this.allPropertyNames, this.current.property)]),
+      'property': new UntypedFormControl({value: '', readonly: true,}, [
+        this.notInList(this.allPropertyNames, this.current.property), Validators.pattern(PropertyValueTypeEnumUtil.PROPERTY_NAME_PATTERN)] ),
       'desc': new UntypedFormControl({value: '', readonly: true}, null),
       'type': new UntypedFormControl({value: '', readonly: true}, null),
       'value': new UntypedFormControl({value: ''}),
