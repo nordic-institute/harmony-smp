@@ -13,6 +13,11 @@
         style="color:red; font-size: 70%">
         {{ "document.property.dialog.error.property.already.exists" | translate }}
       </div>
+      <div
+        *ngIf="propertyForm.controls['property'].hasError('pattern')"
+        style="color:red; font-size: 70%">
+        {{ "document.property.dialog.error.property.name.pattern" | translate }}
+      </div>
     </mat-form-field>
     <mat-form-field
       *ngIf="propertyForm.controls['type'].value !== PropertyValueTypeEnum.BOOLEAN"
