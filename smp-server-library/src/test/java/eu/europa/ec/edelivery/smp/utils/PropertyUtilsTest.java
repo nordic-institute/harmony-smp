@@ -137,15 +137,6 @@ public class PropertyUtilsTest {
         }
     }
 
-    @Test
-    void testSubjectRegExpLength() {
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
-                PropertyUtils.isValidProperty(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT,
-                        "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", ROOT_FOLDER));
-
-        assertEquals("Configuration error: [Subject must have less than 256 character]!", result.getMessage());
-    }
-
 
     @Test
     void testSubjectRegExpValue() {

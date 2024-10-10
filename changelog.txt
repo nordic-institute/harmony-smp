@@ -15,6 +15,17 @@ eDelivery SMP 5.1
 - deprecated properties:
     identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate: based on eDelivery SMP 2.0 no need to concatenate ebCore party id in XML responses
     authentication.blueCoat.enabled - deprecated and replaced with smp.automation.authentication.external.tls.clientCert.enabled
+    Following properties are deprecated and replaced with translation properties:
+    smp.alert.user.created.mail.subject
+    smp.alert.user.updated.mail.subject
+    smp.alert.accessToken.imminent_expiration.mail.subject
+    smp.alert.certificate.imminent_expiration.mail.subject
+    smp.alert.accessToken.expired.mail.subject
+    smp.alert.certificate.expired.mail.subject
+    smp.alert.user.login_failure.mail.subject
+    smp.alert.user.suspended.mail.subject
+    smp.alert.password.imminent_expiration.mail.subject
+    smp.alert.password.expired.mail.subject
 
 
 eDelivery SMP 5.0

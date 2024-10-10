@@ -56,7 +56,7 @@ public class MailService {
     }
 
 
-    public void sendMail(final MailDataModel model, final String from, final String to) {
+    public String sendMail(final MailDataModel model, final String from, final String to) {
         if (StringUtils.isBlank(to)) {
             throw new IllegalArgumentException("The 'to' property cannot be null");
         }
@@ -66,10 +66,11 @@ public class MailService {
 
 
         MimeMessage message = javaMailSender.createMimeMessage();
+        String subject;
         try {
 
             MimeMessageHelper helper = getMimeMessageHelper(message);
-            String subject = mailTemplateService.getMailTitle(model);
+            subject = mailTemplateService.getMailTitle(model);
             String html = mailTemplateService.getMailHtmlContent(model);
 
             // if to contains multiple emails, split them and send as anonymously as BCC
@@ -88,6 +89,7 @@ public class MailService {
             LOG.error("Exception while sending mail from [{}] to [{}]", from, to, e);
             throw new SMPRuntimeException(ErrorCode.MAIL_SUBMISSION_ERROR, e, ExceptionUtils.getRootCauseMessage(e));
         }
+        return subject;
     }
 
     MimeMessageHelper getMimeMessageHelper(MimeMessage message) throws MessagingException {

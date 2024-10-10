@@ -78,7 +78,6 @@ public class DBAlert extends BaseEntity {
     private String mailSubject;
     @Column(name = "MAIL_TO", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String mailTo;
-
     @Column(name = "FOR_USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH)
     private String username;
 
@@ -185,7 +184,7 @@ public class DBAlert extends BaseEntity {
 
     @Override
     public String toString() {
-        String sb = "DBAlert{" + "id=" + id +
+        return "DBAlert{" + "id=" + id +
                 ", username=" + username +
                 ", processedTime=" + processedTime +
                 ", alertType=" + alertType +
@@ -194,6 +193,5 @@ public class DBAlert extends BaseEntity {
                 ", alertLevel=" + alertLevel +
                 ", properties=" + String.join(",", properties.keySet()) +
                 '}';
-        return sb;
     }
 }
