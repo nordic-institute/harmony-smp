@@ -367,7 +367,7 @@ public class ResourceResolverService {
         resource.setIdentifierValue(resourceId.getValue());
         resource.setIdentifierScheme(resourceId.getScheme());
         resource.setDocument(new DBDocument());
-        resource.getDocument().setName(resourceDef.getName());
+        resource.getDocument().setName(StringUtils.left(resourceId.getValue(), 255));
         resource.getDocument().setMimeType(resourceDef.getMimeType());
         resource.setDomainResourceDef(domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(domain, resourceDef)
                 .orElse(null));
@@ -381,7 +381,7 @@ public class ResourceResolverService {
         subresource.setResource(resource);
         subresource.setSubresourceDef(subresourceDef);
         subresource.setDocument(new DBDocument());
-        subresource.getDocument().setName(subresourceDef.getName());
+        subresource.getDocument().setName(StringUtils.left(resourceId.getValue(), 255));
         subresource.getDocument().setMimeType(subresourceDef.getMimeType());
         return subresource;
     }
