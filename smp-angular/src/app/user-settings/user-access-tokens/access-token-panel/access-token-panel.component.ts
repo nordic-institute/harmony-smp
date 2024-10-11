@@ -10,19 +10,6 @@ import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guar
 import {GlobalLookups} from "../../../common/global-lookups";
 
 
-export function notAfterCurrentDateValidator(): ValidatorFn {
-  return (control: AbstractControl): { [key: string]: any } | null => {
-    let date = control.value;
-    if (date) {
-      // make date mutable and the modification
-      date = new Date(date);
-      date.setHours(0, 0, 0, 0);
-    }
-    const forbidden = date && date > Date.now();
-
-    return forbidden ? { 'matStartDateInvalid': { value: control.value } } : null;
-  };
-}
 
 export function notBeforeCurrentDateValidator(): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
@@ -62,7 +49,7 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
       'name': new FormControl({value: '', disabled: true}),
       'active': new FormControl({value: '', disabled: false}),
       'description': new FormControl({value: '', disabled: false}),
-      'activeFrom': new FormControl({value: '', disabled: false}, [notAfterCurrentDateValidator()]),
+      'activeFrom': new FormControl({value: '', disabled: false} ),
       'expireOn': new FormControl({value: '', disabled: false}, [notBeforeCurrentDateValidator()])
     });
 
