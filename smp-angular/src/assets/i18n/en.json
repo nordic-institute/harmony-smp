@@ -38,6 +38,7 @@
   "document.property.dialog.button.ok": "OK",
   "document.property.dialog.button.cancel": "Cancel",
   "document.property.dialog.error.property.already.exists": "The property name already exists!",
+  "document.property.dialog.error.property.name.pattern": "Property name start with letter and contain only letters, digits, and dots and must be shorter than 255 characters.",
   "document.property.dialog.label.close": "Close",
   "document.property.dialog.label.property.description": "Property Description:",
   "document.property.dialog.label.property.name": "Property name:",

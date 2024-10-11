@@ -180,8 +180,12 @@ public class SMPExtensionInitializer implements InitializingBean {
         resourceDef.setName(resourceDefinitionSpi.name());
         resourceDef.setDescription(resourceDefinitionSpi.description());
         resourceDef.setMimeType(resourceDefinitionSpi.mimeType());
-        resourceDef.setUrlSegment(resourceDefinitionSpi.defaultUrlSegment());
+        //resourceDef.setUrlSegment(resourceDefinitionSpi.defaultUrlSegment());
         resourceDef.setHandlerImplementationName(getHandlerSPIName(resourceDefinitionSpi.getResourceHandler()));
+        // update only if new subresource
+        if (resourceDef.getId() == null) {
+            resourceDef.setUrlSegment(resourceDefinitionSpi.defaultUrlSegment());
+        }
         resourceDefinitionSpi.getSubresourceSpiList().forEach(
                 subresourceDefinitionSpi -> validateSubresourceDefinition(subresourceDefinitionSpi, resourceDef)
         );
@@ -207,12 +211,12 @@ public class SMPExtensionInitializer implements InitializingBean {
         subresourceDef.setName(subresourceDefinitionSpi.name());
         subresourceDef.setDescription(subresourceDefinitionSpi.description());
         subresourceDef.setMimeType(subresourceDefinitionSpi.mimeType());
-        subresourceDef.setUrlSegment(subresourceDefinitionSpi.urlSegment());
         subresourceDef.setHandlerImplementationName(getHandlerSPIName(subresourceDefinitionSpi.getResourceHandler()));
-
+        // update only if new subresource
+        if (subresourceDef.getId() == null) {
+            subresourceDef.setUrlSegment(subresourceDefinitionSpi.urlSegment());
+        }
     }
-
-
 
     public void updateExtension(String extensionName, ExtensionInfo extensionInfo, DBExtension extension) {
         LOG.debug("Update extension for implementationName [{}]", extensionInfo);

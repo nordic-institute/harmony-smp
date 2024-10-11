@@ -451,10 +451,6 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
-    public String getAlertUserLoginFailureSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT);
-    }
-
     //-----------------------
     // user Created
     public Boolean getAlertUserCreatedEnabled() {
@@ -464,10 +460,6 @@ public class ConfigurationService {
     public AlertLevelEnum getAlertUserCreatedLevel() {
         String level = configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_LEVEL);
         return AlertLevelEnum.valueOf(level);
-    }
-
-    public String getAlertUserCreatedSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_USER_CREATED_MAIL_SUBJECT);
     }
 
     //-----------------------
@@ -481,10 +473,6 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
-    public String getAlertUserUpdatedSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_USER_UPDATED_MAIL_SUBJECT);
-    }
-
     //-----------------------
     // user suspended
     public Boolean getAlertUserSuspendedEnabled() {
@@ -494,10 +482,6 @@ public class ConfigurationService {
     public AlertLevelEnum getAlertUserSuspendedLevel() {
         String level = configurationDAO.getCachedPropertyValue(ALERT_USER_SUSPENDED_LEVEL);
         return AlertLevelEnum.valueOf(level);
-    }
-
-    public String getAlertUserSuspendedSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_USER_SUSPENDED_MAIL_SUBJECT);
     }
 
     public AlertSuspensionMomentEnum getAlertBeforeUserSuspendedAlertMoment() {
@@ -524,10 +508,6 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
-    public String getAlertBeforeExpirePasswordMailSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_BEFORE_EXPIRATION_MAIL_SUBJECT);
-    }
-
     // expired passwords
     public Boolean getAlertExpiredPasswordEnabled() {
         return configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_ENABLED);
@@ -544,10 +524,6 @@ public class ConfigurationService {
     public AlertLevelEnum getAlertExpiredPasswordLevel() {
         String level = configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_LEVEL);
         return AlertLevelEnum.valueOf(level);
-    }
-
-    public String getAlertExpiredPasswordMailSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_MAIL_SUBJECT);
     }
 
     //-----------------------
@@ -569,10 +545,6 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
-    public String getAlertBeforeExpireAccessTokenMailSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_MAIL_SUBJECT);
-    }
-
     // expired access token alerts
     public Boolean getAlertExpiredAccessTokenEnabled() {
         return configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_ENABLED);
@@ -589,10 +561,6 @@ public class ConfigurationService {
     public AlertLevelEnum getAlertExpiredAccessTokenLevel() {
         String level = configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_LEVEL);
         return AlertLevelEnum.valueOf(level);
-    }
-
-    public String getAlertExpiredAccessTokenMailSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_MAIL_SUBJECT);
     }
 
     //-----------------------
@@ -614,10 +582,6 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
-    public String getAlertBeforeExpireCertificateMailSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_BEFORE_EXPIRATION_MAIL_SUBJECT);
-    }
-
     // expired access token alerts
     public Boolean getAlertExpiredCertificateEnabled() {
         return configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_ENABLED);
@@ -634,10 +598,6 @@ public class ConfigurationService {
     public AlertLevelEnum getAlertExpiredCertificateLevel() {
         String level = configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_LEVEL);
         return AlertLevelEnum.valueOf(level);
-    }
-
-    public String getAlertExpiredCertificateMailSubject() {
-        return configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_MAIL_SUBJECT);
     }
 
     public String getSMPInstanceName() {

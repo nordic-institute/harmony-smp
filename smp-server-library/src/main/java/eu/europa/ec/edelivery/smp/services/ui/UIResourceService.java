@@ -298,8 +298,8 @@ public class UIResourceService {
         DBResource resource = resourceDao.find(resourceId);
         resource.setVisibility(resourceRO.getVisibility());
         if (resourceRO.isReviewEnabled() != null) {
-            Boolean newValue = isTrue(resourceRO.isReviewEnabled());
-            Boolean oldValue = isTrue(resource.isReviewEnabled());
+            boolean newValue = isTrue(resourceRO.isReviewEnabled());
+            boolean oldValue = isTrue(resource.isReviewEnabled());
             // update resource review enabled in case if it was null before
             resource.setReviewEnabled(newValue);
             // check if new status is disabled  and changed
@@ -307,7 +307,7 @@ public class UIResourceService {
                 // update all document versions to non review status
                 uiDocumentService.updateToNonReviewStatuses(resource.getDocument());
                 // update statuses for all subresources
-                resource.getSubresources().stream().forEach(subResource ->
+                resource.getSubresources().forEach(subResource ->
                     uiDocumentService.updateToNonReviewStatuses(subResource.getDocument()));
             }
             resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
@@ -415,7 +415,7 @@ public class UIResourceService {
         DBDocument document = new DBDocument();
 
         document.setMimeType(domainResourceDef.getMimeType());
-        document.setName(domainResourceDef.getName());
+        document.setName(StringUtils.left(resource.getIdentifierValue(), 255));
         // create first version of the document
         DBDocumentVersion version = documentVersionService.initializeDocumentVersionByGroupAdmin(EventSourceType.UI);
         // The first version is always published.
