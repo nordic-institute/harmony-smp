@@ -46,12 +46,17 @@ public class CreateResourceDetailsDialog extends DComponent {
     }
 
     public Boolean tryClickOnSave() {
-        wait.forElementToBeClickable(saveBtn);
-        if (weToDButton(saveBtn).isEnabled()) {
-            weToDButton(saveBtn).click();
-            return true;
-        } else {
+        try {
+            wait.forElementToBeClickable(saveBtn);
+            if (weToDButton(saveBtn).isEnabled()) {
+                weToDButton(saveBtn).click();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
     }
+
 }

@@ -24,7 +24,7 @@ public class GridWithoutPagination extends DComponent {
         super(driver);
         PageFactory.initElements(driver, this);
         this.parentElement = parentElement;
-
+        wait.forXMillis(200);
     }
 
     public List<WebElement> getGridHeaders() {
@@ -54,7 +54,6 @@ public class GridWithoutPagination extends DComponent {
             LOG.error("No element found");
             throw new NoSuchElementException("Column not found");
         }
-        boolean isElementPresent = false;
 
 
         List<WebElement> rows = getRows();
@@ -62,7 +61,6 @@ public class GridWithoutPagination extends DComponent {
             List<WebElement> cells = getCells(row);
             WebElement currentCell = cells.get(columnIndex);
             if (currentCell.getText().equalsIgnoreCase(value)) {
-                isElementPresent = true;
                 LOG.debug("Value: " + value + " has been found");
                 //Double Click on top right corner of element to prevent clicking on tooltip
                 Actions act = new Actions(driver);

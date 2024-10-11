@@ -14,8 +14,10 @@ import pages.systemSettings.domainsPage.ConfigurationTab.ConfigurationTab;
  */
 public class DomainsPage extends CommonPageWithTabsAndGrid {
     private final static Logger LOG = LoggerFactory.getLogger(DomainsPage.class);
+
     @FindBy(css = "smp-warning-panel span")
     private WebElement warningLabel;
+
     public DomainsPage(WebDriver driver) {
         super(driver);
         LOG.debug("Loading Domains page.");

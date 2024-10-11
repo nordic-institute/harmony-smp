@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Page object for the Configuration tab of Domains page. This contains the locators of the page and the methods for the behaviour of the page
+ * Page object for the Configuration tab of Domains/Edit Domains page. This contains the locators of the page and the methods for the behaviour of the page
  */
 public class ConfigurationTab extends DComponent {
     private final static Logger LOG = LoggerFactory.getLogger(ConfigurationTab.class);
@@ -27,7 +27,6 @@ public class ConfigurationTab extends DComponent {
     public ConfigurationTab(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
-
     }
 
     private GridWithoutPagination getConfigurationGrid() {
