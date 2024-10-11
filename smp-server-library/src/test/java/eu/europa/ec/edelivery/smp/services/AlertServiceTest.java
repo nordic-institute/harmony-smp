@@ -108,7 +108,6 @@ class AlertServiceTest {
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
-        doReturn(mailSubject).when(configurationService).getAlertBeforeExpirePasswordMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertBeforeExpirePasswordLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
 
@@ -121,7 +120,6 @@ class AlertServiceTest {
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
 
-        verify(configurationService, times(1)).getAlertBeforeExpirePasswordMailSubject();
         verify(configurationService, times(1)).getAlertBeforeExpirePasswordLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -135,8 +133,6 @@ class AlertServiceTest {
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
         DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(-1), null);
 
-
-        doReturn(mailSubject).when(configurationService).getAlertExpiredPasswordMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertExpiredPasswordLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
@@ -148,7 +144,6 @@ class AlertServiceTest {
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
 
-        verify(configurationService, times(1)).getAlertExpiredPasswordMailSubject();
         verify(configurationService, times(1)).getAlertExpiredPasswordLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -162,7 +157,6 @@ class AlertServiceTest {
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        doReturn(mailSubject).when(configurationService).getAlertBeforeExpireAccessTokenMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertBeforeExpireAccessTokenLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
 
@@ -175,7 +169,6 @@ class AlertServiceTest {
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
 
-        verify(configurationService, times(1)).getAlertBeforeExpireAccessTokenMailSubject();
         verify(configurationService, times(1)).getAlertBeforeExpireAccessTokenLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -189,7 +182,6 @@ class AlertServiceTest {
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        doReturn(mailSubject).when(configurationService).getAlertExpiredAccessTokenMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertExpiredAccessTokenLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
@@ -201,7 +193,6 @@ class AlertServiceTest {
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
 
-        verify(configurationService, times(1)).getAlertExpiredAccessTokenMailSubject();
         verify(configurationService, times(1)).getAlertExpiredAccessTokenLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -214,7 +205,6 @@ class AlertServiceTest {
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        doReturn(mailSubject).when(configurationService).getAlertBeforeExpireCertificateMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertBeforeExpireCertificateLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
@@ -226,7 +216,6 @@ class AlertServiceTest {
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
 
-        verify(configurationService, times(1)).getAlertBeforeExpireCertificateMailSubject();
         verify(configurationService, times(1)).getAlertBeforeExpireCertificateLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -239,7 +228,6 @@ class AlertServiceTest {
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        doReturn(mailSubject).when(configurationService).getAlertExpiredCertificateMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertExpiredCertificateLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
@@ -252,7 +240,6 @@ class AlertServiceTest {
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
 
-        verify(configurationService, times(1)).getAlertExpiredCertificateMailSubject();
         verify(configurationService, times(1)).getAlertExpiredCertificateLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -303,7 +290,6 @@ class AlertServiceTest {
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserLoginFailureEnabled();
-        doReturn(mailSubject).when(configurationService).getAlertUserLoginFailureSubject();
         doReturn(alertLevel).when(configurationService).getAlertUserLoginFailureLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
 
@@ -318,7 +304,6 @@ class AlertServiceTest {
                 expectedTemplateProperties);
 
         verify(configurationService, times(1)).getAlertUserLoginFailureEnabled();
-        verify(configurationService, times(1)).getAlertUserLoginFailureSubject();
         verify(configurationService, times(1)).getAlertUserLoginFailureLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -335,7 +320,6 @@ class AlertServiceTest {
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserLoginFailureEnabled();
-        doReturn(mailSubject).when(configurationService).getAlertUserLoginFailureSubject();
         doReturn(alertLevel).when(configurationService).getAlertUserLoginFailureLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         //doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
@@ -350,7 +334,6 @@ class AlertServiceTest {
                 expectedTemplateProperties);
 
         verify(configurationService, times(1)).getAlertUserLoginFailureEnabled();
-        verify(configurationService, times(1)).getAlertUserLoginFailureSubject();
         verify(configurationService, times(1)).getAlertUserLoginFailureLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -367,7 +350,6 @@ class AlertServiceTest {
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserSuspendedEnabled();
-        doReturn(mailSubject).when(configurationService).getAlertUserSuspendedSubject();
         doReturn(alertLevel).when(configurationService).getAlertUserSuspendedLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
@@ -382,7 +364,6 @@ class AlertServiceTest {
                 expectedTemplateProperties);
 
         verify(configurationService, times(1)).getAlertUserSuspendedEnabled();
-        verify(configurationService, times(1)).getAlertUserSuspendedSubject();
         verify(configurationService, times(1)).getAlertUserSuspendedLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
@@ -400,7 +381,6 @@ class AlertServiceTest {
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserSuspendedEnabled();
-        doReturn(mailSubject).when(configurationService).getAlertUserSuspendedSubject();
         doReturn(alertLevel).when(configurationService).getAlertUserSuspendedLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
@@ -415,7 +395,6 @@ class AlertServiceTest {
                 expectedTemplateProperties);
 
         verify(configurationService, times(1)).getAlertUserSuspendedEnabled();
-        verify(configurationService, times(1)).getAlertUserSuspendedSubject();
         verify(configurationService, times(1)).getAlertUserSuspendedLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
