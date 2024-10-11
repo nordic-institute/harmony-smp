@@ -51,24 +51,24 @@ See the Licence for the specific language governing permissions and limitations 
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.15</edelivery.ssl-auth.version>
+        <edelivery.ssl-auth.version>1.16-SNAPSHOT</edelivery.ssl-auth.version>
         <edelivery.dynamic-discovery-client.version>2.3</edelivery.dynamic-discovery-client.version>
         <bdmsl-api.version>4.3</bdmsl-api.version>
         <!-- plugin versions -->
-        <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.11</plugin.jacoco-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
-        <plugin.maven-assembly-plugin.version>3.6.0</plugin.maven-assembly-plugin.version>
-        <plugin.maven-clean-plugin.version>3.3.2</plugin.maven-clean-plugin.version>
+        <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
+        <plugin.maven-clean-plugin.version>3.4.0</plugin.maven-clean-plugin.version>
         <plugin.maven-compiler-plugin.version>3.13.0</plugin.maven-compiler-plugin.version>
-        <plugin.maven-dependency-plugin.version>3.6.1</plugin.maven-dependency-plugin.version>
-        <plugin.maven-failsafe-plugin.version>3.1.2</plugin.maven-failsafe-plugin.version>
+        <plugin.maven-dependency-plugin.version>3.8.0</plugin.maven-dependency-plugin.version>
+        <plugin.maven-failsafe-plugin.version>3.5.1</plugin.maven-failsafe-plugin.version>
         <plugin.maven-jar-plugin.version>3.3.0</plugin.maven-jar-plugin.version>
-        <plugin.maven-release-plugin.version>3.0.1</plugin.maven-release-plugin.version>
+        <plugin.maven-release-plugin.version>3.1.1</plugin.maven-release-plugin.version>
         <plugin.maven-resources-plugin.version>3.3.1</plugin.maven-resources-plugin.version>
-        <plugin.maven-surefire-plugin.version>3.2.2</plugin.maven-surefire-plugin.version>
+        <plugin.maven-surefire-plugin.version>3.2.5</plugin.maven-surefire-plugin.version>
         <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
 
         <aspectj.version>1.9.22.1</aspectj.version>
@@ -88,14 +88,14 @@ See the Licence for the specific language governing permissions and limitations 
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <jackson.version>2.17.2</jackson.version>
+        <jackson.version>2.18.0</jackson.version>
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
         <org.glassfish.jaxb.jaxb-runtime.version>2.3.9</org.glassfish.jaxb.jaxb-runtime.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
-        <junit-jupiter.version>5.11.0</junit-jupiter.version>
+        <junit-jupiter.version>5.11.2</junit-jupiter.version>
         <junit-platform-surefire-provider.version>1.3.2</junit-platform-surefire-provider.version>
         <junitparams.version>1.1.1</junitparams.version>
         <!-- Use logback 1.2.x because is the one used by springboot 5.7. Changing to 1.3+ will break springboot logging. -->
@@ -104,11 +104,11 @@ See the Licence for the specific language governing permissions and limitations 
         <mysql.jdbc.version>8.4.0</mysql.jdbc.version>
         <metro.version>2.2.1-1</metro.version>
         <mockito.version>4.11.0</mockito.version>
-        <jakarta.servlet-api.version>4.0.2</jakarta.servlet-api.version>
+        <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.95</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.96</spring-boot.tomcat.version>
         <spring.security.version>5.8.14</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.0</xmlunit.version>
@@ -141,8 +141,8 @@ See the Licence for the specific language governing permissions and limitations 
             **/*Types.java,
             **/*Constants.java,
         </sonar.coverage.exclusions>
-        <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
-        <plugin.sonar-maven-plugin.version>3.5.0.1254</plugin.sonar-maven-plugin.version>
+      
+        <plugin.sonar-maven-plugin.version>3.11.0.3922</plugin.sonar-maven-plugin.version>
         <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
         </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
