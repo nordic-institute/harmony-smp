@@ -74,7 +74,7 @@
                                [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
         <smp-field-error
-          *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')  || credentialForm.controls.activeFrom.hasError('required')">{{ "access.token.panel.error.invalid.start.date" | translate }}
+          *ngIf="credentialForm.controls.activeFrom.hasError('required')">{{ "access.token.panel.error.invalid.start.date" | translate }}
         </smp-field-error>
         <smp-field-error
           *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid') || credentialForm.controls.expireOn.hasError('required')">{{ "access.token.panel.error.invalid.end.date" | translate }}
