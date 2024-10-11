@@ -18,4 +18,15 @@ public class SMPRestException extends Exception {
                 "CONTENT = " + response.getEntity(String.class)));
     }
 
+    public SMPRestException(String message, int responseStatus, String responseContent) {
+        super(String.format("%s \n %s \n %s \n",
+                message,
+                "STATUS = " + responseStatus,
+                "CONTENT = " + responseContent));
+        log.error(String.format("%s \n %s \n %s \n",
+                message,
+                "STATUS = " + responseStatus,
+                "CONTENT = " + responseContent));
+    }
+
 }
