@@ -35,12 +35,13 @@
           <mat-icon>search</mat-icon>
           <span>{{ "reference.document.dialog.button.search" | translate }}</span>
         </button>
-        <button mat-raised-button  id="resetbutton_id"
-                [disabled]="filterForm"
+        <button mat-raised-button color="primary"
+                id="resetbutton_id"
+                [disabled]="!isDirty"
                 (click)="onResetButtonClicked()"
         >
-          <mat-icon>reset</mat-icon>
-          <span>{{ "reference.document.dialog.button.reset" | translate }}</span>
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>{{ "reference.document.dialog.button.reset.filters" | translate }}</span>
         </button>
       </mat-toolbar-row>
     </div>

@@ -455,7 +455,7 @@
   "reference.document.dialog.button.save": "Save",
   "reference.document.dialog.button.select": "Set selected document as reference",
   "reference.document.dialog.label.select.page": "Page",
-  "reference.document.dialog.button.reset": "Reset",
+  "reference.document.dialog.button.reset.filters": "Reset filters",
 
   "review.edit.dialog.title": "Review tasks details",
   "review.edit.panel.label.review": "Review",
@@ -568,7 +568,7 @@
   "login.title.sso.login": "SSO Login:",
   "login.success.confirmation.email.sent": "A confirmation email has been sent to your registered email address for user [{{userId}}]. Please follow the instructions in the email to complete the account reset process. If you did not receive mail try later or contact administrator",
 
-  "resource.search.button.clear.all": "Clear All",
+  "resource.search.button.reset.filters": "Reset filters",
   "resource.search.error.fetch.resource.metadata": "Error occurred while retrieving the resource metadata",
   "resource.search.label.document.type": "Document Type",
   "resource.search.label.domain": "Domain",
