@@ -1,5 +1,5 @@
 <smp-search-table #searchTable
-  page_id='search_id'
+  id='search_id'
   [title]="'resource.search.title' | translate"
   [columnPicker]="columnPicker"
   [url]="baseUrl"
@@ -59,8 +59,8 @@
 
   <ng-template #additionalSearchAreaButtons>
     <button mat-raised-button color="primary" (click)="clearFilters()" id="clearallbutton_id">
-      <mat-icon>search</mat-icon>
-      <span>{{ "resource.search.button.clear.all" | translate }}</span>
+      <mat-icon>filter_alt_off</mat-icon>
+      <span>{{ "resource.search.button.reset.filters" | translate }}</span>
     </button>
   </ng-template>
 
