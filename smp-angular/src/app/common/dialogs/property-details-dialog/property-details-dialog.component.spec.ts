@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PropertyDetailsDialogComponent } from './property-details-dialog.component';
+import {PropertyDetailsDialogComponent} from './property-details-dialog.component';
 
 describe('DomainDetailsDialogComponent', () => {
   let component: PropertyDetailsDialogComponent;
