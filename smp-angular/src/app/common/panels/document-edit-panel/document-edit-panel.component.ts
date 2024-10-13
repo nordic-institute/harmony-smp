@@ -55,6 +55,7 @@ import {
 import {
   ReviewDocumentVersionRo
 } from "../../model/review-document-version-ro.model";
+import {DateTimeService} from "../../services/date-time.service";
 
 export enum SmpDocumentEditorType {
   RESOURCE_EDITOR = "RESOURCE_EDITOR",
@@ -204,6 +205,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
 
   constructor(private editResourceService: EditResourceService,
               private alertService: AlertMessageService,
+              private dateTimeService: DateTimeService,
               private dialog: MatDialog,
               private navigationService: NavigationService,
               private formBuilder: FormBuilder,
@@ -215,7 +217,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       'mimeType': new FormControl({value: null}),
       'name': new FormControl({value: null}),
       'currentResourceVersion': new FormControl({value: null}),
-      'payloadCreatedOn': new FormControl({value: null}),
+      'payloadCreatedOnFormatted': new FormControl({value: null}),
       'payloadVersion': new FormControl({value: null}),
       'payload': new FormControl({value: null}),
       'referencePayload': new FormControl({value: null}),
@@ -309,7 +311,9 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
-      this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
+      this.documentForm.controls['payloadCreatedOnFormatted'].setValue(
+        this.dateTimeService.formatDateTimeForUserLocal(
+        value.payloadCreatedOn));
       this.documentForm.controls['payload'].setValue(value.payload);
       this.documentForm.controls['editorText'].setValue(value.payload);
       this.documentForm.controls['referencePayload'].setValue(value.referencePayload);
@@ -334,7 +338,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['name'].setValue("");
       this.documentForm.controls['currentResourceVersion'].setValue("");
       this.documentForm.controls['payloadVersion'].setValue("");
-      this.documentForm.controls['payloadCreatedOn'].setValue("");
+      this.documentForm.controls['payloadCreatedOnFormatted'].setValue("");
       this.documentForm.controls['payload'].setValue("");
       this.documentForm.controls['editorText'].setValue("");
       this.documentForm.controls['referencePayload'].setValue("");

@@ -11,16 +11,9 @@ import {SmpInfo} from "../app-info/smp-info.model";
 import {SmpConfig} from "../app-config/smp-config.model";
 import {SecurityEventService} from "../security/security-event.service";
 import {DateAdapter} from "@angular/material/core";
-import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 import {DomainRo} from "./model/domain-ro.model";
 import {Subject} from "rxjs";
-import {
-  FormatWidth,
-  getLocaleDateFormat,
-  getLocaleDateTimeFormat,
-  getLocaleTimeFormat
-} from "@angular/common";
-import StringUtils from "./utils/string-utils";
+import DateUtils from "./utils/date-utils";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -31,7 +24,6 @@ export class GlobalLookups {
   // global data observers. The components will subscribe to these Subject to get
   // data updates.
   private smpInfoUpdateSubject: Subject<SmpInfo> = new Subject<SmpInfo>();
-  private readonly DEFAULT_LOCALE: string = 'fr';
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
@@ -46,31 +38,27 @@ export class GlobalLookups {
               protected securityService: SecurityService,
               protected http: HttpClient,
               private securityEventService: SecurityEventService,
-              private dateAdapter: DateAdapter<Date>,
-              private ngxMatDateAdapter: NgxMatDateAdapter<Date>
+              private dateAdapter: DateAdapter<Date>
   ) {
     this.refreshApplicationInfo();
     this.refreshDomainLookupFromPublic();
     this.securityService.refreshLoggedUserFromServer();
 
-    securityEventService.onLoginSuccessEvent().subscribe(user => {
+    this.securityEventService.onLoginSuccessEvent().subscribe(user => {
         this.refreshLookupsOnLogin();
         // set locale
         if (!!user && user.smpLocale) {
-          dateAdapter.setLocale(user.smpLocale);
-          ngxMatDateAdapter.setLocale(user.smpLocale);
+          this.dateAdapter.setLocale(user.smpLocale);
         }
       }
     );
 
-    securityEventService.onLogoutSuccessEvent().subscribe(value => {
+    this.securityEventService.onLogoutSuccessEvent().subscribe(value => {
         this.clearCachedLookups();
       }
     );
     // set default locale
-    dateAdapter.setLocale(this.DEFAULT_LOCALE);
-    ngxMatDateAdapter.setLocale(this.DEFAULT_LOCALE);
-
+    this.dateAdapter.setLocale(DateUtils.DEFAULT_LOCALE);
   }
 
   public refreshLookupsOnLogin() {
@@ -100,26 +88,10 @@ export class GlobalLookups {
   }
 
   getCurrentLocale(): string {
-    if (this.securityService.getCurrentUser() == null) {
-      return this.DEFAULT_LOCALE;
+    if (this.securityService.getCurrentUser()?.smpLocale == null) {
+      return DateUtils.DEFAULT_LOCALE;
     }
     return this.securityService.getCurrentUser().smpLocale;
-  }
-
-  public getDateTimeFormat(withSeconds: boolean = true): string {
-    let locale = this.getCurrentLocale();
-    locale = locale ? locale : this.DEFAULT_LOCALE;
-    let format: string = getLocaleDateTimeFormat(locale, FormatWidth.Short);
-    let fullTime = getLocaleTimeFormat(locale,withSeconds? FormatWidth.Medium:FormatWidth.Short);
-    let fullDate = getLocaleDateFormat(locale, FormatWidth.Short);
-    let result = StringUtils.format(format, [fullTime, fullDate]);
-    return result;
-  }
-
-  public getDateFormat(): string {
-    let locale = this.getCurrentLocale();
-    locale = locale ? locale : this.DEFAULT_LOCALE;
-    return getLocaleDateFormat(locale, FormatWidth.Short);
   }
 
   private format(str, opt_values) {

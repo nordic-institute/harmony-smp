@@ -113,14 +113,10 @@
                           appearance="fill">
             <mat-label>{{ "document.edit.panel.label.selected.created.on" | translate }}</mat-label>
             <input id="payloadCreatedOn_id"
-                   matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
-                   formControlName="payloadCreatedOn"
+                   matInput
+                   formControlName="payloadCreatedOnFormatted"
                    readonly>
-            <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker"
-                                   style="visibility: hidden"></mat-datepicker-toggle>
-            <ngx-mat-datetime-picker #payloadCreatedOnPicker [showSpinners]="true"
-                                     [showSeconds]="false"
-                                     [hideTime]="false"></ngx-mat-datetime-picker>
+
           </mat-form-field>
         </div>
       </ng-template>

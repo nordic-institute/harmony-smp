@@ -41,6 +41,7 @@ import {
   BeforeLeaveGuard
 } from "../../../window/sidenav/navigation-on-leave-guard";
 import {GlobalLookups} from "../../global-lookups";
+import {DateTimeService} from "../../services/date-time.service";
 
 /**
  * Component to display the properties of a document in a table. The properties can be edited and saved.
@@ -75,13 +76,13 @@ export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeav
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
-    private globalLookups: GlobalLookups,
+    private dateTimeService: DateTimeService,
     public dialog: MatDialog,
     private controlContainer: ControlContainer) {
   }
 
   get dateTimeFormat(): string {
-    return this.globalLookups.getDateTimeFormat();
+    return this.dateTimeService.userDateTimeFormat;
   }
 
   @Input() set selectedVersion(version: number) {

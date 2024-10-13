@@ -19,6 +19,7 @@ import {SearchTableComponent} from "../../search-table/search-table.component";
 import {SecurityService} from "../../../security/security.service";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import {DateTimeService} from "../../services/date-time.service";
 
 /**
  * This is a generic alert panel component for previewing alert list
@@ -45,6 +46,7 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
+              protected dateTimeService: DateTimeService,
               protected http: HttpClient,
               protected alertService: AlertMessageService,
               public dialog: MatDialog,
@@ -131,6 +133,6 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
   }
 
   get dateTimeFormat(): string {
-    return this.lookups.getDateTimeFormat();
+    return this.dateTimeService.userDateTimeFormat;
   }
 }

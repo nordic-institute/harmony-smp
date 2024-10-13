@@ -92,29 +92,16 @@
       <mat-form-field style="flex-grow:2 " floatLabel="always">
         <mat-label>{{ "access.token.panel.label.login.last.failed.attempt" | translate }}</mat-label>
         <input id="LastFailedAttempt_id" matInput
-               [ngxMatDatetimePicker]="LastFailedAttemptPicker"
                [value]="lastFailedLoginAttempt"
                placeholder="---"
                readonly>
-        <mat-datepicker-toggle matSuffix [for]="LastFailedAttemptPicker"
-                               style="visibility: hidden"></mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #LastFailedAttemptPicker [showSpinners]="true"
-                                 [showSeconds]="false"
-                                 [hideTime]="false"></ngx-mat-datetime-picker>
       </mat-form-field>
       <mat-form-field style="flex-grow: 2" floatLabel="always">
         <mat-label>{{ "access.token.panel.label.suspended.until" | translate }}</mat-label>
         <input id="SuspendedUtil_id" matInput
-               [ngxMatDatetimePicker]="suspendedUtilPicker"
                [value]="suspendedUtil"
                placeholder="---"
                readonly>
-        <mat-datepicker-toggle matSuffix [for]="suspendedUtilPicker"
-                               style="visibility: hidden"></mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #suspendedUtilPicker [showSpinners]="true"
-                                 [showSeconds]="false"
-                                 [hideTime]="false"></ngx-mat-datetime-picker>
-
       </mat-form-field>
     </div>
   </div>
