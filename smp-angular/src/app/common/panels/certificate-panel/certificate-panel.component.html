@@ -33,29 +33,17 @@
   <div style="display: flex;flex-direction: row;flex-grow: 1">
     <mat-form-field style="flex-grow: 1">
       <mat-label>{{ "certificate.panel.label.valid.from" | translate }}</mat-label>
-      <input matInput [ngxMatDatetimePicker]="pickerFromDate"
+      <input matInput
              placeholder="{{ 'certificate.panel.placeholder.valid.from' | translate }}"
-             [value]="certificate?.validFrom"
+             [value]="certificateValidFromFormattedDate"
              readonly>
-      <mat-datepicker-toggle matSuffix [for]="pickerFromDate" style="visibility: hidden"></mat-datepicker-toggle>
-      <ngx-mat-datetime-picker #pickerFromDate [showSpinners]="false" [showSeconds]="false" [stepHour]="1"
-                               [stepMinute]="1" [stepSecond]="1"
-                               [hideTime]="false">
-      </ngx-mat-datetime-picker>
     </mat-form-field>
     <mat-form-field style="flex-grow: 1">
       <mat-label>{{ "certificate.panel.label.valid.to" | translate }}</mat-label>
-      <input matInput [ngxMatDatetimePicker]="pickerToDate" placeholder="{{ 'certificate.panel.placeholder.valid.to' | translate }}"
-             [value]="certificate?.validTo"
+      <input matInput placeholder="{{ 'certificate.panel.placeholder.valid.to' | translate }}"
+             [value]="certificateValidToFormattedDate"
              readonly>
-      <mat-datepicker-toggle matSuffix [for]="pickerToDate" style="visibility: hidden"></mat-datepicker-toggle>
-      <ngx-mat-datetime-picker #pickerToDate [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
-                               [stepMinute]="1" [stepSecond]="1"
-                               [hideTime]="false"
-      >
-
-      </ngx-mat-datetime-picker>
-    </mat-form-field>
+     </mat-form-field>
   </div>
   <mat-form-field>
     <mat-label>{{ "certificate.panel.label.issuer" | translate }}</mat-label>
@@ -76,6 +64,4 @@
            [value]="certificate?.crlUrl"
            readonly>
   </mat-form-field>
-
-
 </div>

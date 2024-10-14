@@ -93,16 +93,9 @@
         <!-- show example only for logged-in user-->
         <mat-form-field style="flex-grow: 1" *ngIf="isUserDataLoggedInUserData">
           <mat-label>{{ "user.profile.panel.label.example" | translate }}</mat-label>
-          <input id="exampleDate_id" matInput [ngxMatDatetimePicker]="picker" placeholder="{{ 'user.profile.panel.placeholder.choose.date' | translate }}"
-                 [value]="currentDate"
+          <input id="exampleDate_id" matInput placeholder="{{ 'user.profile.panel.placeholder.choose.date' | translate }}"
+                 [value]="formattedDateTimeExample"
                  readonly>
-          <mat-datepicker-toggle matSuffix [for]="picker" style="visibility: hidden"></mat-datepicker-toggle>
-          <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
-                                   [stepMinute]="1" [stepSecond]="1"
-                                   [hideTime]="false"
-          >
-
-          </ngx-mat-datetime-picker>
         </mat-form-field>
       </div>
 
@@ -132,32 +125,19 @@
       <div style="display: flex;flex-flow: row wrap;">
         <mat-form-field style="flex-grow:2 "  floatLabel="always">
           <mat-label>{{ "user.profile.panel.label.last.set" | translate }}</mat-label>
-          <input id="passwordUpdatedOn_id" matInput [ngxMatDatetimePicker]="passwordUpdatedOnPicker"
+          <input id="passwordUpdatedOn_id" matInput
                  formControlName="passwordUpdatedOn"
                  placeholder="---"
                  readonly>
-          <mat-datepicker-toggle matSuffix [for]="passwordUpdatedOnPicker" style="visibility: hidden"></mat-datepicker-toggle>
-          <ngx-mat-datetime-picker #passwordUpdatedOnPicker [showSpinners]="true" [showSeconds]="false"
-                                   [hideTime]="false"></ngx-mat-datetime-picker>
         </mat-form-field>
 
         <mat-form-field style="flex-grow: 1">
           <mat-label>{{ "user.profile.panel.label.password.expiration.date" | translate }}</mat-label>
           <input id="passwordExpireOn_id"
-                 *ngIf="!!userCredentialForm.get('passwordExpireOn').value; else noPasswordExpirySet "
-                 matInput [ngxMatDatetimePicker]="passwordExpireOnPicker"
+                 matInput
                  formControlName="passwordExpireOn"
                  placeholder="---"
                  readonly>
-          <mat-datepicker-toggle matSuffix [for]="passwordExpireOnPicker" style="visibility: hidden"></mat-datepicker-toggle>
-          <ngx-mat-datetime-picker #passwordExpireOnPicker [showSpinners]="true" [showSeconds]="false"
-                                   [hideTime]="false"></ngx-mat-datetime-picker>
-          <ng-template #noPasswordExpirySet>
-            <input id="passwordExpireOn_id" matInput placeholder="{{ 'user.profile.panel.placeholder.password.expiration.date' | translate }}" style="color: red"
-                   matTooltip="{{ 'user.profile.panel.tooltip.password.expiration.date' | translate }}"
-                   value="{{ 'user.profile.panel.value.password.expiration.date' | translate }}"
-                   maxlength="255" disabled>
-          </ng-template>
         </mat-form-field>
       </div>
       <div style="display: flex;flex-flow: row;">
@@ -170,24 +150,18 @@
         </mat-form-field>
         <mat-form-field style="flex-grow:2 "  floatLabel="always">
           <mat-label>{{ "user.profile.panel.label.login.last.failed.attempt" | translate }}</mat-label>
-          <input id="LastFailedAttempt_id" matInput [ngxMatDatetimePicker]="LastFailedAttemptPicker"
+          <input id="LastFailedAttempt_id" matInput
                  formControlName="lastFailedLoginAttempt"
                  placeholder="---"
                  readonly>
-          <mat-datepicker-toggle matSuffix [for]="LastFailedAttemptPicker" style="visibility: hidden"></mat-datepicker-toggle>
-          <ngx-mat-datetime-picker #LastFailedAttemptPicker [showSpinners]="true" [showSeconds]="false"
-                                   [hideTime]="false"></ngx-mat-datetime-picker>
         </mat-form-field>
 
         <mat-form-field style="flex-grow:2 "  floatLabel="always">
           <mat-label>{{ "user.profile.panel.label.suspended.until.date" | translate }}</mat-label>
-          <input id="suspendedUtil_id" matInput [ngxMatDatetimePicker]="suspendedUtilPicker"
+          <input id="suspendedUtil_id" matInput
                  formControlName="suspendedUtil"
                  placeholder="---"
                  readonly>
-          <mat-datepicker-toggle matSuffix [for]="suspendedUtilPicker" style="visibility: hidden"></mat-datepicker-toggle>
-          <ngx-mat-datetime-picker #suspendedUtilPicker [showSpinners]="true" [showSeconds]="false"
-                                   [hideTime]="false"></ngx-mat-datetime-picker>
         </mat-form-field>
       </div>
       <mat-toolbar class ="mat-elevation-z2">

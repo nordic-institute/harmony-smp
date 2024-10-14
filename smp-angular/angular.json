@@ -15,7 +15,7 @@ ng {
             "index": "src/index.html",
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "assets": [
               "src/assets",
               "src/favicon.ico"
@@ -68,18 +68,18 @@ ng {
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "SMP-UI:build:development"
+            "buildTarget": "SMP-UI:build:development"
           },
           "configurations": {
             "production": {
-              "browserTarget": "SMP-UI:build:production"
+              "buildTarget": "SMP-UI:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "SMP-UI:build"
+            "buildTarget": "SMP-UI:build"
           }
         },
         "test": {
@@ -87,7 +87,7 @@ ng {
           "options": {
             "main": "src/test.ts",
             "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
             "styles": [

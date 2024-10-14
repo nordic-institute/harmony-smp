@@ -1,20 +1,18 @@
 import {Component, Input} from '@angular/core';
 import {CertificateRo} from "../../model/certificate-ro.model";
+import {DateTimeService} from "../../services/date-time.service";
 
 @Component({
   selector: 'certificate-panel',
   templateUrl: './certificate-panel.component.html',
   styleUrls: ['./certificate-panel.component.scss'],
-  providers: [
-    // `MomentDateAdapter` and `MAT_MOMENT_DATE_FORMATS` can be automatically provided by importing
-    // `MatMomentDateModule` in your applications root module. We provide it at the component level
-    // here, due to limitations of our example generation script.
-
-  ],
 })
 export class CertificatePanelComponent {
 
   _certificate: CertificateRo = null;
+
+  constructor(private dateTimeService: DateTimeService) {
+  }
 
   get certificate(): CertificateRo {
     return this._certificate;
@@ -24,4 +22,14 @@ export class CertificatePanelComponent {
     this._certificate = value;
   }
 
+  public formatDate(date: Date): string {
+    return this.dateTimeService.formatDateTimeForUserLocal(date);
+  }
+
+  get certificateValidFromFormattedDate(): string {
+    return this.formatDate(this._certificate?.validFrom);
+  }
+  get certificateValidToFormattedDate(): string {
+    return this.formatDate(this._certificate?.validTo);
+  }
 }
