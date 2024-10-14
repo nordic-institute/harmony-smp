@@ -26,7 +26,7 @@ export class CertificatePanelComponent {
     return this.dateTimeService.formatDateTimeForUserLocal(date);
   }
 
-  get getCertificateValidFromFormattedDate(): string {
+  get certificateValidFromFormattedDate(): string {
     return this.formatDate(this._certificate?.validFrom);
   }
   get getCertificateValidToFormattedDate(): string {
