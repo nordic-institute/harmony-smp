@@ -1,3 +1,38 @@
+.edit-resource-selection-panel {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+
+}
+
+.edit-resource-container mat-table {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  border: 1px solid red;
+}
+
+.edit-resource-container {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  border: 1px solid black;
+}
+
+.edit-resource-table-container {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  border: 1px solid blue;
+  overflow: scroll;
+  min-width: 0;
+}
+
+.mat-table {
+  width: 100%;
+  overflow: auto;
+  height: 100%;
+}
 
 #admin-resource-panel {
   display: flex;

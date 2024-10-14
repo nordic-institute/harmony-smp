@@ -1,4 +1,11 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
@@ -9,7 +16,13 @@ import {
 } from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
-import {MatTableDataSource} from "@angular/material/table";
+import {MatColumnDef, MatTableDataSource} from "@angular/material/table";
+import {
+  SmpTableComponent
+} from "../../common/components/smp-table/smp-table.component";
+import {
+  SmpTableColDef
+} from "../../common/components/smp-table/smp-table-coldef.model";
 
 
 @Component({
@@ -21,16 +34,27 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
   selected: ResourceRo;
   isLoadingResults = false;
-
   dataSource: MatTableDataSource<ResourceRo>;
-  @ViewChild("resourcePaginator") paginator: MatPaginator;
+
+
+  columns: SmpTableColDef[];
 
   constructor(private editResourceController: EditResourceController) {
     this.dataSource = editResourceController;
+    this.columns= [
+      { columnDef: 'identifierScheme',
+        header: 'identifierScheme',
+        cell: (row: ResourceRo) => row.identifierScheme
+      } as SmpTableColDef,
+      { columnDef: 'identifierValue',
+        header: 'identifierValue',
+        cell: (row: ResourceRo) => row.identifierValue
+      } as SmpTableColDef
+    ];
   }
 
   ngOnInit() {
-    console.log("EditResourceComponent: ngOnInit")
+    console.log("EditResourceComponent: ngOnInit  " + this.columns.length);
     if (!this.selectedResource) {
       this.editResourceController.refreshDomains();
     } else {
@@ -41,13 +65,11 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
 
 
   ngAfterViewInit(): void {
-    // bind data to resource controller
-    this.dataSource.paginator = this.paginator;
   }
 
 
-  applyResourceFilter(event: Event) {
-    this.editResourceController.applyResourceFilter(event);
+  onFilterChangedEvent(filter: string) {
+    this.editResourceController.applyResourceFilter(filter);
   }
 
   get hasResources(): boolean {

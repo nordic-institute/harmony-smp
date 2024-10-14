@@ -54,7 +54,7 @@
 </div>
 
 <ng-template #searchGroupPanel>
-  <div
+  <div class="edit-resource-selection-panel"
     *ngIf="hasResources || filterResourceResults "
   >
     <mat-form-field style="width:100%">
@@ -90,52 +90,30 @@
            *ngIf="isLoadingResults">
         <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
       </div>
-
-      <div class="edit-resource-table-container">
-
-        <mat-form-field id="edit-resource-filter" style="width: 100%">
-          <mat-label>{{ "edit.resource.label.filter" | translate }}</mat-label>
-          <input matInput (keyup)="applyResourceFilter($event)"
-                 placeholder="{{ 'edit.resource.placeholder.filter' | translate }}"
-                 [disabled]="disabledResourceFilter"
-                 #inputDomainMemberFilter>
-        </mat-form-field>
-
-        <table class="mat-elevation-z2" mat-table [dataSource]="dataSource">
-
-          <ng-container matColumnDef="identifierScheme">
-            <th mat-header-cell *matHeaderCellDef>{{ "edit.resource.label.identifier.scheme" | translate }}</th>
-            <td mat-cell *matCellDef="let row">{{row.identifierScheme}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="identifierValue">
-            <th mat-header-cell *matHeaderCellDef>{{ "edit.resource.label.identifier.value" | translate }}</th>
-            <td mat-cell *matCellDef="let row">{{row.identifierValue}}</td>
-          </ng-container>
-
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
-              (click)="onResourceSelected(row)"
-              [ngClass]="{'datatable-row-selected': row==selectedResource,'datatable-row-odd': odd}"
-          ></tr>
-
-          <tr class="mat-row" *matNoDataRow>
-            <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">
-              {{ "edit.resource.label.no.filter.results" | translate: { filterValue : inputDomainMemberFilter.value } }}
-            </td>
-            <ng-template #noDataFound>
-              <td class="mat-cell" colspan="2">{{ "edit.resource.label.no.data.found" | translate }}</td>
-            </ng-template>
-          </tr>
-        </table>
-      </div>
-
-      <mat-paginator  #resourcePaginator class="mat-elevation-z2"
-                     (page)="onPageChanged($event)"
-                     [hidePageSize]="true"
-                     [pageSize]="5"
-                     aria-label="{{ 'edit.resource.label.select.pages' | translate }}"></mat-paginator>
+      <smp-table
+        filterLabel="edit.resource.label.filter"
+        filterPlaceholder="edit.resource.placeholder.filter"
+        noResultLabel="edit.resource.label.no.data.found"
+        noResultForFilterLabel="edit.resource.label.no.filter.results"
+        [dataSource]="dataSource"
+        [columnDefList]="columns"
+        [displayedColumns]="displayedColumns"
+        (onFilterChanged)="onFilterChangedEvent($event)"
+        (onPageChanged)="onPageChanged($event)"
+        >
+      </smp-table>
     </div>
   </div>
 </ng-template>
+
+<ng-container matColumnDef="identifierScheme">
+  <mat-header-cell *matHeaderCellDef>{{ "edit.resource.label.identifier.scheme" | translate }}</mat-header-cell>
+  <mat-cell *matCellDef="let row">{{ row.identifierScheme }}</mat-cell>
+</ng-container>
+
+<ng-container matColumnDef="identifierValue">
+  <mat-header-cell
+    *matHeaderCellDef>{{ "edit.resource.label.identifier.value" | translate }}
+  </mat-header-cell>
+  <mat-cell *matCellDef="let row">{{ row.identifierValue }}</mat-cell>
+</ng-container>

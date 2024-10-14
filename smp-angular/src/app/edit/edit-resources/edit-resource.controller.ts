@@ -220,13 +220,15 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!this.selectedResource && !!list && list.length > 0) {
       this.selectedResource = list[0];
     }
-
-
   }
 
-  applyResourceFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.resourcesFilter["filter"] = filterValue.trim().toLowerCase();
+  /**
+   * Apply filter to resources
+   * @param filterValue - filter value
+   */
+  applyResourceFilter(filterValue: string) {
+    this.resourcesFilter["filter"] =
+      !filterValue ? '' : filterValue.trim().toLowerCase();
     this.refreshResources();
   }
 

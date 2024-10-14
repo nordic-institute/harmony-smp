@@ -1,7 +1,17 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 
 .smp-container-limited {
   display: flex;
   flex-flow: row;
+  flex-grow: 1;
   gap: 10px;
   align-items: center;
 

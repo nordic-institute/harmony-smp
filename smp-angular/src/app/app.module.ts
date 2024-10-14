@@ -351,6 +351,9 @@ import {
 } from "./common/services/reference-document.service";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {DateTimeService} from "./common/services/date-time.service";
+import {
+  SmpTableComponent
+} from "./common/components/smp-table/smp-table.component";
 
 @NgModule({ declarations: [
         AccessTokenPanelComponent,
@@ -370,6 +373,7 @@ import {DateTimeService} from "./common/services/date-time.service";
         CertificateDialogComponent,
         CertificatePanelComponent,
         SmpEditorComponent,
+        SmpTableComponent,
         ColumnPickerComponent,
         ConfirmationDialogComponent,
         CredentialDialogComponent,
