@@ -23,7 +23,7 @@ export default class DateUtils {
    * @param withZone - flag to include the time zone in the formatted date time string
    */
   static getDateTimeFormatForLocal(locale: string, withSeconds: boolean = true, withZone: boolean = false): string {
-    locale = locale ? locale : this.DEFAULT_LOCALE;
+    locale = locale || this.DEFAULT_LOCALE;
     let format: string = getLocaleDateTimeFormat(locale, FormatWidth.Short);
     let fullTime = getLocaleTimeFormat(locale, withSeconds ? FormatWidth.Medium : FormatWidth.Short);
     let fullDate = getLocaleDateFormat(locale, FormatWidth.Short);
