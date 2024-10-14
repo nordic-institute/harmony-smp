@@ -35,13 +35,13 @@
       <mat-label>{{ "certificate.panel.label.valid.from" | translate }}</mat-label>
       <input matInput
              placeholder="{{ 'certificate.panel.placeholder.valid.from' | translate }}"
-             [value]="getCertificateValidFromFormattedDate"
+             [value]="certificateValidFromFormattedDate"
              readonly>
     </mat-form-field>
     <mat-form-field style="flex-grow: 1">
       <mat-label>{{ "certificate.panel.label.valid.to" | translate }}</mat-label>
       <input matInput placeholder="{{ 'certificate.panel.placeholder.valid.to' | translate }}"
-             [value]="getCertificateValidToFormattedDate"
+             [value]="certificateValidToFormattedDate"
              readonly>
      </mat-form-field>
   </div>

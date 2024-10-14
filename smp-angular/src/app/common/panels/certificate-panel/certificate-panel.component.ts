@@ -29,7 +29,7 @@ export class CertificatePanelComponent {
   get certificateValidFromFormattedDate(): string {
     return this.formatDate(this._certificate?.validFrom);
   }
-  get getCertificateValidToFormattedDate(): string {
+  get certificateValidToFormattedDate(): string {
     return this.formatDate(this._certificate?.validTo);
   }
 }
