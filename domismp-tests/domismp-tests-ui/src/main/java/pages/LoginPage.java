@@ -16,11 +16,17 @@ import java.util.HashMap;
 public class LoginPage extends DomiSMPPage {
     private final static Logger LOG = LoggerFactory.getLogger(LoginPage.class);
     @FindBy(id = "username_id")
-    private WebElement username;
+    private WebElement usernameInput;
     @FindBy(id = "password_id")
-    private WebElement password;
+    private WebElement passwordInput;
     @FindBy(id = "loginbutton_id")
     private WebElement loginBtn;
+    @FindBy(css = ".mat-mdc-tab-labels > div:nth-child(2)")
+    private WebElement goToResetPasswordTab;
+    @FindBy(id = "reset_username_id")
+    private WebElement resetUsernameInput;
+    @FindBy(id = "resetbutton_id")
+    private WebElement requestResetPasswordBtn;
 
     public LoginPage(WebDriver driver) {
         super(driver);
@@ -35,8 +41,8 @@ public class LoginPage extends DomiSMPPage {
         LOG.debug("Login started " + usr.get("username") + " / " + usr.get("pass"));
 
         goToLoginPage();
-        weToDInput(username).fill(usr.get("username"));
-        weToDInput(password).fill(usr.get("pass"));
+        weToDInput(usernameInput).fill(usr.get("username"));
+        weToDInput(passwordInput).fill(usr.get("pass"));
         weToDButton(loginBtn).click();
 
         try {
@@ -46,9 +52,16 @@ public class LoginPage extends DomiSMPPage {
         } catch (Exception e) {
             LOG.debug("Password expiration popup is not present");
         }
-
-
     }
 
+    public String resetPassword(String user) {
+        LOG.debug("Resetting password for : " + user);
+        goToLoginPage();
+
+        weToDButton(goToResetPasswordTab).click();
+        weToDInput(resetUsernameInput).fill(user);
+        weToDButton(requestResetPasswordBtn).click();
+        return getAlertArea().getAlertMessage();
+    }
 }
 

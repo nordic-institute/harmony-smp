@@ -1,10 +1,7 @@
 package ddsl.dcomponents;
 
 import ddsl.dcomponents.mat.MatSelect;
-import ddsl.dobjects.DButton;
-import ddsl.dobjects.DInput;
-import ddsl.dobjects.DSelect;
-import ddsl.dobjects.DWait;
+import ddsl.dobjects.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import utils.TestRunData;
@@ -22,6 +19,10 @@ public class DComponent {
 
     protected DButton weToDButton(WebElement element) {
         return new DButton(driver, element);
+    }
+
+    protected DCheckbox weToDChecked(WebElement element) {
+        return new DCheckbox(driver, element);
     }
 
     protected DInput weToDInput(WebElement element) {

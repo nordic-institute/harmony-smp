@@ -7,14 +7,17 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.systemSettings.domainsPage.ConfigurationTab.ConfigurationTab;
 
 /**
  * Page object for the Users page. This contains the locators of the page and the methods for the behaviour of the page
  */
 public class DomainsPage extends CommonPageWithTabsAndGrid {
     private final static Logger LOG = LoggerFactory.getLogger(DomainsPage.class);
+
     @FindBy(css = "smp-warning-panel span")
     private WebElement warningLabel;
+
     public DomainsPage(WebDriver driver) {
         super(driver);
         LOG.debug("Loading Domains page.");
@@ -22,11 +25,6 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
 
     public DButton getCreateDomainBtn() {
         return new DButton(driver, addBtn);
-    }
-
-    public ResourceTab getResourceTab() {
-
-        return new ResourceTab(driver);
     }
 
     public DomainTab getDomainTab() {
@@ -42,6 +40,11 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
     public MembersTab getMembersTab() {
 
         return new MembersTab(driver);
+    }
+
+    public ConfigurationTab getConfigurationTab() {
+
+        return new ConfigurationTab(driver);
     }
 
     public String getDomainWarningMessage() {

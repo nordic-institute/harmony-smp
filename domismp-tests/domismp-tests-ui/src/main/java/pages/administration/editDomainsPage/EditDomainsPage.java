@@ -4,6 +4,8 @@ import ddsl.CommonPageWithTabsAndGrid;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.systemSettings.domainsPage.ConfigurationTab.ConfigurationTab;
+
 /**
  * Page object for the Edit domains page. This contains the locators of the page and the methods for the behaviour of the page
  */
@@ -19,6 +21,12 @@ public class EditDomainsPage extends CommonPageWithTabsAndGrid {
 
         return new DomainMembersTab(driver);
     }
+
+    public ConfigurationTab getConfigurationTab() {
+
+        return new ConfigurationTab(driver);
+    }
+
 
     public GroupTab getGroupTab() {
 

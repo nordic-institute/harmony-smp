@@ -1,7 +1,9 @@
 package domiSMPTests.ui;
 
 import ddsl.DomiSMPPage;
+import ddsl.dcomponents.commonComponents.domanPropertyEditDialog.DomainPropertyEditDialog;
 import ddsl.enums.Pages;
+import ddsl.enums.ResourceTypes;
 import ddsl.enums.ResponseCertificates;
 import domiSMPTests.SeleniumTest;
 import org.openqa.selenium.WebElement;
@@ -13,7 +15,12 @@ import pages.SmlPage;
 import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.systemSettings.domainsPage.DomainsPage;
 import rest.models.DomainModel;
+import rest.models.MemberModel;
 import rest.models.UserModel;
+import utils.TestRunData;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class has the tests against Domains Page
@@ -170,6 +177,81 @@ public class DomainsPgTests extends SeleniumTest {
         domainsPage.getDomainTab().saveChanges();
         alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Invalid domain data! Domain with code [" + domainModel.getDomainCode() + "] already exists!");
+        soft.assertAll();
+    }
+
+
+    @Test(description = "DOM-19 - Domain admins are able to change default properties for domains")
+    public void systemAdminsAreAbleToChangeDefaultPropertiesForDomains() throws Exception {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+        //create domain
+        domainModel = rest.domains().createDomain(domainModel);
+
+        //  rest.domains().addMembersToDomain(domainModel, adminMember);
+        rest.domains().addMembersToDomain(domainModel, superMember);
+
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        domainsPage.refreshPage();
+        domainsPage
+                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.goToTab("Configuration");
+
+        //Check is modifying boolean values
+        String boolPropertyName = "identifiersBehaviour.scheme.mandatory";
+        DomainPropertyEditDialog domainPropertyEditDialog = domainsPage.getConfigurationTab().openProperty(boolPropertyName);
+        domainPropertyEditDialog.setDomainValue(false);
+        domainPropertyEditDialog.pressOk();
+        domainsPage.getConfigurationTab().saveChanges();
+
+        //verify changes
+        soft.assertFalse(domainsPage.getConfigurationTab().isSystemValueUsed(boolPropertyName), "Property is marked as it's using system value");
+        soft.assertEquals("false", domainsPage.getConfigurationTab().getCurrentPropertyValue(boolPropertyName));
+
+
+        //Verify disabling system property
+        String useDomainProperty = "identifiersBehaviour.ParticipantIdentifierScheme.validationRegex";
+        domainPropertyEditDialog = domainsPage.getConfigurationTab().openProperty(useDomainProperty);
+        domainPropertyEditDialog.disableSystemValue();
+        domainPropertyEditDialog.pressOk();
+        domainsPage.getConfigurationTab().saveChanges();
+        //verify changes
+        soft.assertFalse(domainsPage.getConfigurationTab().isSystemValueUsed(useDomainProperty), "Property is marked as it's using system value");
+
+        //Verify change to enabling system property
+        domainPropertyEditDialog = domainsPage.getConfigurationTab().openProperty(useDomainProperty);
+        domainPropertyEditDialog.enableSystemValue();
+        domainPropertyEditDialog.pressOk();
+        domainsPage.getConfigurationTab().saveChanges();
+        //verify changes
+        soft.assertTrue(domainsPage.getConfigurationTab().isSystemValueUsed(useDomainProperty));
+
+        // String property value
+        String stringProperty = "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes";
+        String defaultPropertyValue = domainsPage.getConfigurationTab().getCurrentPropertyValue(stringProperty);
+
+        domainPropertyEditDialog = domainsPage.getConfigurationTab().openProperty(stringProperty);
+        domainPropertyEditDialog.setDomainValue("${identifier}${identifier}");
+        domainPropertyEditDialog.pressOk();
+        domainsPage.getConfigurationTab().saveChanges();
+
+        soft.assertFalse(domainsPage.getConfigurationTab().isSystemValueUsed(stringProperty), "Property is marked as it's using system value");
+        soft.assertTrue(domainsPage.getConfigurationTab().getCurrentPropertyValue(stringProperty).equalsIgnoreCase("${identifier}${identifier}"), "Configuration table is not showing updated value");
+
+        //Check if the property value is updated with system value after use system value is enabled
+        domainPropertyEditDialog = domainsPage.getConfigurationTab().openProperty(stringProperty);
+        domainPropertyEditDialog.enableSystemValue();
+        domainPropertyEditDialog.pressOk();
+        domainsPage.getConfigurationTab().saveChanges();
+        soft.assertTrue(domainsPage.getConfigurationTab().getCurrentPropertyValue(stringProperty).equalsIgnoreCase(defaultPropertyValue), "Configuration table is not showing system value");
+
         soft.assertAll();
     }
 
