@@ -10,11 +10,19 @@
   display: flex;
   flex-flow: column;
   flex-grow: 1;
-  overflow: scroll;
   min-height: 100px;
   height: 10px;
   overflow: hidden;
   padding-right: 5px;
+}
+
+.smp-table-cell  {
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.smp-table-row  {
+  min-height: unset;
+  padding: 0.4em 0;
 }
 
 .smp-table-container mat-table {

@@ -72,7 +72,7 @@ export class ExpandablePanelComponent implements AfterViewInit {
       return;
     }
     this._expandableItems.forEach((item: ExpandableItemComponent, i: number) => {
-      item.showItem(i === this.selectedIndex);
+      item.showItem = (i === this.selectedIndex);
     });
   }
 

@@ -1,13 +1,6 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren
-} from '@angular/core';
+import {Component, Input, OnInit,} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
@@ -16,10 +9,6 @@ import {
 } from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
-import {MatColumnDef, MatTableDataSource} from "@angular/material/table";
-import {
-  SmpTableComponent
-} from "../../common/components/smp-table/smp-table.component";
 import {
   SmpTableColDef
 } from "../../common/components/smp-table/smp-table-coldef.model";
@@ -31,23 +20,25 @@ import {
 })
 export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
-  displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
+
   selected: ResourceRo;
   isLoadingResults = false;
-  dataSource: MatTableDataSource<ResourceRo>;
-
-
+  dataSource: EditResourceController;
+  // define columns for smp-table
+  displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
   columns: SmpTableColDef[];
 
   constructor(private editResourceController: EditResourceController) {
     this.dataSource = editResourceController;
-    this.columns= [
-      { columnDef: 'identifierScheme',
-        header: 'identifierScheme',
+    this.columns = [
+      {
+        columnDef: 'identifierScheme',
+        header: 'edit.resource.label.identifier.scheme',
         cell: (row: ResourceRo) => row.identifierScheme
       } as SmpTableColDef,
-      { columnDef: 'identifierValue',
-        header: 'identifierValue',
+      {
+        columnDef: 'identifierValue',
+        header: 'edit.resource.label.identifier.value',
         cell: (row: ResourceRo) => row.identifierValue
       } as SmpTableColDef
     ];
@@ -62,7 +53,6 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
       this.editResourceController.refreshResources();
     }
   }
-
 
   ngAfterViewInit(): void {
   }
@@ -100,13 +90,14 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     this.editResourceController.selectedGroup = resource;
   };
 
-  get selectedResource(): ResourceRo {
-    return this.editResourceController.selectedResource;
-  };
 
   get selectedDomainResourceDefs(): ResourceDefinitionRo[] {
     return this.editResourceController._selectedDomainResourceDefs;
   }
+
+  get selectedResource(): ResourceRo {
+    return this.editResourceController.selectedResource;
+  };
 
   @Input() set selectedResource(resource: ResourceRo) {
     this.editResourceController.selectedResource = resource;
@@ -124,12 +115,20 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     return !this.editResourceController.filteredData;
   }
 
+  get isLoading(): boolean {
+    return this.editResourceController.isLoadingResults;
+  }
+
+  get dataLength(): number {
+    return this.editResourceController.dataLength;
+  }
+
   isDirty(): boolean {
     return false;
   }
 
   onPageChanged(page: PageEvent) {
-    this.editResourceController.refreshResources();
+    this.editResourceController.applyResourcePage(page.pageIndex, page.pageSize);
   }
 
   get hasSubResources(): boolean {

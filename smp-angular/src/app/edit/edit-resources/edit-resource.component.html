@@ -6,7 +6,8 @@
 
     <mat-tab-group #resourceTabs
                    *ngIf="hasResources;else noUserAdminGroupsDataFound"
-                   style="height: 100%">
+                   class="edit-resource-tab-group"
+                   >
       <mat-tab>
         <ng-template mat-tab-label>
           <smp-label icon="article" label="{{ 'edit.resource.label.resource.details' | translate }}"></smp-label>
@@ -95,25 +96,19 @@
         filterPlaceholder="edit.resource.placeholder.filter"
         noResultLabel="edit.resource.label.no.data.found"
         noResultForFilterLabel="edit.resource.label.no.filter.results"
+        [isLoadableTable]="true"
         [dataSource]="dataSource"
+        [dataLength]="dataLength"
+        [selectedRow]="selectedResource"
         [columnDefList]="columns"
         [displayedColumns]="displayedColumns"
+        [isLoading]="isLoadingResults"
+        [disabledFilter]="disabledResourceFilter"
         (onFilterChanged)="onFilterChangedEvent($event)"
         (onPageChanged)="onPageChanged($event)"
+        (onRowClicked)="onResourceSelected($event)"
         >
       </smp-table>
     </div>
   </div>
 </ng-template>
-
-<ng-container matColumnDef="identifierScheme">
-  <mat-header-cell *matHeaderCellDef>{{ "edit.resource.label.identifier.scheme" | translate }}</mat-header-cell>
-  <mat-cell *matCellDef="let row">{{ row.identifierScheme }}</mat-cell>
-</ng-container>
-
-<ng-container matColumnDef="identifierValue">
-  <mat-header-cell
-    *matHeaderCellDef>{{ "edit.resource.label.identifier.value" | translate }}
-  </mat-header-cell>
-  <mat-cell *matCellDef="let row">{{ row.identifierValue }}</mat-cell>
-</ng-container>

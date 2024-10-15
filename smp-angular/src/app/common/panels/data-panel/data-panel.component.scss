@@ -26,6 +26,8 @@
   display: flex;
   flex-direction: column;
   align-self: stretch;
+  border-left: 1px solid rgba(150, 150, 150, 0.5);
+  padding-left: 0.5em;
 }
 
 .smp-data-panel-field {
@@ -45,7 +47,7 @@
 }
 .smp-column-label p {
   border-bottom: 1px solid black;
-  margin: 0em 2em 2em 1em;
+  margin: 0 2em 2em 1em;
   font-weight: bold;
 
 }

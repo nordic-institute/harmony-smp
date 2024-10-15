@@ -36,6 +36,9 @@ td , th {
   align-self: center;
 }
 
+div.mat-mdc-tab-body-wrapper {
+  flex-grow: 1 !important;
+}
 
 .mat-button, .mat-raised-button, .mat-icon-button {
   font-family: 'Open Sans', sans-serif !important;

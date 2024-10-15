@@ -17,10 +17,11 @@
  * #END_LICENSE#
  */
 import {
+  AfterViewInit,
+  ChangeDetectorRef,
   Component,
-  EventEmitter,
+  HostBinding,
   Input,
-  Output,
   ViewChild,
 } from '@angular/core';
 
@@ -35,7 +36,7 @@ import {
   templateUrl: './expandable-item.component.html',
   styleUrls: ['./expandable-item.component.scss'],
 })
-export class ExpandableItemComponent {
+export class ExpandableItemComponent implements AfterViewInit {
 
   //
   @Input() showButtonSpacer: boolean = false;
@@ -43,14 +44,26 @@ export class ExpandableItemComponent {
   @Input() buttonLabel: string;
   @Input() icon: string;
   @Input() tooltip: string;
+  _visible: boolean = false;
+
 
   @ViewChild('root') expandableItem: any;
 
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
 
   }
 
-  showItem(show: boolean) {
-    this.expandableItem.nativeElement.style.display = show ? 'block' : 'none';
+  ngAfterViewInit() {
+    this.cdr.detectChanges(); // Mark for change detection
+  }
+
+  @HostBinding('style.display')
+  get display() {
+    return this._visible ? 'flex' : 'none';
+  }
+
+  @Input() set showItem(show: boolean) {
+    this._visible = show;
+    // this.expandableItem.nativeElement.style.display = show ? 'block' : 'none';
   }
 }

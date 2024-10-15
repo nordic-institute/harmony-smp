@@ -1,23 +1,41 @@
 import {AfterViewInit, Component, Input, ViewChild,} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
-import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {
+  BeforeLeaveGuard
+} from "../../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
 import {GroupRo} from "../../../common/model/group-ro.model";
 import {ResourceRo} from "../../../common/model/resource-ro.model";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "../../../common/alert-message/alert-message.service";
 import {finalize} from "rxjs/operators";
 import {DomainRo} from "../../../common/model/domain-ro.model";
-import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditResourceService} from "../edit-resource.service";
 import {SubresourceRo} from "../../../common/model/subresource-ro.model";
 import {MatTableDataSource} from "@angular/material/table";
-import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SubresourceDialogComponent} from "./subresource-dialog/subresource-dialog.component";
-import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
-import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {
+  ConfirmationDialogComponent
+} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  SubresourceDialogComponent
+} from "./subresource-dialog/subresource-dialog.component";
+import {
+  SubresourceDefinitionRo
+} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
+import {
+  NavigationNode,
+  NavigationService
+} from "../../../window/sidenav/navigation-model.service";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 import StringUtils from "../../../common/utils/string-utils";
+import {
+  SmpTableColDef
+} from "../../../common/components/smp-table/smp-table-coldef.model";
 
 
 @Component({
@@ -33,7 +51,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
   private _resource: ResourceRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
-  displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
+
   dataSource: MatTableDataSource<SubresourceRo> = new MatTableDataSource();
   selected: SubresourceRo;
   filter: any = {};
@@ -41,17 +59,37 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
   isLoadingResults = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
+  displayedColumns: string[] = ['identifierValue', 'identifierScheme', 'subresourceTypeIdentifier'];
+  columns: SmpTableColDef[];
+
   constructor(private editResourceService: EditResourceService,
               private navigationService: NavigationService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
     this.translateService.get("subresource.panel.title").subscribe(value => this.title = value);
+    this.columns = [
+      {
+        columnDef: 'identifierScheme',
+        header: 'subresource.panel.label.identifier.value',
+        cell: (row: SubresourceRo) => row.identifierScheme
+      } as SmpTableColDef,
+      {
+        columnDef: 'identifierValue',
+        header: 'subresource.panel.label.identifier.value',
+        cell: (row: SubresourceRo) => row.identifierValue
+      } as SmpTableColDef,
+      {
+        columnDef: 'subresourceTypeIdentifier',
+        header: 'subresource.panel.label.subresource.type',
+        cell: (row: SubresourceRo) => row.subresourceTypeIdentifier
+      } as SmpTableColDef
+    ];
   }
 
   ngAfterViewInit() {
 
-    this.dataSource.paginator = this.paginator;
+    //   this.dataSource.paginator = this.paginator;
   }
 
   @Input() set resource(resource: ResourceRo) {
@@ -97,8 +135,8 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
   }
 
 
-  applySubResourceFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  applySubResourceFilter(filterValue: string) {
+
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
     if (this.dataSource.paginator) {
@@ -125,10 +163,10 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     });
   }
 
-  createSubresource(subResDef:SubresourceDefinitionRo[]): SubresourceRo {
+  createSubresource(subResDef: SubresourceDefinitionRo[]): SubresourceRo {
 
     return {
-      subresourceTypeIdentifier: !!subResDef && subResDef.length > 0 ?subResDef[0].identifier : "",
+      subresourceTypeIdentifier: !!subResDef && subResDef.length > 0 ? subResDef[0].identifier : "",
       identifierValue: "",
     }
   }

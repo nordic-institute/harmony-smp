@@ -1,6 +1,16 @@
+:host{
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+}
 
-
-
+#edit-resource-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-right: 5px;
+}
 .edit-resource-loading-shade {
   position: absolute;
   top: 0;

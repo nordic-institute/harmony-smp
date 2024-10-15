@@ -16,18 +16,11 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-import {
-  AfterViewInit,
-  Component,
-  forwardRef,
-  Input,
-  ViewChild,
-} from '@angular/core';
+import {Component, forwardRef, Input, ViewChild,} from '@angular/core';
 import {
   BeforeLeaveGuard
 } from "../../../window/sidenav/navigation-on-leave-guard";
-import {DomainPropertyRo} from "../../../common/model/domain-property-ro.model";
-import {MatTable, MatTableDataSource} from "@angular/material/table";
+import {MatTableDataSource} from "@angular/material/table";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {
   ControlContainer,
@@ -37,13 +30,14 @@ import {
   NG_VALUE_ACCESSOR
 } from "@angular/forms";
 import {DocumentPropertyRo} from "../../model/document-property-ro.model";
-import {MatSort} from "@angular/material/sort";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {
   DocumentPropertyDialogComponent
 } from "../../dialogs/document-property-dialog/document-property-dialog.component";
 import {PropertyValueTypeEnum} from "../../enums/property-value-type.enum";
-import {MatPaginator} from "@angular/material/paginator";
+import {
+  SmpTableColDef
+} from "../../components/smp-table/smp-table-coldef.model";
 
 /**
  * Component to display the properties of a document in a table. The properties can be edited and saved.
@@ -62,9 +56,8 @@ import {MatPaginator} from "@angular/material/paginator";
     }
   ]
 })
-export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
+export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, ControlValueAccessor {
   private readonly NEW_PROPERTY_NAME_TEMPLATE: string = 'document.property.v';
-  displayedColumns: string[] = ['property', 'value'];
   private onChangeCallback: (_: any) => void = () => {
   };
   selected?: DocumentPropertyRo = null;
@@ -73,12 +66,22 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
   initPropertyList: DocumentPropertyRo[] = [];
   propertyDataSource: MatTableDataSource<DocumentPropertyRo> = new MatTableDataSource();
 
-  @ViewChild("DocumentPropertyTable") table: MatTable<DocumentPropertyRo>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  displayedColumns: string[] = ['property', 'value'];
+  columns: SmpTableColDef[];
 
   constructor(public dialog: MatDialog, private controlContainer: ControlContainer) {
-
+    this.columns = [
+      {
+        columnDef: 'property',
+        header: 'document.properties.panel.label.property',
+        cell: (row: DocumentPropertyRo) => row.property
+      } as SmpTableColDef,
+      {
+        columnDef: 'value',
+        header: 'ocument.properties.panel.label.value',
+        cell: (row: DocumentPropertyRo) => row.value
+      } as SmpTableColDef
+    ];
   }
 
   @ViewChild(FormControlDirective, {static: true})
@@ -93,13 +96,8 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
   }
 
 
-  ngAfterViewInit() {
-    this.propertyDataSource.paginator = this.paginator;
-    this.propertyDataSource.sort = this.sort;
-  }
+  applyFilter(filterValue: string) {
 
-  applyFilter(event: Event) {
-    const filterValue: string = (event.target as HTMLInputElement).value;
     this.propertyDataSource.filter = filterValue?.trim().toLowerCase();
 
     if (this.propertyDataSource.paginator) {
@@ -237,15 +235,6 @@ export class DocumentPropertiesPanelComponent implements AfterViewInit, BeforeLe
   public onResetButtonClicked(): void {
     this.control.setValue(this.initPropertyList);
     this.control.markAsPristine();
-  }
-
-  /**
-   * return the value to be displayed in the table row. If the row is updated and not system default,
-   * then display the new value else display the old value
-   * @param row
-   */
-  getTableRowValue(row: DomainPropertyRo) {
-    return row.systemDefault ? row.systemDefaultValue : row.value;
   }
 
   isDirty(): boolean {

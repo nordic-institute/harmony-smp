@@ -25,72 +25,22 @@
     </mat-toolbar-row>
   </mat-toolbar>
   <h3 style="word-wrap: break-word; max-width: 750px">{{formTitle}}</h3>
-  <div class="domain-member-container mat-elevation-z2">
-    <div class="domain-member-loading-shade"
-         *ngIf="isLoadingResults">
-      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-    </div>
-
-    <div class="domain-member-table-container">
-
-      <mat-form-field id="domain-member-filter">
-        <mat-label>{{ "membership.panel.label.filter" | translate }}</mat-label>
-        <input matInput (keyup)="applyMemberFilter($event)"
-               placeholder="{{ 'membership.panel.placeholder.filter' | translate }}"
-               [disabled]="entityNotSelected"
-               #inputDomainMemberFilter>
-      </mat-form-field>
-
-      <table class="mat-elevation-z2" mat-table [dataSource]="data">
-
-        <ng-container matColumnDef="username">
-          <th mat-header-cell *matHeaderCellDef>{{ "membership.panel.label.username" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.username}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="fullName">
-          <th mat-header-cell *matHeaderCellDef>{{ "membership.panel.label.full.name" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.fullName}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="roleType">
-          <th mat-header-cell *matHeaderCellDef>{{ "membership.panel.label.role.type" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.roleType}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="hasPermissionToReview">
-          <th mat-header-cell *matHeaderCellDef>{{ "membership.panel.label.permission.review" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.hasPermissionReview}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="memberOf">
-          <th mat-header-cell *matHeaderCellDef>{{ "membership.panel.label.member.of" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.memberOf}}</td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
-            (click)="memberSelected(row)"
-            (dblclick)="showEditDialogForMember(row)"
-            [ngClass]="{'datatable-row-selected': row==selectedMember,'datatable-row-odd': odd}"
-        ></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">
-            {{ "membership.panel.label.no.filter.results" | translate: {filterValue: inputDomainMemberFilter.value} }}
-          </td>
-          <ng-template #noDataFound>
-            <td class="mat-cell" colspan="2">{{ "membership.panel.label.no.data.found" | translate }}</td>
-          </ng-template>
-        </tr>
-      </table>
-    </div>
-
-    <mat-paginator class="mat-elevation-z2" [length]="resultsLength" #memberPaginator
-                   (page)="onPageChanged($event)"
-                   [hidePageSize]="true"
-                   [pageSize]="pageSize"
-                   [disabled]="entityNotSelected"
-                   aria-label="Select pages"></mat-paginator>
-  </div>
+  <smp-table
+    filterLabel="membership.panel.label.filter"
+    filterPlaceholder="membership.panel.placeholder.filter"
+    noResultLabel="edit.resource.label.no.data.found"
+    noResultForFilterLabel="membership.panel.label.no.data.found"
+    [isLoadableTable]="true"
+    [dataSource]="dataSource"
+    [dataLength]="membershipCount"
+    [selectedRow]="selectedMember"
+    [columnDefList]="columns"
+    [displayedColumns]="displayedColumns"
+    [isLoading]="isLoadingResults"
+    (onFilterChanged)="applyMemberFilter($event)"
+    (onPageChanged)="onPageChanged($event)"
+    (onRowClicked)="memberSelected($event)"
+    (onRowDoubleClicked)="showEditDialogForMember($event)"
+  >
+  </smp-table>
 </div>

@@ -4,57 +4,46 @@
     <input matInput #tableFilter
            (keyup)="onFilterChangedEvent($event)"
            placeholder="{{ filterPlaceholder | translate }}"
-           [disabled]="disabledResourceFilter"
+           [disabled]="disabledFilter"
     >
   </mat-form-field>
-  <ng-container *ngIf="dataSource.data.length == 0">
-    <p>There is no data for this filter</p>
-  </ng-container>
   <mat-table class="mat-elevation-z2"
              [dataSource]="dataSource"
   >
-
+    <!-- configure table columns based on the  columnDefList -->
     <ng-container *ngFor="let colDef of columnDefList; let colIndex = index"
                   matColumnDef="{{colDef.columnDef}}">
       <mat-header-cell *matHeaderCellDef>{{ colDef.header | translate }}
       </mat-header-cell>
-      <mat-cell *matCellDef="let row">{{ colDef.cell(row) }}</mat-cell>
+      <mat-cell class="smp-table-cell" *matCellDef="let row">{{ colDef.cell(row) }}</mat-cell>
     </ng-container>
-
-    <mat-header-row
-      *matHeaderRowDef="displayedColumns;sticky: true"></mat-header-row>
-
-    <mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
-             (click)="onSelected(row)"
-             [ngClass]="{'datatable-row-selected': row==selectedResource,'datatable-row-odd': odd}"
+    <!-- configure table header -->
+    <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></mat-header-row>
+    <!-- configure table rows -->
+    <mat-row class="smp-table-row" *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+             (click)="onRowClickedEvent(row)"
+             (dblclick)="onRowDoubleClickedEvent(row)"
+             [ngClass]="{'datatable-row-selected': row==selectedRow,'datatable-row-odd': odd}"
     ></mat-row>
 
-
     <!-- Row shown when there is no matching data. -->
-    <mat-row class="mat-row" *matNoDataRow>
-      <mat-row *ngIf="tableFilter.value;else noDataFound"
-          class="mat-cell">
+    <div class="mat-row" *matNoDataRow>
+      <div *ngIf="tableFilter.value;else noDataFound"
+           class="mat-cell">
         {{ noResultForFilterLabel | translate: {filterValue: tableFilter.value} }}
-      </mat-row>
+      </div>
       <ng-template #noDataFound>
-        <mat-row>{{ noResultLabel | translate }}
-        </mat-row>
+        <div>{{ noResultLabel | translate }}</div>
       </ng-template>
-    </mat-row>
-
-    <!-- Row shown when there is no matching data. -->
-    <mat-row *matNoDataRow>
-      <mat-cell colspan="2">No data matching the filter </mat-cell>
-    </mat-row>
-
+    </div>
   </mat-table>
-
 </div>
 
-<mat-paginator #smpTablePaginator class="mat-elevation-z2"
+<mat-paginator #smpTablePaginator
                (page)="onPageChangedEvent($event)"
                [pageSizeOptions]="[5, 10, 15, 20]"
                showFirstLastButtons
                [pageSize]="10"
+
 ></mat-paginator>
 

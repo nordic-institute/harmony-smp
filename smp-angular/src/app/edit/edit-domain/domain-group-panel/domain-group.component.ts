@@ -1,8 +1,12 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild,} from '@angular/core';
+import {Component, Input, OnInit,} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {
+  BeforeLeaveGuard
+} from "../../../window/sidenav/navigation-on-leave-guard";
 import {DomainRo} from "../../../common/model/domain-ro.model";
 import {finalize} from "rxjs/operators";
 import {MatTableDataSource} from "@angular/material/table";
@@ -10,22 +14,28 @@ import {GroupRo} from "../../../common/model/group-ro.model";
 import {EditDomainService} from "../edit-domain.service";
 import {GroupDialogComponent} from "./group-dialog/group-dialog.component";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
-import {MatPaginator} from "@angular/material/paginator";
-import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ConfirmationDialogComponent
+} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  ResourceDefinitionRo
+} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {
   ManageMembersDialogComponent
 } from "../../../common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import {
+  SmpTableColDef
+} from "../../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
   selector: 'domain-group-panel',
   templateUrl: './domain-group.component.html',
   styleUrls: ['./domain-group.component.scss']
 })
-export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
+export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
 
 
   private _domain: DomainRo;
@@ -38,16 +48,31 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
 
   displayedColumns: string[] = ['groupName', 'visibility', 'groupDescription'];
   dataSource: MatTableDataSource<GroupRo> = new MatTableDataSource();
-
+  columns: SmpTableColDef[];
   selectedGroup: GroupRo;
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private editDomainService: EditDomainService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private formBuilder: FormBuilder,
               private translateService: TranslateService) {
+    this.columns = [
+      {
+        columnDef: 'groupName',
+        header: 'domain.group.label.group.name',
+        cell: (row: GroupRo) => row.groupName
+      } as SmpTableColDef,
+      {
+        columnDef: 'visibility',
+        header: 'domain.group.label.group.visibility',
+        cell: (row: GroupRo) => row.visibility
+      } as SmpTableColDef,
+      {
+        columnDef: 'groupDescription',
+        header: 'domain.group.label.group.description',
+        cell: (row: GroupRo) => row.groupDescription
+      } as SmpTableColDef
+    ];
   }
 
   ngOnInit(): void {
@@ -56,10 +81,6 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
       (data: GroupRo, filter: string) => {
         return !filter || -1 != data.groupName.toLowerCase().indexOf(filter.trim().toLowerCase())
       };
-  }
-
-  ngAfterViewInit():void {
-    this.dataSource.paginator = this.paginator;
   }
 
   get domain(): DomainRo {
@@ -86,14 +107,11 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
     return this._domainResourceDefinitions;
   }
 
-  @Input() set domainResourceDefinitions(value:  ResourceDefinitionRo[]) {
+  @Input() set domainResourceDefinitions(value: ResourceDefinitionRo[]) {
     this._domainResourceDefinitions = value;
   }
 
   public refresh() {
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
     this.loadTableData();
   }
 
@@ -136,6 +154,7 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
       this.refresh();
     });
   };
+
   async onEditSelectedGroupMembersButtonClicked() {
     this.dialog.open(ManageMembersDialogComponent, {
       data: {
@@ -148,6 +167,7 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
       this.refresh();
     });
   };
+
   onEditSelectedButtonClicked() {
     this.showEditDialogForGroup(this.selectedGroup);
   };
@@ -224,14 +244,11 @@ export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveG
     return !this._domain
   }
 
-  applyGroupFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  applyGroupFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
-
   }
 
 }

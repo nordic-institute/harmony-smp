@@ -1,7 +1,7 @@
 <div id="domain-properties-panel" class="mat-elevation-z2">
   <h3>{{ "domain.properties.panel.title" | translate }}</h3>
 
-  <table class="mat-elevation-z2" id="admin-domain-properties-table" mat-table
+  <table id="admin-domain-properties-table" mat-table
          [dataSource]="propertyDataSource" matSort>
     <ng-container matColumnDef="systemDefault">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "domain.properties.label.system.default" | translate }}</th>
