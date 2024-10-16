@@ -79,27 +79,34 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
       {
         columnDef: 'date',
         header: 'document.events.panel.label.date',
-        cell: (row: DocumentVersionEventRo) => this.dateTimeService.formatDateTimeForUserLocal(row.eventOn)
+        cell: (row: DocumentVersionEventRo) => this.dateTimeService.formatDateTimeForUserLocal(row.eventOn),
+        style: 'font-size: 0.8em; flex-grow: 0;flex-basis: 80px; padding: 5px;justify-content : center;'
       } as SmpTableColDef,
       {
         columnDef: 'eventType',
         header: 'document.events.panel.label.type',
-        cell: (row: DocumentVersionEventRo) => row.eventType
+        cell: (row: DocumentVersionEventRo) => row.eventType,
+        style: 'font-size: 0.8em; padding: 5px;justify-content : center;flex-grow: 0;flex-basis:80px;'
+
       } as SmpTableColDef,
       {
         columnDef: 'status',
         header: 'document.events.panel.label.status',
-        cell: (row: DocumentVersionEventRo) => row.status
+        cell: (row: DocumentVersionEventRo) => row.documentVersionStatus,
+        style: 'font-size: 0.8em; padding: 5px;justify-content : center;flex-grow: 0;flex-basis:80px;'
+
       } as SmpTableColDef,
       {
         columnDef: 'username',
         header: 'document.events.panel.label.username',
-        cell: (row: DocumentVersionEventRo) => row.username
+        cell: (row: DocumentVersionEventRo) => row.username,
+        style: 'font-size: 0.8em; padding: 5px;justify-content : center;'
       } as SmpTableColDef,
       {
         columnDef: 'eventSource',
-        header: 'document.events.panel.label.eventSource',
-        cell: (row: DocumentVersionEventRo) => row.eventSourceType
+        header: 'document.events.panel.label.source',
+        cell: (row: DocumentVersionEventRo) => row.eventSourceType,
+        style: 'font-size: 0.8em; flex-grow: 0;flex-basis:100px;padding: 5px;justify-content : center;'
       } as SmpTableColDef,
     ];
   }

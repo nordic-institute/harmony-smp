@@ -6,4 +6,6 @@ export interface SmpTableColDef {
   columnDef: string;
   header: string;
   cell?: (row: any) => any;
+  tooltip?: (row: any) => any;
+  style?:string  ;
 }

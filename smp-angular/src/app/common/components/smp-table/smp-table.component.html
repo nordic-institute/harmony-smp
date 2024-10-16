@@ -13,9 +13,14 @@
     <!-- configure table columns based on the  columnDefList -->
     <ng-container *ngFor="let colDef of columnDefList; let colIndex = index"
                   matColumnDef="{{colDef.columnDef}}">
-      <mat-header-cell *matHeaderCellDef>{{ colDef.header | translate }}
+      <mat-header-cell *matHeaderCellDef
+                       [style]="colDef.style">{{ colDef.header | translate }}
+
       </mat-header-cell>
-      <mat-cell class="smp-table-cell" *matCellDef="let row">{{ colDef.cell(row) }}</mat-cell>
+      <mat-cell class="smp-table-cell"  *matCellDef="let row"
+                [style]="colDef.style"
+                [matTooltip]="colDef.tooltip? colDef.tooltip(row):null"
+      >{{ colDef.cell(row) }}</mat-cell>
     </ng-container>
     <!-- configure table header -->
     <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></mat-header-row>

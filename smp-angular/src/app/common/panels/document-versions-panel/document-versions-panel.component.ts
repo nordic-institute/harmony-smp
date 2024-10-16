@@ -81,22 +81,26 @@ export class DocumentVersionsPanelComponent implements BeforeLeaveGuard, Control
       {
         columnDef: 'version',
         header: 'document.versions.panel.label.version',
-        cell: (row: DocumentVersionRo) => row.version
+        cell: (row: DocumentVersionRo) => row.version,
+        style: 'font-size: 0.8em;padding: 5px;justify-content : center;flex-grow: 0;flex-basis:70px;'
       } as SmpTableColDef,
       {
         columnDef: 'status',
         header: 'document.versions.panel.label.status',
-        cell: (row: DocumentVersionRo) => row.versionStatus
+        cell: (row: DocumentVersionRo) => row.versionStatus,
+        style: 'font-size: 0.8em;padding: 5px;justify-content:center;flex-grow: 0;flex-basis:100px;'
       } as SmpTableColDef,
       {
         columnDef: 'createdOn',
         header: 'document.versions.panel.label.created',
-        cell: (row: DocumentVersionRo) => this.dateTimeService.formatDateTimeForUserLocal(row.createdOn)
+        cell: (row: DocumentVersionRo) => this.dateTimeService.formatDateTimeForUserLocal(row.createdOn),
+        style: 'font-size: 0.8em; padding: 5px;justify-content:center;'
       } as SmpTableColDef,
       {
         columnDef: 'lastUpdatedOn',
         header: 'document.versions.panel.label.updated',
-        cell: (row: DocumentVersionRo) => this.dateTimeService.formatDateTimeForUserLocal(row.lastUpdatedOn)
+        cell: (row: DocumentVersionRo) => this.dateTimeService.formatDateTimeForUserLocal(row.lastUpdatedOn),
+        style: 'font-size: 0.8em; padding: 5px;justify-content:center;'
       } as SmpTableColDef
     ];
   }

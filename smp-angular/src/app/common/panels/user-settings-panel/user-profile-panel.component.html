@@ -1,9 +1,12 @@
-<div id="user-profile-panel">
-  <form [formGroup]="userForm">
+<div id="user-profile-panel"  style="display: flex;flex-direction: column">
+  <form [formGroup]="userForm" >
     <data-panel title="{{ 'user.profile.panel.title.account' | translate }}"
                 [showTitle]="showDataPanelTitles"
                 text="{{ 'user.profile.panel.text.account' | translate }}">
-      <div class="panel" *ngIf="isNewUser"><p style="font-weight: bold">{{ "user.profile.panel.label.new.user" | translate }}</div>
+
+      <div class="panel" *ngIf="isNewUser">
+        <p style="font-weight: bold">{{ "user.profile.panel.label.new.user" | translate }}
+      </div>
       <mat-form-field class="user-profile-pane-field">
         <mat-label>{{ "user.profile.panel.label.username" | translate }}</mat-label>
         <input id="username_id" matInput formControlName="username" #username
@@ -28,7 +31,6 @@
           id="active_id"
           formControlName="active">{{ "user.profile.panel.label.active" | translate }}</mat-checkbox>
       </div>
-
     </data-panel>
 
     <data-panel title="{{ 'user.profile.panel.title.user.profile' | translate }}"
@@ -39,7 +41,7 @@
         <input id="emailAddress_id" matInput formControlName="emailAddress"
                maxlength="127">
         <div
-          *ngIf="userForm.controls['emailAddress'].hasError('pattern') && userForm.controls['emailAddress'].touched"
+          *ngIf="userForm.controls['emailAddress'].hasError('pattern') && !userForm.controls['emailAddress'].untouched"
           class="has-error">{{ "user.profile.panel.error.email" | translate }}
         </div>
       </mat-form-field>

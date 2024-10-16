@@ -34,7 +34,8 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
       {
         columnDef: 'identifierScheme',
         header: 'edit.resource.label.identifier.scheme',
-        cell: (row: ResourceRo) => row.identifierScheme
+        cell: (row: ResourceRo) => row.identifierScheme,
+        style: 'flex-grow: 0;flex-basis: 180px;'
       } as SmpTableColDef,
       {
         columnDef: 'identifierValue',

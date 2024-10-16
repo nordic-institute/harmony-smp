@@ -6,7 +6,7 @@
     <ng-template #noDataFound>
       <div class="empty-data-panel">{{ "admin.user.label.no.user.selected" | translate }}</div>
     </ng-template>
-    <user-profile-panel  *ngIf="managedUserData;else noDataFound"
+    <user-profile-panel *ngIf="managedUserData;else noDataFound"
       [showDataPanelTitles] =false
       [managedUserData]="managedUserData"
       (onSaveUserEvent)="onSaveUserEvent($event)"

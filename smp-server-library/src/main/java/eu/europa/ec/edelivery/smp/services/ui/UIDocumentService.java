@@ -340,7 +340,6 @@ public class UIDocumentService {
      *
      * @param resourceHandler handler to generate document
      * @param data            request data
-     * @return DocumentRo with payload
      */
     private void generateDocumentWithHandler(ResourceHandlerSpi resourceHandler, RequestData data, OutputStream outputStream) {
 
@@ -426,7 +425,7 @@ public class UIDocumentService {
      * any properties or all exiting properties return status PERSISTED it returns false otherwise true.
      *
      * @param documentRo document to validate
-     * @retun true if any of the properties changed otherwise false
+     * @return true if any of the properties changed otherwise false
      */
     private boolean isDocumentPropertiesChanged(DocumentRO documentRo) {
         return documentRo != null && documentRo.getProperties() != null && documentRo.getProperties().stream()
@@ -790,7 +789,7 @@ public class UIDocumentService {
     public DocumentRO convert(DBDocument document, DBDocumentVersion version, List<DocumentPropertyRO> initialProperties) {
         DocumentRO documentRo = new DocumentRO();
         documentRo.addProperty(DOCUMENT_NAME.getPropertyName(),
-                document.getName(), DOCUMENT_MIMETYPE.getPropertyDescription(), SMPPropertyTypeEnum.STRING, true);
+                document.getName(), DOCUMENT_NAME.getPropertyDescription(), SMPPropertyTypeEnum.STRING, true);
         documentRo.addProperty(DOCUMENT_MIMETYPE.getPropertyName(),
                 document.getMimeType(), DOCUMENT_MIMETYPE.getPropertyDescription(), SMPPropertyTypeEnum.STRING, true);
         documentRo.getProperties().addAll(initialProperties);
