@@ -29,6 +29,9 @@ import {lastValueFrom} from "rxjs";
 import {
   SmpTableColDef
 } from "../../../common/components/smp-table/smp-table-coldef.model";
+import {
+  EditResourceController
+} from "../../edit-resources/edit-resource.controller";
 
 @Component({
   selector: 'domain-group-panel',
@@ -52,6 +55,7 @@ export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
   selectedGroup: GroupRo;
 
   constructor(private editDomainService: EditDomainService,
+              private editResourceController: EditResourceController,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private formBuilder: FormBuilder,
@@ -216,6 +220,7 @@ export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
         if (result) {
           this.alertService.success(await lastValueFrom(this.translateService.get("domain.group.success.delete", {groupName: result.groupName})));
           this.onGroupSelected(null);
+          this.editResourceController.dataChanged = true;
           this.refresh()
         }
       }, (error) => {

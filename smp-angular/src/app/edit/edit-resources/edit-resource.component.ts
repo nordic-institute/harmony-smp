@@ -47,6 +47,8 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
 
   ngOnInit() {
     console.log("EditResourceComponent: ngOnInit  " + this.columns.length);
+    this.editResourceController.refreshDataOnDataChange();
+
     if (!this.selectedResource) {
       this.editResourceController.refreshDomains();
     } else {
