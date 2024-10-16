@@ -81,17 +81,20 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       {
         columnDef: 'roleType',
         header: 'membership.panel.label.role.type',
-        cell: (row: MemberRo) => row.roleType
+        cell: (row: MemberRo) => row.roleType,
+        style: 'padding: 0 5px;flex-grow: 0;flex-basis:120px;'
       } as SmpTableColDef,
       {
         columnDef: 'hasPermissionToReview',
-        header: 'membership.panel.label.member.of',
-        cell: (row: MemberRo) => row.hasPermissionReview
+        header: 'membership.panel.label.permission.review',
+        cell: (row: MemberRo) => row.hasPermissionReview,
+        style: 'padding: 0 5px;flex-grow: 0;flex-basis:100px;'
       } as SmpTableColDef,
       {
         columnDef: 'memberOf',
-        header: 'membership.panel.label.permission.review',
-        cell: (row: MemberRo) => row.memberOf
+        header: 'membership.panel.label.member.of',
+        cell: (row: MemberRo) => row.memberOf,
+        style: 'padding: 0 5px;flex-grow: 0;flex-basis:100px;'
       } as SmpTableColDef
 
     ];
