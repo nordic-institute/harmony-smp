@@ -115,7 +115,6 @@ export class GlobalLookups {
           console.log("getSmpInfo:" + err);
         }
       });
-
   }
 
   public refreshApplicationConfiguration() {
