@@ -29,64 +29,23 @@
     </mat-toolbar-row>
   </mat-toolbar>
   <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
-  <div class="group-container mat-elevation-z2">
-    <div class="group-loading-shade"
-         *ngIf="isLoadingResults">
-      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-    </div>
 
-    <div class="group-table-container">
+    <smp-table
+      filterLabel="domain.group.label.filter"
+      filterPlaceholder="domain.group.tooltip.filter"
+      noResultLabel="edit.domain.label.user.not.administrator"
+      noResultForFilterLabel="edit.domain.label.no.filter.results"
+      [dataSource]="dataSource"
+      [selectedRow]="selectedGroup"
+      [columnDefList]="columns"
+      [disabledFilter]="domainNotSelected"
+      [displayedColumns]="displayedColumns"
+      (onFilterChanged)="applyGroupFilter($event)"
+      (onRowClicked)="onGroupSelected($event)"
+      (onRowDoubleClicked)="showEditDialogForGroup($event)"
+    >
+    </smp-table>
 
-      <mat-form-field id="group-filter">
-        <mat-label>{{ "domain.group.label.filter" | translate }}</mat-label>
-        <input matInput (keyup)="applyGroupFilter($event)"
-               placeholder="{{ 'domain.group.tooltip.filter' | translate }}"
-               [disabled]="domainNotSelected"
-               #inputDomainMemberFilter>
-      </mat-form-field>
-
-      <table class="mat-elevation-z2" mat-table [dataSource]="dataSource">
-
-        <ng-container matColumnDef="groupName">
-          <th mat-header-cell *matHeaderCellDef>{{ "domain.group.label.group.name" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.groupName}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="visibility">
-          <th mat-header-cell *matHeaderCellDef>{{ "domain.group.label.group.visibility" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.visibility}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="groupDescription">
-          <th mat-header-cell *matHeaderCellDef>{{ "domain.group.label.group.description" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.groupDescription}}</td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
-            (click)="onGroupSelected(row)"
-            (dblclick)="showEditDialogForGroup(row)"
-            [ngClass]="{'datatable-row-selected': row==selectedGroup,'datatable-row-odd': odd}"
-        ></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">
-            {{ "domain.group.label.no.filter.results" | translate: {filterValue: inputDomainMemberFilter.value} }}
-          </td>
-          <ng-template #noDataFound>
-            <td class="mat-cell" colspan="2">{{ "domain.group.label.no.data.found" | translate }}</td>
-          </ng-template>
-        </tr>
-      </table>
-    </div>
-
-
-    <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
-                   [hidePageSize]="true"
-                   [pageSize]="5"
-                   [disabled]="domainNotSelected"
-                   attr.aria-label="{{ 'domain.group.label.select.pages' | translate }}"></mat-paginator>
-  </div>
 
 </div>
 

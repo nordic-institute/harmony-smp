@@ -1,8 +1,13 @@
-#domain-properties-panel {
-  padding: 1em;
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-
+#domain-properties-panel {
+  padding-left: 5ox;
+  flex-grow:1;
+}
 
 .deleted  {
   text-decoration: line-through !important;

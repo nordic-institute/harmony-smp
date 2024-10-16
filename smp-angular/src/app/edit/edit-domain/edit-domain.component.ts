@@ -7,14 +7,15 @@ import {DomainRo} from "../../common/model/domain-ro.model";
 import {
   CancelDialogComponent
 } from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatSort} from "@angular/material/sort";
 import {MatTabGroup} from "@angular/material/tabs";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {firstValueFrom} from "rxjs";
 import {
   HttpErrorHandlerService
 } from "../../common/error/http-error-handler.service";
+import {
+  SmpTableColDef
+} from "../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
   templateUrl: './edit-domain.component.html',
@@ -23,22 +24,35 @@ import {
 export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
 
   membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
-  displayedColumns: string[] = ['domainCode'];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected: DomainRo;
   domainList: DomainRo[] = [];
   currenTabIndex: number = 0;
   handleTabClick: any;
 
-  loading: boolean = false;
+  displayedColumns: string[] = ['domainCode', "visibility"];
+  columns: SmpTableColDef[];
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  loading: boolean = false;
   @ViewChild('domainTabs') domainTabs: MatTabGroup;
 
   constructor(private domainService: EditDomainService,
               private httpErrorHandlerService: HttpErrorHandlerService,
               private dialog: MatDialog) {
+    this.columns = [
+      {
+        columnDef: 'domainCode',
+        header: 'edit.domain.label.domain.code',
+        cell: (row: DomainRo) => row.domainCode
+      } as SmpTableColDef,
+      {
+        columnDef: 'visibility',
+        header: 'edit.domain.label.domain.visibility',
+        cell: (row: DomainRo) => row.visibility
+      } as SmpTableColDef
+    ];
+
+
     this.refreshDomains();
   }
 
@@ -51,10 +65,9 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
     // MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
     // _handleClick handler
+
     this.registerTabClick();
   }
 
@@ -113,13 +126,8 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     }
   }
 
-  applyDomainFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  applyDomainFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
 

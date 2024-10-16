@@ -17,7 +17,6 @@
  * #END_LICENSE#
  */
 import {
-  AfterViewInit,
   Component,
   EventEmitter,
   forwardRef,
@@ -25,7 +24,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import {MatTable, MatTableDataSource} from "@angular/material/table";
+import {MatTableDataSource} from "@angular/material/table";
 import {
   ControlContainer,
   ControlValueAccessor,
@@ -33,15 +32,15 @@ import {
   FormControlDirective,
   NG_VALUE_ACCESSOR
 } from "@angular/forms";
-import {MatSort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
-import {MatPaginator} from "@angular/material/paginator";
 import {DocumentVersionRo} from "../../model/document-version-ro.model";
 import {
   BeforeLeaveGuard
 } from "../../../window/sidenav/navigation-on-leave-guard";
-import {GlobalLookups} from "../../global-lookups";
 import {DateTimeService} from "../../services/date-time.service";
+import {
+  SmpTableColDef
+} from "../../components/smp-table/smp-table-coldef.model";
 
 /**
  * Component to display the properties of a document in a table. The properties can be edited and saved.
@@ -60,25 +59,50 @@ import {DateTimeService} from "../../services/date-time.service";
     }
   ]
 })
-export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
+export class DocumentVersionsPanelComponent implements BeforeLeaveGuard, ControlValueAccessor {
   @Output() selectedVersionChange: EventEmitter<number> = new EventEmitter<number>();
 
-  displayedColumns: string[] = ['version', 'status', 'createdOn', 'lastUpdatedOn'];
+
   private onChangeCallback: (_: any) => void = () => {
   };
   versionDataSource: MatTableDataSource<DocumentVersionRo> = new MatTableDataSource();
   dataChanged: boolean = false;
   selected: DocumentVersionRo;
   _currentVersion: number;
-
-  @ViewChild("DocumentVersionsTable") table: MatTable<DocumentVersionRo>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  displayedColumns: string[] = ['version', 'status', 'createdOn', 'lastUpdatedOn'];
+  columns: SmpTableColDef[];
 
   constructor(
     private dateTimeService: DateTimeService,
     public dialog: MatDialog,
     private controlContainer: ControlContainer) {
+
+    this.columns = [
+      {
+        columnDef: 'version',
+        header: 'document.versions.panel.label.version',
+        cell: (row: DocumentVersionRo) => row.version,
+        style: 'font-size: 0.8em;padding: 5px;justify-content : center;flex-grow: 0;flex-basis:70px;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'status',
+        header: 'document.versions.panel.label.status',
+        cell: (row: DocumentVersionRo) => row.versionStatus,
+        style: 'font-size: 0.8em;padding: 5px;justify-content:center;flex-grow: 0;flex-basis:100px;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'createdOn',
+        header: 'document.versions.panel.label.created',
+        cell: (row: DocumentVersionRo) => this.dateTimeService.formatDateTimeForUserLocal(row.createdOn),
+        style: 'font-size: 0.8em; padding: 5px;justify-content:center;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'lastUpdatedOn',
+        header: 'document.versions.panel.label.updated',
+        cell: (row: DocumentVersionRo) => this.dateTimeService.formatDateTimeForUserLocal(row.lastUpdatedOn),
+        style: 'font-size: 0.8em; padding: 5px;justify-content:center;'
+      } as SmpTableColDef
+    ];
   }
 
   get dateTimeFormat(): string {
@@ -101,7 +125,7 @@ export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeav
    */
   private updateSelectedVersion(): void {
 
-    const selectedVersion :DocumentVersionRo = this.versionDataSource.data.find(v => v.version === this._currentVersion);
+    const selectedVersion: DocumentVersionRo = this.versionDataSource.data.find(v => v.version === this._currentVersion);
     this.selected = selectedVersion;
   }
 
@@ -136,13 +160,8 @@ export class DocumentVersionsPanelComponent implements AfterViewInit, BeforeLeav
     this.dataChanged = false;
   }
 
-  ngAfterViewInit() {
-    this.versionDataSource.paginator = this.paginator;
-    this.versionDataSource.sort = this.sort;
-  }
 
-  applyFilter(event: Event) {
-    const filterValue: string = (event.target as HTMLInputElement).value;
+  applyFilter(filterValue: string) {
     this.versionDataSource.filter = filterValue?.trim().toLowerCase();
 
     if (this.versionDataSource.paginator) {
