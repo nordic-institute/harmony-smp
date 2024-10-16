@@ -48,7 +48,7 @@ class OasisSMPResource20Test {
     void defaultUrlSegment() {
         String result = testInstance.defaultUrlSegment();
 
-        assertEquals("oasis-bdxr-smp-2", result);
+        assertEquals("bdxr-smp-2", result);
     }
 
     @Test
