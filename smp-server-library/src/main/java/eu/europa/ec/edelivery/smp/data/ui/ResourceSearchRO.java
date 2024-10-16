@@ -19,6 +19,8 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,7 @@ import java.util.List;
  * @since 4.1
  */
 
-public class ServiceGroupSearchRO extends BaseRO {
+public class ResourceSearchRO extends BaseRO {
 
 
     private static final long serialVersionUID = 9008583888835630016L;
@@ -40,6 +42,7 @@ public class ServiceGroupSearchRO extends BaseRO {
     private String resourceDefUrlSegment;
     private String participantIdentifier;
     private String participantScheme;
+    private VisibilityType visibility;
     private final List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
 
 
@@ -93,5 +96,13 @@ public class ServiceGroupSearchRO extends BaseRO {
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public VisibilityType getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(VisibilityType visibility) {
+        this.visibility = visibility;
     }
 }

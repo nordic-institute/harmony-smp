@@ -28,7 +28,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceFilterOptionsResult;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGroupSearchRO> {
+public class UIResourceSearchService extends UIServiceBase<DBResource, ResourceSearchRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIResourceSearchService.class);
 
     private final DomainDao domainDao;
@@ -75,9 +75,9 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
      * @return
      */
     @Transactional
-    public ServiceResult<ServiceGroupSearchRO> getTableList(int page, int pageSize, String sortField, String sortOrder, ResourceFilter filter) {
+    public ServiceResult<ResourceSearchRO> getTableList(int page, int pageSize, String sortField, String sortOrder, ResourceFilter filter) {
         LOG.debug("Get table list for page: [{}], page size: [{}], sort field: [{}], sort order: [{}], filter: [{}]", page, pageSize, sortField, sortOrder, filter);
-        ServiceResult<ServiceGroupSearchRO> sg = new ServiceResult<>();
+        ServiceResult<ResourceSearchRO> sg = new ServiceResult<>();
         sg.setPage(page < 0 ? 0 : page);
         sg.setPageSize(pageSize);
         DBUser user = SessionSecurityUtils.getSessionUserDetails() != null ?
@@ -95,9 +95,9 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
                 iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             }
             List<ResourceDao.DBResourceWrapper> lst = resourceDao.getPublicResourcesSearch(page, pageSize, user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike(), filter.getDomainCode(), filter.getDocumentType());
-            List<ServiceGroupSearchRO> lstRo = new ArrayList<>();
+            List<ResourceSearchRO> lstRo = new ArrayList<>();
             for (ResourceDao.DBResourceWrapper resource : lst) {
-                ServiceGroupSearchRO serviceGroupRo = convert(resource);
+                ResourceSearchRO serviceGroupRo = convert(resource);
                 serviceGroupRo.setIndex(iStartIndex++);
                 lstRo.add(serviceGroupRo);
             }
@@ -112,8 +112,8 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
      * @param resource - database entity wrapper
      * @return ServiceGroupRO
      */
-    private ServiceGroupSearchRO convert(ResourceDao.DBResourceWrapper resource) {
-        ServiceGroupSearchRO serviceGroupRo = new ServiceGroupSearchRO();
+    private ResourceSearchRO convert(ResourceDao.DBResourceWrapper resource) {
+        ResourceSearchRO serviceGroupRo = new ResourceSearchRO();
 
         serviceGroupRo.setId(resource.getDbResource().getId());
         serviceGroupRo.setDomainCode(resource.getDomainCode());
@@ -121,6 +121,7 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
         serviceGroupRo.setResourceDefUrlSegment(resource.getUrlSegment());
         serviceGroupRo.setParticipantIdentifier(resource.getDbResource().getIdentifierValue());
         serviceGroupRo.setParticipantScheme(resource.getDbResource().getIdentifierScheme());
+        serviceGroupRo.setVisibility(resource.getDbResource().getVisibility());
 
         resource.getDbResource().getSubresources().forEach(subresource -> {
             ServiceMetadataRO smdro = new ServiceMetadataRO();
