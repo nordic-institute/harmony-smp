@@ -1,4 +1,5 @@
 eDelivery SMP 5.1
+- change the default "smp.configuration.file" from "smp.conf.properties" to smp.config.properties
 - added new HTTP headers when creating a new resource:
     'Resource-Admin' as alternative to ServiceGroup-Owner
     'Resource-Group': the name of the group: to define to which group in domain the resource belongs to. The group must be in one of the admin's groups. If not given the first group from the list is used.
