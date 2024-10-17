@@ -11,7 +11,7 @@ import StringUtils from "./string-utils";
  * such as date comparison and date formatting
  */
 export default class DateUtils {
-  public static readonly DEFAULT_LOCALE: string = 'fr';
+  public static readonly DEFAULT_LOCALE: string = 'en';
   // ISO8601 extended format + Z indicator for offset 0 (= XXXXX) example  -08:00
   // see details getLocaleDateTimeFormat/ getLocaleTimeFormat
   public static readonly DEFAULT_ZONE_FORMAT: string = ' ZZZZZ';

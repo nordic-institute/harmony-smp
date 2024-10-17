@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,7 @@ public class UserROToDBUserConverter implements Converter<UserRO, DBUser> {
         target.setEmailAddress(source.getEmailAddress());
         target.setFullName(source.getFullName());
         target.setSmpTheme(source.getSmpTheme());
-        target.setSmpLocale(source.getSmpLocale());
+        target.setSmpLocale(LocaleUtils.validateLocale(source.getSmpLocale()));
         return target;
     }
 

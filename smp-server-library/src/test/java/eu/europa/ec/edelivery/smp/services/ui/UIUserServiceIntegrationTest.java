@@ -404,7 +404,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         // changed
         assertEquals(userRO.getEmailAddress(), changedUser.getEmailAddress());
         assertEquals(userRO.getSmpTheme(), changedUser.getSmpTheme());
-        assertEquals(userRO.getSmpLocale(), changedUser.getSmpLocale());
+        // if locale is not valid, it should be set to default
+        assertEquals("en", changedUser.getSmpLocale());
         assertEquals(userRO.getEmailAddress(), changedUser.getEmailAddress());
         assertEquals(userRO.getFullName(), changedUser.getFullName());
     }
