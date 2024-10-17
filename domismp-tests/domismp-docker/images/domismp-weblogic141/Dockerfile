@@ -81,6 +81,7 @@ COPY container-scripts/* ${ORACLE_HOME}/
 COPY container-scripts/init-scripts ${ORACLE_HOME}/init/scripts/
 COPY properties/init  ${ORACLE_HOME}/init/properties/
 COPY artefacts/smp.war ${ORACLE_HOME}/init/
+ADD ./artefacts /tmp/artefacts
 
 USER root
 #Create directory where domain will be written to

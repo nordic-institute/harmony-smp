@@ -25,7 +25,7 @@ package eu.europa.ec.edelivery.smp.config.enums;
  * @since 5.0
  */
 public enum SMPEnvPropertyEnum {
-    CONFIGURATION_FILE("smp.configuration.file","smp.conf.properties","Configuration property file path."),
+    CONFIGURATION_FILE("smp.configuration.file","smp.config.properties","Configuration property file path."),
     SECURITY_FOLDER("smp.security.folder","smp","security folder for storing the keystore and the truststore"),
     INIT_CONFIGURATION_FILE("smp.init.configuration.file","smp.init.properties","Init configuration property file path."),
     LOG_CONFIGURATION_FILE("smp.log.configuration.file",null,"The path to custom logback logging configuration file  If configuration file path is blank, the default configuration is used."),
@@ -51,9 +51,9 @@ public enum SMPEnvPropertyEnum {
     SMP_MODE_DEVELOPMENT("smp.mode.development","false","Set to true in test or development environment to make faster \"semi-random generation of secrets\"."),
     ;
 
-    String property;
-    String defValue;
-    String desc;
+    final String property;
+    final String defValue;
+    final String desc;
 
     SMPEnvPropertyEnum(String property, String defValue, String desc) {
         this.property = property;
