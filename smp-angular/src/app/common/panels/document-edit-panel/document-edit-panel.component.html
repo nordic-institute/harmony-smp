@@ -226,7 +226,7 @@
           <mat-icon>task</mat-icon>
           <span>{{ "document.edit.panel.button.version.review.request" | translate }}</span>
         </button>
-        <button mat-raised-button
+        <button mat-raised-button  id="reviewApprove_id"
                 *ngIf="!isNotReviewMode || hasReviewPermission"
                 color="primary"
                 matTooltip="{{ 'document.edit.panel.tooltip.version.review.approve' | translate }}"
@@ -235,7 +235,7 @@
           <mat-icon>check_circle</mat-icon>
           <span>{{ "document.edit.panel.button.version.review.approve" | translate }}</span>
         </button>
-        <button mat-raised-button
+        <button mat-raised-button id="reviewReject_id"
                 color="primary"
                 matTooltip="{{ 'document.edit.panel.tooltip.version.review.reject' | translate }}"
                 [disabled]="reviewRejectButtonDisabled"

@@ -42,6 +42,7 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
@@ -313,7 +314,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setEmailAddress(user.getEmailAddress());
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
-        dbUser.setSmpLocale(user.getSmpLocale());
+        dbUser.setSmpLocale(LocaleUtils.validateLocale(user.getSmpLocale()));
     }
 
     @Transactional
@@ -330,7 +331,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setEmailAddress(user.getEmailAddress());
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
-        dbUser.setSmpLocale(user.getSmpLocale());
+        dbUser.setSmpLocale(LocaleUtils.validateLocale(user.getSmpLocale()));
         alertService.alertUserUpdated(dbUser);
     }
 
@@ -348,7 +349,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setEmailAddress(user.getEmailAddress());
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
-        dbUser.setSmpLocale(user.getSmpLocale());
+        dbUser.setSmpLocale(LocaleUtils.validateLocale(user.getSmpLocale()));
         return createDBUser(dbUser);
     }
 
