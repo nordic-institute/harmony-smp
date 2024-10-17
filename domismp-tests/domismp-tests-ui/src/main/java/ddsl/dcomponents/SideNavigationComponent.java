@@ -11,6 +11,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.administration.ReviewTasksPage;
 import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.administration.editGroupsPage.EditGroupsPage;
 import pages.administration.editResourcesPage.EditResourcePage;
@@ -47,6 +48,9 @@ public class SideNavigationComponent extends DomiSMPPage {
 
     @FindBy(id = "edit-resourceButton")
     private WebElement editResourcesLnk;
+
+    @FindBy(id = "review-tasksButton")
+    private WebElement reviewTasksLnk;
 
     @FindBy(id = "editButton")
     private WebElement administrationExpand;
@@ -104,6 +108,7 @@ public class SideNavigationComponent extends DomiSMPPage {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T navigateTo(Pages page) {
         LOG.debug("Get link to " + page.name());
         // DomiSMP behaviour. Button is not expanded if already focused and not expanded - issue when re-login
@@ -125,6 +130,10 @@ public class SideNavigationComponent extends DomiSMPPage {
         if (page == Pages.ADMINISTRATION_EDIT_RESOURCES) {
             openSubmenu(administrationExpand, editResourcesLnk);
             return (T) new EditResourcePage(driver);
+        }
+        if (page == Pages.ADMINISTRATION_REVIEW_TASKS) {
+            openSubmenu(administrationExpand, reviewTasksLnk);
+            return (T) new ReviewTasksPage(driver);
         }
         if (page == Pages.SYSTEM_SETTINGS_USERS) {
             openSubmenu(systemSettingsExpand, usersLnk);

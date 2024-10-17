@@ -2,7 +2,7 @@ package ddsl.dcomponents.commonComponents.subcategoryTab;
 
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
-import ddsl.dcomponents.Grid.SmallGrid;
+import ddsl.dcomponents.Grid.MatSmallGrid;
 import ddsl.dcomponents.commonComponents.members.InviteMembersWithGridPopup;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebDriver;
@@ -28,8 +28,8 @@ public class SubcategoryTabComponent extends DComponent {
         super(driver);
     }
 
-    public SmallGrid getGrid() {
-        return new SmallGrid(driver, rightSidePanel);
+    public MatSmallGrid getGrid() {
+        return new MatSmallGrid(driver, rightSidePanel);
     }
 
     protected void create() throws ElementNotInteractableException {

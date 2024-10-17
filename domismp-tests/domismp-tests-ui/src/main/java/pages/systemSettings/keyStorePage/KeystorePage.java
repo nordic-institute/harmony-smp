@@ -2,6 +2,7 @@ package pages.systemSettings.keyStorePage;
 
 import ddsl.CommonCertificatePage;
 import ddsl.dcomponents.ConfirmationDialog;
+import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -12,6 +13,10 @@ public class KeystorePage extends CommonCertificatePage {
         super(driver);
     }
 
+    @Override
+    public SmallGrid getLeftSideGrid() {
+        return new SmallGrid(driver, rightPanel);
+    }
     public KeyStoreImportDialog clickImportkeyStoreBtn(){
         weToDButton(addBtn).click();
         return new KeyStoreImportDialog(driver);

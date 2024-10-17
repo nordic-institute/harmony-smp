@@ -7,7 +7,6 @@ import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -69,7 +68,6 @@ public class ProfilePgTests extends SeleniumTest {
     }
 
     @Test(description = "PROF-02 All loggedin users are able to update profile data")
-    @Ignore("The following asserts failed:  expected [English] but found [null]")
     public void allLoggedUsersShouldAbleToUpdateProfilePage() throws Exception {
         UserModel normalUser = UserModel.generateUserWithUSERrole();
         rest.users().createUser(normalUser);

@@ -49,7 +49,12 @@ public class TrustorePgTests extends SeleniumTest {
 
         TruststorePage truststorepage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_TRUSTSTORE);
         String path = FileUtils.getAbsolutePath("./src/main/resources/truststore/validCertificate.cer");
+        try {
+            truststorepage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "red_gw");
+            truststorepage.deleteandConfirm();
+        } catch (Exception e) {
 
+        }
         String certificateALias = truststorepage.addCertificateAndReturnAlias(path);
         soft.assertTrue(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", certificateALias));
         soft.assertNotNull(certificateALias);

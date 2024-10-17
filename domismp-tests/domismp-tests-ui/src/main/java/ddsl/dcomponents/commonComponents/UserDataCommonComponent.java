@@ -38,7 +38,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
     }
 
     public String getSelectedLocale() {
-        return weToDSelect(localeSel).getCurrentValue();
+        return weToDSelect(localeSel).getCurrentValueAttribute("value");
     }
 
     public String getEmailAddress() {
@@ -71,7 +71,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
             }
             weToDSelect(themeSel).selectByVisibleText(selectThemeValue);
             wait.forXMillis(50);
-            weToDSelect(localeSel).selectByVisibleText(localeValue, true);
+            weToDSelect(localeSel).selectByVisibleText(localeValue);
 
 
         } catch (Exception e) {

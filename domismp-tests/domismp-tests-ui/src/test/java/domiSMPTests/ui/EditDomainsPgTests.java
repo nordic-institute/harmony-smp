@@ -100,13 +100,13 @@ public class EditDomainsPgTests extends SeleniumTest {
         CreateGroupDetailsDialog createGroupDetailsDialog = editDomainPage.getGroupTab().clickCreateNewGroup();
         createGroupDetailsDialog.fillGroupDetails(groupToBeCreated);
         Boolean isSaveSuccesfully = createGroupDetailsDialog.tryClickOnSave();
-        soft.assertTrue(isSaveSuccesfully);
+        soft.assertTrue(isSaveSuccesfully, "Domain creation alert is not present");
 
         WebElement createGroup = editDomainPage.getGroupTab().getGrid().searchAndGetElementInColumn("Group name", groupToBeCreated.getGroupName());
         soft.assertNotNull(createGroup);
         createGroup.click();
         InviteMembersWithGridPopup inviteMembersWithGridPopup = editDomainPage.getGroupTab().clickOnGroupMembersBtn();
-        soft.assertTrue(inviteMembersWithGridPopup.isMemberPresentByUsername(adminUser));
+        soft.assertTrue(inviteMembersWithGridPopup.isMemberPresentByUsername(adminUser), "User is not present in the members list");
         inviteMembersWithGridPopup.clickOnCloseBtn();
 
         EditGroupsPage editgroupPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_GROUPS);
