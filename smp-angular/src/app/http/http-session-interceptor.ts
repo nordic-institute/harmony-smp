@@ -20,9 +20,6 @@ import {TranslateService} from "@ngx-translate/core";
 })
 export class HttpSessionInterceptor implements HttpInterceptor {
 
-  private readonly TIME_BEFORE_EXPIRATION_IN_SECONDS = 60;
-  private readonly MAXIMUM_TIMEOUT_VALUE = 2147483647;
-
   private timerId: number;
   private timerToLogoutId: number;
 
@@ -36,23 +33,28 @@ export class HttpSessionInterceptor implements HttpInterceptor {
     clearTimeout(this.timerId);
     clearTimeout(this.timerToLogoutId);
     let user = this.securityService.getCurrentUser();
-    if (user?.sessionMaxIntervalTimeoutInSeconds && user.sessionMaxIntervalTimeoutInSeconds > this.TIME_BEFORE_EXPIRATION_IN_SECONDS) {
-      let timeout = Math.min((user.sessionMaxIntervalTimeoutInSeconds - this.TIME_BEFORE_EXPIRATION_IN_SECONDS) * 1000, this.MAXIMUM_TIMEOUT_VALUE);
+    // set the last UI session call
+    this.securityService.uiUserSessionCallDetected()
+    if (user?.sessionMaxIntervalTimeoutInSeconds && user.sessionMaxIntervalTimeoutInSeconds > SecurityService.TIME_BEFORE_EXPIRATION_IN_SECONDS) {
+      let timeout = Math.min((user.sessionMaxIntervalTimeoutInSeconds - SecurityService.TIME_BEFORE_EXPIRATION_IN_SECONDS) * 1000, SecurityService.MAXIMUM_TIMEOUT_VALUE);
       this.timerId = setTimeout(() => this.sessionExpiringSoon(user.sessionMaxIntervalTimeoutInSeconds), timeout);
     }
     return next.handle(req);
   }
 
   private sessionExpiringSoon(timeout) {
+
     // Logout the user after the session expires
     this.timerToLogoutId = setTimeout(() => {
       this.securityService.logout();
       this.alertService.errorForTranslation("session.alert.message.logout.expired", true);
-    }, this.TIME_BEFORE_EXPIRATION_IN_SECONDS * 1000);
-
+    }, SecurityService.TIME_BEFORE_EXPIRATION_IN_SECONDS * 1000);
+    // disable the automatic UI session extension,
+    // because the user has dialog to extend the session
+    this.securityService.uiUserSessionExtensionDisable();
     this.dialog.open(SessionExpirationDialogComponent, {
       data: {
-        timeLeft: this.TIME_BEFORE_EXPIRATION_IN_SECONDS,
+        timeLeft: SecurityService.TIME_BEFORE_EXPIRATION_IN_SECONDS,
         timeout
       }
     });

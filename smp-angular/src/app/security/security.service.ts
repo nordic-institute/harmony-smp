@@ -16,11 +16,18 @@ import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {WindowSpinnerService} from "../common/services/window-spinner.service";
 import {SmpErrorCode} from "../common/enums/smp-error-code.enum";
+import {SmpInfo} from "../app-info/smp-info.model";
 
 @Injectable()
 export class SecurityService {
 
+  public static readonly TIME_BEFORE_EXPIRATION_IN_SECONDS: number = 60;
+  public static readonly DELAY_BEFORE_UI_SESSION_EXTENSION_IN_MS: number = 3000;
+  public static readonly MAXIMUM_TIMEOUT_VALUE: number = 2147483647;
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
+
+  lastUIActivity: Date = new Date();
+  lastUISessionCall: Date = new Date();
 
   constructor(
     private http: HttpClient,
@@ -276,5 +283,52 @@ export class SecurityService {
 
   public clearLocalStorage() {
     localStorage.removeItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
+  }
+
+  /**
+   *
+   */
+  uiUserActivityDetected() {
+    console.log("User activity detected");
+    let user = this.getCurrentUser();
+    if (!this.isAuthenticated(false)
+      || !user
+      || !this.lastUISessionCall) {
+      return;
+    }
+    this.lastUIActivity = new Date();
+    // to prevent multiple calls to the backend, we check if the last call
+    // was more than DELAY_BEFORE_UI_SESSION_EXTENSION_IN_MS
+    if (this.lastUIActivity.getTime() - this.lastUISessionCall.getTime() > SecurityService.DELAY_BEFORE_UI_SESSION_EXTENSION_IN_MS) {
+      // make a call to the backend to extend the session
+      this.refreshApplicationInfo();
+    }
+  }
+
+  /**
+   * This method is called when a UI session call to server is detected.
+   */
+  uiUserSessionCallDetected() {
+    if (!this.isAuthenticated(false)) {
+      return;
+    }
+    this.lastUISessionCall = new Date();
+  }
+
+  uiUserSessionExtensionDisable() {
+    this.lastUISessionCall = null;
+  }
+
+  public refreshApplicationInfo() {
+
+    this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
+      .subscribe({
+        next: (res: SmpInfo): void => {
+
+        },
+        error: (err: any): void => {
+          console.log("getSmpInfo:" + err);
+        }
+      });
   }
 }

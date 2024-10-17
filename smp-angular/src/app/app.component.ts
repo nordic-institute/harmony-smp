@@ -1,8 +1,10 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, HostListener, ViewChild} from '@angular/core';
 import {SecurityService} from './security/security.service';
 import {Router} from '@angular/router';
 import {Authority} from "./security/authority.model";
-import {AlertMessageService} from "./common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "./common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {GlobalLookups} from "./common/global-lookups";
 import {HttpClient} from "@angular/common/http";
@@ -92,12 +94,42 @@ export class AppComponent {
     this.alertService.clearAlert();
   }
 
-  onDrawerContentScroll(scrollEvent: any){
+  onDrawerContentScroll(scrollEvent: any) {
     let scrollTop = scrollEvent.srcElement.scrollTop;
     this.alertService.setKeepAfterNavigationChange(scrollTop > 0)
   }
 
   get showSpinner(): boolean {
     return this.windowSpinnerService.showSpinner
+  }
+
+// Listeners for activity monitoring
+// Every time one of these events are triggered, all the "watches" are reseted
+  @HostListener('window:mousemove')
+  mouseMove() {
+    this.refreshUserState();
+  }
+
+  @HostListener('keydown')
+  keyboardClick() {
+    this.refreshUserState();
+  }
+
+  @HostListener('touchstart')
+  screenTouched() {
+    this.refreshUserState();
+  }
+
+  @HostListener('touchmove')
+  screenDragged() {
+    this.refreshUserState();
+  }
+
+  refreshUserState() {
+    // if user is not logged in, do nothing
+    if (!this.securityService.isAuthenticated(false)) {
+      return;
+    }
+    this.securityService.uiUserActivityDetected()
   }
 }
