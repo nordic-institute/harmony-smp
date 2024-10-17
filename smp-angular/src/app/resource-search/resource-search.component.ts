@@ -39,7 +39,6 @@ import {SecurityEventService} from "../security/security-event.service";
 export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>
-  @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
@@ -88,6 +87,14 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         prop: 'serviceMetadata.length',
         width: 70,
         maxWidth: 70,
+        resizable: 'false',
+        showInitially: true,
+      },
+      {
+        name: await lastValueFrom(this.translateService.get("resource.search.label.column.visibility")),
+        prop: 'visibility',
+        width: 100,
+        maxWidth: 100,
         resizable: 'false',
         showInitially: true,
       },

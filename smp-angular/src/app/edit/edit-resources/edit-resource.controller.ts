@@ -28,13 +28,16 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
 
+  // data changed indicates the cached data may be outdated and need to be refreshed
+  _dataChanged: boolean = false;
+  _isLoadingResults:boolean = false;
+
   _selectedDomain: DomainRo;
   _selectedGroup: GroupRo;
   _selectedResource: ResourceRo;
   _selectedDomainResourceDefs: ResourceDefinitionRo[];
 
   resourcesFilter: any = {};
-  isLoadingResults = false;
 
   dataLength:number = 0;
   pageIndex:number = 0;
@@ -58,6 +61,29 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     });
   }
 
+  // this flag is used to trigger data refresh when data is needed.
+  //The data can be changed for the user when adding/creating new resource in the edit group
+  @Input() set dataChanged(value: boolean) {
+    this._dataChanged = value;
+  }
+
+  get dataChanged(): boolean {
+    return this._dataChanged;
+  }
+
+  // this flag is used to trigger data refresh when data is needed.
+  //The data can be changed for the user when adding/creating new resource in the edit group
+  @Input() set isLoadingResults(value: boolean) {
+    if (!value) {
+      // data was loaded, and we can reset the flag for data changed
+      this._dataChanged = value
+    }
+    this._isLoadingResults = value;
+  }
+
+  get isLoadingResults(): boolean {
+    return this._isLoadingResults;
+  }
 
   private clearSelectedData() {
     this.domainList = [];
@@ -77,7 +103,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   @Input() set selectedDomain(domain: DomainRo) {
     this._selectedDomain = domain;
-    if (!!this.selectedDomain) {
+    if (!!this.selectedDomain || this.dataChanged) {
       this.refreshGroups();
       this.refreshDomainsResourceDefinitions();
     } else {
@@ -93,7 +119,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   @Input() set selectedGroup(resource: GroupRo) {
     this._selectedGroup = resource;
-    if (!!this._selectedGroup) {
+    if (!!this._selectedGroup || this.dataChanged ) {
       this.refreshResources();
     } else {
       this.isLoadingResults = false;
@@ -123,6 +149,15 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedResource = resource;
   };
 
+  /**
+   * Method refreshes data when data changed
+   */
+  refreshDataOnDataChange() {
+    if (this.dataChanged) {
+      this.refreshDomains();
+    }
+  }
+
 
   refreshDomains() {
     this.isLoadingResults = true;
@@ -140,6 +175,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   refreshGroups() {
     if (!this.selectedDomain) {
       this.updateGroupList([]);
+
       this.isLoadingResults = false;
       return;
     }
@@ -191,6 +227,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!!this.domainList && this.domainList.length > 0) {
       this.selectedDomain = this.domainList[0];
     } else {
+      this._dataChanged = false;
       this.isLoadingResults = false;
     }
   }
@@ -200,6 +237,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
     } else {
+      this._dataChanged = false;
       this.isLoadingResults = false;
     }
   }

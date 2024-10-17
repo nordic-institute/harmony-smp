@@ -547,7 +547,7 @@
   "edit.resource.placeholder.filter": "Resource filter",
   "edit.resource.placeholder.selected.domain": "Select domain",
   "edit.resource.placeholder.selected.group": "Select group",
-  "edit.resource.text": "Edit resource administration panel is a tool for resource administrators to administer the resource",
+  "edit.resource.text": "Edit resource administration panel is a tool for resource administrators to administer the resource.<br /><b>Note:</b>Only domains and groups where the user is a resource administrator are shown.",
   "edit.resource.title": "Edit Resource",
   "edit.resource.tooltip.selected.domain": "Select domain.",
   "edit.resource.tooltip.selected.group": "Select group.",
@@ -588,6 +588,7 @@
   "resource.search.label.column.resource.scheme": "Resource scheme",
   "resource.search.label.column.resource.url": "Resource URL",
   "resource.search.label.column.subresource.count": "Sr. Cnt.",
+  "resource.search.label.column.subresource.visibility": "Visibility",
   "resource.search.label.subresource.id": "Subresource identifier",
   "resource.search.label.subresource.id.scheme": "Subresource identifier scheme",
   "resource.search.placeholder.document.type": "Document type",
@@ -945,5 +946,4 @@
   "navigation.tooltip.search.resources": "Search registered resources",
   "navigation.tooltip.search.tools": "Search tools",
   "navigation.tooltip.search.dns.tools": "DNS lookup tools"
-
 }
