@@ -354,6 +354,7 @@ import {DateTimeService} from "./common/services/date-time.service";
 import {
   SmpTableComponent
 } from "./common/components/smp-table/smp-table.component";
+import {LocalStorageService} from "./common/services/local-storage.service";
 
 @NgModule({ declarations: [
         AccessTokenPanelComponent,
@@ -515,6 +516,7 @@ import {
         SmlIntegrationService,
         SmpInfoService,
         ThemeService,
+        LocalStorageService,
         UserDetailsService,
         UserService,
         WindowSpinnerService,
