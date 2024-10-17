@@ -547,7 +547,7 @@
   "edit.resource.placeholder.filter": "Resource filter",
   "edit.resource.placeholder.selected.domain": "Select domain",
   "edit.resource.placeholder.selected.group": "Select group",
-  "edit.resource.text": "Edit resource administration panel is a tool for resource administrators to administer the resource",
+  "edit.resource.text": "Edit resource administration panel is a tool for resource administrators to administer the resource.<br /><b>Note:</b>Only domains and groups where the user is a resource administrator are shown.",
   "edit.resource.title": "Edit Resource",
   "edit.resource.tooltip.selected.domain": "Select domain.",
   "edit.resource.tooltip.selected.group": "Select group.",

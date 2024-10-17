@@ -31,6 +31,9 @@ import {
   DomainPropertyRo
 } from "../../../../common/model/domain-property-ro.model";
 import {Subscription} from "rxjs";
+import {
+  EditResourceController
+} from "../../../edit-resources/edit-resource.controller";
 
 
 @Component({
@@ -67,6 +70,7 @@ export class ResourceDialogComponent implements OnInit {
               public dialogRef: MatDialogRef<ResourceDialogComponent>,
               private editGroupService: EditGroupService,
               private editResourceService: EditResourceService,
+              private editResourceController: EditResourceController,
               private alertService: AlertMessageService,
               private httpErrorHandlerService: HttpErrorHandlerService,
               private editDomainService: EditDomainService,
@@ -224,6 +228,8 @@ export class ResourceDialogComponent implements OnInit {
     this.editGroupService.createResourceForGroup(this.resource, this.group, this.domain).subscribe({
       next: (result: ResourceRo) => {
         if (!!result) {
+          // refresh the domains/groups/resources for user to see the changes
+          this.editResourceController.dataChanged = true;
           this.closeDialog();
         }
         this.submitInProgress = false;
@@ -239,6 +245,8 @@ export class ResourceDialogComponent implements OnInit {
     this.editResourceService.updateResourceForGroup(resource, this.group, this.domain).subscribe({
       next: (result: ResourceRo): void => {
         if (!!result) {
+          // refresh the domains/groups/resources for user to see the changes
+          this.editResourceController.dataChanged = true;
           this.closeDialog();
         }
         this.submitInProgress = false;

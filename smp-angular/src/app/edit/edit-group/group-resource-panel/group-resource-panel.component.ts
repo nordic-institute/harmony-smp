@@ -34,6 +34,9 @@ import {MatTableDataSource} from "@angular/material/table";
 import {
   SmpTableColDef
 } from "../../../common/components/smp-table/smp-table-coldef.model";
+import {
+  EditResourceController
+} from "../../edit-resources/edit-resource.controller";
 
 @Component({
   selector: 'group-resource-panel',
@@ -58,6 +61,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   columns: SmpTableColDef[];
 
   constructor(private editGroupService: EditGroupService,
+              private editResourceController: EditResourceController,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
@@ -220,6 +224,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     this.editGroupService.deleteResourceFromGroup(resource, this._group, this.domain)
       .pipe(
         finalize(() => {
+          this.editResourceController.dataChanged = true;
           this.refresh();
           this.isLoadingResults = false;
         }))
