@@ -50,7 +50,7 @@ public class UsersPgTests extends SeleniumTest {
 
         soft.assertEquals(usersPage.getEmailValue(), adminNewUserData.getEmailAddress());
         soft.assertEquals(usersPage.getSelectedThemeValue(), adminNewUserData.getSmpTheme());
-        soft.assertEquals(usersPage.getSelectedLocaleValue(), "English");
+        soft.assertEquals(usersPage.getSelectedLocaleValue(), "fr");
 
         soft.assertAll();
 
@@ -193,7 +193,7 @@ public class UsersPgTests extends SeleniumTest {
     }
 
     @Test(description = "LGN-35 - Reset password screen applies password complexity")
-    public void resetPasswordScreenAppliesPasswordComplexity() throws Exception {
+    public void resetPasswordScreenAppliesPasswordComplexity() {
 
         UserModel user = UserModel.generateUserWithUSERrole();
         String normalUserId = rest.users().createUser(user).getString("userId");

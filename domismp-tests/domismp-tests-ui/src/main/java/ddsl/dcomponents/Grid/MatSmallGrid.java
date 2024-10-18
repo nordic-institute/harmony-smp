@@ -1,5 +1,6 @@
 package ddsl.dcomponents.Grid;
 
+import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -10,14 +11,18 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class SmallGrid extends MatSmallGrid {
-    private final static Logger LOG = LoggerFactory.getLogger(SmallGrid.class);
-    protected static final By gridHeadersLocator = By.cssSelector("table thead th");
-    protected static final By gridRowsLocator = By.cssSelector("table tbody tr");
+/**
+ * Mat-table component used for grids.
+ */
+
+public class MatSmallGrid extends DComponent {
+    protected static final By gridHeadersLocator = By.cssSelector("mat-table mat-header-cell");
+    protected static final By gridRowsLocator = By.cssSelector("mat-table mat-row");
+    private final static Logger LOG = LoggerFactory.getLogger(MatSmallGrid.class);
     private final WebElement parentElement;
 
-    public SmallGrid(WebDriver driver, WebElement parentElement) {
-        super(driver, parentElement);
+    public MatSmallGrid(WebDriver driver, WebElement parentElement) {
+        super(driver);
         PageFactory.initElements(driver, this);
         this.parentElement = parentElement;
     }
@@ -36,7 +41,7 @@ public class SmallGrid extends MatSmallGrid {
     }
 
     public List<WebElement> getCells(WebElement row) {
-        return row.findElements(By.cssSelector("td"));
+        return row.findElements(By.cssSelector("mat-cell"));
     }
 
     public WebElement searchAndGetElementInColumn(String columnName, String value) {
@@ -141,6 +146,7 @@ public class SmallGrid extends MatSmallGrid {
         }
         return null;
     }
+
     public void searchAndClickElementInColumn(String columnName, String value) {
 
         wait.forXMillis(100);

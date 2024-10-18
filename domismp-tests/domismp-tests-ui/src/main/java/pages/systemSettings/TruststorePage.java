@@ -1,6 +1,8 @@
 package pages.systemSettings;
 
 import ddsl.CommonCertificatePage;
+import ddsl.dcomponents.ConfirmationDialog;
+import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -17,6 +19,11 @@ public class TruststorePage extends CommonCertificatePage {
     public TruststorePage(WebDriver driver) {
         super(driver);
     }
+
+    @Override
+    public SmallGrid getLeftSideGrid() {
+        return new SmallGrid(driver, rightPanel);
+    }
     public String addCertificateAndReturnAlias(String filePath) {
         uploadInput.sendKeys(filePath);
         String certificateAlias = getAlertMessageAndClose();
@@ -29,6 +36,12 @@ public class TruststorePage extends CommonCertificatePage {
      else {
         throw new NullPointerException("No alias found in the message: "+certificateAlias);
     }
+    }
+
+    public void deleteandConfirm() {
+        weToDButton(deleteBtn).click();
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
+        confirmationDialog.confirm();
     }
 
 

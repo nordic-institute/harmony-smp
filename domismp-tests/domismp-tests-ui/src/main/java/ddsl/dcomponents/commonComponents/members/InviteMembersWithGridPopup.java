@@ -1,7 +1,7 @@
 package ddsl.dcomponents.commonComponents.members;
 
 import ddsl.dcomponents.DComponent;
-import ddsl.dcomponents.Grid.SmallGrid;
+import ddsl.dcomponents.Grid.MatSmallGrid;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,8 +32,8 @@ public class InviteMembersWithGridPopup extends DComponent {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
-    public SmallGrid getGrid() {
-        return new SmallGrid(driver, panel);
+    public MatSmallGrid getGrid() {
+        return new MatSmallGrid(driver, panel);
     }
 
     protected InviteMembersPopup inviteMember() throws ElementNotInteractableException {

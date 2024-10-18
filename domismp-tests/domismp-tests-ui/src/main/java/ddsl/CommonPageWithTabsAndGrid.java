@@ -1,6 +1,6 @@
 package ddsl;
 
-import ddsl.dcomponents.Grid.SmallGrid;
+import ddsl.dcomponents.Grid.MatSmallGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -23,7 +23,8 @@ public class CommonPageWithTabsAndGrid extends CommonPageWithTabs {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
-    public SmallGrid getLeftSideGrid() {
-        return new SmallGrid(driver, rightPanel);
+
+    public MatSmallGrid getLeftSideGrid() {
+        return new MatSmallGrid(driver, rightPanel);
     }
   }

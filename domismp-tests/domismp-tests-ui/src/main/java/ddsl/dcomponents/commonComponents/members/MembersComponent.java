@@ -2,7 +2,7 @@ package ddsl.dcomponents.commonComponents.members;
 
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
-import ddsl.dcomponents.Grid.SmallGrid;
+import ddsl.dcomponents.Grid.MatSmallGrid;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -30,8 +30,8 @@ public class MembersComponent extends DComponent {
         LOG.debug("Members component is loaded");
     }
 
-    public SmallGrid getMembersGrid() {
-        return new SmallGrid(driver, sidePanel);
+    public MatSmallGrid getMembersGrid() {
+        return new MatSmallGrid(driver, sidePanel);
     }
 
     public InviteMembersPopup getInviteMembersPopup() {

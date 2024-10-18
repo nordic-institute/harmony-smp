@@ -1,6 +1,7 @@
 package pages.systemSettings.domainsPage;
 
 import ddsl.CommonPageWithTabsAndGrid;
+import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,6 +31,11 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
     public DomainTab getDomainTab() {
 
         return new DomainTab(driver);
+    }
+
+    @Override
+    public SmallGrid getLeftSideGrid() {
+        return new SmallGrid(driver, rightPanel);
     }
 
     public SMLIntegrationTab getSMLIntegrationTab() {

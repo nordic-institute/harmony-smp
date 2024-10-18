@@ -126,5 +126,16 @@ public class ResourceModel {
         return resourceModel;
     }
 
+    public static ResourceModel generatePublicResourceWithReview(ResourceTypes resourceType) {
+        ResourceModel resourceModel = new ResourceModel();
+        resourceModel.identifierScheme = StringUtils.lowerCase(Generator.randomAlphabeticalValue(3) + "-" + Generator.randomAlphaNumericValue(3) + "-" + Generator.randomAlphaNumericValue(3));
+        resourceModel.identifierValue = "AUT_resIden_" + Generator.randomAlphaNumericValue(4).toLowerCase();
+        resourceModel.smlRegistered = false;
+        resourceModel.resourceTypeIdentifier = StringUtils.lowerCase(resourceType.getName());
+        resourceModel.visibility = "PUBLIC";
+        resourceModel.reviewEnabled = true;
+        return resourceModel;
+    }
+
 
 }

@@ -45,6 +45,7 @@ public class EditResourcePgTests extends SeleniumTest {
         };
         adminMember.setUsername(adminUser.getUsername());
         adminMember.setRoleType("ADMIN");
+        adminMember.setHasPermissionReview(true);
 
         MemberModel superMember = new MemberModel();
         superMember.setUsername(TestRunData.getInstance().getAdminUsername());
@@ -264,6 +265,47 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertEquals(documentXML.getNodeValue("ExtensionReason"), generatedExtensionReasonvalue, "Wrong ExtensionReason value");
 
         soft.assertAll();
+    }
+
+    @Test(description = "EDTRES-15 - Resource Administrator can publish resource documents with approve status", priority = 1)
+    public void resourceAdministratorsCanPublisResourceDocumentsWithApproveStatus() throws JsonProcessingException {
+
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+
+
+        //add resource to group
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
+
+        editResourcePage.goToTab("Resource details");
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
+        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getAlertArea().closeAlert();
+
+        soft.assertTrue(editResourceDocumentPage.getRequestReviewBtn().isEnabled(), "Request review button is not enabled");
+        soft.assertEquals("DRAFT", editResourceDocumentPage.getStatusValue());
+
+        //Request review
+        editResourceDocumentPage.getRequestReviewBtn().click();
+        soft.assertEquals("UNDER_REVIEW", editResourceDocumentPage.getStatusValue());
+
+        //Self approve
+        soft.assertTrue(editResourceDocumentPage.getApproveBtn().isEnabled(), "Approve button is not enabled");
+        editResourceDocumentPage.clickOnApproveAndConfirm();
+        soft.assertEquals("APPROVED", editResourceDocumentPage.getStatusValue());
+
+        soft.assertTrue(editResourceDocumentPage.getPublishBtn().isEnabled(), "Publish is not enabled");
+        editResourceDocumentPage.clickOnPublishAndConfirm();
+        soft.assertEquals("PUBLISHED", editResourceDocumentPage.getStatusValue());
+        editResourceDocumentPage.selectVersion(1);
+        soft.assertEquals("RETIRED", editResourceDocumentPage.getStatusValue());
+
+        soft.assertAll();
+
     }
 
 
