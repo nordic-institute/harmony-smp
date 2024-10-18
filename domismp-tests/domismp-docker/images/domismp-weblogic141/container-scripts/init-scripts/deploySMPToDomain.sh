@@ -26,8 +26,16 @@ smp.datasource.jndi=jdbc/eDeliverySmpDs
 smp.automation.authentication.external.tls.clientCert.enabled=true
 log.folder=./logs/
 smp.security.folder=${SMP_SECURITY_DIR}/
+smp.keystore.filename=mp-keystore-docker-demo.p12
+smp.keystore.type=PKCS12
+smp.truststore.type=PKCS12
+smp.truststore.password={DEC}{test123}
+smp.keystore.password={DEC}{test123}
 EOT
 fi
+
+echo "Copy SMP keystore : ${SMP_SECURITY_DIR}/smp-keystore-docker-demo.p12"
+cp /tmp/artefacts/shared-artefacts/smp-keystore-docker-demo.p12 "${SMP_SECURITY_DIR}/smp-keystore-docker-demo.p12"
 
 cp /u01/oracle/init/smp.war "${WL_DOMAIN_HOME}/"
 ls -ltr "${WL_DOMAIN_HOME}/"

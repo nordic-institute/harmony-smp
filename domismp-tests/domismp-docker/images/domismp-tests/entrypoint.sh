@@ -11,6 +11,18 @@ executeUITests(){
   exit ${EXIT_CODE}
 }
 
+
+setConfigPropertiesAPITests() {
+  echo "[INFO] Update soapUI project file and testsuite names ..."
+     if [ -n "${TEST_SUITE}" ]; then
+        sed -i "s#<testSuite>.*</testSuite>#<testSuite>${TEST_SUITE}</testSuite>#g" "${TEST_API}"/pom.xml
+     fi
+	 # TODO Add the legacy test suite to the new project file then remove the following configuration 
+	 if [ -n "${TEST_FILE_NAME}" ]; then
+        sed -i "s#<projectFile>\${basedir}/soapui/.*</projectFile>#<projectFile>\${basedir}/soapui/${TEST_FILE_NAME}</projectFile>#g" "${TEST_API}"/pom.xml
+     fi
+}
+
 executeAPITests() {
   echo "[INFO] start execution of the tests from ${TEST_API}"
      cd  "${TEST_API}"
@@ -28,6 +40,7 @@ createUIProperties(){
 if [ "$TEST_PLAN" == "ui" ]; then
   executeUITests
 elif [ "$TEST_PLAN" == "api" ]; then
+  setConfigPropertiesAPITests
   executeAPITests
 elif [ "$TEST_PLAN" == "manual" ]; then
   echo "[INFO] Container will start in idle mode to allow user to manually login and execute tests!"
