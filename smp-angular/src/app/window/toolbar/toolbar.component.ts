@@ -29,7 +29,8 @@ export class ToolbarComponent implements OnDestroy{
   fullMenu: boolean = true;
   userController: UserController;
   currentUserRoleDescription = "";
-  private sub: Subscription;
+  private loginSubscription: Subscription;
+  private languageChangeSubscription: Subscription;
 
   constructor(private alertService: AlertMessageService,
               private securityService: SecurityService,
@@ -41,11 +42,13 @@ export class ToolbarComponent implements OnDestroy{
               private translateService: TranslateService) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
-    this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(async user => await this.updateCurrentUserRoleDescription());
+    this.loginSubscription = this.securityEventService.onLoginSuccessEvent().subscribe(async user => await this.updateCurrentUserRoleDescription());
+    this.languageChangeSubscription = this.translateService.onLangChange.subscribe(async langChangeEvent => await this.updateCurrentUserRoleDescription());
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    this.loginSubscription.unsubscribe();
+    this.languageChangeSubscription.unsubscribe();
   }
 
   clearWarning() {
