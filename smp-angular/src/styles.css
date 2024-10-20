@@ -109,15 +109,15 @@ div.mat-mdc-tab-body-wrapper {
 }
 
 .mat-toolbar-multiple-rows {
-  height: unset !important;
-  min-height: 32px !important;
-  padding: 5px;
+  padding: 0;
+  height: 44px !important;
+  min-height: 44px !important
 }
 
 .mat-toolbar-row {
-  padding: unset !important;
-  height: unset !important;
-  min-height: 32px !important;
+  padding: 0 5px;
+  height: 42px !important;
+  min-height: 42px !important;
 }
 
 /*--------------------------------------------------
@@ -262,6 +262,8 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+  height: 42px;
+  min-height: 42px;
 }
 
 mat-card {

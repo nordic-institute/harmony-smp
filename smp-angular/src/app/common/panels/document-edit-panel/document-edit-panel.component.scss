@@ -2,7 +2,25 @@
   display: flex;
   height: 100%;
   flex-direction: column;
+  min-height: 200px;
+  overflow: hidden;
+}
 
+.document-edit-panel {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  min-height: 150px;
+}
+
+.document-editor-container {
+  display:flex;
+  overflow: auto;
+  flex: 2;
+  align-self: stretch;
+  flex-direction: column;
+  border: ridge 3px #b0bec5;
+  min-height: 150px;
 }
 
 .CodeMirror {

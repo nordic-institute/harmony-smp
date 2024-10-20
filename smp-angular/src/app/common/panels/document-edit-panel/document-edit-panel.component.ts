@@ -9,36 +9,36 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {
   BeforeLeaveGuard
 } from "../../../window/sidenav/navigation-on-leave-guard";
-import {GroupRo} from "../../../common/model/group-ro.model";
-import {ResourceRo} from "../../../common/model/resource-ro.model";
+import {GroupRo} from "../../model/group-ro.model";
+import {ResourceRo} from "../../model/resource-ro.model";
 import {
   AlertMessageService
-} from "../../../common/alert-message/alert-message.service";
-import {DomainRo} from "../../../common/model/domain-ro.model";
+} from "../../alert-message/alert-message.service";
+import {DomainRo} from "../../model/domain-ro.model";
 import {
   ResourceDefinitionRo
 } from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {DocumentRo} from "../../../common/model/document-ro.model";
+import {DocumentRo} from "../../model/document-ro.model";
 import {
   NavigationService
 } from "../../../window/sidenav/navigation-model.service";
 
 import {
   ConfirmationDialogComponent
-} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {
   SmpEditorComponent
-} from "../../../common/components/smp-editor/smp-editor.component";
-import {EntityStatus} from "../../../common/enums/entity-status.enum";
+} from "../../components/smp-editor/smp-editor.component";
+import {EntityStatus} from "../../enums/entity-status.enum";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom, Observer} from "rxjs";
 import {
   DocumentVersionsStatus
-} from "../../../common/enums/document-versions-status.enum";
+} from "../../enums/document-versions-status.enum";
 import {
   HttpErrorHandlerService
-} from "../../../common/error/http-error-handler.service";
+} from "../../error/http-error-handler.service";
 import {
   DocumentWizardDialogComponent
 } from "../../../edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
@@ -264,11 +264,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
         subresourceTypeIdentifier: null,
       } as SubresourceRo;
     }
-    if (this.reviewDocument.target === "RESOURCE") {
-      this.isResourceDocument = true;
-    } else {
-      this.isResourceDocument = false;
-    }
+    this.isResourceDocument = this.reviewDocument.target === "RESOURCE";
   }
 
   ngOnInit(): void {
@@ -694,6 +690,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       documentVersionStatus: DocumentVersionsStatus.DRAFT,
       payloadStatus: EntityStatus.NEW,
       status: EntityStatus.UPDATED,
+      mimeType: this._document.mimeType,
       payloadVersion: null,
       payloadCreatedOn: null,
       payload: this.documentForm.controls['payload'].value,
