@@ -114,4 +114,11 @@ export class SmpTableComponent implements AfterViewInit {
     }
   }
 
+  getHeaderStyle(col: SmpTableColDef): string {
+    if (!col) {
+      return '';
+    }
+    return ( col?.style?col.style:'') + ' '  +( col?.headerStyle?col.headerStyle:'') ;
+  }
+
 }

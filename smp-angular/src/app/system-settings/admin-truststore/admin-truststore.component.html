@@ -49,7 +49,7 @@
 
     <!-- Name Column -->
     <ng-container matColumnDef="alias">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "admin.truststore.label.alias" | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="truststore-table-cell-header">{{ "admin.truststore.label.alias" | translate }}</th>
       <td mat-cell *matCellDef="let row"
           [ngClass]="{'datatable-row-error': row.invalid}"
           [matTooltip]="row.certificateId">{{row.alias}}</td>

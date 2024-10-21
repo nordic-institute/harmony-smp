@@ -76,13 +76,13 @@ export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, Contr
         header: 'document.properties.panel.label.property',
         cell: (row: DocumentPropertyRo) => row.property,
         tooltip: (row: DocumentPropertyRo) => row.desc,
-        style: 'font-size: 0.8em; padding: 0 5px;flex-grow: 0;flex-basis:40%;'
+        style: 'flex-grow: 0;flex-basis:40%;'
       } as SmpTableColDef,
       {
         columnDef: 'value',
         header: 'document.properties.panel.label.value',
         cell: (row: DocumentPropertyRo) => row.value,
-        style: 'font-size: 0.8em; padding: 0 5px;'
+        style: 'flex-grow: 1;'
       } as SmpTableColDef
     ];
   }
