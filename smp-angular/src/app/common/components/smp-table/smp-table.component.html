@@ -14,7 +14,8 @@
     <ng-container *ngFor="let colDef of columnDefList; let colIndex = index"
                   matColumnDef="{{colDef.columnDef}}">
       <mat-header-cell *matHeaderCellDef
-                       [style]="colDef.style">{{ colDef.header | translate }}
+                       class="smp-table-cell-header"
+                       [style]="getHeaderStyle(colDef)">{{ colDef.header | translate }}
 
       </mat-header-cell>
       <mat-cell class="smp-table-cell"  *matCellDef="let row"
@@ -23,7 +24,8 @@
       >{{ colDef.cell(row) }}</mat-cell>
     </ng-container>
     <!-- configure table header -->
-    <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></mat-header-row>
+    <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"
+    class="smp-table-header-row"></mat-header-row>
     <!-- configure table rows -->
     <mat-row class="smp-table-row" *matRowDef="let odd = odd; let row; columns: displayedColumns;"
              (click)="onRowClickedEvent(row)"

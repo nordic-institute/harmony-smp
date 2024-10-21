@@ -22,13 +22,13 @@
 
     <!-- Name Column -->
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "extensions.label.name" | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="extension-table-cell-header">{{ "extensions.label.name" | translate }}</th>
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>
     </ng-container>
 
     <!-- Version Column -->
-    <ng-container matColumnDef="version">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "extensions.label.version" | translate }}</th>
+    <ng-container matColumnDef="version" class="extension-table-cell-header">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="extension-table-cell-header">{{ "extensions.label.version" | translate }}</th>
       <td mat-cell *matCellDef="let row"> {{row.version}}</td>
     </ng-container>
 

@@ -635,10 +635,13 @@
 
   "domain.properties.button.reset": "Reset",
   "domain.properties.button.save": "Save",
+  "domain.properties.label.filter": "Filter by prop. name",
+  "domain.properties.placeholder.filter": "Filter by property name",
   "domain.properties.label.domain.property": "Domain property",
   "domain.properties.label.domain.value": "Domain value",
   "domain.properties.label.system.default": "Sys. Def.",
   "domain.properties.label.no.properties.found": "No Domain properties found",
+  "domain.properties.label.no.filter.found": "No data matching the filter {{filterValue}}\"",
   "domain.properties.panel.title": "Domain properties",
 
   "domain.resource.type.panel.button.reset": "Reset",

@@ -92,7 +92,7 @@
   <table class="mat-elevation-z2" id="admin-domain-table" mat-table
          [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="domainCode">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "admin.domain.label.domain.code" | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="domain-table-cell-header">{{ "admin.domain.label.domain.code" | translate }}</th>
       <td mat-cell *matCellDef="let row"
           [matTooltip]="row.domainCode">{{ row.domainCode }}
       </td>

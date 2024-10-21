@@ -16,9 +16,19 @@
   padding-right: 5px;
 }
 
-.smp-table-cell  {
+.smp-table-cell {
   word-break: break-all;
   word-wrap: break-word;
+  font-size: 0.8em;
+  padding: 1px 5px;
+
+}
+
+.smp-table-cell-header {
+  font-weight: bold;
+  font-size: 0.9em;
+  padding: 1px 5px;
+  text-align: left;
 }
 
 .smp-table-row  {
@@ -38,6 +48,10 @@
 .smp-table-filter {
   width: 100%;
   padding-top: 1em;
+}
+
+.smp-table-header-row{
+  min-height: 36px;
 }
 
 

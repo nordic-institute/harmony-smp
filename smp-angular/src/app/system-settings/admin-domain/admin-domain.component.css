@@ -31,3 +31,10 @@
   height: 100%;
   max-width: 800px
 }
+
+.domain-table-cell-header {
+  font-weight: bold;
+  font-size: 0.9em;
+  padding: 1px 5px;
+  text-align: center;
+}

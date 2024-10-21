@@ -80,33 +80,33 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
         columnDef: 'date',
         header: 'document.events.panel.label.date',
         cell: (row: DocumentVersionEventRo) => this.dateTimeService.formatDateTimeForUserLocal(row.eventOn),
-        style: 'font-size: 0.8em; flex-grow: 0;flex-basis: 80px; padding: 5px;justify-content : center;'
+        style: 'flex-basis: 150px;flex-grow: 0;'
       } as SmpTableColDef,
       {
         columnDef: 'eventType',
         header: 'document.events.panel.label.type',
         cell: (row: DocumentVersionEventRo) => row.eventType,
-        style: 'font-size: 0.8em; padding: 5px;justify-content : center;flex-grow: 0;flex-basis:80px;'
+        style: 'flex-basis:80px;flex-grow: 0;'
 
       } as SmpTableColDef,
       {
         columnDef: 'status',
         header: 'document.events.panel.label.status',
         cell: (row: DocumentVersionEventRo) => row.documentVersionStatus,
-        style: 'font-size: 0.8em; padding: 5px;justify-content : center;flex-grow: 0;flex-basis:80px;'
+        style: 'flex-basis:80px;flex-grow: 0;'
 
       } as SmpTableColDef,
       {
         columnDef: 'username',
         header: 'document.events.panel.label.username',
         cell: (row: DocumentVersionEventRo) => row.username,
-        style: 'font-size: 0.8em; padding: 5px;justify-content : center;'
+        style: 'flex-grow: 1;'
       } as SmpTableColDef,
       {
         columnDef: 'eventSource',
         header: 'document.events.panel.label.source',
         cell: (row: DocumentVersionEventRo) => row.eventSourceType,
-        style: 'font-size: 0.8em; flex-grow: 0;flex-basis:100px;padding: 5px;justify-content : center;'
+        style: 'flex-basis:60px;flex-grow: 0;'
       } as SmpTableColDef,
     ];
   }
