@@ -584,6 +584,7 @@
   "resource.search.label.resource.scheme": "Resource scheme",
   "resource.search.label.column.document.type": "Document type",
   "resource.search.label.column.domain": "Domain",
+  "resource.search.label.column.visibility": "Visibility",
   "resource.search.label.column.resource.id": "Resource identifier",
   "resource.search.label.column.resource.scheme": "Resource scheme",
   "resource.search.label.column.resource.url": "Resource URL",
