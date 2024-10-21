@@ -1,5 +1,4 @@
 <div id="resource-document-panel">
-
   <mat-toolbar class="mat-elevation-z2" style="min-height: 50px !important;">
     <mat-toolbar-row class="smp-toolbar-row"
                      style="justify-content: space-between;min-height: 50px !important;">
@@ -45,8 +44,7 @@
     </mat-toolbar-row>
   </mat-toolbar>
 
-  <div class="panel" [formGroup]="documentForm"
-       style="display: flex;flex-direction: row;flex-grow: 1; ">
+  <div class="panel document-edit-panel" [formGroup]="documentForm">
     <div
       style="display:flex; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;">
       <ng-container *ngIf="hasDocumentReference && isNotReviewMode; else selectedDocumentVersionDataTemplate" >
@@ -122,8 +120,7 @@
       </ng-template>
 
 
-      <div
-        style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;border: ridge 3px #b0bec5"
+      <div class="document-editor-container"
         (click)="onEditPanelClick()">
         <smp-editor #smpDocumentEditor
                     formControlName="editorText"
@@ -178,8 +175,7 @@
     </expandable-panel>
   </div>
 
-  <mat-toolbar class="mat-elevation-z2"
-               style="flex-grow: 0;">
+  <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
       <button id="back_id" mat-raised-button color="primary"
               (click)="onBackButtonClicked()">
