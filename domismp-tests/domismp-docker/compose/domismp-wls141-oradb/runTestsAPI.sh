@@ -21,4 +21,4 @@ export DOCKER_NETWORK_NAME
 
 # Starting Docker Compose TEST (in specific project to avoid orphan container warning)
 docker compose -f docker-compose.test-api${SMP_VERSION_SUFFIX}.yml -p "run-${PLAN_PREFIX}" up
-docker cp "run-${PLAN_PREFIX}-testapi-1:/data/results/soapui-reports" ./results
+docker cp "run-${PLAN_PREFIX}-testapi-1:/data/results/soapui-reports" "./results${SMP_VERSION_SUFFIX}"
