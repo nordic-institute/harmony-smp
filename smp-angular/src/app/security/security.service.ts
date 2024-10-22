@@ -226,12 +226,14 @@ export class SecurityService {
           subject.next(false);
         }
       });
-
     } else {
-      let currentUser = this.getCurrentUser();
-      subject.next(currentUser !== null);
+      subject.next(this.hasUISessionData());
     }
     return subject.asObservable();
+  }
+
+  hasUISessionData(): boolean {
+    return !!this.getCurrentUser();
   }
 
   isCurrentUserSystemAdmin(): boolean {
