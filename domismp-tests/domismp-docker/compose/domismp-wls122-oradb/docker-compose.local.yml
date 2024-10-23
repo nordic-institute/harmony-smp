@@ -1,0 +1,24 @@
+services:
+  smp-oracle-db:
+    ports:
+      - 1921:1521
+
+  smp-wls-admin:
+      ports:
+        - 7901:7001
+
+  smp-node-01:
+    ports:
+      - "19453:8453"
+      - "19001:8001"
+
+  smp-node-02:
+    ports:
+      - "19454:8453"
+      - "19002:8001"
+
+  smp-httpd:
+    ports:
+      - "7980:80"
+
+
