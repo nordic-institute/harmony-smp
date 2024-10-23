@@ -15,6 +15,14 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
+   file name: spring-*-5.3.39.jar
+        CVE-2024-38820 - DataBinder is used to bind request parameters to JavaBean objects. The vulnerability is not exploitable by SMP usage of the library.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring-.*?@.*$</packageUrl>
+        <cve>CVE-2024-38820</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
    file name: spring-web-5.3.*.jar
    CVE-2016-1000027 - The data serialized by the application are from authenticated users and trusted
    ]]></notes>
@@ -27,8 +35,10 @@
    file name: smp.war: spring-core-5.3.31.jar
    The data serialized by the application are from authenticated users and trusted
    NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
+   - CVE-2024-38820: see below the spring-*-5.3.39.jar for the same issue explanation
    ]]></notes>
         <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2024-38820</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
