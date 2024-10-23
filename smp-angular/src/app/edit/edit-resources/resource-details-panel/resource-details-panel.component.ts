@@ -177,6 +177,24 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     this.resourceForm.reset(this._resource);
   }
 
+  async onVisibilityChanged(event: any) {
+    let showWarning: boolean = this._resource?.visibility === VisibilityEnum.Public && event.target.value === VisibilityEnum.Private;
+    if (showWarning) {
+      this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: await lastValueFrom(this.translateService.get("resource.details.panel.visibility.change.confirmation.dialog.title")),
+          description: await lastValueFrom(this.translateService.get("resource.details.panel.visibility.change.confirmation.dialog.description"))
+        }
+      }).afterClosed().subscribe(result => {
+        if (!result) {
+          // prevent default does not work in case of "async"
+          this.resourceForm.controls['visibility'].setValue(VisibilityEnum.Public);
+          this.resourceForm.controls['visibility'].markAsPristine();
+        }
+      });
+    }
+  }
+
   async onReviewEnabledChanged(event: any) {
     let newReviewEnabled: boolean = event.target.checked;
     let showWarning: boolean = this._resource?.reviewEnabled && !newReviewEnabled;

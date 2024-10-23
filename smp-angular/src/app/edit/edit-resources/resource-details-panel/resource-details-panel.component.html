@@ -54,6 +54,7 @@
       <mat-label>{{ "resource.details.panel.label.resource.visibility" | translate }}</mat-label>
       <select matNativeControl formControlName="visibility"
               matTooltip="{{ 'resource.details.panel.tooltip.resource.visibility' | translate }}"
+              (change)="onVisibilityChanged($event)"
               id="visibility_id" required>
         <option *ngFor="let visibility of groupVisibilityOptions"
                 [value]="visibility.value">

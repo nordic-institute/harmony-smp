@@ -379,6 +379,9 @@
   "resource.details.panel.button.save": "Save",
   "resource.details.panel.review.disabled.confirmation.dialog.title": "Review disabled?",
   "resource.details.panel.review.disabled.confirmation.dialog.description": "All document versions with review statuses (UNDER_REVIEW, APPROVED, REJECTED) will be set to DRAFT\nDo you want to continue?",
+  "resource.details.panel.visibility.change.confirmation.dialog.title": "Visibility change?",
+  "resource.details.panel.visibility.change.confirmation.dialog.description": "If the resource includes shared documents for a resource or subresource, existing users can continue to access the documents as reference, but it can not be added as a reference  the new documents.\nDo you want to continue?",
+
 
   "document.edit.panel.button.back": "Back",
   "document.edit.panel.button.cancel": "Cancel",
