@@ -34,6 +34,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -202,6 +203,26 @@ public class DocumentDao extends BaseDao<DBDocument> {
 
         return query.getSingleResult();
     }
+
+    /**
+     * Method retrieved all the documents where given document is set as target and un-link the documents
+     *
+     * @param document the target document
+     */
+    public void unlinkDocument(DBDocument document){
+        if (document == null || document.getId() == null) {
+            LOG.debug("Can not unlink document, because document is not persisted to the database");
+            return;
+        }
+        TypedQuery<DBDocument> query =  memEManager.createNamedQuery(QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, DBDocument.class);
+        query.setParameter(PARAM_DOCUMENT_ID, document.getId());
+        // user stream ulink to capture audit record
+        try (Stream<DBDocument> streamDocument = query.getResultStream()) {
+            streamDocument.forEach(linkedDoc -> {
+                linkedDoc.setReferenceDocument(null);
+            });
+        }
+   }
 
     /**
      * Method creates query for searching reference document resources
