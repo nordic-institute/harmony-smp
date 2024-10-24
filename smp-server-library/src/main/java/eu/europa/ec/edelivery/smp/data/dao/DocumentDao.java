@@ -217,11 +217,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
         TypedQuery<DBDocument> query =  memEManager.createNamedQuery(QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, DBDocument.class);
         query.setParameter(PARAM_DOCUMENT_ID, document.getId());
         // user stream ulink to capture audit record
-        try (Stream<DBDocument> streamDocument = query.getResultStream()) {
-            streamDocument.forEach(linkedDoc -> {
-                linkedDoc.setReferenceDocument(null);
-            });
-        }
+        List<DBDocument> lstDocuments = query.getResultList();
+        lstDocuments.forEach(linkedDoc -> {
+            linkedDoc.setReferenceDocument(null);
+        });
    }
 
     /**
