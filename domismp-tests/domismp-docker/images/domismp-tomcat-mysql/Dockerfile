@@ -10,7 +10,8 @@ ENV SMP_HOME=/opt/smp  \
     MYSQL_DRV_SHA1=41ec3f8cdaccf6c46a47d7cd628eeb59a926d9d4 \
     TOMCAT_MAJOR=9  \
     TOMCAT_VERSION=9.0.73 \
-    TOMCAT_NAVITVE_VERSION=1.2.36  \
+    TOMCAT_NATIVE_VERSION=1.2.36  \
+    TOMCAT_TLS_KEY_ALIAS=eulogin.protected.smp.local  \
     TOMCAT_SHA512=4deac84d6f8ff147d0060605e85fd2c0bf92b9eb622e426d4acc19d0cd4fc0d46a394e01e5664076a5e4f1c39ae14fc2238ebee53a7779bf086540f6dc4967c8 \
     JAVA_8_VERSION="jdk8u402-b06" \
     JAVA_8_URL_FILENAME="OpenJDK8U-jdk_x64_linux_hotspot_8u402b06.tar.gz" \
@@ -52,7 +53,7 @@ ENV TOMCAT_HOME=/opt/apache-tomcat-$TOMCAT_VERSION  \
 # - 8080 Tomcat port
 # - 53 dns port
 # - JDPA debug port
-EXPOSE 3306 8080 6901 53 5005
+EXPOSE 3306 8080 8443 6901 53 5005
 
 VOLUME ["/data"]
 
@@ -124,7 +125,7 @@ RUN  echo "smp.jdbc.driver=com.mysql.cj.jdbc.Driver" >  $SMP_HOME/apache-tomcat-
     
 RUN cd $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin \
     && tar xfz tomcat-native.tar.gz \
-    && cd tomcat-native-${TOMCAT_NAVITVE_VERSION}-src/native \
+    && cd tomcat-native-${TOMCAT_NATIVE_VERSION}-src/native \
     && ./configure && make && make install 
 
 # download and deploy sml

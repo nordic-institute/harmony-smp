@@ -89,8 +89,30 @@ init_tomcat() {
 
   # sleep a little to avoid mv issues
   sleep 5s
+
+  configureServerHttps
 }
 
+function configureServerHttps() {
+  echo "Create Tomcat HTTPS..."
+
+  cp /tmp/artefacts/shared-artefacts/server* ${TOMCAT_HOME}/
+  # Because tomcat-native.tar.gz is installed we can use APR connector
+  sed -i.bak -e "s#</Service>#<Connector port=\"8443\" protocol=\"org.apache.coyote.http11.Http11AprProtocol\"  \
+		maxThreads=\"200\" maxParameterCount=\"1000\"  \
+	  scheme=\"https\" secure=\"true\" SSLEnabled=\"true\" \
+		clientAuth=\"true\" sslProtocol=\"TLS\" \
+  	keystoreType=\"PKCS12\" \
+		keystoreFile=\"/tmp/artefacts/shared-artefacts/server-keystore.p12\" \
+    keyAlias=\"${TOMCAT_TLS_KEY_ALIAS}\" \
+  	keystorePass=\"test123\" \
+  	keyPass=\"test123\"   \
+    truststoreType=\"PKCS12\" \
+  	truststoreFile=\"/tmp/artefacts/shared-artefacts/server-truststore.p12\"  \
+  	truststorePass=\"test123\"  \
+  	/> \
+	</Service>#g" "${TOMCAT_HOME}/conf/server.xml"
+}
 init_mysql() {
   echo "[INFO] init database:"
   if [ ! -d "/run/mysqld" ]; then
