@@ -78,6 +78,7 @@ public class UIResourceService {
     private final GroupDao groupDao;
     private final ResourceMemberDao resourceMemberDao;
     private final UserDao userDao;
+    private final DocumentDao documentDao;
     private final ResourceDefDao resourceDefDao;
     private final DomainResourceDefDao domainResourceDefDao;
     private final IdentifierService identifierService;
@@ -87,7 +88,10 @@ public class UIResourceService {
     private final DocumentVersionService documentVersionService;
 
 
-    public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao,
+    public UIResourceService(ResourceDao resourceDao,
+                             ResourceMemberDao resourceMemberDao,
+                             ResourceDefDao resourceDefDao,
+                             DocumentDao documentDao,
                              DomainResourceDefDao domainResourceDefDao, UserDao userDao, GroupDao groupDao,
                              IdentifierService identifierService,
                              ConversionService conversionService,
@@ -96,6 +100,7 @@ public class UIResourceService {
         this.resourceDao = resourceDao;
         this.resourceMemberDao = resourceMemberDao;
         this.resourceDefDao = resourceDefDao;
+        this.documentDao = documentDao;
         this.domainResourceDefDao = domainResourceDefDao;
         this.groupDao = groupDao;
         this.userDao = userDao;
@@ -191,6 +196,9 @@ public class UIResourceService {
                 resourceDomain.isSmlRegistered() && resource.isSmlRegistered()) {
             smlIntegrationService.unregisterParticipant(resource, resourceDomain);
         }
+
+        // remove all documents where resource is used as reference
+        documentDao.unlinkDocument(resource.getDocument());
 
         resourceDao.remove(resource);
         return conversionService.convert(resource, ResourceRO.class);
@@ -308,7 +316,7 @@ public class UIResourceService {
                 uiDocumentService.updateToNonReviewStatuses(resource.getDocument());
                 // update statuses for all subresources
                 resource.getSubresources().forEach(subResource ->
-                    uiDocumentService.updateToNonReviewStatuses(subResource.getDocument()));
+                        uiDocumentService.updateToNonReviewStatuses(subResource.getDocument()));
             }
             resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
         }
