@@ -33,15 +33,72 @@ function stopAndClearTestContainers() {
 }
 
 ################################################################
-# Function exports the logs to file and stop and clear containers
+# function starts the container with the prefix and version. If local is set to true,
+# and docker-compose.local.yml is present, then local docker compose file is used as well
 function startTestContainers() {
   COMPOSE_FILE="-f docker-compose.yml"
   if [ "${START_LOCAL}" == "true" ]; then
-    COMPOSE_FILE="${COMPOSE_FILE} -f docker-compose.local.yml"
+    # check if local docker compose file is present and use it
+    # else log and and continue without it
+    if [ ! -f "docker-compose.local.yml" ]; then
+      echo "Local docker compose file not found!"
+    else
+        echo "Local docker compose file found, add to the execution!"
+        COMPOSE_FILE="${COMPOSE_FILE} -f docker-compose.local.yml"
+    fi
   fi
+
   : "${SMP_VERSION?"Need to set SMP_VERSION non-empty!"}"
   echo "Start containers with prefix ${PLAN_PREFIX} for version ${SMP_VERSION}"
   docker compose -p "${PLAN_PREFIX}" ${COMPOSE_FILE} up -d --force-recreate --wait --wait-timeout 300
+}
+
+################################################################
+# Function starts the testing container which executes the tests.
+# The function requires the test yaml suffix (e.g. test-api, test-ui) as parameter
+# and the optional second parameter is the test variant (e.g. smp20)
+function runTestsFromContainer() {
+  : "${1?"The container service name is missing : eg: testapi!"}"
+  : "${2?"The compose suffix is mandatory: e.g. test-api, test-ui!"}"
+  : "${WORKDIR?"Work dir is not set!"}"
+  : "${SMP_VERSION?"Need to set SMP_VERSION non-empty!"}"
+
+  COMPOSE_FILE="docker-compose.${2}.yml"
+  TEST_PLAN_SUFFIX="${3+-${3}}"
+
+  if [ ! -f "${COMPOSE_FILE}" ]; then
+    echo "Docker compose file to execute tests [${COMPOSE_FILE}] not found!"
+    exit 2
+  fi
+  # add -f to the compose file
+  COMPOSE_FILE="-f ${COMPOSE_FILE}"
+  # if {3} is sets then add additional compose file with the variant
+  if [ -n "${TEST_PLAN_SUFFIX}" ]; then
+    ADDITIONAL_DOCKER_COMPOSE_FILE="docker-compose.${2}${TEST_PLAN_SUFFIX}.yml"
+    if [ -f "${ADDITIONAL_DOCKER_COMPOSE_FILE}" ]; then
+      COMPOSE_FILE="${COMPOSE_FILE} -f ${ADDITIONAL_DOCKER_COMPOSE_FILE}"
+    else
+      echo "Variant docker compose file [${ADDITIONAL_DOCKER_COMPOSE_FILE}] not found!"
+      exit 3
+    fi
+  fi
+  DOCKER_NETWORK_NAME="${PLAN_PREFIX}_default"
+  export SMP_VERSION
+  export DOCKER_NETWORK_NAME
+
+  RESULT_FOLDER="${WORKDIR}/results-${2}${TEST_PLAN_SUFFIX}"
+  # clear old results
+  rm -rf "${RESULT_FOLDER}"
+  mkdir -p "${RESULT_FOLDER}"
+
+  echo "Start testing containers ${COMPOSE_FILE} with prefix ${PLAN_PREFIX} for version ${SMP_VERSION}"
+  docker compose -p "run-${PLAN_PREFIX}" ${COMPOSE_FILE} up
+  # copy results from container
+  TEST_CONTAINER_NAME="run-${PLAN_PREFIX}-${1}-1"
+  echo "Copy results from container from "${TEST_CONTAINER_NAME}:/data/results/soapui-reports"  to ${RESULT_FOLDER}"
+  docker cp "${TEST_CONTAINER_NAME}:/data/results/soapui-reports" ${RESULT_FOLDER}
+  echo "Copy logs from container from ${TEST_CONTAINER_NAME} to  ${RESULT_FOLDER}/smp-${2}${TEST_PLAN_SUFFIX}.log"
+  docker logs "${TEST_CONTAINER_NAME}"  > "${RESULT_FOLDER}/smp-${2}${TEST_PLAN_SUFFIX}.log" 2>&1
 }
 
 # method creates init scripts for application oracle database initialization from scratch!

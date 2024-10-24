@@ -3,15 +3,6 @@ services:
   ## UI Tests
   ##
   testapi:
-    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TESTS}:${SMP_VERSION}
     environment:
-      - TEST_PLAN=api
-      - TEST_URL=http://smp-springboot-mysql.local:8084/smp/
       - TEST_FILE_NAME=DomiSMP-Oasis2-soapui-project.xml
       - TEST_SUITE=AUTO_BAMBOO_SMP20
-    networks:
-      - test-network
-networks:
-  test-network:
-    name: ${DOCKER_NETWORK_NAME:-domismp-springboot-mysql_default}
-    external: true
