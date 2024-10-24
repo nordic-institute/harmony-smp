@@ -17,7 +17,7 @@ are registered in SML as trusted certificates for domains
 For detailed DomiSML configuration see the SML init script:[sml-mysql5innodb-data.sql](sml-mysql5innodb-data.sql)
 
 
-# Tomcate HTTPS endpoint
+# Tomcat HTTPS endpoint
 The Tomcat instance is configured with a mutual TLS endpoint. To access the HTTPS endpoint, start the Docker container with the following port mapping:
 example snipped for docker-compose.yml:
 
