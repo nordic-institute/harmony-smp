@@ -959,7 +959,7 @@ class SMP implements  AutoCloseable
 	}
 
 //-------------- Set the Smp configuration property value -----------------
-	def static setSmpConfigProperty(log, context, propName, newValue, waitForApp=false, waitDuration="3", authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
+	def static setSmpConfigProperty(log, context, propName, newValue, waitForApp=false, waitDuration="20", authenticationUser=SYSTEM_USER, authenticationPwd=SYSTEM_PWD){
 		debugLog("Calling \"setSmpConfigProperty\".", log)
 		debugLog("  setSmpConfigProperty  [][]  Setting property \"$propName\" to \"$newValue\".", log)
 		def updatedProp=[:]
@@ -1000,7 +1000,7 @@ class SMP implements  AutoCloseable
         }
 		assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:setSmpConfigProperty: Error while trying to connect to the SMP. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
 		if(waitForApp){
-			waitFor(log,waitDuration, "min")
+			waitFor(log,waitDuration, "sec")
 		}
 		debugLog("  setSmpConfigProperty  [][]  Property \"$propName\" update done successfully.", log)		
 	}
