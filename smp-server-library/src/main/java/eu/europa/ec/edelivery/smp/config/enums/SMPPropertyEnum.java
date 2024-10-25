@@ -312,10 +312,10 @@ public enum SMPPropertyEnum {
             "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
 
     ALERT_USER_UPDATED_ENABLED("smp.alert.user.updated.enabled",
-            "true", "Enable/disable the user creation alert",
+            "true", "Enable/disable the user update alert",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
     ALERT_USER_UPDATED_LEVEL("smp.alert.user.updated.level",
-            "HIGH", "User creation alert level. Values: {LOW, MEDIUM, HIGH}",
+            "HIGH", "User update alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
             "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
 
