@@ -71,7 +71,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
     this.columns = [
       {
         columnDef: 'identifierScheme',
-        header: 'subresource.panel.label.identifier.value',
+        header: 'subresource.panel.label.identifier.scheme',
         cell: (row: SubresourceRo) => row.identifierScheme
       } as SmpTableColDef,
       {
