@@ -1035,7 +1035,6 @@ See the Licence for the specific language governing permissions and limitations 
                                     <stylesheet>license/config/license.xsl</stylesheet>
                                     <outputDir>./</outputDir>
 
-
                                     <fileMappers>
                                         <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
                                             <pattern>licenses.xml</pattern>
