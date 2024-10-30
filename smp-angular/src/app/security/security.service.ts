@@ -290,7 +290,7 @@ export class SecurityService {
    *
    */
   uiUserActivityDetected() {
-    console.log("User activity detected");
+
     let user = this.getCurrentUser();
     if (!this.isAuthenticated(false)
       || !user
