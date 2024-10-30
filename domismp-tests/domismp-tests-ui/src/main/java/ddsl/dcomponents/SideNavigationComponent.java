@@ -15,6 +15,7 @@ import pages.administration.ReviewTasksPage;
 import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.administration.editGroupsPage.EditGroupsPage;
 import pages.administration.editResourcesPage.EditResourcePage;
+import pages.search.ResourcesPage;
 import pages.systemSettings.TruststorePage;
 import pages.systemSettings.UsersPage;
 import pages.systemSettings.domainsPage.DomainsPage;
@@ -36,7 +37,7 @@ public class SideNavigationComponent extends DomiSMPPage {
     private WebElement resourcesLnk;
 
     @FindBy(id = "search-toolsButton")
-    private WebElement resourcesExpandLnk;
+    private WebElement searchExpandLnk;
     //	----------------------------------------------------
 
     //	--------------Administration---------------------------
@@ -113,12 +114,12 @@ public class SideNavigationComponent extends DomiSMPPage {
         LOG.debug("Get link to " + page.name());
         // DomiSMP behaviour. Button is not expanded if already focused and not expanded - issue when re-login
         // with this we make sure the starting point from Search
-        openSubmenu(resourcesExpandLnk, null);
+        openSubmenu(searchExpandLnk, null);
 
-
-        //            case SEARCH_RESOURCES:
-        //                expandSection(resourcesExpandLnk);s
-        //                return new DLink(driver, resourcesLnk);
+        if (page == Pages.SEARCH_RESOURCES) {
+            openSubmenu(searchExpandLnk, resourcesLnk);
+            return (T) new ResourcesPage(driver);
+        }
         if (page == Pages.ADMINISTRATION_EDIT_DOMAINS) {
             openSubmenu(administrationExpand, editDomainsLnk);
             return (T) new EditDomainsPage(driver);

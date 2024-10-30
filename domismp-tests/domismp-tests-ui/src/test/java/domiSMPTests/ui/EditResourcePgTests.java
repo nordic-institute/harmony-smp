@@ -9,10 +9,15 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
+import pages.administration.editResourcesPage.CreateSubresourceDetailsDialog;
 import pages.administration.editResourcesPage.EditResourcePage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentPage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentWizardDialog;
+import pages.administration.editResourcesPage.editResourceDocumentPage.EditSubresourceDocumentPage;
+import pages.administration.editResourcesPage.editResourceDocumentPage.SubresourceWizardDialog;
+import pages.search.ResourcesPage;
 import rest.models.*;
+import utils.FileUtils;
 import utils.Generator;
 import utils.TestRunData;
 import utils.XMLUtils;
@@ -283,6 +288,8 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
         editResourceDocumentPage.clickOnNewVersion();
+        editResourceDocumentPage.clickOnDocumentWizard().getExtensionAgencyIdnput().fill("NewVersion");
+        new EditResourceDocumentWizardDialog(driver).clickOK();
         editResourceDocumentPage.clickOnSave();
         editResourceDocumentPage.getAlertArea().closeAlert();
 
@@ -303,12 +310,71 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertEquals("PUBLISHED", editResourceDocumentPage.getStatusValue());
         editResourceDocumentPage.selectVersion(1);
         soft.assertEquals("RETIRED", editResourceDocumentPage.getStatusValue());
-
+        ResourcesPage resourcesPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLResouceDocument(resourceModelOasis1.getIdentifierValue(), resourceModelOasis1.getIdentifierScheme());
+        soft.assertEquals(documentXML.getNodeValue("ExtensionAgencyID"), "NewVersion", "Document value is wrong");
         soft.assertAll();
 
     }
 
+    @Test(description = "EDTRES-15 - Resource Administrator can publish subresource documents with approve status", priority = 1)
 
+    public void resourceAdministratorsCanPublisSUBResourceDocumentsWithApproveStatus() throws Exception {
+
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
+
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModel);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModel);
+        editSubresourceDocumentPage.clickOnNewVersion();
+        SubresourceWizardDialog subresourceWizardDialog = editSubresourceDocumentPage.clickOnDocumentWizard();
+        subresourceWizardDialog.processIdentifierInput().fill("123-123-123");
+        subresourceWizardDialog.accessPointUrlInput().fill("www.domibustest.com");
+        String path = FileUtils.getAbsoluteTruststorePath("validCertificate.cer");
+
+
+        subresourceWizardDialog.uploadCertificateBtn(path);
+        subresourceWizardDialog.clickOK();
+
+        editSubresourceDocumentPage.clickOnSave();
+        editSubresourceDocumentPage.getAlertArea().closeAlert();
+
+        soft.assertTrue(editSubresourceDocumentPage.getRequestReviewBtn().isEnabled(), "Request review button is not enabled");
+        soft.assertEquals("DRAFT", editSubresourceDocumentPage.getStatusValue());
+
+        //Request review
+        editSubresourceDocumentPage.getRequestReviewBtn().click();
+        soft.assertEquals("UNDER_REVIEW", editSubresourceDocumentPage.getStatusValue());
+
+        //Self approve
+        soft.assertTrue(editSubresourceDocumentPage.getApproveBtn().isEnabled(), "Approve button is not enabled");
+        editSubresourceDocumentPage.clickOnApproveAndConfirm();
+        soft.assertEquals("APPROVED", editSubresourceDocumentPage.getStatusValue());
+
+        soft.assertTrue(editSubresourceDocumentPage.getPublishBtn().isEnabled(), "Publish is not enabled");
+        editSubresourceDocumentPage.clickOnPublishAndConfirm();
+        soft.assertEquals("PUBLISHED", editSubresourceDocumentPage.getStatusValue());
+        editSubresourceDocumentPage.selectVersion(1);
+        soft.assertEquals("RETIRED", editSubresourceDocumentPage.getStatusValue());
+        ResourcesPage resourcesPage = editSubresourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLSubResouceDocument(resourceModelOasis1.getIdentifierValue(), resourceModelOasis1.getIdentifierScheme(), subresourceModel.getIdentifierValue());
+
+        soft.assertEquals(documentXML.getNodeValue("ParticipantIdentifier"), resourceModelOasis1.getIdentifierValue(), "EndpointURI value is wrong");
+        soft.assertEquals(documentXML.getNodeValue("DocumentIdentifier"), subresourceModel.getIdentifierValue(), "EndpointURI value is wrong");
+        soft.assertEquals(documentXML.getNodeValue("EndpointURI"), "www.domibustest.com", "EndpointURI value is wrong");
+        soft.assertAll();
+    }
 }
 
 
