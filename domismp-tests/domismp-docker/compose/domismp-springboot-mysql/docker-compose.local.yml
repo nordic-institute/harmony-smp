@@ -1,0 +1,10 @@
+services:
+  smp-springboot:
+    environment:
+    ports:
+      - "8282:8084"
+      - "3208:3306"
+      - "5005:5005"
+  mail-service:
+    ports:
+      - "9205:9000"

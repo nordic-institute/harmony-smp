@@ -21,12 +21,32 @@ public class ResourceModel {
     private Long status;
     private String visibility;
 
+    public Boolean getHasCurrentUserReviewPermission() {
+        return hasCurrentUserReviewPermission;
+    }
+
+    public void setHasCurrentUserReviewPermission(Boolean hasCurrentUserReviewPermission) {
+        this.hasCurrentUserReviewPermission = hasCurrentUserReviewPermission;
+    }
+
+    public Boolean getReviewEnabled() {
+        return reviewEnabled;
+    }
+
+    public void setReviewEnabled(Boolean reviewEnabled) {
+        this.reviewEnabled = reviewEnabled;
+    }
+
+    private Boolean hasCurrentUserReviewPermission= false;
+    private Boolean reviewEnabled =	false;
+
     public static ResourceModel generatePublicResource() {
         ResourceModel resourceModel = new ResourceModel();
         resourceModel.resourceTypeIdentifier = StringUtils.lowerCase(Utils.randomEnum(getAllEnumValues(ResourceTypes.class)).getName());
         resourceModel.identifierValue = ("AUT_resourceIdentifier_" + Generator.randomAlphaNumericValue(4)).toLowerCase();
         resourceModel.identifierScheme = Generator.randomAlphabeticalValue(4).toLowerCase() + "-" + Generator.randomAlphaNumericValue(4).toLowerCase() + "-" + Generator.randomAlphaNumericValue(4).toLowerCase();
         resourceModel.visibility = "PUBLIC";
+        resourceModel.reviewEnabled= false;
         return resourceModel;
     }
 
@@ -103,6 +123,17 @@ public class ResourceModel {
         resourceModel.smlRegistered = false;
         resourceModel.resourceTypeIdentifier = StringUtils.lowerCase(resourceType.getName());
         resourceModel.visibility = "PUBLIC";
+        return resourceModel;
+    }
+
+    public static ResourceModel generatePublicResourceWithReview(ResourceTypes resourceType) {
+        ResourceModel resourceModel = new ResourceModel();
+        resourceModel.identifierScheme = StringUtils.lowerCase(Generator.randomAlphabeticalValue(3) + "-" + Generator.randomAlphaNumericValue(3) + "-" + Generator.randomAlphaNumericValue(3));
+        resourceModel.identifierValue = "AUT_resIden_" + Generator.randomAlphaNumericValue(4).toLowerCase();
+        resourceModel.smlRegistered = false;
+        resourceModel.resourceTypeIdentifier = StringUtils.lowerCase(resourceType.getName());
+        resourceModel.visibility = "PUBLIC";
+        resourceModel.reviewEnabled = true;
         return resourceModel;
     }
 

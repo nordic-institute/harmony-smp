@@ -1,22 +1,22 @@
 <div id="domain-properties-panel" class="mat-elevation-z2">
   <h3>{{ "domain.properties.panel.title" | translate }}</h3>
 
-  <table class="mat-elevation-z2" id="admin-domain-properties-table" mat-table
+  <table id="admin-domain-properties-table" mat-table
          [dataSource]="propertyDataSource" matSort>
     <ng-container matColumnDef="systemDefault">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "domain.properties.label.system.default" | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="domprop-table-cell-header">{{ "domain.properties.label.system.default" | translate }}</th>
       <td mat-cell *matCellDef="let row">
         <mat-checkbox checked="{{row.systemDefault}}" disabled></mat-checkbox>
       </td>
     </ng-container>
     <ng-container matColumnDef="property">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "domain.properties.label.domain.property" | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header  class="domprop-table-cell-header">{{ "domain.properties.label.domain.property" | translate }}</th>
       <td mat-cell *matCellDef="let row"
           [matTooltip]="row.desc">{{ row.property }}
       </td>
     </ng-container>
     <ng-container matColumnDef="value">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "domain.properties.label.domain.value" | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header  class="domprop-table-cell-header">{{ "domain.properties.label.domain.value" | translate }}</th>
       <td mat-cell *matCellDef="let row">{{ getTableRowValue(row) }}</td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

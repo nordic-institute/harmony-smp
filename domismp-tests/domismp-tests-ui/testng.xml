@@ -1,8 +1,18 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="SELENIUM" parallel="classes" thread-count="1">
-    <groups>
-        <run>
-        </run>
-    </groups>
+    <test thread-count="1" name="domismp-tests-ui">
+        <classes>
+            <class name="domiSMPTests.SeleniumTest"/>
+            <class name="domiSMPTests.ui.UsersPgTests"/>
+            <class name="domiSMPTests.ui.DomainsPgTests"/>
+            <class name="domiSMPTests.ui.ProfilePgTests"/>
+            <class name="domiSMPTests.ui.KeystorePgTests"/>
+            <class name="domiSMPTests.ui.TrustorePgTests"/>
+            <class name="domiSMPTests.ui.EditGroupsPgTests"/>
+            <class name="domiSMPTests.ui.PropertiesPgTests"/>
+            <class name="domiSMPTests.ui.EditDomainsPgTests"/>
+            <class name="domiSMPTests.ui.EditResourcePgTests"/>
+        </classes>
+    </test> <!-- domismp-tests-ui -->
 
 </suite>

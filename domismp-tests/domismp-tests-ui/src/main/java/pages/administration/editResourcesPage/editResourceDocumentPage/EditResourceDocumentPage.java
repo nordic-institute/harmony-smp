@@ -1,6 +1,8 @@
 package pages.administration.editResourcesPage.editResourceDocumentPage;
 
 import ddsl.DomiSMPPage;
+import ddsl.dcomponents.ConfirmationDialog;
+import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -15,7 +17,8 @@ import java.util.List;
  */
 public class EditResourceDocumentPage extends DomiSMPPage {
     private final static Logger LOG = LoggerFactory.getLogger(EditResourceDocumentPage.class);
-
+    @FindBy(id = "newVersion_id")
+    private WebElement newVersionBtn;
     @FindBy(id = "GenerateResource_id")
     private WebElement generateBtn;
     @FindBy(id = "validateResource_id")
@@ -36,8 +39,20 @@ public class EditResourceDocumentPage extends DomiSMPPage {
     private WebElement saveBtn;
     @FindBy(id = "cancel_id")
     private WebElement cancelBtn;
-    @FindBy(id = "document version_id")
-    private WebElement versionDdl;
+    @FindBy(id = "document-version_id")
+    public WebElement versionDdl;
+    @FindBy(id = "status_id")
+    public WebElement statusLbl;
+    @FindBy(id = "reviewResource_id")
+    private WebElement reviewRequestBtn;
+
+    @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(8)")
+    private WebElement approveBtn;
+    @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(9)")
+    private WebElement rejectBtn;
+
+    @FindBy(id = "publishResource_id")
+    private WebElement publishBtn;
 
     @FindBy(css = "ngx-codemirror[formcontrolname= \"payload\"] div textarea")
     private WebElement codeEditorSendValueElement;
@@ -67,15 +82,52 @@ public class EditResourceDocumentPage extends DomiSMPPage {
 
         return formatedDoc;
     }
+    public void clickOnNewVersion() {
+        weToDButton(newVersionBtn).click();
+    }
     public void clickOnGenerate() {
         weToDButton(generateBtn).click();
     }
     public void clickOnSave() {
         weToDButton(saveBtn).click();
     }
+
+    public DButton getRequestReviewBtn() {
+        return weToDButton(reviewRequestBtn);
+    }
+
+    public DButton getApproveBtn() {
+        return weToDButton(approveBtn);
+    }
+
+    public DButton getPublishBtn() {
+        return weToDButton(publishBtn);
+    }
+
+    public String getStatusValue() {
+        return weToDInput(statusLbl).getText();
+    }
+
     public void clickOnValidate() {
         weToDButton(validateBtn).click();
     }
+
+    public void clickOnApproveAndConfirm() {
+        weToDButton(approveBtn).click();
+        new ConfirmationDialog(driver).confirm();
+    }
+
+    public void clickOnPublishAndConfirm() {
+        weToDButton(publishBtn).click();
+        new ConfirmationDialog(driver).confirm();
+    }
+
+    public void selectVersion(int version) {
+        weToMatSelect(versionDdl).selectByVisibleText(String.valueOf(version));
+    }
+
+
+
 
     public EditResourceDocumentWizardDialog clickOnDocumentWizard() {
             weToDButton(documentWizardBtn).click();

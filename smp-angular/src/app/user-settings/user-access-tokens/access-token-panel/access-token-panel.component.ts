@@ -7,22 +7,9 @@ import {
 } from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
-import {GlobalLookups} from "../../../common/global-lookups";
+import {DateTimeService} from "../../../common/services/date-time.service";
 
 
-export function notAfterCurrentDateValidator(): ValidatorFn {
-  return (control: AbstractControl): { [key: string]: any } | null => {
-    let date = control.value;
-    if (date) {
-      // make date mutable and the modification
-      date = new Date(date);
-      date.setHours(0, 0, 0, 0);
-    }
-    const forbidden = date && date > Date.now();
-
-    return forbidden ? { 'matStartDateInvalid': { value: control.value } } : null;
-  };
-}
 
 export function notBeforeCurrentDateValidator(): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
@@ -56,13 +43,13 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
 
   constructor(private formBuilder: FormBuilder,
-              private globalLookups: GlobalLookups) {
+              private dateTimeService: DateTimeService) {
     this.credentialForm = formBuilder.group({
       // common values
       'name': new FormControl({value: '', disabled: true}),
       'active': new FormControl({value: '', disabled: false}),
       'description': new FormControl({value: '', disabled: false}),
-      'activeFrom': new FormControl({value: '', disabled: false}, [notAfterCurrentDateValidator()]),
+      'activeFrom': new FormControl({value: '', disabled: false} ),
       'expireOn': new FormControl({value: '', disabled: false}, [notBeforeCurrentDateValidator()])
     });
 
@@ -128,12 +115,12 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
       this._credential.sequentialLoginFailureCount + "" : "0";
   }
 
-  get suspendedUtil(): Date {
-    return this._credential?.suspendedUtil;
+  get suspendedUtil(): string {
+    return this.dateTimeService.formatDateForUserLocal(this._credential?.suspendedUtil);
   }
 
-  get lastFailedLoginAttempt(): Date {
-    return this._credential?.lastFailedLoginAttempt
+  get lastFailedLoginAttempt(): string {
+    return this.dateTimeService.formatDateForUserLocal(this._credential?.lastFailedLoginAttempt);
   }
 
   isDirty(): boolean {
@@ -141,6 +128,6 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   }
 
   get dateFormat(): string {
-    return this.globalLookups.getDateFormat();
+    return this.dateTimeService.userDateFormat;
   }
 }

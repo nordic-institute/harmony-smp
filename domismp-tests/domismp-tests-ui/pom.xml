@@ -17,25 +17,25 @@
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>false</maven.deploy.skip>
         <!-- dependencies versions-->
-        <commons-csv_version>1.10.0</commons-csv_version>
-        <selenium-chrome-driver_version>4.16.1</selenium-chrome-driver_version>
-        <selenium-java_version>4.16.1</selenium-java_version>
-        <poi-ooxml_version>5.2.4</poi-ooxml_version>
+        <commons-csv_version>1.12.0</commons-csv_version>
+        <selenium-chrome-driver_version>4.25.0</selenium-chrome-driver_version>
+        <selenium-java_version>4.25.0</selenium-java_version>
+        <poi-ooxml_version>5.3.0</poi-ooxml_version>
         <reflections_version>0.10.2</reflections_version>
         <jersey-client_version>1.19.4</jersey-client_version>
         <jersey-multipart_version>1.19.4</jersey-multipart_version>
-        <json_version>20231013</json_version>
-        <jackson_version>2.15.2</jackson_version>
+        <json_version>20240303</json_version>
+        <jackson_version>2.18.0</jackson_version>
         <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
         <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
         <xmlunit_version>1.6</xmlunit_version>
-        <testng_version>7.8.0</testng_version>
-        <logback-classic_version>1.4.11</logback-classic_version>
-        <extentreports_version>5.1.1</extentreports_version>
-        <commons-lang3_version>3.13.0</commons-lang3_version>
-        <commons-io_version>2.15.0</commons-io_version>
+        <testng_version>7.10.2</testng_version>
+        <logback-classic_version>1.5.8</logback-classic_version>
+        <extentreports_version>5.1.2</extentreports_version>
+        <commons-lang3_version>3.17.0</commons-lang3_version>
+        <commons-io_version>2.17.0</commons-io_version>
         <!-- plugin versions-->
-        <maven-surefire-plugin_version>3.2.2</maven-surefire-plugin_version>
+        <maven-surefire-plugin_version>3.5.1</maven-surefire-plugin_version>
         <plugin.dependency-check-maven.version>9.0.7</plugin.dependency-check-maven.version>
         <maven-compiler-plugin>3.11.0</maven-compiler-plugin>
 
@@ -174,7 +174,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
+            <version>4.5.0-M2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

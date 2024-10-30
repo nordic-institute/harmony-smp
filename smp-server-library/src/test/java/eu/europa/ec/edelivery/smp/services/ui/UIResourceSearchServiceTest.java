@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ class UIResourceSearchServiceTest extends AbstractJunit5BaseDao {
     @Test
     void testGetTableList() {
         ResourceFilter filter = new ResourceFilter();
-        ServiceResult<ServiceGroupSearchRO> result = testInstance.getTableList(-1, -1, null, null, filter);
+        ServiceResult<ResourceSearchRO> result = testInstance.getTableList(-1, -1, null, null, filter);
         assertNotNull(result);
         assertEquals(2, result.getCount().intValue());
     }
@@ -56,7 +56,7 @@ class UIResourceSearchServiceTest extends AbstractJunit5BaseDao {
         ResourceFilter filter = new ResourceFilter();
         filter.setIdentifierValueLike(testUtilsDao.getResourceD1G1RD1().getIdentifierValue());
 
-        ServiceResult<ServiceGroupSearchRO> result = testInstance.getTableList(-1, -1, null, null, filter);
+        ServiceResult<ResourceSearchRO> result = testInstance.getTableList(-1, -1, null, null, filter);
         assertNotNull(result);
         assertEquals(1, result.getCount().intValue());
     }

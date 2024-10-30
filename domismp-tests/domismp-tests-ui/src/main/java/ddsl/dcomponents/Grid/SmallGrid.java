@@ -1,6 +1,5 @@
 package ddsl.dcomponents.Grid;
 
-import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,19 +10,18 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class SmallGrid extends DComponent {
+public class SmallGrid extends MatSmallGrid {
     private final static Logger LOG = LoggerFactory.getLogger(SmallGrid.class);
     protected static final By gridHeadersLocator = By.cssSelector("table thead th");
     protected static final By gridRowsLocator = By.cssSelector("table tbody tr");
     private final WebElement parentElement;
 
-
     public SmallGrid(WebDriver driver, WebElement parentElement) {
-        super(driver);
+        super(driver, parentElement);
         PageFactory.initElements(driver, this);
         this.parentElement = parentElement;
-
     }
+
 
     public GridPagination getGridPagination() {
         return new GridPagination(driver, parentElement);

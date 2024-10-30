@@ -14,7 +14,7 @@ initializeVariables
 SMP_INIT_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
 #SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
 SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/domismp-tests/domismp-tests-api/groovy/oracle-4.1_integration_test_data.sql"
-
+START_LOCAL="false"
 
 #ORA_VERSION="19.3.0"
 #ORA_EDITION="se2"
@@ -32,12 +32,13 @@ SMP_DB_SCRIPTS=./properties/db-scripts
 SMP_WLS_INIT_SCRIPTS=./properties/weblogic-init
 
 # READ arguments
-while getopts i:v: option
+while getopts i:v:l: option
 do
   case "${option}"
   in
     i) SMP_INIT_DATABASE_DATA=${OPTARG};;
     v) SMP_VERSION=${OPTARG};;
+    l) START_LOCAL=${OPTARG};;
     *) echo "Unknown option [${option}]. Usage: $0 [-i] [-v]"; exit 1;;
   esac
 done

@@ -53,7 +53,7 @@ public class OasisSMPResource20 implements ResourceDefinitionSpi {
 
     @Override
     public String defaultUrlSegment() {
-        return "oasis-bdxr-smp-2";
+        return "bdxr-smp-2";
     }
 
     @Override

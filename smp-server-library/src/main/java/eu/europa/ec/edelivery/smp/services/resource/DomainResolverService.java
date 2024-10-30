@@ -173,7 +173,7 @@ public class DomainResolverService {
         }
 
         if (authorizedGroup.stream().filter(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup)).count() == 0) {
-            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, domainCode);
+            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, domainGroup);
         }
 
         DBGroup group = authorizedGroup.stream()

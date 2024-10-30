@@ -49,7 +49,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SML_INVALID_IDENTIFIER;
 import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
 import static org.apache.commons.lang3.StringUtils.*;
 
@@ -136,7 +135,6 @@ public class ResourceResolverService {
         Identifier resourceId = identifierService.normalizeParticipantIdentifier(domain.getDomainCode(), currentParameter);
         boolean isCaseSensitive = identifierService.isResourceIdentifierCaseSensitive(resourceId, domain.getDomainCode());
         // validate identifier
-        validateResourceIdentifier(resourceId);
         DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId, isCaseSensitive);
         if (resource == null) {
             // the resource must be found because if action is not "create" action nor the last parameter to be resolved
@@ -367,7 +365,7 @@ public class ResourceResolverService {
         resource.setIdentifierValue(resourceId.getValue());
         resource.setIdentifierScheme(resourceId.getScheme());
         resource.setDocument(new DBDocument());
-        resource.getDocument().setName(resourceDef.getName());
+        resource.getDocument().setName(StringUtils.left(resourceId.getValue(), 255));
         resource.getDocument().setMimeType(resourceDef.getMimeType());
         resource.setDomainResourceDef(domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(domain, resourceDef)
                 .orElse(null));
@@ -381,7 +379,7 @@ public class ResourceResolverService {
         subresource.setResource(resource);
         subresource.setSubresourceDef(subresourceDef);
         subresource.setDocument(new DBDocument());
-        subresource.getDocument().setName(subresourceDef.getName());
+        subresource.getDocument().setName(StringUtils.left(resourceId.getValue(), 255));
         subresource.getDocument().setMimeType(subresourceDef.getMimeType());
         return subresource;
     }
@@ -392,13 +390,6 @@ public class ResourceResolverService {
                 .filter(subresourceDef -> StringUtils.equals(subresourceDef.getUrlSegment(), urlPathSegment))
                 .findFirst().orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST,
                         urlPathSegment, "Subresource [" + urlPathSegment + "] does not exist for resource type [" + resourceDef.getName() + "]"));
-    }
-
-    public void validateResourceIdentifier(Identifier identifier) {
-        LOG.debug("Validate resource identifier: [{}]", identifier);
-        if (configurationService.getParticipantSchemeMandatory() && StringUtils.isBlank(identifier.getScheme())) {
-            throw new SMPRuntimeException(SML_INVALID_IDENTIFIER, identifier.getValue());
-        }
     }
 
     public String getUsername(UserDetails user) {

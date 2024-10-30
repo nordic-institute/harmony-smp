@@ -16,11 +16,20 @@ import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {WindowSpinnerService} from "../common/services/window-spinner.service";
 import {SmpErrorCode} from "../common/enums/smp-error-code.enum";
+import {LocalStorageService} from "../common/services/local-storage.service";
+import {SmpInfo} from "../app-info/smp-info.model";
 
 @Injectable()
 export class SecurityService {
 
+
+  public static readonly TIME_BEFORE_EXPIRATION_IN_SECONDS: number = 60;
+  public static readonly DELAY_BEFORE_UI_SESSION_EXTENSION_IN_MS: number = 3000;
+  public static readonly MAXIMUM_TIMEOUT_VALUE: number = 2147483647;
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
+
+  lastUIActivity: Date = new Date();
+  lastUISessionCall: Date = new Date();
 
   constructor(
     private http: HttpClient,
@@ -29,7 +38,8 @@ export class SecurityService {
     private dialog: MatDialog,
     private router: Router,
     private translateService: TranslateService,
-    private windowSpinnerService: WindowSpinnerService
+    private windowSpinnerService: WindowSpinnerService,
+    private localStorageService: LocalStorageService
   ) {
     this.securityEventService.onLogoutSuccessEvent().subscribe(() => {
       this.dialog.closeAll();
@@ -50,6 +60,7 @@ export class SecurityService {
       .subscribe({
         next: (response: User) => {
           this.updateUserDetails(response);
+          this.translateService.use(response?.smpLocale);
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
         error: (error: any) => {
@@ -158,7 +169,7 @@ export class SecurityService {
       }
     }, (error: any) => {
       // just clean local storage
-      this.clearLocalStorage();
+      this.localStorageService.clearLocalStorage();
     });
   }
 
@@ -179,13 +190,13 @@ export class SecurityService {
   }
 
   finalizeLogout(res) {
-    this.clearLocalStorage();
+    this.localStorageService.clearLocalStorage();
     this.securityEventService.notifyLogoutSuccessEvent(res);
   }
 
 
   getCurrentUser(): User {
-    return JSON.parse(this.readLocalStorage());
+    return this.localStorageService.getUserDetails();
   }
 
   private getCurrentUsernameFromServer(): Observable<User> {
@@ -208,19 +219,21 @@ export class SecurityService {
       this.getCurrentUsernameFromServer().subscribe({
         next: (user: User) => {
           if (!user) {
-            this.clearLocalStorage();
+            this.localStorageService.clearLocalStorage();
           }
           subject.next(user !== null);
         }, error: (user: any) => {
           subject.next(false);
         }
       });
-
     } else {
-      let currentUser = this.getCurrentUser();
-      subject.next(currentUser !== null);
+      subject.next(this.hasUISessionData());
     }
     return subject.asObservable();
+  }
+
+  hasUISessionData(): boolean {
+    return !!this.getCurrentUser();
   }
 
   isCurrentUserSystemAdmin(): boolean {
@@ -262,18 +275,61 @@ export class SecurityService {
 
   updateUserDetails(userDetails: User) {
     // store user data to local storage!
-    this.populateLocalStorage(JSON.stringify(userDetails));
+    this.localStorageService.storeUserDetails(userDetails);
   }
 
-  private populateLocalStorage(userDetails: string) {
-    localStorage.setItem(this.LOCAL_STORAGE_KEY_CURRENT_USER, userDetails);
+  /**
+   *  Method clears all local storage except the theme. Theme is not
+   *  cleared because it is used to set the theme on the next login.
+   */
+  public clearLocalStorage(): void {
+    this.localStorageService.clearLocalStorage();
   }
 
-  private readLocalStorage(): string {
-    return localStorage.getItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
+  /**
+   *
+   */
+  uiUserActivityDetected() {
+
+    let user = this.getCurrentUser();
+    if (!this.isAuthenticated(false)
+      || !user
+      || !this.lastUISessionCall) {
+      return;
+    }
+    this.lastUIActivity = new Date();
+    // to prevent multiple calls to the backend, we check if the last call
+    // was more than DELAY_BEFORE_UI_SESSION_EXTENSION_IN_MS
+    if (this.lastUIActivity.getTime() - this.lastUISessionCall.getTime() > SecurityService.DELAY_BEFORE_UI_SESSION_EXTENSION_IN_MS) {
+      // make a call to the backend to extend the session
+      this.refreshApplicationInfo();
+    }
   }
 
-  public clearLocalStorage() {
-    localStorage.removeItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
+  /**
+   * This method is called when a UI session call to server is detected.
+   */
+  uiUserSessionCallDetected() {
+    if (!this.isAuthenticated(false)) {
+      return;
+    }
+    this.lastUISessionCall = new Date();
+  }
+
+  uiUserSessionExtensionDisable() {
+    this.lastUISessionCall = null;
+  }
+
+  public refreshApplicationInfo() {
+
+    this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
+      .subscribe({
+        next: (res: SmpInfo): void => {
+
+        },
+        error: (err: any): void => {
+          console.log("getSmpInfo:" + err);
+        }
+      });
   }
 }

@@ -1,5 +1,5 @@
 import {MatTreeNestedDataSource} from "@angular/material/tree";
-import {Injectable} from "@angular/core";
+import {Injectable, Input} from "@angular/core";
 import {SecurityService} from "../../security/security.service";
 import {SecurityEventService} from "../../security/security-event.service";
 import {SmpConstants} from "../../smp.constants";
@@ -8,6 +8,7 @@ import {User} from "../../security/user.model";
 import {NavigationEnd, Router} from "@angular/router";
 import {Observable, Subject} from "rxjs";
 import {filter, map} from "rxjs/operators";
+import {LocalStorageService} from "../../common/services/local-storage.service";
 
 /**
  * The smp navigation tree
@@ -75,14 +76,15 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   private selectedPathSubject = new Subject<NavigationNode[]>();
   selected: NavigationNode;
   previousSelected: NavigationNode;
-  selectedPath: NavigationNode[];
+  _selectedPath: NavigationNode[];
 
   private rootNode: NavigationNode = PUBLIC_NAVIGATION_TREE;
 
   constructor(protected securityService: SecurityService,
               protected securityEventService: SecurityEventService,
               protected http: HttpClient,
-              protected router: Router) {
+              protected router: Router,
+              protected localStorageService: LocalStorageService) {
     super();
     // set  tree data.
     this.refreshNavigationTree();
@@ -101,6 +103,18 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     );
   }
 
+  @Input() set selectedPath(path: NavigationNode[]) {
+    this.localStorageService.storeNavigationPath(path);
+    this._selectedPath = path;
+  }
+
+  get selectedPath(): NavigationNode[] {
+    if (!this._selectedPath || this._selectedPath?.length == 0) {
+      this._selectedPath = this.localStorageService.getNavigationPath();
+    }
+    return this._selectedPath;
+  }
+
   ngOnDestroy() {
     console.log('>> STOP listening to route events ');
     this.sub.unsubscribe();
@@ -108,9 +122,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   select(node: NavigationNode) {
     let targetNode = this.findLeaf(node);
-
     if (targetNode === this.selected) {
-      console.log("Already selected skip");
       return
     }
     if (!!targetNode) {
@@ -217,17 +229,17 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
    * @param parentNode - the root of the tree to start search
    */
   protected findPathForNode(targetNode: NavigationNode, parentNode: NavigationNode): NavigationNode[] {
-    if (parentNode === targetNode) {
+    if (parentNode.code === targetNode.code) {
       return [parentNode];
     }
     if (!parentNode.children) {
       return null;
     }
 
-    const index = parentNode.children.indexOf(targetNode);
-    if (index > -1) {
+    let node: NavigationNode =  this.findNodeByCode(targetNode.code, parentNode);
+    if (node) {
       // got target return initial array
-      return [parentNode, targetNode];
+      return [parentNode, node];
     }
 
     for (const child of parentNode.children) {
@@ -243,7 +255,6 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     if (!parentNode.children) {
       return null;
     }
-    console.log("find " + nodeCode + " from parent: " + parentNode.code)
     return parentNode.children.find(node => node.routerLink == nodeCode);
   }
 
@@ -252,7 +263,6 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
    */
   public refreshNavigationTree() {
     this.securityService.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
-      console.log("Refresh navigation tree [is authenticated: " + isAuthenticated + "]")
       if (isAuthenticated) {
         const currentUser: User = this.securityService.getCurrentUser();
         // get navigation for user
@@ -392,9 +402,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   public navigateUp(): void {
-    this.selectedPath?.pop();
-    if (this.selectedPath?.length > 0) {
-      this.select(this.selectedPath[this.selectedPath.length - 1]);
+    let currentPath = this.selectedPath;
+    currentPath?.pop();
+    this._selectedPath = currentPath;
+    if (currentPath?.length > 0) {
+      this.select(currentPath[currentPath?.length - 1]);
     }
   }
 

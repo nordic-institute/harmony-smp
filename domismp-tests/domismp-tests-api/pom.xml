@@ -10,17 +10,15 @@
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>true</maven.deploy.skip>
         <url>http://localhost:8080/smp</url>
-        <SMPAdminUser />
-        <SMPAdminPassword />
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- the soap ui specific dependencies -->
         <plugin.soapui-maven-plugin.version>5.7.2</plugin.soapui-maven-plugin.version>
-        <plugin.maven-compiler-plugin.version>3.11.0</plugin.maven-compiler-plugin.version>
-        <plugin.dependency-check-maven.version>9.0.7</plugin.dependency-check-maven.version>
+        <plugin.maven-compiler-plugin.version>3.13.0</plugin.maven-compiler-plugin.version>
+        <plugin.dependency-check-maven.version>9.2.0</plugin.dependency-check-maven.version>
 
         <org.codehaus.groovy.version>2.9.2-01</org.codehaus.groovy.version>
-        <org.codehaus.groovy.eclipse-batch.version>2.5.13-01</org.codehaus.groovy.eclipse-batch.version>
+        <org.codehaus.groovy.eclipse-batch.version>2.5.22-01</org.codehaus.groovy.eclipse-batch.version>
 
         <com.jgoodies.version>1.0.7</com.jgoodies.version>
         <http-builder.version>0.7.1</http-builder.version>
@@ -138,8 +136,7 @@
                                 </property>
                             </soapuiProperties>
                             <testFailIgnore>true</testFailIgnore>
-                            <projectFile>${basedir}/soapui/SMP4.0-Generic-soapui-project.xml
-                            </projectFile>
+                            <projectFile>${basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                             <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                             <!--If you want to execute single test case -->
                             <!-- testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase -->
@@ -147,8 +144,6 @@
                             <!-- testCase>SMP022-Create ServiceMetadata-Basic Flow</testCase -->
                             <projectProperties>
                                 <value>url=${url}</value>
-                                <value>SMPAdminUser=${SMPAdminUser}</value>
-                                <value>SMPAdminPassword=${SMPAdminPassword}</value>
                             </projectProperties>
                         </configuration>
                         <dependencies>

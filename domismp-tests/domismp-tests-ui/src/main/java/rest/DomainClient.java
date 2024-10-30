@@ -30,11 +30,12 @@ public class DomainClient extends BaseRestClient {
     public DomainModel createDomain(DomainModel domainModel) {
 
         JSONObject domainJson = new JSONObject(domainModel);
+        startSession();
         String createDomainPath = RestServicePaths.getCreateDomainPath(TestRunData.getInstance().getUserId());
         ClientResponse response = jsonPUT(resource.path(createDomainPath), domainJson);
         if (response.getStatus() != 200) {
             try {
-                throw new SMPRestException("Could not create domain", response);
+                throw new SMPRestException("Could not create domain", response.getStatus(), response.getEntity(String.class));
             } catch (SMPRestException e) {
                 throw new RuntimeException(e);
             }
@@ -51,7 +52,7 @@ public class DomainClient extends BaseRestClient {
         ClientResponse response = jsonPUT(resource.path(addMemberPath), membersJson);
         if (response.getStatus() != 200) {
             try {
-                throw new SMPRestException("Could not create domain", response);
+                throw new SMPRestException("Could not create domain", response.getStatus(), response.getEntity(String.class));
             } catch (SMPRestException e) {
                 throw new RuntimeException(e);
             }
@@ -72,7 +73,7 @@ public class DomainClient extends BaseRestClient {
         ClientResponse response = requestPOST(resource.path(addMemberPath), resourceTypes);
         if (response.getStatus() != 200) {
             try {
-                throw new SMPRestException("Could not add resource!", response);
+                throw new SMPRestException("Could not add resource!", response.getStatus(), response.getEntity(String.class));
             } catch (SMPRestException e) {
                 throw new RuntimeException(e);
             }
@@ -87,7 +88,7 @@ public class DomainClient extends BaseRestClient {
         ClientResponse response = jsonPUT(resource.path(createGroupPath), groupJson);
         if (response.getStatus() != 200) {
             try {
-                throw new SMPRestException("Could not create group!", response);
+                throw new SMPRestException("Could not create group!", response.getStatus(), response.getEntity(String.class));
             } catch (SMPRestException e) {
                 throw new RuntimeException(e);
             }

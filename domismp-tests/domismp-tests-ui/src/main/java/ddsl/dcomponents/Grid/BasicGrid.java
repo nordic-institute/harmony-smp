@@ -21,7 +21,9 @@ public class BasicGrid extends DComponent {
     protected List<WebElement> gridHeaders;
     @FindBy(css = "datatable-body-row > div.datatable-row-center.datatable-row-group")
     protected List<WebElement> gridRows;
-    protected ArrayList<String> headerTxt = new ArrayList<String>();
+    @FindBy(css = "datatable-body-row > div.datatable-row-center.datatable-row-group >datatable-body-cell")
+    protected List<WebElement> gridCells;
+    protected ArrayList<String> headerTxt = new ArrayList<>();
 
 
     public BasicGrid(WebDriver driver, WebElement container) {
@@ -31,8 +33,8 @@ public class BasicGrid extends DComponent {
         wait.forXMillis(500);
         PageFactory.initElements(new DefaultElementLocatorFactory(container), this);
 
-        for (int i = 0; i < gridHeaders.size(); i++) {
-            headerTxt.add(gridHeaders.get(i).getText().trim());
+        for (WebElement gridHeader : gridHeaders) {
+            headerTxt.add(gridHeader.getText().trim());
         }
 
     }

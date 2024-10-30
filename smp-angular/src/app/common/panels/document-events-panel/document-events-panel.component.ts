@@ -23,7 +23,7 @@ import {
   Input,
   ViewChild,
 } from '@angular/core';
-import {MatTable, MatTableDataSource} from "@angular/material/table";
+import {MatTableDataSource} from "@angular/material/table";
 import {
   ControlContainer,
   ControlValueAccessor,
@@ -31,16 +31,17 @@ import {
   FormControlDirective,
   NG_VALUE_ACCESSOR
 } from "@angular/forms";
-import {MatSort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
-import {MatPaginator} from "@angular/material/paginator";
 import {
   DocumentVersionEventRo
 } from "../../model/document-version-event-ro.model";
 import {
   BeforeLeaveGuard
 } from "../../../window/sidenav/navigation-on-leave-guard";
-import {GlobalLookups} from "../../global-lookups";
+import {DateTimeService} from "../../services/date-time.service";
+import {
+  SmpTableColDef
+} from "../../components/smp-table/smp-table-coldef.model";
 
 /**
  * Component to display the properties of a document in a table. The properties can be edited and saved.
@@ -61,25 +62,57 @@ import {GlobalLookups} from "../../global-lookups";
 })
 export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
 
-
-  displayedColumns: string[] = ['date', 'eventType', 'status','username', 'eventSource'];
   private onChangeCallback: (_: any) => void = () => {
   };
   eventDataSource: MatTableDataSource<DocumentVersionEventRo> = new MatTableDataSource();
   dataChanged: boolean = false;
   selected: DocumentVersionEventRo;
-  @ViewChild("DocumentVersionEventTable") table: MatTable<DocumentVersionEventRo>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+
+  displayedColumns: string[] = ['date', 'eventType', 'status', 'username', 'eventSource'];
+  columns: SmpTableColDef[];
 
   constructor(
-    private globalLookups: GlobalLookups,
+    private dateTimeService: DateTimeService,
     public dialog: MatDialog,
     private controlContainer: ControlContainer) {
+    this.columns = [
+      {
+        columnDef: 'date',
+        header: 'document.events.panel.label.date',
+        cell: (row: DocumentVersionEventRo) => this.dateTimeService.formatDateTimeForUserLocal(row.eventOn),
+        style: 'flex-basis: 150px;flex-grow: 0;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'eventType',
+        header: 'document.events.panel.label.type',
+        cell: (row: DocumentVersionEventRo) => row.eventType,
+        style: 'flex-basis:80px;flex-grow: 0;'
+
+      } as SmpTableColDef,
+      {
+        columnDef: 'status',
+        header: 'document.events.panel.label.status',
+        cell: (row: DocumentVersionEventRo) => row.documentVersionStatus,
+        style: 'flex-basis:80px;flex-grow: 0;'
+
+      } as SmpTableColDef,
+      {
+        columnDef: 'username',
+        header: 'document.events.panel.label.username',
+        cell: (row: DocumentVersionEventRo) => row.username,
+        style: 'flex-grow: 1;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'eventSource',
+        header: 'document.events.panel.label.source',
+        cell: (row: DocumentVersionEventRo) => row.eventSourceType,
+        style: 'flex-basis:60px;flex-grow: 0;'
+      } as SmpTableColDef,
+    ];
   }
 
   get dateTimeFormat(): string {
-    return this.globalLookups.getDateTimeFormat();
+    return this.dateTimeService.userDateTimeFormat;
   }
 
   @ViewChild(FormControlDirective, {static: true})
@@ -103,8 +136,6 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
   }
 
   ngAfterViewInit() {
-    this.eventDataSource.paginator = this.paginator;
-    this.eventDataSource.sort = this.sort;
     // add custom filter to exclude filtering on  event description
     this.eventDataSource.filterPredicate = (data: DocumentVersionEventRo, filter: string) => {
       return data.eventType?.toLowerCase().includes(filter)
@@ -115,13 +146,8 @@ export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveG
     };
   }
 
-  applyFilter(event: Event) {
-    const filterValue: string = (event.target as HTMLInputElement).value;
+  applyFilter(filterValue: string) {
     this.eventDataSource.filter = filterValue?.trim().toLowerCase();
-
-    if (this.eventDataSource.paginator) {
-      this.eventDataSource.paginator.firstPage();
-    }
   }
 
   isDirty(): boolean {

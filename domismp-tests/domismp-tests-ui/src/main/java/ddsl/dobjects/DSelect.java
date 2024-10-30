@@ -41,4 +41,12 @@ public class DSelect extends DObject {
         }
     }
 
+    public String getCurrentValueAttribute(String attribute) {
+        try {
+            return select.getAllSelectedOptions().get(0).getAttribute(attribute);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
 }

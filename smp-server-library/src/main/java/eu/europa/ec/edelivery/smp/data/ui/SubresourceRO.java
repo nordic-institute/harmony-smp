@@ -24,6 +24,7 @@ public class SubresourceRO extends BaseRO {
     String identifierValue;
     String identifierScheme;
     String subresourceTypeIdentifier;
+    Boolean isDocumentSharingEnabled = false;
 
 
     public String getSubresourceId() {
@@ -56,5 +57,13 @@ public class SubresourceRO extends BaseRO {
 
     public void setSubresourceTypeIdentifier(String subresourceTypeIdentifier) {
         this.subresourceTypeIdentifier = subresourceTypeIdentifier;
+    }
+
+    public Boolean getDocumentSharingEnabled() {
+        return isDocumentSharingEnabled;
+    }
+
+    public void setDocumentSharingEnabled(Boolean documentSharingEnabled) {
+        isDocumentSharingEnabled = documentSharingEnabled;
     }
 }

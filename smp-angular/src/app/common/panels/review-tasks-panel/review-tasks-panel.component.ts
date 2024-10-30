@@ -29,6 +29,7 @@ import {
 import {
   ReviewDocumentVersionRo
 } from "../../model/review-document-version-ro.model";
+import {DateTimeService} from "../../services/date-time.service";
 
 /**
  * This is a generic alert panel component for previewing alert list
@@ -57,6 +58,7 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
+              protected dateTimeService: DateTimeService,
               protected http: HttpClient,
               protected alertService: AlertMessageService,
               private translateService: TranslateService,
@@ -142,7 +144,7 @@ export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterVi
   }
 
   get dateTimeFormat(): string {
-    return this.lookups.getDateTimeFormat();
+    return this.dateTimeService.userDateTimeFormat;
   }
 
   async onRowDoubleClicked(row: ReviewDocumentVersionRo) {

@@ -1,28 +1,29 @@
-<div id="edit-resource-panel" class="mat-elevation-z2">
+<div id="edit-resource-panel" >
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
       <button id="showResource" mat-raised-button
               color="primary"
               matTooltip="{{ 'resource.details.panel.tooltip.show.resource' | translate }}"
               (click)="onShowButtonDocumentClicked()"
-              >
+      >
         <mat-icon>article</mat-icon>
         <span>{{ "resource.details.panel.button.edit" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
-  <form [formGroup]="resourceForm">
+  <h3 style="word-wrap: break-word; max-width: 750px">{{ title }}</h3>
+  <form [formGroup]="resourceForm" style="display:flex;flex-grow: 1;flex-direction: column">
     <mat-form-field style="width:100%">
       <mat-label>{{ "resource.details.panel.label.resource.type" | translate }}</mat-label>
-      <select matNativeControl placeholder="{{ 'resource.details.panel.placeholder.resource.type' | translate }}"
-                  matTooltip="{{ 'resource.details.panel.tooltip.resource.type' | translate }}"
-                  id="resourceTypeIdentifier"
-                  formControlName="resourceTypeIdentifier"
-                  required>
+      <select matNativeControl
+              placeholder="{{ 'resource.details.panel.placeholder.resource.type' | translate }}"
+              matTooltip="{{ 'resource.details.panel.tooltip.resource.type' | translate }}"
+              id="resourceTypeIdentifier"
+              formControlName="resourceTypeIdentifier"
+              required>
         <option *ngFor="let resDef of domainResourceDefs"
-                    [value]="resDef.identifier">
-          {{resDef.name}} ({{resDef.identifier}})
+                [value]="resDef.identifier">
+          {{ resDef.name }} ({{ resDef.identifier }})
         </option>
       </select>
     </mat-form-field>
@@ -48,11 +49,12 @@
     <smp-warning-panel *ngIf="showReviewEnabledHint"
                        type="warning"
                        icon="warning"
-    label="{{ 'resource.details.panel.review.disabled.confirmation.dialog.description' | translate }}"></smp-warning-panel>
+                       label="{{ 'resource.details.panel.review.disabled.confirmation.dialog.description' | translate }}"></smp-warning-panel>
     <mat-form-field style="width:100%">
       <mat-label>{{ "resource.details.panel.label.resource.visibility" | translate }}</mat-label>
       <select matNativeControl formControlName="visibility"
               matTooltip="{{ 'resource.details.panel.tooltip.resource.visibility' | translate }}"
+              (change)="onVisibilityChanged($event)"
               id="visibility_id" required>
         <option *ngFor="let visibility of groupVisibilityOptions"
                 [value]="visibility.value">
@@ -60,24 +62,28 @@
         </option>
       </select>
     </mat-form-field>
-    <mat-toolbar class ="mat-elevation-z2">
-      <mat-toolbar-row  class="smp-toolbar-row">
-        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+    <!-- extandable spacer :" -->
+    <div style="flex-grow: 1"></div>
+    <smp-warning-panel
+      type="desc"
+      icon="info"
+      [label]="visibilityDescription"
+    ></smp-warning-panel>
+    <mat-toolbar class="mat-elevation-z2">
+      <mat-toolbar-row class="smp-toolbar-row">
+        <button id="cancelButton" mat-raised-button
+                (click)="onResetButtonClicked()" color="primary"
                 [disabled]="!resetButtonEnabled">
           <mat-icon>refresh</mat-icon>
           <span>{{ "resource.details.panel.button.reset" | translate }}</span>
         </button>
-        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+        <button id="saveButton" mat-raised-button
+                (click)="onSaveButtonClicked()" color="primary"
                 [disabled]="!submitButtonEnabled">
           <mat-icon>save</mat-icon>
           <span>{{ "resource.details.panel.button.save" | translate }}</span>
         </button>
       </mat-toolbar-row>
     </mat-toolbar>
-    <smp-warning-panel
-      type="desc"
-      icon="info"
-      [label]="visibilityDescription"
-    ></smp-warning-panel>
   </form>
 </div>

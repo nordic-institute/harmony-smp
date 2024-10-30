@@ -1,17 +1,27 @@
-import {Component, Input, ViewChild,} from '@angular/core';
+import {Component, Input,} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
-import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {
+  BeforeLeaveGuard
+} from "../../../window/sidenav/navigation-on-leave-guard";
+import {PageEvent} from "@angular/material/paginator";
 import {GroupRo} from "../../../common/model/group-ro.model";
 import {ResourceRo} from "../../../common/model/resource-ro.model";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "../../../common/alert-message/alert-message.service";
 import {EditGroupService} from "../edit-group.service";
 import {finalize} from "rxjs/operators";
 import {TableResult} from "../../../common/model/table-result.model";
-import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {ResourceDialogComponent} from "./resource-dialog/resource-dialog.component";
+import {
+  ConfirmationDialogComponent
+} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  ResourceDialogComponent
+} from "./resource-dialog/resource-dialog.component";
 import {DomainRo} from "../../../common/model/domain-ro.model";
-import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {
   ManageMembersDialogComponent
@@ -20,7 +30,13 @@ import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 import StringUtils from "../../../common/utils/string-utils";
-
+import {MatTableDataSource} from "@angular/material/table";
+import {
+  SmpTableColDef
+} from "../../../common/components/smp-table/smp-table-coldef.model";
+import {
+  EditResourceController
+} from "../../edit-resources/edit-resource.controller";
 
 @Component({
   selector: 'group-resource-panel',
@@ -33,18 +49,41 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   private _group: GroupRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
-  displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
-  data: ResourceRo[] = [];
+  dataSource: MatTableDataSource<ResourceRo> = new MatTableDataSource();
   selected: ResourceRo;
   filter: any = {};
-  resultsLength = 0;
+  dataLength = 0;
+  pageSize = 10;
+  pageIndex = 0;
   isLoadingResults = false;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  displayedColumns: string[] = ['identifierValue', 'identifierScheme', "resourceTypeIdentifier"];
+  columns: SmpTableColDef[];
 
   constructor(private editGroupService: EditGroupService,
+              private editResourceController: EditResourceController,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
+
+    this.columns = [
+      {
+        columnDef: 'identifierScheme',
+        header: 'group.resource.panel.label.identifier.scheme',
+        cell: (row: ResourceRo) => row.identifierScheme
+      } as SmpTableColDef,
+      {
+        columnDef: 'identifierValue',
+        header: 'group.resource.panel.label.identifier.value',
+        cell: (row: ResourceRo) => row.identifierValue
+      } as SmpTableColDef,
+      {
+        columnDef: 'resourceTypeIdentifier',
+        header: 'group.resource.panel.label.resource.type',
+        cell: (row: ResourceRo) => row.resourceTypeIdentifier
+      } as SmpTableColDef
+    ];
+
   }
 
 
@@ -64,11 +103,13 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     })();
   }
 
-  get group(){
+  get group() {
     return this._group;
   }
 
   onPageChanged(page: PageEvent) {
+    this.pageIndex = page.pageIndex;
+    this.pageSize = page.pageSize;
     this.loadGroupResources();
   }
 
@@ -80,22 +121,21 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     }
 
     this.isLoadingResults = true;
-    this.editGroupService.getGroupResourcesForGroupAdminObservable(this._group,this.domain, this.filter, this.paginator.pageIndex, this.paginator.pageSize)
+    this.editGroupService.getGroupResourcesForGroupAdminObservable(this._group, this.domain, this.filter, this.pageIndex, this.pageSize)
       .pipe(
         finalize(() => {
           this.isLoadingResults = false;
         }))
       .subscribe((result: TableResult<ResourceRo>) => {
-          this.data = [...result.serviceEntities];
-          this.resultsLength = result.count;
+          this.dataSource.data = [...result.serviceEntities];
+          this.dataLength = result.count;
           this.isLoadingResults = false;
         }
       );
   }
 
 
-  applyResourceFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  applyResourceFilter(filterValue: string) {
     this.filter["filter"] = filterValue.trim().toLowerCase();
     this.refresh();
   }
@@ -108,9 +148,9 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     this.showResourceEditDialog(this.createResource());
   }
 
-  createResource ():ResourceRo {
+  createResource(): ResourceRo {
     return {
-      resourceTypeIdentifier: !!this.domainResourceDefs && this.domainResourceDefs.length>0 ? this.domainResourceDefs[0].identifier:"",
+      resourceTypeIdentifier: !!this.domainResourceDefs && this.domainResourceDefs.length > 0 ? this.domainResourceDefs[0].identifier : "",
       identifierValue: "",
       smlRegistered: false,
       visibility: VisibilityEnum.Public
@@ -118,9 +158,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   }
 
   public refresh() {
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
     this.loadGroupResources();
   }
 
@@ -137,9 +174,11 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
       this.refresh();
     });
   };
+
   public onEditSelectedButtonClicked() {
     this.showResourceEditDialog(this.selected)
   }
+
   public async showResourceEditDialog(resource: ResourceRo) {
     this.dialog.open(ResourceDialogComponent, {
       data: {
@@ -185,19 +224,22 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     this.editGroupService.deleteResourceFromGroup(resource, this._group, this.domain)
       .pipe(
         finalize(() => {
+          this.editResourceController.dataChanged = true;
           this.refresh();
           this.isLoadingResults = false;
         }))
-      .subscribe({next:async (result: ResourceRo) => {
-          if (result) {
-            this.alertService.success(await lastValueFrom(this.translateService.get("group.resource.panel.success.delete", {
-              identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
-              identifierValue: this.selected.identifierValue
-            })));
+      .subscribe({
+          next: async (result: ResourceRo) => {
+            if (result) {
+              this.alertService.success(await lastValueFrom(this.translateService.get("group.resource.panel.success.delete", {
+                identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
+                identifierValue: this.selected.identifierValue
+              })));
+            }
+          }, error: (error: any) => {
+            this.alertService.error(error.error?.errorDescription);
           }
-        }, error: (error:any)=> {
-          this.alertService.error(error.error?.errorDescription);
-        }}
+        }
       );
   }
 

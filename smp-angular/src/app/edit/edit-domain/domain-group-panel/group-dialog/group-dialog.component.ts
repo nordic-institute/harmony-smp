@@ -6,6 +6,9 @@ import {AlertMessageService} from "../../../../common/alert-message/alert-messag
 import {VisibilityEnum} from "../../../../common/enums/visibility.enum";
 import {GroupRo} from "../../../../common/model/group-ro.model";
 import {EditDomainService} from "../../edit-domain.service";
+import {
+  EditResourceController
+} from "../../../edit-resources/edit-resource.controller";
 
 
 @Component({
@@ -29,6 +32,7 @@ export class GroupDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private editDomainService: EditDomainService,
+              private editResourceController: EditResourceController,
               public dialogRef: MatDialogRef<GroupDialogComponent>,
               private alertService: AlertMessageService,
               private formBuilder: FormBuilder
@@ -112,6 +116,7 @@ export class GroupDialogComponent {
 
     this.editDomainService.createDomainGroupObservable(this._currentDomain.domainId, group).subscribe((group: GroupRo) => {
       if (!!group) {
+        this.editResourceController.dataChanged = true;
         this.closeDialog();
       }
     }, (error) => {
@@ -126,6 +131,7 @@ export class GroupDialogComponent {
   public saveGroup(group: GroupRo) {
     this.editDomainService.saveDomainGroupObservable(this._currentDomain.domainId, group).subscribe((group: GroupRo) => {
       if (!!group) {
+        this.editResourceController.dataChanged = true;
         this.closeDialog();
       }
     }, (error) => {

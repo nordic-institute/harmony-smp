@@ -28,15 +28,21 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
 
+  // data changed indicates the cached data may be outdated and need to be refreshed
+  _dataChanged: boolean = false;
+  _isLoadingResults:boolean = false;
+
   _selectedDomain: DomainRo;
   _selectedGroup: GroupRo;
   _selectedResource: ResourceRo;
   _selectedDomainResourceDefs: ResourceDefinitionRo[];
 
-  pageIndex: number = 0;
-  pageSize: number = 10;
   resourcesFilter: any = {};
-  isLoadingResults = false;
+
+  dataLength:number = 0;
+  pageIndex:number = 0;
+  pageSize:number = 10;
+
 
 
   constructor(
@@ -55,6 +61,29 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     });
   }
 
+  // this flag is used to trigger data refresh when data is needed.
+  //The data can be changed for the user when adding/creating new resource in the edit group
+  @Input() set dataChanged(value: boolean) {
+    this._dataChanged = value;
+  }
+
+  get dataChanged(): boolean {
+    return this._dataChanged;
+  }
+
+  // this flag is used to trigger data refresh when data is needed.
+  //The data can be changed for the user when adding/creating new resource in the edit group
+  @Input() set isLoadingResults(value: boolean) {
+    if (!value) {
+      // data was loaded, and we can reset the flag for data changed
+      this._dataChanged = value
+    }
+    this._isLoadingResults = value;
+  }
+
+  get isLoadingResults(): boolean {
+    return this._isLoadingResults;
+  }
 
   private clearSelectedData() {
     this.domainList = [];
@@ -63,11 +92,9 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedGroup = null;
     this._selectedResource = null;
     this._selectedDomainResourceDefs = [];
-    this.pageIndex = 0;
-    this.pageSize = 10;
     this.resourcesFilter = {};
     this.isLoadingResults = false;
-    super.data = [];
+    this.updateResourceList([], 0, -1, -1);
   }
 
   get selectedDomain(): DomainRo {
@@ -76,7 +103,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   @Input() set selectedDomain(domain: DomainRo) {
     this._selectedDomain = domain;
-    if (!!this.selectedDomain) {
+    if (!!this.selectedDomain || this.dataChanged) {
       this.refreshGroups();
       this.refreshDomainsResourceDefinitions();
     } else {
@@ -92,11 +119,11 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   @Input() set selectedGroup(resource: GroupRo) {
     this._selectedGroup = resource;
-    if (!!this._selectedGroup) {
+    if (!!this._selectedGroup || this.dataChanged ) {
       this.refreshResources();
     } else {
       this.isLoadingResults = false;
-      this.data = [];
+      this.updateResourceList([], 0, -1, -1);
     }
   };
 
@@ -122,9 +149,15 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedResource = resource;
   };
 
-  onResourceSelected(resource: ResourceRo) {
-    this.selectedResource = resource;
+  /**
+   * Method refreshes data when data changed
+   */
+  refreshDataOnDataChange() {
+    if (this.dataChanged) {
+      this.refreshDomains();
+    }
   }
+
 
   refreshDomains() {
     this.isLoadingResults = true;
@@ -142,6 +175,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   refreshGroups() {
     if (!this.selectedDomain) {
       this.updateGroupList([]);
+
       this.isLoadingResults = false;
       return;
     }
@@ -160,7 +194,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   refreshResources() {
     if (!this._selectedGroup) {
       this.isLoadingResults = false;
-      this.updateResourceList([]);
+      this.updateResourceList([], 0, -1, -1);
       return;
     }
     this.isLoadingResults = true;
@@ -168,7 +202,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
       this.resourcesFilter, this.pageIndex, this.pageSize)
       .subscribe({
         next: (result: TableResult<ResourceRo>) => {
-          this.updateResourceList(result.serviceEntities)
+          this.updateResourceList(result.serviceEntities, result.count,  result.page, result.pageSize);
           this.isLoadingResults = false;
         }, error: (error: any) => {
           this.isLoadingResults = false;
@@ -193,6 +227,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!!this.domainList && this.domainList.length > 0) {
       this.selectedDomain = this.domainList[0];
     } else {
+      this._dataChanged = false;
       this.isLoadingResults = false;
     }
   }
@@ -202,14 +237,23 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
     } else {
+      this._dataChanged = false;
       this.isLoadingResults = false;
     }
   }
 
-  updateResourceList(list: ResourceRo[]) {
+  updateResourceList(list: ResourceRo[], totalDataSize: number = 0, pageIndex: number = -1, pageSize: number = -1) {
     let currR: ResourceRo = this.selectedResource;
     this.selectedResource = null;
     this.data = list;
+
+    this.dataLength = totalDataSize;
+    if (pageIndex !== -1) {
+      this.pageIndex = pageIndex;
+    }
+    if (pageSize !== -1) {
+      this.pageSize = pageSize;
+    }
 
     if (!!currR) {
       this.selectedResource = list.find(r =>
@@ -220,13 +264,21 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!this.selectedResource && !!list && list.length > 0) {
       this.selectedResource = list[0];
     }
-
-
   }
 
-  applyResourceFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.resourcesFilter["filter"] = filterValue.trim().toLowerCase();
+  /**
+   * Apply filter to resources
+   * @param filterValue - filter value
+   */
+  applyResourceFilter(filterValue: string) {
+    this.resourcesFilter["filter"] =
+      !filterValue ? '' : filterValue.trim().toLowerCase();
+    this.refreshResources();
+  }
+
+  applyResourcePage(pageIndex: number, pageSize: number) {
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
     this.refreshResources();
   }
 
@@ -241,4 +293,5 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
     return this._selectedDomainResourceDefs.find(def => def.identifier == this._selectedResource.resourceTypeIdentifier)
   }
+
 }

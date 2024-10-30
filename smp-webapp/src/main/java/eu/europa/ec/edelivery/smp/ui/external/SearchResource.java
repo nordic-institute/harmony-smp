@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.ui.external;
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceFilterOptionsResult;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -59,7 +59,7 @@ public class SearchResource {
     }
 
     @GetMapping(path = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)
-    public ServiceResult<ServiceGroupSearchRO> getServiceGroupList(
+    public ServiceResult<ResourceSearchRO> getServiceGroupList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,

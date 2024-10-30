@@ -45,6 +45,7 @@ public class DBSubresourceToSubresourceROConverter implements Converter<DBSubres
             BeanUtils.copyProperties(target, source);
             target.setSubresourceTypeIdentifier(source.getSubresourceDef().getIdentifier());
             target.setSubresourceId(SessionSecurityUtils.encryptedEntityId(source.getId()));
+
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOG.error("Error occurred while converting DBResource", e);
             return null;

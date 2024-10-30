@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Input} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {HttpClient, HttpParams} from '@angular/common/http';
@@ -14,6 +14,7 @@ import {SubresourceRo} from "../../common/model/subresource-ro.model";
 import {
   ReviewDocumentVersionRo
 } from "../../common/model/review-document-version-ro.model";
+import {LocalStorageService} from "../../common/services/local-storage.service";
 
 /**
  * The EditResourceService is used for server interaction on resources, sub-resources and it's documents.
@@ -24,14 +25,52 @@ import {
 @Injectable()
 export class EditResourceService {
 
-  selectedResource: ResourceRo;
-  selectedSubresource: SubresourceRo;
-  selectedReviewDocument: ReviewDocumentVersionRo;
+  _selectedResource: ResourceRo;
+  _selectedSubresource: SubresourceRo;
+  _selectedReviewDocument: ReviewDocumentVersionRo;
 
   constructor(
     private http: HttpClient,
-    private securityService: SecurityService) {
+    private securityService: SecurityService,
+    private localStorageService: LocalStorageService) {
   }
+
+  @Input() set selectedResource(value: ResourceRo) {
+    this._selectedResource = value;
+    this.localStorageService.storeSelectedResource(value);
+  }
+
+  get selectedResource(): ResourceRo {
+    if (this._selectedResource == null) {
+      this._selectedResource = this.localStorageService.getSelectedResource();
+    }
+    return this._selectedResource;
+  }
+
+  @Input() set selectedSubresource(value: SubresourceRo) {
+    this._selectedSubresource = value;
+    this.localStorageService.storeSelectedSubresource(value);
+  }
+
+  get selectedSubresource(): SubresourceRo {
+    if (this._selectedSubresource == null) {
+      this._selectedSubresource = this.localStorageService.getSelectedSubresource();
+    }
+    return this._selectedSubresource;
+  }
+
+  @Input() set selectedReviewDocument(value: ReviewDocumentVersionRo) {
+    this._selectedReviewDocument = value;
+    this.localStorageService.storeSelectedReviewDocumentVersion(value);
+  }
+
+  get selectedReviewDocument(): ReviewDocumentVersionRo {
+    if (this._selectedReviewDocument == null) {
+      this._selectedReviewDocument = this.localStorageService.getSelectedReviewDocumentVersion();
+    }
+    return this._selectedReviewDocument;
+  }
+
 
   /**
    * Method return observable of resource list from the server for resource-admin role for selected domain and group filter and paginating data.

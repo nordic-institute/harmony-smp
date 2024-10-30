@@ -1,5 +1,4 @@
 <div id="resource-document-panel">
-
   <mat-toolbar class="mat-elevation-z2" style="min-height: 50px !important;">
     <mat-toolbar-row class="smp-toolbar-row"
                      style="justify-content: space-between;min-height: 50px !important;">
@@ -45,8 +44,7 @@
     </mat-toolbar-row>
   </mat-toolbar>
 
-  <div class="panel" [formGroup]="documentForm"
-       style="display: flex;flex-direction: row;flex-grow: 1; ">
+  <div class="panel document-edit-panel" [formGroup]="documentForm">
     <div
       style="display:flex; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;">
       <ng-container *ngIf="hasDocumentReference && isNotReviewMode; else selectedDocumentVersionDataTemplate" >
@@ -113,21 +111,16 @@
                           appearance="fill">
             <mat-label>{{ "document.edit.panel.label.selected.created.on" | translate }}</mat-label>
             <input id="payloadCreatedOn_id"
-                   matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
-                   formControlName="payloadCreatedOn"
+                   matInput
+                   formControlName="payloadCreatedOnFormatted"
                    readonly>
-            <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker"
-                                   style="visibility: hidden"></mat-datepicker-toggle>
-            <ngx-mat-datetime-picker #payloadCreatedOnPicker [showSpinners]="true"
-                                     [showSeconds]="false"
-                                     [hideTime]="false"></ngx-mat-datetime-picker>
+
           </mat-form-field>
         </div>
       </ng-template>
 
 
-      <div
-        style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;border: ridge 3px #b0bec5"
+      <div class="document-editor-container"
         (click)="onEditPanelClick()">
         <smp-editor #smpDocumentEditor
                     formControlName="editorText"
@@ -144,6 +137,7 @@
     <expandable-panel>
       <!-- The document version panels -->
       <expandable-item icon="event"
+                       [showItem]="true"
                        showButtonSpacer="true"
                        title="{{'document.events.panel.tab.title' | translate }}"
                        buttonLabel="{{'document.events.panel.tab.button.events' | translate }}">
@@ -181,8 +175,7 @@
     </expandable-panel>
   </div>
 
-  <mat-toolbar class="mat-elevation-z2"
-               style="flex-grow: 0;">
+  <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
       <button id="back_id" mat-raised-button color="primary"
               (click)="onBackButtonClicked()">
@@ -229,7 +222,7 @@
           <mat-icon>task</mat-icon>
           <span>{{ "document.edit.panel.button.version.review.request" | translate }}</span>
         </button>
-        <button mat-raised-button
+        <button mat-raised-button  id="reviewApprove_id"
                 *ngIf="!isNotReviewMode || hasReviewPermission"
                 color="primary"
                 matTooltip="{{ 'document.edit.panel.tooltip.version.review.approve' | translate }}"
@@ -238,7 +231,7 @@
           <mat-icon>check_circle</mat-icon>
           <span>{{ "document.edit.panel.button.version.review.approve" | translate }}</span>
         </button>
-        <button mat-raised-button
+        <button mat-raised-button id="reviewReject_id"
                 color="primary"
                 matTooltip="{{ 'document.edit.panel.tooltip.version.review.reject' | translate }}"
                 [disabled]="reviewRejectButtonDisabled"

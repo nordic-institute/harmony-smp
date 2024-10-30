@@ -140,6 +140,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier))" +
         "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme))")
 
+@NamedQuery(name = QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, query = "SELECT d FROM DBDocument d WHERE d.referenceDocument.id =:document_id")
 public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);
     @Id

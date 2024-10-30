@@ -34,6 +34,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -55,6 +56,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * @return document for the resource or empty if not found
      */
     public Optional<DBDocument> getDocumentForResource(DBResource dbResource) {
+        if (dbResource == null || dbResource.getId() == null) {
+            LOG.debug("Can not get document for resource, because resource is not persisted to the database");
+            return Optional.empty();
+        }
         try {
             // expected is only one domain,
             TypedQuery<DBDocument> query = memEManager.createNamedQuery(QUERY_DOCUMENT_FOR_RESOURCE, DBDocument.class);
@@ -74,6 +79,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * @return document for the resource or empty if not found
      */
     public Optional<DBDocument> getDocumentForSubresource(DBSubresource dbSubresource) {
+        if (dbSubresource == null|| dbSubresource.getId() == null) {
+            LOG.debug("Can not get document for subresource, because resource is not persisted to the database");
+            return Optional.empty();
+        }
         try {
             // expected is only one domain,
             TypedQuery<DBDocument> query = memEManager.createNamedQuery(QUERY_DOCUMENT_FOR_SUBRESOURCE, DBDocument.class);
@@ -192,8 +201,27 @@ public class DocumentDao extends BaseDao<DBDocument> {
     public long getDocumentReviewListForUserCount(Long dbUserId) {
         TypedQuery<Long> query = createDocumentReviewListForUserQuery(Long.class, dbUserId);
 
-        return query.getSingleResult().longValue();
+        return query.getSingleResult();
     }
+
+    /**
+     * Method retrieved all the documents where given document is set as target and un-link the documents
+     *
+     * @param document the target document
+     */
+    public void unlinkDocument(DBDocument document){
+        if (document == null || document.getId() == null) {
+            LOG.debug("Can not unlink document, because document is not persisted to the database");
+            return;
+        }
+        TypedQuery<DBDocument> query =  memEManager.createNamedQuery(QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, DBDocument.class);
+        query.setParameter(PARAM_DOCUMENT_ID, document.getId());
+        // user stream ulink to capture audit record
+        List<DBDocument> lstDocuments = query.getResultList();
+        lstDocuments.forEach(linkedDoc -> {
+            linkedDoc.setReferenceDocument(null);
+        });
+   }
 
     /**
      * Method creates query for searching reference document resources

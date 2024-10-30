@@ -1,6 +1,6 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit,} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
@@ -9,7 +9,9 @@ import {
 } from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
-import {MatTableDataSource} from "@angular/material/table";
+import {
+  SmpTableColDef
+} from "../../common/components/smp-table/smp-table-coldef.model";
 
 
 @Component({
@@ -18,19 +20,35 @@ import {MatTableDataSource} from "@angular/material/table";
 })
 export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
-  displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
+
   selected: ResourceRo;
   isLoadingResults = false;
-
-  dataSource: MatTableDataSource<ResourceRo>;
-  @ViewChild("resourcePaginator") paginator: MatPaginator;
+  dataSource: EditResourceController;
+  // define columns for smp-table
+  displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
+  columns: SmpTableColDef[];
 
   constructor(private editResourceController: EditResourceController) {
     this.dataSource = editResourceController;
+    this.columns = [
+      {
+        columnDef: 'identifierScheme',
+        header: 'edit.resource.label.identifier.scheme',
+        cell: (row: ResourceRo) => row.identifierScheme,
+        style: 'flex-grow: 0;flex-basis: 180px;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'identifierValue',
+        header: 'edit.resource.label.identifier.value',
+        cell: (row: ResourceRo) => row.identifierValue
+      } as SmpTableColDef
+    ];
   }
 
   ngOnInit() {
-    console.log("EditResourceComponent: ngOnInit")
+    console.log("EditResourceComponent: ngOnInit  " + this.columns.length);
+    this.editResourceController.refreshDataOnDataChange();
+
     if (!this.selectedResource) {
       this.editResourceController.refreshDomains();
     } else {
@@ -39,15 +57,12 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     }
   }
 
-
   ngAfterViewInit(): void {
-    // bind data to resource controller
-    this.dataSource.paginator = this.paginator;
   }
 
 
-  applyResourceFilter(event: Event) {
-    this.editResourceController.applyResourceFilter(event);
+  onFilterChangedEvent(filter: string) {
+    this.editResourceController.applyResourceFilter(filter);
   }
 
   get hasResources(): boolean {
@@ -78,13 +93,14 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     this.editResourceController.selectedGroup = resource;
   };
 
-  get selectedResource(): ResourceRo {
-    return this.editResourceController.selectedResource;
-  };
 
   get selectedDomainResourceDefs(): ResourceDefinitionRo[] {
     return this.editResourceController._selectedDomainResourceDefs;
   }
+
+  get selectedResource(): ResourceRo {
+    return this.editResourceController.selectedResource;
+  };
 
   @Input() set selectedResource(resource: ResourceRo) {
     this.editResourceController.selectedResource = resource;
@@ -102,12 +118,20 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     return !this.editResourceController.filteredData;
   }
 
+  get isLoading(): boolean {
+    return this.editResourceController.isLoadingResults;
+  }
+
+  get dataLength(): number {
+    return this.editResourceController.dataLength;
+  }
+
   isDirty(): boolean {
     return false;
   }
 
   onPageChanged(page: PageEvent) {
-    this.editResourceController.refreshResources();
+    this.editResourceController.applyResourcePage(page.pageIndex, page.pageSize);
   }
 
   get hasSubResources(): boolean {

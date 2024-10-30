@@ -1,4 +1,16 @@
+:host{
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+}
 
+#edit-subresource-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-right: 5px;
+}
 
 
 .edit-resource-loading-shade {
@@ -13,8 +25,10 @@
   align-items: center;
   justify-content: center;
 }
-
-#dit-resource-filter {
-  width: 100%;
-  padding-top: 1em;
+.edit-subresource-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: auto;
+  padding: 0 5px;
 }

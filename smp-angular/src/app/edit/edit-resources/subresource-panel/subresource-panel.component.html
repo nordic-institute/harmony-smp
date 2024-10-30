@@ -1,4 +1,4 @@
-<div id="edit-resource-panel" class="mat-elevation-z2">
+<div id="edit-subresource-panel" class="mat-elevation-z2">
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
       <button id="createButton" mat-raised-button (click)="onCreateResourceButtonClicked()" color="primary"
@@ -24,56 +24,25 @@
     </mat-toolbar-row>
   </mat-toolbar>
   <h3>{{title}}</h3>
-  <div class="edit-resource-container mat-elevation-z2">
+  <div class="edit-subresource-container mat-elevation-z2">
     <div class="edit-resource-loading-shade"
          *ngIf="isLoadingResults">
       <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
     </div>
 
-    <div class="edit-resource-table-container">
-
-      <mat-form-field id="edit-resource-filter" style="width: 100%">
-        <mat-label>{{ "subresource.panel.label.filter" | translate }}</mat-label>
-        <input matInput (keyup)="applySubResourceFilter($event)"
-               placeholder="{{ 'subresource.panel.placeholder.filter' | translate }}"
-               [disabled]="disabledForm"
-               #inputDomainMemberFilter>
-      </mat-form-field>
-
-      <table class="mat-elevation-z2" mat-table [dataSource]="dataSource">
-
-        <ng-container matColumnDef="identifierScheme">
-          <th mat-header-cell *matHeaderCellDef>{{ "subresource.panel.label.identifier.scheme" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.identifierScheme}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="identifierValue">
-          <th mat-header-cell *matHeaderCellDef>{{ "subresource.panel.label.identifier.value" | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{row.identifierValue}}</td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
-            (click)="onResourceSelected(row)"
-            (dblclick)="showSubresourceEditPanel(row)"
-            [ngClass]="{'datatable-row-selected': row==selected,'datatable-row-odd': odd}"
-        ></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">
-            {{ "subresource.panel.label.no.filter.results" | translate: { filterValue: inputDomainMemberFilter.value } }}
-          </td>
-          <ng-template #noDataFound>
-            <td class="mat-cell" colspan="2">{{ "subresource.panel.label.no.data.found" | translate }}</td>
-          </ng-template>
-        </tr>
-      </table>
-    </div>
-
-    <mat-paginator class="mat-elevation-z2"
-                   [hidePageSize]="true"
-                   [pageSize]="5"
-                   [disabled]="disabledForm"
-                   attr.aria-label="{{ 'subresource.panel.label.select.pages' | translate }}"></mat-paginator>
+    <smp-table
+      filterLabel="subresource.panel.label.filter"
+      filterPlaceholder="subresource.panel.placeholder.filter"
+      noResultLabel="subresource.panel.label.no.data.found"
+      noResultForFilterLabel="edit.resource.label.no.filter.results"
+      [dataSource]="dataSource"
+      [selectedRow]="selected"
+      [columnDefList]="columns"
+      [displayedColumns]="displayedColumns"
+      (onFilterChanged)="applySubResourceFilter($event)"
+      (onRowClicked)="onResourceSelected($event)"
+      (onRowDoubleClicked)="showSubresourceEditPanel($event)"
+    >
+    </smp-table>
   </div>
 </div>

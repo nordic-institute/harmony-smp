@@ -30,14 +30,15 @@ SMP_DB_PASSWORD="test"
 SMP_JDBC_URL="jdbc:oracle:thin:@//smp-oracle-db:1521/${ORA_SERVICE}"
 SMP_DB_SCRIPTS=./properties/db-scripts
 SMP_WLS_INIT_SCRIPTS=./properties/weblogic-init
-
+START_LOCAL="false"
 # READ arguments
-while getopts i:v: option
+while getopts i:v:l: option
 do
   case "${option}"
   in
     i) SMP_INIT_DATABASE_DATA=${OPTARG};;
     v) SMP_VERSION=${OPTARG};;
+    l) START_LOCAL=${OPTARG};;
     *) echo "Unknown option [${option}]. Usage: $0 [-i] [-v]"; exit 1;;
   esac
 done

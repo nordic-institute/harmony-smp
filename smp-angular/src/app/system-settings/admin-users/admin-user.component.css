@@ -17,3 +17,10 @@
   width: 100%;
   padding-top: 1em;
 }
+
+.user-table-cell-header {
+  font-weight: bold;
+  font-size: 0.9em;
+  padding: 1px 5px;
+  text-align: left;
+}

@@ -1,6 +1,7 @@
 package pages.systemSettings;
 
 import ddsl.CommonPageWithTabsAndGrid;
+import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
@@ -27,6 +28,11 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
         super(driver);
         userData = new UserDataCommonComponent(driver);
         LOG.debug("Loading Users page.");
+    }
+
+    @Override
+    public SmallGrid getLeftSideGrid() {
+        return new SmallGrid(driver, rightPanel);
     }
 
     public DButton getCreateUserBtn() {

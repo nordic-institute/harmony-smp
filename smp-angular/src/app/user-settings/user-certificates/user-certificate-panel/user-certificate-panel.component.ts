@@ -3,6 +3,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {GlobalLookups} from "../../../common/global-lookups";
+import {DateTimeService} from "../../../common/services/date-time.service";
 
 
 @Component({
@@ -21,7 +22,7 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
   credentialForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
-              private globalLookups: GlobalLookups) {
+              private dateTimeService: DateTimeService) {
     this.credentialForm = formBuilder.group({
       // common values
       'active': new FormControl({value: '', disabled: false}),
@@ -97,7 +98,7 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
   }
 
   get dateFormat(): string {
-    return this.globalLookups.getDateFormat();
+    return this.dateTimeService.userDateFormat;
   }
 
 }

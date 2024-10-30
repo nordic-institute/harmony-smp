@@ -1,4 +1,13 @@
+#domain-member-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
+.domain-member-container {
+  flex: 1;
+  overflow-y: auto;
+}
 
 
 .domain-member-loading-shade {

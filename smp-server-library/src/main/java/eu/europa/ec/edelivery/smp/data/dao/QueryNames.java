@@ -130,10 +130,12 @@ public class QueryNames {
     public static final String QUERY_SEARCH_DOCUMENT_REFERENCES = "DBDocument.getDocumentReferences";
     public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT = "DBDocument.getDocumentReferencesCount";
     public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
+    public static final String QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT = "DBDocument.getAllDocumentsForTargetDocument";
     public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES = "DBDocument.getDocumentReferencesForSubresources";
     public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT = "DBDocument.getDocumentReferencesForSubresourcesCount";
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
+
 
 
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT = "DBDocumentVersion.forCurrentForDocument";
