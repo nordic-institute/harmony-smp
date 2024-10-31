@@ -1,7 +1,6 @@
 package pages.administration.editResourcesPage;
 
 import ddsl.CommonPageWithTabsAndGrid;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,11 +28,6 @@ public class EditResourcePage extends CommonPageWithTabsAndGrid {
         super(driver);
         LOG.debug("Loading Edit resources page.");
     }
-
-    public void selectGroup(DomainModel domainModel, GroupModel groupModel) {
-        weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
-    }
-
     public ResourcesMembersTab getResourceMembersTab() {
         return new ResourcesMembersTab(driver);
     }
@@ -42,22 +36,13 @@ public class EditResourcePage extends CommonPageWithTabsAndGrid {
         return new ResourceDetailsTab(driver);
     }
 
+    public SubresourceTab getSubresourceTab() {
+        return new SubresourceTab(driver);
+    }
+
     public void selectDomain(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceModel) {
         weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
         weToMatSelect(groupDdl).selectByVisibleText(groupModel.getGroupName());
         getLeftSideGrid().searchAndClickElementInColumn("Identifier", resourceModel.getIdentifierValue());
     }
-
-    public boolean isCurrentUserAdministrator() {
-        try {
-            if (notAdministratorWarning.isDisplayed()) {
-                return true;
-            }
-            return false;
-
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
-
 }

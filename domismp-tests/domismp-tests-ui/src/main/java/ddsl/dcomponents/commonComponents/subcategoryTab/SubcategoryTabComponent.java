@@ -5,6 +5,7 @@ import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.MatSmallGrid;
 import ddsl.dcomponents.commonComponents.members.InviteMembersWithGridPopup;
 import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -15,7 +16,7 @@ import org.openqa.selenium.support.FindBy;
 public class SubcategoryTabComponent extends DComponent {
     @FindBy(id = "createButton")
     private WebElement createBtn;
-    @FindBy(id = "editButton")
+    @FindBy(css = "mat-toolbar-row button[id=\"editButton\"]")
     private WebElement editBtn;
     @FindBy(id = "groupMembersButton")
     private WebElement membersBtn;
@@ -43,9 +44,14 @@ public class SubcategoryTabComponent extends DComponent {
 
     protected void edit(String columnName, String value) throws Exception {
         WebElement tobeEdited = getGrid().searchAndGetElementInColumn(columnName, value);
-        tobeEdited.click();
-        wait.forElementToBeEnabled(editBtn);
-        weToDButton(editBtn).click();
+        try {
+            tobeEdited.click();
+            wait.forElementToBeEnabled(editBtn);
+            weToDButton(editBtn).click();
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("Element was not found in the grid: " + value);
+        }
+
     }
 
     protected void delete(String columnName, String value){

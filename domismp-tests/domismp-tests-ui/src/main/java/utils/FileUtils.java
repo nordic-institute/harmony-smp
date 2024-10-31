@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 public class FileUtils {
 
     private static final Path keystoreFolder = Paths.get("src", "main", "resources", "keystore");
+    private static final Path trustStoreFolder = Paths.get("src", "main", "resources", "truststore");
 
 
     public static String getAbsolutePath(String relativePath) {
@@ -21,6 +22,10 @@ public class FileUtils {
      */
     public static String getAbsoluteKeystorePath(String keystoreFileName) {
         return keystoreFolder.resolve(keystoreFileName).toAbsolutePath().toString();
+    }
+
+    public static String getAbsoluteTruststorePath(String truststoreFileName) {
+        return trustStoreFolder.resolve(truststoreFileName).toAbsolutePath().toString();
     }
 
 }
