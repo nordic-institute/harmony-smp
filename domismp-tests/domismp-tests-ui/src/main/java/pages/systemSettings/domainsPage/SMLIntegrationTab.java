@@ -33,6 +33,8 @@ public class SMLIntegrationTab extends DComponent {
 
     @FindBy(id = "registerButton")
     private WebElement registerBtn;
+    @FindBy(id = "unregisterButton")
+    private WebElement unregisterBtn;
 
     public SMLIntegrationTab(WebDriver driver) {
         super(driver);
@@ -85,6 +87,21 @@ public class SMLIntegrationTab extends DComponent {
 
         } catch (Exception e) {
             LOG.error("Register button is not enabled");
+            throw new Exception(e);
+        }
+
+    }
+
+    public void unregisterToSML() throws Exception {
+        try {
+            if (weToDButton(unregisterBtn).isEnabled()) {
+                weToDButton(unregisterBtn).click();
+                ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
+                confirmationDialog.confirm();
+            }
+
+        } catch (Exception e) {
+            LOG.error("Unregister button is not enabled");
             throw new Exception(e);
         }
 

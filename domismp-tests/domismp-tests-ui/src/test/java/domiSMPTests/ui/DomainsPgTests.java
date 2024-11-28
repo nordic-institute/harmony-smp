@@ -24,10 +24,7 @@ import java.util.List;
 /**
  * This class has the tests against Domains Page
  */
-//@Ignore("DomainsPgTests:beforeTest Failing tests: org.openqa.selenium.ElementClickInterceptedException: Element <select id=\"signatureKeyAlias_id\" " +
-//        "class=\"mat-mdc-input-element mat-mdc-tooltip-trigger ng-tns-c1205077789-11 ng-untouched ng-pristine ng-valid " +
-//        "mat-mdc-form-field-input-control mdc-text-field__input cdk-text-field-autofill-monitored cdk-focused cdk-program-focused\"> " +
-//        "is not clickable at point (1014,364) because another element <mat-label class=\"ng-tns-c1205077789-11\"> obscures it" )
+
 public class DomainsPgTests extends SeleniumTest {
     DomiSMPPage homePage;
     LoginPage loginPage;
@@ -243,6 +240,43 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "DOM-07 System admin can delete only unregister SML domains")
+    public void systemAdminCanDeleteOnlyUnregisterSMLDomains() throws Exception {
+        DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        DomainModel domainModel = rest.domains().createDomain(domainModelGenerated);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        domainsPage.refreshPage();
+
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.goToTab("SML integration");
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModelGenerated);
+        domainsPage.getSMLIntegrationTab().saveChanges();
+        domainsPage.getSMLIntegrationTab().registerToSML();
+
+        String alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain [" + domainModel.getDomainCode() + "] registered to SML!");
+        soft.assertFalse(domainsPage.getDeleteBtn().isEnabled(), "Delete button is enabled!");
+
+        domainsPage.getSMLIntegrationTab().unregisterToSML();
+        domainsPage.deleteandConfirm();
+        soft.assertFalse(domainsPage.getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()), "Deleted domain is still in the grid");
+
+
+        soft.assertAll();
+    }
 
     @Test(description = "DOM-19 - Domain admins are able to change default properties for domains")
     public void systemAdminsAreAbleToChangeDefaultPropertiesForDomains() throws Exception {

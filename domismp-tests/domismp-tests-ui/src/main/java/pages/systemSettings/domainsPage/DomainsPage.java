@@ -63,4 +63,8 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
         ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
         confirmationDialog.confirm();
     }
+
+    public DButton getDeleteBtn() {
+        return weToDButton(deleteBtn);
+    }
 }
