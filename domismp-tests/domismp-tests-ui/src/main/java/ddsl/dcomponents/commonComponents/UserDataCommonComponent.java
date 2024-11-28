@@ -90,6 +90,4 @@ public class UserDataCommonComponent extends DomiSMPPage {
             return null;
         }
     }
-
-
 }
