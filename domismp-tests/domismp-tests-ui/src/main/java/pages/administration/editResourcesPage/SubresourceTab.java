@@ -27,5 +27,9 @@ public class SubresourceTab extends SubcategoryTabComponent {
         return new EditSubresourceDocumentPage(driver);
     }
 
+    public void deleteSubresouceDocument(SubresourceModel subresourceModel) {
+        delete("Identifier", subresourceModel.getIdentifierValue());
+    }
+
 }
 

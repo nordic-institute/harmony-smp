@@ -1,6 +1,7 @@
 package pages.systemSettings;
 
 import ddsl.CommonPageWithTabsAndGrid;
+import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
@@ -21,7 +22,9 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
     @FindBy(id = "role_id")
     private WebElement applicationRoleDdl;
     @FindBy(id = "active_id")
-    private WebElement isActive;
+    private WebElement isActiveCheckBox;
+    @FindBy(id = "saveButton")
+    private WebElement saveBtn;
 
 
     public UsersPage(WebDriver driver) {
@@ -37,6 +40,12 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
 
     public DButton getCreateUserBtn() {
         return new DButton(driver, addBtn);
+    }
+
+    public String deleteAndConfirm() {
+        weToDButton(deleteBtn).click();
+        new ConfirmationDialog(driver).confirm();
+        return getAlertMessageAndClose();
     }
 
     public String fillNewUserDataAndSave(UserModel newUserData) {
@@ -63,7 +72,7 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
 
     public Boolean isSelectedUserActive() {
         try {
-            return weToDInput(isActive).getAttribute("class").contains("checked");
+            return weToDInput(isActiveCheckBox).getAttribute("class").contains("checked");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -82,5 +91,30 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
         return userData.getSelectedLocale();
     }
 
+    public void changeApplicationRole(String role) {
+        try {
+            weToDSelect(applicationRoleDdl).selectByVisibleText(role);
+            weToDButton(saveBtn).click();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String modifyIsActiveForUser(Boolean isActive) throws Exception {
+        if (isActive) {
+            weToDChecked(isActiveCheckBox).check();
+
+        } else {
+            weToDChecked(isActiveCheckBox).uncheck();
+
+        }
+        if (weToDButton(saveBtn).isEnabled()) ;
+        {
+            LOG.debug("Changing active value of access token to: [{}]", isActive);
+
+            weToDButton(saveBtn).click();
+            return getAlertArea().getAlertMessage();
+        }
+    }
 
 }

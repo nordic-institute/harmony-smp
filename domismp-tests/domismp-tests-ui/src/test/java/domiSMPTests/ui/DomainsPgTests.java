@@ -1,5 +1,6 @@
 package domiSMPTests.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.commonComponents.domanPropertyEditDialog.DomainPropertyEditDialog;
 import ddsl.enums.Pages;
@@ -14,9 +15,7 @@ import pages.LoginPage;
 import pages.SmlPage;
 import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.systemSettings.domainsPage.DomainsPage;
-import rest.models.DomainModel;
-import rest.models.MemberModel;
-import rest.models.UserModel;
+import rest.models.*;
 import utils.TestRunData;
 
 import java.util.Arrays;
@@ -177,6 +176,70 @@ public class DomainsPgTests extends SeleniumTest {
         domainsPage.getDomainTab().saveChanges();
         alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Invalid domain data! Domain with code [" + domainModel.getDomainCode() + "] already exists!");
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    public void systemAdminIsAbleToDeleteDomainsWithoutResources() throws JsonProcessingException {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+        //create domain
+        domainModel = rest.domains().createDomain(domainModel);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+        domainsPage.refreshPage();
+        domainsPage
+                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.deleteandConfirm();
+        soft.assertEquals(domainsPage.getAlertArea().getAlertMessage(), "Domain: [" + domainModel.getDomainCode() + "] is removed!", "Alert message is wrong");
+
+        soft.assertFalse(domainsPage
+                .getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()));
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    public void systemAdminIsNotAbleToDeleteDomainsWithResources() throws JsonProcessingException {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
+        GroupModel groupModel = GroupModel.generatePublicGroup();
+        ResourceModel resourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
+
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        domainModel = rest.domains().createDomain(domainModel);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        //create group for domain
+        groupModel = rest.domains().createGroupForDomain(domainModel, groupModel);
+
+
+        //add resource to group
+        rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
+
+
+        domainsPage.refreshPage();
+        domainsPage
+                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.deleteandConfirm();
+        soft.assertEquals(domainsPage.getAlertArea().getAlertMessage(), "Can not delete domain because it has resources [1]! Delete resources first!", "Alert message is wrong");
+        soft.assertTrue(domainsPage
+                .getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()));
         soft.assertAll();
     }
 

@@ -1,6 +1,7 @@
 package pages.systemSettings.domainsPage;
 
 import ddsl.CommonPageWithTabsAndGrid;
+import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
@@ -57,5 +58,9 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
         return warningLabel.getText();
     }
 
-
+    public void deleteandConfirm() {
+        weToDButton(deleteBtn).click();
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
+        confirmationDialog.confirm();
+    }
 }
