@@ -22,6 +22,8 @@ import pages.systemSettings.domainsPage.DomainsPage;
 import pages.systemSettings.keyStorePage.KeystorePage;
 import pages.systemSettings.propertiesPage.PropertiesPage;
 import pages.userSettings.ProfilePage;
+import pages.userSettings.accessTokensPage.AccessTokensPage;
+import pages.userSettings.certificatesPage.accessTokensPage.CertificatesPage;
 
 import java.util.Objects;
 /**
@@ -168,14 +170,17 @@ public class SideNavigationComponent extends DomiSMPPage {
         if (page == Pages.USER_SETTINGS_PROFILE) {
             openSubmenu(userSettingsExpand, profileLnk);
             return (T) new ProfilePage(driver);
-//            case USER_SETTINGS_ACCESS_TOKEN:
-//                //expandSection(userSettingsExpand);
-//                //accessTokensLnk.click();
-//                return new ProfilePage(driver);
-//            case USER_SETTINGS_CERTIFICATES:
-//                expandSection(userSettingsExpand);
-//                return new DLink(driver, certificatesLnk);
+
         }
+        if (page == Pages.USER_SETTINGS_ACCESS_TOKEN) {
+            openSubmenu(userSettingsExpand, accessTokensLnk);
+            return (T) new AccessTokensPage(driver);
+        }
+        if (page == Pages.USER_SETTINGS_CERTIFICATES) {
+            openSubmenu(userSettingsExpand, certificatesLnk);
+            return (T) new CertificatesPage(driver);
+        }
+
         return null;
     }
 

@@ -25,6 +25,7 @@ import utils.XMLUtils;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class EditResourcePgTests extends SeleniumTest {
     DomiSMPPage homePage;
@@ -272,6 +273,40 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "EDTRES-11 Resource admin is able to delete subresource", priority = 1)
+    public void resourceAdminsIsAbleToDeleteSubResource() throws Exception {
+
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
+
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModel);
+        createSubresourceDetailsDialog.tryClickOnSave();
+        editResourcePage.getSubresourceTab().deleteSubresouceDocument(subresourceModel);
+        String deleteResourceAlert = editResourcePage.getAlertMessageAndClose();
+
+
+        soft.assertEquals(deleteResourceAlert, "Subresource with scheme [" + subresourceModel.getIdentifierScheme() + "] and identifier: [" + subresourceModel.getIdentifierValue() + "] deleted.");
+        soft.assertFalse(editResourcePage.getSubresourceTab().getGrid().isValuePresentInColumn("Identifier", subresourceModel.getIdentifierValue()), "Deleted subresource is stil in the grid.");
+        ResourcesPage resourcesPage = editResourcePage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        try {
+            resourcesPage.openURLSubResouceDocument(resourceModelOasis1.getIdentifierValue(), resourceModelOasis1.getIdentifierScheme(), subresourceModel.getIdentifierValue());
+            soft.assertTrue(false);
+        } catch (NoSuchElementException e) {
+            soft.assertTrue(true);
+        }
+        soft.assertAll();
+
+    }
+
     @Test(description = "EDTRES-15 - Resource Administrator can publish resource documents with approve status", priority = 1)
     public void resourceAdministratorsCanPublisResourceDocumentsWithApproveStatus() throws JsonProcessingException {
 
@@ -317,7 +352,7 @@ public class EditResourcePgTests extends SeleniumTest {
 
     }
 
-    @Test(description = "EDTRES-15 - Resource Administrator can publish subresource documents with approve status", priority = 1)
+    @Test(description = "EDTRES-16 - Resource Administrator can publish SubResource documents with approve status", priority = 1)
 
     public void resourceAdministratorsCanPublisSUBResourceDocumentsWithApproveStatus() throws Exception {
 

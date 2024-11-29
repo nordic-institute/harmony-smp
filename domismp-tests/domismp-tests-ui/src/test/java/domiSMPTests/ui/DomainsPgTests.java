@@ -1,5 +1,6 @@
 package domiSMPTests.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.commonComponents.domanPropertyEditDialog.DomainPropertyEditDialog;
 import ddsl.enums.Pages;
@@ -14,9 +15,7 @@ import pages.LoginPage;
 import pages.SmlPage;
 import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.systemSettings.domainsPage.DomainsPage;
-import rest.models.DomainModel;
-import rest.models.MemberModel;
-import rest.models.UserModel;
+import rest.models.*;
 import utils.TestRunData;
 
 import java.util.Arrays;
@@ -25,10 +24,7 @@ import java.util.List;
 /**
  * This class has the tests against Domains Page
  */
-//@Ignore("DomainsPgTests:beforeTest Failing tests: org.openqa.selenium.ElementClickInterceptedException: Element <select id=\"signatureKeyAlias_id\" " +
-//        "class=\"mat-mdc-input-element mat-mdc-tooltip-trigger ng-tns-c1205077789-11 ng-untouched ng-pristine ng-valid " +
-//        "mat-mdc-form-field-input-control mdc-text-field__input cdk-text-field-autofill-monitored cdk-focused cdk-program-focused\"> " +
-//        "is not clickable at point (1014,364) because another element <mat-label class=\"ng-tns-c1205077789-11\"> obscures it" )
+
 public class DomainsPgTests extends SeleniumTest {
     DomiSMPPage homePage;
     LoginPage loginPage;
@@ -180,6 +176,107 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    public void systemAdminIsAbleToDeleteDomainsWithoutResources() throws JsonProcessingException {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+        //create domain
+        domainModel = rest.domains().createDomain(domainModel);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+        domainsPage.refreshPage();
+        domainsPage
+                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.deleteandConfirm();
+        soft.assertEquals(domainsPage.getAlertArea().getAlertMessage(), "Domain: [" + domainModel.getDomainCode() + "] is removed!", "Alert message is wrong");
+
+        soft.assertFalse(domainsPage
+                .getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()));
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    public void systemAdminIsNotAbleToDeleteDomainsWithResources() throws JsonProcessingException {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
+        GroupModel groupModel = GroupModel.generatePublicGroup();
+        ResourceModel resourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
+
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        domainModel = rest.domains().createDomain(domainModel);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        //create group for domain
+        groupModel = rest.domains().createGroupForDomain(domainModel, groupModel);
+
+
+        //add resource to group
+        rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
+
+
+        domainsPage.refreshPage();
+        domainsPage
+                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.deleteandConfirm();
+        soft.assertEquals(domainsPage.getAlertArea().getAlertMessage(), "Can not delete domain because it has resources [1]! Delete resources first!", "Alert message is wrong");
+        soft.assertTrue(domainsPage
+                .getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()));
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-07 System admin can delete only unregister SML domains")
+    public void systemAdminCanDeleteOnlyUnregisterSMLDomains() throws Exception {
+        DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        DomainModel domainModel = rest.domains().createDomain(domainModelGenerated);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        domainsPage.refreshPage();
+
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.goToTab("SML integration");
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModelGenerated);
+        domainsPage.getSMLIntegrationTab().saveChanges();
+        domainsPage.getSMLIntegrationTab().registerToSML();
+
+        String alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain [" + domainModel.getDomainCode() + "] registered to SML!");
+        soft.assertFalse(domainsPage.getDeleteBtn().isEnabled(), "Delete button is enabled!");
+
+        domainsPage.getSMLIntegrationTab().unregisterToSML();
+        domainsPage.deleteandConfirm();
+        soft.assertFalse(domainsPage.getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()), "Deleted domain is still in the grid");
+
+
+        soft.assertAll();
+    }
 
     @Test(description = "DOM-19 - Domain admins are able to change default properties for domains")
     public void systemAdminsAreAbleToChangeDefaultPropertiesForDomains() throws Exception {

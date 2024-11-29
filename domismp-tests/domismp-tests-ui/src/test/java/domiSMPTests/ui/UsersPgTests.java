@@ -1,7 +1,9 @@
 package domiSMPTests.ui;
 
 import ddsl.DomiSMPPage;
+import ddsl.dcomponents.SetChangePasswordDialog;
 import ddsl.dobjects.DWait;
+import ddsl.enums.ApplicationRoles;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.openqa.selenium.WebElement;
@@ -11,6 +13,7 @@ import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
 import pages.ResetCredentialsPage;
 import pages.systemSettings.UsersPage;
+import pages.userSettings.ProfilePage;
 import rest.InbucketRestClient;
 import rest.models.UserModel;
 
@@ -53,9 +56,8 @@ public class UsersPgTests extends SeleniumTest {
         soft.assertEquals(usersPage.getSelectedLocaleValue(), "en");
 
         soft.assertAll();
-
-
     }
+
 
     @Test(description = "USR-02 System admin is not able to create duplicated user")
     public void systemAdminIsNotAbleToCreateDuplicatedUser() throws Exception {
@@ -74,8 +76,129 @@ public class UsersPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "USR-03 System admin is able to delete user")
+    public void systemAdminIsAbleToDeleteUser() throws Exception {
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+
+        String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
+        rest.users().changePassword(normalUserId, data.getNewPassword());
+
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+        String deleteAlert = usersPage.deleteAndConfirm();
+        soft.assertEquals(deleteAlert, "User [" + newNormalUser.getUsername() + "] has been deleted!", "Delete user alert message is wrong");
+        soft.assertFalse(usersPage.getLeftSideGrid().isValuePresentInColumn("Username", newNormalUser.getUsername()));
+        loginPage.logout();
+        loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
+        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "Login failed; Invalid userID or password!", "Login failed alert message is not correct");
+        soft.assertAll();
+    }
+
+    @Test(description = "USR-04 System admin is able to change the password of selected user")
+    public void systemAdminIsAbleToChangePasswordOfSelectedUser() throws Exception {
+        String newPassword = "@#$#asdddersPasswordValue12";
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+        rest.users().createUser(newNormalUser).getString("userId");
+
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+
+        SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
+        setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"), newPassword);
+        setChangePasswordDialog.TryClickOnChangePassword();
+
+        loginPage.logout();
+        loginPage.login(newNormalUser.getUsername(), newPassword);
+        homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        soft.assertEquals(homePage.getBreadcrump().getCurrentPage(), "Profile");
+        soft.assertAll();
+    }
+
+    @Test(description = "USR-05 System admin can modify user's data")
+    public void systemAdminCanModifyUserData() throws Exception {
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+
+        String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
+        rest.users().changePassword(normalUserId, data.getNewPassword());
+
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+
+        String newEmail = "newemail@email.com";
+        String newFullname = "AUT_NewFullName";
+        String newTheme = "Blue theme";
+        String newLocale = "Romanian";
+        usersPage.userData.fillUserProfileData(newEmail, newFullname, newTheme, newLocale);
+
+        loginPage.logout();
+        loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
+        ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        soft.assertEquals(profilePage.profileData.getEmailAddress(), newEmail, "Email is not updated!");
+        soft.assertEquals(profilePage.profileData.getFullName(), newFullname, "Fullname is not updated!");
+        soft.assertEquals(profilePage.profileData.getSelectedTheme(), newTheme, "Theme is not updated!");
+        soft.assertEquals(profilePage.profileData.getSelectedLocale(), "ro", "Locale is not updated!");
+        soft.assertAll();
+    }
+
+    @Test(description = "USR-06 System admin is able to change the role of an user")
+    public void systemAdminIsAbleToChangeTheRoleOfUsers() throws Exception {
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+
+        String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
+        rest.users().changePassword(normalUserId, data.getNewPassword());
+
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+        usersPage.changeApplicationRole(ApplicationRoles.SYSTEM_ADMIN);
+
+        loginPage.logout();
+        loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
+        homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
+        soft.assertEquals(homePage.getBreadcrump().getCurrentPage(), "Domain");
+        soft.assertAll();
+    }
+
+    @Test(description = "USR-07 System admin is able to active/deactivate users")
+    public void systemAdminIsAbleToActivatDeactivateUser() throws Exception {
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+
+        String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
+        rest.users().changePassword(normalUserId, data.getNewPassword());
+        //Deactivate user
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+        usersPage.modifyIsActiveForUser(false);
+
+        loginPage.logout();
+        loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
+        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "Login failed; Invalid userID or password!", "Login failed alert message is not correct");
+        //Activate user
+
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+        usersPage.modifyIsActiveForUser(true);
+
+        loginPage.logout();
+        loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
+        homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        soft.assertEquals(homePage.getBreadcrump().getCurrentPage(), "Profile");
+        soft.assertAll();
+    }
+
     @Test(description = "LGN-32 - User is able to reset password")
-    public void userIsAbleToResetHisPassword() throws Exception {
+    public void userIsAbleToResetPassword() throws Exception {
 
         UserModel newAdminUser = UserModel.generateUserWithADMINrole();
         UserModel newNormalUser = UserModel.generateUserWithUSERrole();
@@ -254,5 +377,6 @@ public class UsersPgTests extends SeleniumTest {
 
         soft.assertAll();
     }
+
 
 }
