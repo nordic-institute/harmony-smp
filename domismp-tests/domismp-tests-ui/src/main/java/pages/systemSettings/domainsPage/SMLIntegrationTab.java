@@ -2,6 +2,8 @@ package pages.systemSettings.domainsPage;
 
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
+import ddsl.dobjects.DInput;
+import ddsl.dobjects.DSelect;
 import ddsl.enums.ResponseCertificates;
 import org.apache.poi.util.StringUtil;
 import org.openqa.selenium.WebDriver;
@@ -22,6 +24,8 @@ public class SMLIntegrationTab extends DComponent {
 
     @FindBy(id = "smlSMPId_id")
     private WebElement smlsmpIdentifierInput;
+    @FindBy(css = ".mdc-text-field--invalid > div:nth-child(2) > div:nth-child(1) > div")
+    private WebElement smlsmpIdentifierInputError;
 
     @FindBy(id = "smlClientKeyAlias_id")
     private WebElement smlClientCertificateAliasDdl;
@@ -36,6 +40,7 @@ public class SMLIntegrationTab extends DComponent {
     @FindBy(id = "unregisterButton")
     private WebElement unregisterBtn;
 
+
     public SMLIntegrationTab(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
@@ -45,7 +50,7 @@ public class SMLIntegrationTab extends DComponent {
     public void fillSMLIntegrationTab(DomainModel domainModel) {
         ResponseCertificates responseCertificates = ResponseCertificates
                 .getByAlias(domainModel.getSignatureKeyAlias());
-        if (StringUtil.isNotBlank(domainModel.getSignatureKeyAlias()) &&  responseCertificates== null) {
+        if (StringUtil.isNotBlank(domainModel.getSignatureKeyAlias()) && responseCertificates == null) {
             LOG.warn("Cannot find signature key for alias [{}]", domainModel.getSignatureKeyAlias());
         }
         try {
@@ -64,12 +69,11 @@ public class SMLIntegrationTab extends DComponent {
         }
 
     }
-
     public void saveChanges() {
         if (saveBtn.isEnabled()) {
             saveBtn.click();
             wait.forElementToBeDisabled(saveBtn);
-            if (saveBtn.getAttribute("disabled").equals("true")) {
+            if (saveBtn.getDomAttribute("disabled").equals("true")) {
                 LOG.debug("SML Integration tab changes were succesfully saved");
             } else {
                 LOG.error("SML Integration  tab changes were not saved");
@@ -106,5 +110,24 @@ public class SMLIntegrationTab extends DComponent {
         }
 
     }
+
+    public String getSMLSMPErrorMessage() {
+        try {
+            return smlsmpIdentifierInputError.getText();
+        } catch (Exception e) {
+            LOG.debug("No SMLSMP validation error");
+            return null;
+        }
+    }
+
+    public DInput getsmlsmpIdentifierInput() {
+        return weToDInput(smlsmpIdentifierInput);
+    }
+
+    public DSelect getSMLClientCertificateAliasDdl() {
+        return weToDSelect(smlClientCertificateAliasDdl);
+    }
+
+
 
 }

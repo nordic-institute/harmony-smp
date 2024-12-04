@@ -25,6 +25,7 @@ public class GridPagination extends DComponent {
     }
 
     public Integer getTotalPageNumber() {
+        wait.forElementToBeVisible(parentElement);
         String val = parentElement.findElement(currentElementsLblLocator).getText();
         Integer numofElementsPerPage = 5;
         Pattern pattern = Pattern.compile("of (\\d+)");

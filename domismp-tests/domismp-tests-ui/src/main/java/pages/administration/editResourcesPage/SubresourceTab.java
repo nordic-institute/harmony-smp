@@ -12,6 +12,7 @@ import rest.models.SubresourceModel;
  * Page object Subresource tab of Edit Resource page. This contains the locators of the page and the methods for the behaviour of the page
  */
 public class SubresourceTab extends SubcategoryTabComponent {
+
     public SubresourceTab(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);

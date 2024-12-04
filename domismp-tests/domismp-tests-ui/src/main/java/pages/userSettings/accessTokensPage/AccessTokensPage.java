@@ -61,10 +61,15 @@ public class AccessTokensPage extends DomiSMPPage {
     }
 
     public Boolean isAccessTokenPresent(String accessTokenName) {
-        WebElement accessToken = getAccessToken(accessTokenName);
+        try {
+            getAccessToken(accessTokenName);
+            return true;
+
+        } catch (NoSuchElementException e) {
+            return false;
+        }
 
 
-        return accessToken != null;
     }
 
     public HashMap<String, String> getAccessTokenInfo(String accessTokenName) throws Exception {
@@ -106,7 +111,7 @@ public class AccessTokensPage extends DomiSMPPage {
             weToDChecked(accessToken.findElement(isActiveLocator)).uncheck();
 
         }
-        if (weToDButton(accessToken.findElement(saveBtnLocator)).isEnabled()) ;
+        if (weToDButton(accessToken.findElement(saveBtnLocator)).isEnabled())
         {
             LOG.debug("Changing active value of access token to: [{}]", isActive);
 
@@ -114,6 +119,7 @@ public class AccessTokensPage extends DomiSMPPage {
             new ConfirmationDialog(driver).confirm();
             return getAlertArea().getAlertMessage();
         }
+        return null;
     }
 
 }

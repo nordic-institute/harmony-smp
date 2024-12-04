@@ -70,6 +70,14 @@ public class BaseRestClient {
         return builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, body);
     }
 
+    protected ClientResponse requestGet(WebResource resource) {
+        startSession();
+        WebResource.Builder builder = decorateBuilder(resource);
+
+        return builder.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+    }
+
+
     // -------------------------------------------- Login --------------------------------------------------------------
 
     protected WebResource.Builder decorateBuilder(WebResource resource) {
