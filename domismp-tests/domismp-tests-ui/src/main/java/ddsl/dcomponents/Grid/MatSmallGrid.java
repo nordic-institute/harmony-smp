@@ -110,7 +110,7 @@ public class MatSmallGrid extends DComponent {
     }
 
     public String getColumnValueForSpecificRow(String columnNameToSearch, String valueToSearch, String searchedColumnValue) {
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeShort());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
