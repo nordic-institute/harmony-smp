@@ -44,18 +44,18 @@ public class AccessTokensPgTests extends SeleniumTest {
         //Create new token
         CreateNewAccessTokenDialog createNewAccessTokenDialog = accessTokensPage.clickCreateAccessTokenBtn();
         createNewAccessTokenDialog.getDescriptionInput().fill(description);
-        createNewAccessTokenDialog.getStartDateInput().fill(currentDate);
-        createNewAccessTokenDialog.getEndDateInput().fill(currentDate);
+        createNewAccessTokenDialog.getStartDateInput().fill(currentDate, true);
+        createNewAccessTokenDialog.getEndDateInput().fill(currentDate, true);
         createNewAccessTokenDialog.getCreateNewTokenBtn().click();
         String tokenID = createNewAccessTokenDialog.getTokenIdAndCloseDialog();
 
-
+        String currentDateUiFormat = Utils.getCurrentDate("MM/d/yyyy");
         soft.assertTrue(accessTokensPage.isAccessTokenPresent(tokenID), "Access Token ID is not correct");
         HashMap<String, String> accessTokenInfo = accessTokensPage.getAccessTokenInfo(tokenID);
         soft.assertEquals(accessTokenInfo.get("Description"), description, "Access Token description is not correct");
         soft.assertEquals(accessTokenInfo.get("Active"), "true", "Access Token active status is not correct");
-        soft.assertEquals(accessTokenInfo.get("StartDate"), currentDate, "Access Token start date is not correct");
-        soft.assertEquals(accessTokenInfo.get("EndDate"), currentDate, "Access Token end date is not correct");
+        soft.assertEquals(accessTokenInfo.get("StartDate"), currentDateUiFormat, "Access Token start date is not correct");
+        soft.assertEquals(accessTokenInfo.get("EndDate"), currentDateUiFormat, "Access Token end date is not correct");
         soft.assertEquals(accessTokenInfo.get("SequenceFailedAttempts"), "0", "Access Token SequenceFailedAttempts is not correct");
         soft.assertEquals(accessTokenInfo.get("LastFailedAttempts"), "---", "Access Token LastFailedAttempts is not correct");
         soft.assertEquals(accessTokenInfo.get("SuspendedUntil"), "---", "Access Token SuspendedUntil is not correct");
@@ -68,8 +68,8 @@ public class AccessTokensPgTests extends SeleniumTest {
         //Create new token
         createNewAccessTokenDialog = accessTokensPage.clickCreateAccessTokenBtn();
         createNewAccessTokenDialog.getDescriptionInput().fill(description);
-        createNewAccessTokenDialog.getStartDateInput().fill(currentDate);
-        createNewAccessTokenDialog.getEndDateInput().fill(currentDate);
+        createNewAccessTokenDialog.getStartDateInput().fill(currentDate, true);
+        createNewAccessTokenDialog.getEndDateInput().fill(currentDate, true);
         createNewAccessTokenDialog.getCreateNewTokenBtn().click();
         tokenID = createNewAccessTokenDialog.getTokenIdAndCloseDialog();
 
@@ -78,8 +78,8 @@ public class AccessTokensPgTests extends SeleniumTest {
         accessTokenInfo = accessTokensPage.getAccessTokenInfo(tokenID);
         soft.assertEquals(accessTokenInfo.get("Description"), description, "Access Token description is not correct");
         soft.assertEquals(accessTokenInfo.get("Active"), "true", "Access Token active status is not correct");
-        soft.assertEquals(accessTokenInfo.get("StartDate"), currentDate, "Access Token start date is not correct");
-        soft.assertEquals(accessTokenInfo.get("EndDate"), currentDate, "Access Token end date is not correct");
+        soft.assertEquals(accessTokenInfo.get("StartDate"), currentDateUiFormat, "Access Token start date is not correct");
+        soft.assertEquals(accessTokenInfo.get("EndDate"), currentDateUiFormat, "Access Token end date is not correct");
         soft.assertEquals(accessTokenInfo.get("SequenceFailedAttempts"), "0", "Access Token SequenceFailedAttempts is not correct");
         soft.assertEquals(accessTokenInfo.get("LastFailedAttempts"), "---", "Access Token LastFailedAttempts is not correct");
         soft.assertEquals(accessTokenInfo.get("SuspendedUntil"), "---", "Access Token SuspendedUntil is not correct");
@@ -95,14 +95,14 @@ public class AccessTokensPgTests extends SeleniumTest {
         //Create new token
         CreateNewAccessTokenDialog createNewAccessTokenDialog = accessTokensPage.clickCreateAccessTokenBtn();
         createNewAccessTokenDialog.getDescriptionInput().fill(description);
-        createNewAccessTokenDialog.getStartDateInput().fill(currentDate);
-        createNewAccessTokenDialog.getEndDateInput().fill(currentDate);
+        createNewAccessTokenDialog.getStartDateInput().fill(currentDate, true);
+        createNewAccessTokenDialog.getEndDateInput().fill(currentDate, true);
         createNewAccessTokenDialog.getCreateNewTokenBtn().click();
         String tokenID = createNewAccessTokenDialog.getTokenIdAndCloseDialog();
         String alertMessage = accessTokensPage.deleteAccessToken(tokenID);
 
         soft.assertEquals(alertMessage, "Access token \"" + tokenID + "\" has been deleted!", "Access Token ID is not correct");
-        soft.assertTrue(accessTokensPage.isAccessTokenPresent(tokenID));
+        soft.assertFalse(accessTokensPage.isAccessTokenPresent(tokenID));
         soft.assertAll();
     }
 
@@ -113,8 +113,8 @@ public class AccessTokensPgTests extends SeleniumTest {
         //Create new token
         CreateNewAccessTokenDialog createNewAccessTokenDialog = accessTokensPage.clickCreateAccessTokenBtn();
         createNewAccessTokenDialog.getDescriptionInput().fill(description);
-        createNewAccessTokenDialog.getStartDateInput().fill(currentDate);
-        createNewAccessTokenDialog.getEndDateInput().fill(currentDate);
+        createNewAccessTokenDialog.getStartDateInput().fill(currentDate, true);
+        createNewAccessTokenDialog.getEndDateInput().fill(currentDate, true);
         createNewAccessTokenDialog.getCreateNewTokenBtn().click();
 
         String tokenID = createNewAccessTokenDialog.getTokenIdAndCloseDialog();
@@ -140,8 +140,8 @@ public class AccessTokensPgTests extends SeleniumTest {
         //Create new token
         createNewAccessTokenDialog = accessTokensPage.clickCreateAccessTokenBtn();
         createNewAccessTokenDialog.getDescriptionInput().fill(description);
-        createNewAccessTokenDialog.getStartDateInput().fill(currentDate);
-        createNewAccessTokenDialog.getEndDateInput().fill(currentDate);
+        createNewAccessTokenDialog.getStartDateInput().fill(currentDate, true);
+        createNewAccessTokenDialog.getEndDateInput().fill(currentDate, true);
         createNewAccessTokenDialog.getCreateNewTokenBtn().click();
 
         tokenID = createNewAccessTokenDialog.getTokenIdAndCloseDialog();

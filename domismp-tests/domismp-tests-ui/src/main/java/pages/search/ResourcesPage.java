@@ -76,6 +76,7 @@ public class ResourcesPage extends DomiSMPPage {
         String original = iterator.next();
         String newTab = iterator.next();
         driver.switchTo().window(newTab);
+        wait.forXMillis(data.getWaitTimeShort());
         LOG.debug("Switching to new tab" + newTab);
 
         try {

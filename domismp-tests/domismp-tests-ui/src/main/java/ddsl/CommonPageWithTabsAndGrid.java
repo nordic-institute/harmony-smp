@@ -14,7 +14,7 @@ public class CommonPageWithTabsAndGrid extends CommonPageWithTabs {
     public WebElement filterInput;
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")
     public WebElement addBtn;
-    @FindBy(css = "data-panel >div >div> mat-toolbar button:last-of-type")
+    @FindBy(css = ".smp-toolbar-row > button:nth-child(2)")
     public WebElement deleteBtn;
     @FindBy(css = "[class~=smp-column-label]")
     public WebElement rightPanel;

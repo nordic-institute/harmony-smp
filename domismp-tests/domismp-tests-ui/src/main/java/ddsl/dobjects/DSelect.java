@@ -7,6 +7,9 @@ import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Generic wrapper for select element.
  */
@@ -43,8 +46,21 @@ public class DSelect extends DObject {
 
     public String getCurrentValueAttribute(String attribute) {
         try {
-            return select.getAllSelectedOptions().get(0).getAttribute(attribute);
+            return select.getAllSelectedOptions().get(0).getDomAttribute(attribute);
         } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public ArrayList<String> getAllOptionValues() {
+        try {
+            ArrayList<String> optionValueList = new ArrayList<>();
+            List<WebElement> allOptionELementsList = select.getOptions();
+            for (int i = 1; i < allOptionELementsList.size(); i++) {
+                optionValueList.add(allOptionELementsList.get(i).getDomAttribute("value"));
+            }
+            return optionValueList;
+        } catch (Exception e) {
             return null;
         }
     }

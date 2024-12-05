@@ -113,6 +113,7 @@ public class CertificatesPgTests extends SeleniumTest {
         //Delete certificate if exists
         try {
             certificatePage.deleteCertificate(certificateId);
+            certificatePage.getAlertArea().closeAlert();
         } catch (Exception ignored) {
 
         }

@@ -7,6 +7,7 @@ import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
 import ddsl.enums.ResponseCertificates;
 import domiSMPTests.SeleniumTest;
+import org.json.JSONArray;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -16,8 +17,10 @@ import pages.SmlPage;
 import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.systemSettings.domainsPage.DomainsPage;
 import rest.models.*;
+import utils.Generator;
 import utils.TestRunData;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -176,7 +179,7 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    @Test(description = "DOM-05 System admin is able to delete domains without Resources")
     public void systemAdminIsAbleToDeleteDomainsWithoutResources() throws JsonProcessingException {
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
 
@@ -200,7 +203,7 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    @Test(description = "DOM-06 System admin is not able to delete domains with Resources")
     public void systemAdminIsNotAbleToDeleteDomainsWithResources() throws JsonProcessingException {
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
         GroupModel groupModel = GroupModel.generatePublicGroup();
@@ -237,6 +240,48 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertEquals(domainsPage.getAlertArea().getAlertMessage(), "Can not delete domain because it has resources [1]! Delete resources first!", "Alert message is wrong");
         soft.assertTrue(domainsPage
                 .getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()));
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-10 System admin is able to change the Resource Type only if it is not used by a resource")
+    public void systemAdminIsAbleToChangeTheResourceTypeOnlyIfItIsNotUsedByAResource() throws Exception {
+        DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
+        GroupModel groupModel = GroupModel.generatePublicGroup();
+        ResourceModel resourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
+        resourceModel.setResourceTypeIdentifier(ResourceTypes.OASIS3.getName());
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        DomainModel domainModel = rest.domains().createDomain(domainModelGenerated);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        //create group for domain
+        groupModel = rest.domains().createGroupForDomain(domainModel, groupModel);
+
+
+        //add resource to group
+        rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
+        domainsPage.refreshPage();
+
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.goToTab("Resource Types");
+        domainsPage.getResourceTypesTab().checkResource("edelivery-oasis-smp-1.0-servicegroup (smp-1)", false);
+        domainsPage.getResourceTypesTab().saveChanges();
+        soft.assertFalse(domainsPage.getResourceTypesTab().getResourceTypeStatus("edelivery-oasis-smp-1.0-servicegroup (smp-1)"));
+
+        domainsPage.getResourceTypesTab().checkResource("edelivery-oasis-cppa-3.0-cpp (cpp)", false);
+        domainsPage.getResourceTypesTab().saveChanges();
+        soft.assertEquals(domainsPage.getAlertMessageAndClose(), "Can not remove resource definition [edelivery-oasis-cppa-3.0-cpp] from domain [" + domainModel.getDomainCode() + "], because it has resources. Resource count [1]!");
+
         soft.assertAll();
     }
 
@@ -278,6 +323,81 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    //Ignore tag should be removed when
+    @Test(description = "DOM-15 - User tries to add invalid SML SMP identifier and receives error")
+    public void systemAdminTriesToAddInvalidSMLSMPIdentifierAndReceivesError() throws Exception {
+        DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+        //create domain
+        DomainModel domainModel = rest.domains().createDomain(domainModelGenerated);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        domainsPage.refreshPage();
+
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.goToTab("SML integration");
+        domainModelGenerated.setSmlSmpId("43ASDASDASD");
+        String smlsmpIdentifierError = "SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit nor a hyphen and should not end with a hyphen.";
+
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModelGenerated);
+        soft.assertEquals(domainsPage.getSMLIntegrationTab().getSMLSMPErrorMessage(), smlsmpIdentifierError, "Validation error does not appear when identifier starts with number");
+
+        domainModelGenerated.setSmlSmpId("-ASDASDASD");
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModelGenerated);
+        soft.assertEquals(domainsPage.getSMLIntegrationTab().getSMLSMPErrorMessage(), smlsmpIdentifierError, "Validation error does not appear when identifier starts with hyphen");
+
+        domainModelGenerated.setSmlSmpId("ASDASDASD-");
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModelGenerated);
+        soft.assertEquals(domainsPage.getSMLIntegrationTab().getSMLSMPErrorMessage(), smlsmpIdentifierError, "Validation error does not appear when identifier ends with hyphen");
+        String longIdentifierValue = Generator.randomAlphabeticalValue(64);
+        domainModelGenerated.setSmlSmpId(longIdentifierValue);
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModelGenerated);
+        soft.assertNotEquals(domainsPage.getSMLIntegrationTab().getsmlsmpIdentifierInput().getText(), longIdentifierValue);
+
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-16 - SML Cert Alias dropdown field contains all keys from the keystore")
+    public void smlCertAliasDowndownContainsAllKeysFromKeystore() throws Exception {
+        DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        DomainModel domainModel = rest.domains().createDomain(domainModelGenerated);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(domainModel, superMember);
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
+
+        domainsPage.refreshPage();
+
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.goToTab("SML integration");
+        ArrayList<String> listOfCertificates = domainsPage.getSMLIntegrationTab().getSMLClientCertificateAliasDdl().getAllOptionValues();
+        ArrayList<String> listOfKeystore = new ArrayList<>();
+        JSONArray keystoreResponse = rest.keystoreClient().getAllKeystores();
+
+        for (int i = 0; i < keystoreResponse.length(); i++) {
+            listOfKeystore.add(rest.keystoreClient().getAllKeystores().getJSONObject(i).get("alias").toString());
+        }
+        soft.assertEquals(listOfKeystore, listOfCertificates);
+        soft.assertAll();
+    }
     @Test(description = "DOM-19 - Domain admins are able to change default properties for domains")
     public void systemAdminsAreAbleToChangeDefaultPropertiesForDomains() throws Exception {
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();

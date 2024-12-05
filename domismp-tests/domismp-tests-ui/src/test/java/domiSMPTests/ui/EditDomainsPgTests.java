@@ -1,5 +1,6 @@
 package domiSMPTests.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.commonComponents.domanPropertyEditDialog.DomainPropertyEditDialog;
 import ddsl.dcomponents.commonComponents.members.InviteMembersWithGridPopup;
@@ -152,6 +153,46 @@ public class EditDomainsPgTests extends SeleniumTest {
         soft.assertEquals(deleteMessage, String.format("Domain group [%s] deleted", groupToBeDeleted.getGroupName()));
         soft.assertAll();
     }
+
+    @Test(description = "EDTDOM-05 Domain admins are not able to delete groups with resources")
+    public void domainAdminsAreNotAbleToDeleteGroupsWithResources() throws JsonProcessingException {
+
+        DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
+        GroupModel currentGroupModel = GroupModel.generatePublicGroup();
+        ResourceModel currentResourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
+        currentResourceModel.setResourceTypeIdentifier(ResourceTypes.OASIS3.getName());
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+        //create domain
+        DomainModel currentDomainModel = rest.domains().createDomain(domainModelGenerated);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(currentDomainModel, superMember);
+        rest.domains().addMembersToDomain(currentDomainModel, memberAdmin);
+
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        currentDomainModel = rest.domains().addResourcesToDomain(currentDomainModel, resourcesToBeAdded);
+
+        //create group for domain
+        currentGroupModel = rest.domains().createGroupForDomain(currentDomainModel, currentGroupModel);
+
+        //add resource to group
+        rest.resources().createResourceForGroup(currentDomainModel, currentGroupModel, currentResourceModel);
+
+        editDomainPage.refreshPage();
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", currentDomainModel.getDomainCode()).click();
+        editDomainPage.goToTab("Group");
+        //  Thread.sleep(500);
+        editDomainPage.getGroupTab().deleteGroup(currentGroupModel.getGroupName());
+        String deleteMessage = editDomainPage.getAlertArea().getAlertMessage();
+        soft.assertEquals(deleteMessage, "Invalid request [DeleteGroup]. Error: Group has resources [1] and can not be deleted!");
+        soft.assertAll();
+    }
+
 
     @Test(description = "EDTDOM-09 Domain admins are able to change default properties for domains")
     public void domainAdminsAreAbleToChangeDefaultPropertiesForDomains() throws Exception {

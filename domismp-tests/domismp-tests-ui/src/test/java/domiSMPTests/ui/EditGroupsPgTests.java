@@ -103,4 +103,32 @@ public class EditGroupsPgTests extends SeleniumTest {
         soft.assertTrue(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel.getIdentifierValue()));
         soft.assertAll();
     }
+
+    @Test(description = "EDTGRP-04 Group admins are not able to create duplicated resources with same identifier and schema")
+    public void groupsAdminsAreNotAbleToCreateDuplicatedResourcesWithSameIdentifierAndSchema() {
+        ResourceModel resourceModel = ResourceModel.generatePublicResource();
+
+        editGroupPage.selectDomain(domainModel, groupModel);
+        editGroupPage.goToTab("Resources");
+        CreateResourceDetailsDialog createResourceDetailsDialog = editGroupPage.getResourceTab().clickOnCreateNewResource();
+        createResourceDetailsDialog.fillResourceDetails(resourceModel);
+        createResourceDetailsDialog.tryClickOnSave();
+
+        //Create resource with same identifier but different schema
+        resourceModel.setIdentifierScheme("123-123-123");
+        createResourceDetailsDialog = editGroupPage.getResourceTab().clickOnCreateNewResource();
+        createResourceDetailsDialog.fillResourceDetails(resourceModel);
+        createResourceDetailsDialog.tryClickOnSave();
+        soft.assertTrue(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel.getIdentifierValue()));
+
+        //Try to create duplicated resource
+        createResourceDetailsDialog = editGroupPage.getResourceTab().clickOnCreateNewResource();
+        createResourceDetailsDialog.fillResourceDetails(resourceModel);
+        createResourceDetailsDialog.tryClickOnSave();
+        String duplicatedResourceMessage = editGroupPage.getAlertMessageAndClose();
+        soft.assertEquals(duplicatedResourceMessage, String.format("Invalid request [CreateResourceForGroup]. Error: Resource [val:%s scheme:%s] already exists for domain!!", resourceModel.getIdentifierValue(), resourceModel.getIdentifierScheme()));
+
+        soft.assertAll();
+    }
+
 }

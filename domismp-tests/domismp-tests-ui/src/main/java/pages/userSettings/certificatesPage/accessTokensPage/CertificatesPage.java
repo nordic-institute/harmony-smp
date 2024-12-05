@@ -95,7 +95,8 @@ public class CertificatesPage extends DomiSMPPage {
         certificate.findElement(By.cssSelector("mat-expansion-panel")).click();
         weToDButton(certificate.findElement(deleteBtnLocator)).click();
         new ConfirmationDialog(driver).confirm();
-        return getAlertArea().getAlertMessage();
+        String alertMessage = getAlertArea().getAlertMessage();
+        return alertMessage;
     }
 
 }

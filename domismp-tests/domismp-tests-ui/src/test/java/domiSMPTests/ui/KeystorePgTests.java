@@ -50,7 +50,7 @@ public class KeystorePgTests extends SeleniumTest {
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
-        String value = keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertMessageAndClose();
         String alias = Utils.getAliasFromMessage(value);
         keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", alias);
         soft.assertEquals(keystorePage.getPublicKeyTypeValue(), "RSA");
@@ -74,7 +74,7 @@ public class KeystorePgTests extends SeleniumTest {
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "wrongPassword");
         keyStoreImportDialog.clickImport();
 
-        String value = keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertMessageAndClose();
         sofAssertThatContains("Error occurred while importing keystore", value);
         soft.assertAll();
     }
@@ -86,23 +86,24 @@ public class KeystorePgTests extends SeleniumTest {
             keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "blue_gw");
             keystorePage.deleteandConfirm();
         } catch (Exception e) {
-
+            LOG.debug("Keystore was not present. Continue with the test");
         }
 
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
-        String value = keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertMessageAndClose();
+
         String alias = Utils.getAliasFromMessage(value);
-        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", alias));
+        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", alias), "The import certificate message is not present");
 
         keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
 
-        String duplicatedAlertMessage = keystorePage.getAlertArea().getAlertMessage();
-        soft.assertTrue(duplicatedAlertMessage.contains("The following aliases have been ignored because they were already present in the current keystore:") );
+        String duplicatedAlertMessage = keystorePage.getAlertMessageAndClose();
+        soft.assertTrue(duplicatedAlertMessage.contains("The following aliases have been ignored because they were already present in the current keystore:"), "The duplicated certificate message is not present");
 
         soft.assertAll();
     }

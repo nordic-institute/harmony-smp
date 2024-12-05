@@ -39,6 +39,11 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
         return new SmallGrid(driver, rightPanel);
     }
 
+    public ResourceTypesTab getResourceTypesTab() {
+
+        return new ResourceTypesTab(driver);
+    }
+
     public SMLIntegrationTab getSMLIntegrationTab() {
 
         return new SMLIntegrationTab(driver);

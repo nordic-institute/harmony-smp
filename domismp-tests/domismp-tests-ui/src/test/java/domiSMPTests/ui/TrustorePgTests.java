@@ -52,7 +52,10 @@ public class TrustorePgTests extends SeleniumTest {
         try {
             truststorepage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "red_gw");
             truststorepage.deleteandConfirm();
+            truststorepage.getAlertMessageAndClose();
+
         } catch (Exception e) {
+            LOG.debug("Certificate was not present. Continue with the test");
 
         }
         String certificateALias = truststorepage.addCertificateAndReturnAlias(path);
@@ -65,5 +68,36 @@ public class TrustorePgTests extends SeleniumTest {
         soft.assertAll();
 
     }
+
+    @Test(description = "TRST-04 System admin is able to delete certificates")
+    public void systemAdminIsAbleToDeleteCertificates() throws Exception {
+
+        SoftAssert soft = new SoftAssert();
+        DomiSMPPage homePage = new DomiSMPPage(driver);
+
+        LoginPage loginPage = homePage.goToLoginPage();
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+
+        TruststorePage truststorepage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_TRUSTSTORE);
+        String path = FileUtils.getAbsolutePath("./src/main/resources/truststore/validCertificate.cer");
+        try {
+            truststorepage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "red_gw");
+            truststorepage.deleteandConfirm();
+            truststorepage.getAlertMessageAndClose();
+        } catch (Exception e) {
+            LOG.debug("Certificate was not present. Continue with the test");
+        }
+        String certificateALias = truststorepage.addCertificateAndReturnAlias(path);
+        soft.assertTrue(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", certificateALias));
+        soft.assertNotNull(certificateALias);
+
+        truststorepage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "red_gw");
+        truststorepage.deleteandConfirm();
+        String deleteCertificateMessage = truststorepage.getAlertMessageAndClose();
+        soft.assertEquals(deleteCertificateMessage, String.format("Certificate: [CN=red_gw,O=eDelivery,C=BE:00000000110fa0d8] with alias [%s] is removed!", certificateALias));
+        soft.assertFalse(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", certificateALias));
+        soft.assertAll();
+    }
+
 
 }

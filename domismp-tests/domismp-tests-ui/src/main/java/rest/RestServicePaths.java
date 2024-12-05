@@ -62,4 +62,9 @@ public class RestServicePaths {
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/member/put";
     }
 
+    //Keystore
+    public static String getKeystorePath(String currentUserId) {
+
+        return CONTEXT_PATH_INTERNAL + "keystore/" + currentUserId;
+    }
 }
