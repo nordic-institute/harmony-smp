@@ -107,7 +107,7 @@ public class CommonEditDocumentPage extends DomiSMPPage {
     }
 
     public String getStatusValue() {
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         return weToDInput(statusLbl).getText();
     }
 

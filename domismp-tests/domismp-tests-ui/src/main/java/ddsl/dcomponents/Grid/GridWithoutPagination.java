@@ -24,7 +24,7 @@ public class GridWithoutPagination extends DComponent {
         super(driver);
         PageFactory.initElements(driver, this);
         this.parentElement = parentElement;
-        wait.forXMillis(200);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
     }
 
     public List<WebElement> getGridHeaders() {
@@ -41,7 +41,7 @@ public class GridWithoutPagination extends DComponent {
 
     public void searchAndDoubleClickElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
         for (int i = 0; i < rowHeaders.size(); i++) {
@@ -77,7 +77,7 @@ public class GridWithoutPagination extends DComponent {
 
     public WebElement searchAndGetPrecedentSiblingElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
         for (int i = 0; i < rowHeaders.size(); i++) {
@@ -103,7 +103,7 @@ public class GridWithoutPagination extends DComponent {
 
     public WebElement searchAndGetFollowingSiblingElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
         for (int i = 0; i < rowHeaders.size(); i++) {

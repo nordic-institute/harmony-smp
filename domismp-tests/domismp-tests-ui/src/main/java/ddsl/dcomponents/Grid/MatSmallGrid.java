@@ -47,7 +47,7 @@ public class MatSmallGrid extends DComponent {
 
     public WebElement searchAndGetElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(200);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
@@ -110,7 +110,7 @@ public class MatSmallGrid extends DComponent {
     }
 
     public String getColumnValueForSpecificRow(String columnNameToSearch, String valueToSearch, String searchedColumnValue) {
-        wait.forXMillis(data.getWaitTimeShort());
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
@@ -150,7 +150,7 @@ public class MatSmallGrid extends DComponent {
 
     public void searchAndClickElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;

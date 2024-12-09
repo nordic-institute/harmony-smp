@@ -16,6 +16,7 @@ import pages.systemSettings.UsersPage;
 import pages.userSettings.ProfilePage;
 import rest.InbucketRestClient;
 import rest.models.UserModel;
+import utils.Utils;
 
 import java.util.List;
 
@@ -196,6 +197,52 @@ public class UsersPgTests extends SeleniumTest {
         soft.assertEquals(homePage.getBreadcrump().getCurrentPage(), "Profile");
         soft.assertAll();
     }
+
+
+    @Test(description = "USR-08 Check if accounts are suspended")
+    public void checkIfAccountsAreSuspended() throws Exception {
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+        String currentDate = Utils.getCurrentDate("MM/d/YY");
+        String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
+        rest.users().changePassword(normalUserId, data.getNewPassword());
+        //Suspend user
+
+        loginPage.login(newNormalUser.getUsername(), "123123123");
+        loginPage.login(newNormalUser.getUsername(), "123123123");
+        loginPage.login(newNormalUser.getUsername(), "123123123");
+        loginPage.login(newNormalUser.getUsername(), "123123123");
+        loginPage.login(newNormalUser.getUsername(), "123123123");
+        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "The user credential is suspended. Please try again later or contact your administrator.");
+
+        //Validate if suspended info is correct
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+
+        soft.assertEquals(usersPage.userData.getSequenceFailedAttempts(), "5", "Number of attempts is wrong");
+        soft.assertTrue(usersPage.userData.getlastFailedAttempt().startsWith(currentDate), "Last failed attempt date is wrong Actual date: " + usersPage.userData.getlastFailedAttempt());
+        soft.assertTrue(usersPage.userData.getsuspendedUntil().startsWith(currentDate), "Suspended until is wrong. Actual date: " + usersPage.userData.getsuspendedUntil());
+
+        String newPass = "Edeltest!234123@#$";
+        SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
+        setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"),
+                newPass);
+        setChangePasswordDialog.TryClickOnChangePassword();
+
+        //Login with new password
+        loginPage.logout();
+        loginPage.login(newNormalUser.getUsername(), newPass);
+        ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        soft.assertEquals(homePage.getBreadcrump().getCurrentPage(), "Profile");
+
+        soft.assertEquals(profilePage.profileData.getSequenceFailedAttempts(), "---", "Number of attempts is wrong.");
+        soft.assertEquals(profilePage.profileData.getlastFailedAttempt(), "---", "Last failed attempt date is wrong.");
+        soft.assertEquals(profilePage.profileData.getsuspendedUntil(), "---", "Suspended until is wrong.");
+
+        soft.assertAll();
+    }
+
 
     @Test(description = "LGN-32 - User is able to reset password")
     public void userIsAbleToResetPassword() throws Exception {

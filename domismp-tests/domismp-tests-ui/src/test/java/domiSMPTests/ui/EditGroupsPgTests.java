@@ -10,6 +10,9 @@ import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
 import pages.administration.editGroupsPage.CreateResourceDetailsDialog;
 import pages.administration.editGroupsPage.EditGroupsPage;
+import pages.administration.editResourcesPage.CreateSubresourceDetailsDialog;
+import pages.administration.editResourcesPage.EditResourcePage;
+import pages.systemSettings.domainsPage.DomainsPage;
 import rest.models.*;
 import utils.TestRunData;
 
@@ -21,22 +24,25 @@ public class EditGroupsPgTests extends SeleniumTest {
     LoginPage loginPage;
     EditGroupsPage editGroupPage;
     UserModel adminUser;
+    DomainModel generatedDomainModel;
     DomainModel domainModel;
+
     GroupModel groupModel;
     SoftAssert soft;
-
+    MemberModel superMember;
+    MemberModel adminMember;
     @BeforeMethod(alwaysRun = true)
     public void beforeTest() throws Exception {
         soft = new SoftAssert();
-        domainModel = DomainModel.generatePublicDomainModelWithSML();
+        generatedDomainModel = DomainModel.generatePublicDomainModelWithSML();
         adminUser = UserModel.generateUserWithADMINrole();
         groupModel = GroupModel.generatePublicGroup();
-        MemberModel adminMember = new MemberModel() {
+        adminMember = new MemberModel() {
         };
         adminMember.setUsername(adminUser.getUsername());
         adminMember.setRoleType("ADMIN");
 
-        MemberModel superMember = new MemberModel();
+        superMember = new MemberModel();
         superMember.setUsername(TestRunData.getInstance().getAdminUsername());
         superMember.setRoleType("ADMIN");
 
@@ -44,7 +50,7 @@ public class EditGroupsPgTests extends SeleniumTest {
         rest.users().createUser(adminUser).getString("userId");
 
         //create domain
-        domainModel = rest.domains().createDomain(domainModel);
+        domainModel = rest.domains().createDomain(generatedDomainModel);
 
         //add users to domain
         rest.domains().addMembersToDomain(domainModel, adminMember);
@@ -130,5 +136,56 @@ public class EditGroupsPgTests extends SeleniumTest {
 
         soft.assertAll();
     }
+
+    @Test(description = "EDTGRP-05 Group admins are able to delete any resource")
+    public void groupAdminsAreAbleToDeleteAnyResource() throws Exception {
+
+        ResourceModel resourceModel = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
+
+        //Create resource for the group
+        resourceModel = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModel, adminMember);
+
+        EditResourcePage editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModel);
+        //Create subresource for the resouce
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModel);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        //Delete resouce with subresource and documents
+        editGroupPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_GROUPS);
+        editGroupPage.goToTab("Resources");
+        editGroupPage.getResourceTab().deleteResource(resourceModel.getIdentifierValue());
+        soft.assertFalse(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel.getIdentifierValue()), "Deleted resource is still present in the grid");
+
+        //Register domain to SML
+        DomainsPage domainsPage = editGroupPage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
+        domainsPage.getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.goToTab("SML integration");
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(generatedDomainModel);
+        domainsPage.getSMLIntegrationTab().saveChanges();
+        domainsPage.getSMLIntegrationTab().registerToSML();
+
+
+        //create resource for domain registered to SML
+        ResourceModel resourceModelForSML = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        resourceModelForSML.setIdentifierValue("0106:test");
+        //add resource to group
+        resourceModelForSML = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelForSML);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelForSML, adminMember);
+
+        editGroupPage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_GROUPS);
+        editGroupPage.goToTab("Resources");
+        editGroupPage.getResourceTab().deleteResource(resourceModelForSML.getIdentifierValue());
+        soft.assertFalse(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModelForSML.getIdentifierValue()), "Deleted resource is still present in the grid");
+
+        soft.assertAll();
+
+
+    }
+
 
 }

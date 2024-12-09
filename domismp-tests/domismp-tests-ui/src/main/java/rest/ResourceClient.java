@@ -20,7 +20,11 @@ public class ResourceClient extends BaseRestClient {
 
     public ResourceModel createResourceForGroup(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceModelToBeCreated) {
         JSONObject resourceJson = new JSONObject(resourceModelToBeCreated);
-        String createResourcePath = RestServicePaths.getCreateResourcePath(TestRunData.getInstance().getUserId(), domainModel.getDomainId(), groupModel.getGroupId());
+        String userId = TestRunData.getInstance().getUserId();
+        if (userId.isEmpty()) {
+            startSession();
+        }
+        String createResourcePath = RestServicePaths.getCreateResourcePath(userId, domainModel.getDomainId(), groupModel.getGroupId());
         ClientResponse response = jsonPUT(resource.path(createResourcePath), resourceJson);
         if (response.getStatus() != 200) {
             try {
@@ -36,8 +40,12 @@ public class ResourceClient extends BaseRestClient {
     public MemberModel addMembersToResource(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceModel, MemberModel groupMember) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String membersJson = mapper.writeValueAsString(groupMember);
+        String userId = TestRunData.getInstance().getUserId();
 
-        String addGroupMemberPath = RestServicePaths.getResourceAddMemberPath(TestRunData.getInstance().getUserId(), domainModel.getDomainId(), groupModel.getGroupId(), resourceModel.getResourceId());
+        if (userId.isEmpty()) {
+            startSession();
+        }
+        String addGroupMemberPath = RestServicePaths.getResourceAddMemberPath(userId, domainModel.getDomainId(), groupModel.getGroupId(), resourceModel.getResourceId());
 
         ClientResponse response = jsonPUT(resource.path(addGroupMemberPath), membersJson);
         if (response.getStatus() != 200) {

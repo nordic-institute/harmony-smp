@@ -46,7 +46,7 @@ public class ResourcesPage extends DomiSMPPage {
         Iterator<String> iterator = handles.iterator();
 
         // Switch to the new tab
-        String original = iterator.next();
+        iterator.next();
         String newTab = iterator.next();
         driver.switchTo().window(newTab);
         LOG.debug("Switching to new tab" + newTab);
@@ -73,10 +73,10 @@ public class ResourcesPage extends DomiSMPPage {
         Iterator<String> iterator = handles.iterator();
 
         // Switch to the new tab
-        String original = iterator.next();
+        iterator.next();
         String newTab = iterator.next();
         driver.switchTo().window(newTab);
-        wait.forXMillis(data.getWaitTimeShort());
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         LOG.debug("Switching to new tab" + newTab);
 
         try {
