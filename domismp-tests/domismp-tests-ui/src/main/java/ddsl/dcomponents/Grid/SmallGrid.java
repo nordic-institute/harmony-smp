@@ -41,7 +41,7 @@ public class SmallGrid extends MatSmallGrid {
 
     public WebElement searchAndGetElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
@@ -73,7 +73,7 @@ public class SmallGrid extends MatSmallGrid {
 
     public Boolean isValuePresentInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
@@ -104,7 +104,7 @@ public class SmallGrid extends MatSmallGrid {
     }
 
     public String getColumnValueForSpecificRow(String columnNameToSearch, String valueToSearch, String searchedColumnValue) {
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
@@ -143,7 +143,7 @@ public class SmallGrid extends MatSmallGrid {
     }
     public void searchAndClickElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;

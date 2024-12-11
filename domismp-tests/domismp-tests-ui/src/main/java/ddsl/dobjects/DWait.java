@@ -1,6 +1,9 @@
 package ddsl.dobjects;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -80,7 +83,7 @@ public class DWait {
 
             }
 
-        } catch (NoSuchElementException e) {
+        } catch (Exception e) {
             LOG.error("element {} not found", element);
         }
     }

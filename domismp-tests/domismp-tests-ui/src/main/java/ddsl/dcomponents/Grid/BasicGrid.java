@@ -1,7 +1,6 @@
 package ddsl.dcomponents.Grid;
 
 import ddsl.dcomponents.DComponent;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -30,7 +29,7 @@ public class BasicGrid extends DComponent {
         super(driver);
 
         LOG.info("Loading basic grid");
-        wait.forXMillis(500);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         PageFactory.initElements(new DefaultElementLocatorFactory(container), this);
 
         for (WebElement gridHeader : gridHeaders) {
@@ -38,17 +37,6 @@ public class BasicGrid extends DComponent {
         }
 
     }
-
-    public void selectRow(int rowNumber) {
-        LOG.info("selecting row with number ... " + rowNumber);
-        wait.forXMillis(500);
-        if (rowNumber >= gridRows.size()) {
-            return;
-        }
-        gridRows.get(rowNumber).click();
-        wait.forXMillis(500);
-    }
-
     public void doubleClickRow(String fieldName) {
         gridRows.forEach(row -> {
                     if (row.getText().startsWith(fieldName)) {
@@ -58,7 +46,7 @@ public class BasicGrid extends DComponent {
                 }
 
         );
-        wait.forXMillis(500);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
     }
 
     public String getValue(String fieldName) {
@@ -72,11 +60,4 @@ public class BasicGrid extends DComponent {
         return fieldValue;
 
     }
-
-    public void scrollRow(int index) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView();", gridRows.get(index));
-        wait.forXMillis(500);
-    }
-
 }

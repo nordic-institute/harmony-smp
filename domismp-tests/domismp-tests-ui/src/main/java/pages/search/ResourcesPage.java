@@ -42,11 +42,12 @@ public class ResourcesPage extends DomiSMPPage {
         LOG.debug("Click on Open URL for " + resourceIdentifier);
         weToDButton(searchBtn).click();
         getGrid().searchAndClickElementInColumn("Resource URL", "Open URL");
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Set<String> handles = driver.getWindowHandles();
         Iterator<String> iterator = handles.iterator();
 
         // Switch to the new tab
-        String original = iterator.next();
+        iterator.next();
         String newTab = iterator.next();
         driver.switchTo().window(newTab);
         LOG.debug("Switching to new tab" + newTab);
@@ -73,10 +74,10 @@ public class ResourcesPage extends DomiSMPPage {
         Iterator<String> iterator = handles.iterator();
 
         // Switch to the new tab
-        String original = iterator.next();
+        iterator.next();
         String newTab = iterator.next();
         driver.switchTo().window(newTab);
-        wait.forXMillis(data.getWaitTimeShort());
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         LOG.debug("Switching to new tab" + newTab);
 
         try {

@@ -22,6 +22,10 @@ public class DomiSMPRestClient extends BaseRestClient {
         return new KeystoreClient();
     }
 
+    public PropertiesClient propertiesClient() {
+        return new PropertiesClient();
+    }
+
 
 
 }

@@ -44,7 +44,7 @@ public class ResourcePageGrid extends DComponent {
 
     public void searchAndClickElementInColumn(String columnName, String value) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         int numOfPages;
         try {
             numOfPages = getGridPagination().getTotalPageNumber();
@@ -93,7 +93,7 @@ public class ResourcePageGrid extends DComponent {
 
     public void openSubresource(String resourceColumn, String resourceValue, String columnNameSubresouce, String valueSubresource) {
 
-        wait.forXMillis(100);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         int numOfPages;
         try {
             numOfPages = getGridPagination().getTotalPageNumber();

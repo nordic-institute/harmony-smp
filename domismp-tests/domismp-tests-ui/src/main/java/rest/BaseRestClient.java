@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BaseRestClient {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -75,6 +76,19 @@ public class BaseRestClient {
         WebResource.Builder builder = decorateBuilder(resource);
 
         return builder.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+    }
+
+    protected ClientResponse requestGET(WebResource resource, HashMap<String, String> params) throws Exception {
+
+        if (params != null) {
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                resource = resource.queryParam(param.getKey(), param.getValue());
+            }
+        }
+
+        WebResource.Builder builder = decorateBuilder(resource);
+        ClientResponse response = builder.get(ClientResponse.class);
+        return response;
     }
 
 

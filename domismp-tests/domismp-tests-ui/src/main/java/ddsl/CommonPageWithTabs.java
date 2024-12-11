@@ -24,6 +24,7 @@ public class CommonPageWithTabs extends DomiSMPPage {
             if (element.getText().contains(tabName)) {
                 element.click();
                 wait.forAttributeToContain(element, "aria-selected", "true");
+                wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
                 LOG.debug("Domain tab {} is opened", tabName);
                 break;
             }

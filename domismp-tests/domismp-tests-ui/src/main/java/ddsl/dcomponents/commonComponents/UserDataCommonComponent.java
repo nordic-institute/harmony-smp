@@ -5,6 +5,8 @@ import ddsl.dcomponents.SetChangePasswordDialog;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -28,9 +30,19 @@ public class UserDataCommonComponent extends DomiSMPPage {
     private WebElement lastSetLbl;
     @FindBy(id = "passwordExpireOn_id")
     private WebElement passwordExpiresOnLbl;
+    @FindBy(id = "sequentialLoginFailureCount_id")
+    private WebElement seqFailedAttempts;
+    @FindBy(id = "LastFailedAttempt_id")
+    private WebElement lastFailedAttempt;
+    @FindBy(id = "suspendedUtil_id")
+    private WebElement suspendedUntil;
+
 
     public UserDataCommonComponent(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
+
+
     }
 
     public String getSelectedTheme() {
@@ -57,6 +69,18 @@ public class UserDataCommonComponent extends DomiSMPPage {
         return passwordExpiresOnLbl.getAttribute("value");
     }
 
+    public String getSequenceFailedAttempts() {
+        return seqFailedAttempts.getAttribute("value");
+    }
+
+    public String getlastFailedAttempt() {
+        return lastFailedAttempt.getAttribute("value");
+    }
+
+    public String getsuspendedUntil() {
+        return suspendedUntil.getAttribute("value");
+    }
+
     public SetChangePasswordDialog clickOnChangePassword(){
         setChangePasswordBtn.click();
         return new SetChangePasswordDialog(driver);
@@ -70,7 +94,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
                 weToDInput(fullNameInput).fill(fullNameValue);
             }
             weToDSelect(themeSel).selectByVisibleText(selectThemeValue);
-            wait.forXMillis(50);
+            wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
             weToDSelect(localeSel).selectByVisibleText(localeValue);
 
 

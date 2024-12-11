@@ -87,6 +87,7 @@ public class SMLIntegrationTab extends DComponent {
                 weToDButton(registerBtn).click();
                 ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
                 confirmationDialog.confirm();
+                wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
             }
 
         } catch (Exception e) {
