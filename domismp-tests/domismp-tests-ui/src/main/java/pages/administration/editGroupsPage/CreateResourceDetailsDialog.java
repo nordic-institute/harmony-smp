@@ -50,6 +50,7 @@ public class CreateResourceDetailsDialog extends DComponent {
             wait.forElementToBeClickable(saveBtn);
             if (weToDButton(saveBtn).isEnabled()) {
                 weToDButton(saveBtn).click();
+                wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
                 return true;
             } else {
                 return false;

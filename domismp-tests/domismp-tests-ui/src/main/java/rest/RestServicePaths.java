@@ -67,4 +67,13 @@ public class RestServicePaths {
 
         return CONTEXT_PATH_INTERNAL + "keystore/" + currentUserId;
     }
+
+    //Properties
+
+    public static String property() {
+
+        return CONTEXT_PATH_INTERNAL + "property";
+
+
+    }
 }

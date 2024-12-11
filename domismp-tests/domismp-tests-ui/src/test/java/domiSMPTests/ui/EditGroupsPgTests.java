@@ -4,6 +4,7 @@ import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
 import domiSMPTests.SeleniumTest;
+import org.json.JSONObject;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -107,6 +108,52 @@ public class EditGroupsPgTests extends SeleniumTest {
         createResourceDetailsDialog.fillResourceDetails(resourceModel);
         createResourceDetailsDialog.tryClickOnSave();
         soft.assertTrue(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel.getIdentifierValue()));
+        soft.assertAll();
+    }
+
+    @Test(description = "EDTGRP-03 Resource schema field is according to properties")
+    public void resourceSchemeFieldIsAccordingToProperties() throws Exception {
+
+        // Update identifiersBehaviour.ParticipantIdentifierScheme.validationRegex property value
+        JSONObject propertyRegex = rest.propertiesClient().getProperty("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex");
+        propertyRegex.put("value", ".");
+        rest.propertiesClient().setPropertyValue(propertyRegex);
+
+        // Validate if the new value of property is used
+        ResourceModel resourceModel = ResourceModel.generatePublicResource();
+        resourceModel.setIdentifierScheme("2");
+        editGroupPage.selectDomain(domainModel, groupModel);
+        editGroupPage.goToTab("Resources");
+        CreateResourceDetailsDialog createResourceDetailsDialog = editGroupPage.getResourceTab().clickOnCreateNewResource();
+        createResourceDetailsDialog.fillResourceDetails(resourceModel);
+        createResourceDetailsDialog.tryClickOnSave();
+        soft.assertTrue(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel.getIdentifierValue()));
+
+        //Restore the old value
+        propertyRegex.put("value", "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$");
+        rest.propertiesClient().setPropertyValue(propertyRegex);
+
+        // Update identifiersBehaviour.scheme.mandatory property value
+        JSONObject propertyMandatory = rest.propertiesClient().getProperty("identifiersBehaviour.scheme.mandatory");
+        propertyMandatory.put("value", "false");
+        //Restore the old value
+        rest.propertiesClient().setPropertyValue(propertyMandatory);
+
+        // Validate if the new value of property is used
+        ResourceModel resourceModelForMandatory = ResourceModel.generatePublicResource();
+        resourceModelForMandatory.setIdentifierScheme("");
+        editGroupPage.refreshPage();
+        editGroupPage.selectDomain(domainModel, groupModel);
+        editGroupPage.goToTab("Resources");
+        createResourceDetailsDialog = editGroupPage.getResourceTab().clickOnCreateNewResource();
+        createResourceDetailsDialog.fillResourceDetails(resourceModelForMandatory);
+        createResourceDetailsDialog.tryClickOnSave();
+        soft.assertTrue(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModelForMandatory.getIdentifierValue()));
+
+        //Restore the old value
+        propertyMandatory.put("value", "true");
+        rest.propertiesClient().setPropertyValue(propertyMandatory);
+
         soft.assertAll();
     }
 

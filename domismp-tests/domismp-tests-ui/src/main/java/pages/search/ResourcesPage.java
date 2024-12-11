@@ -42,6 +42,7 @@ public class ResourcesPage extends DomiSMPPage {
         LOG.debug("Click on Open URL for " + resourceIdentifier);
         weToDButton(searchBtn).click();
         getGrid().searchAndClickElementInColumn("Resource URL", "Open URL");
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         Set<String> handles = driver.getWindowHandles();
         Iterator<String> iterator = handles.iterator();
 
