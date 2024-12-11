@@ -70,7 +70,7 @@ public class RestServicePaths {
 
     //Properties
 
-    public static String property() {
+    public static String getPropertyPath() {
 
         return CONTEXT_PATH_INTERNAL + "property";
 
