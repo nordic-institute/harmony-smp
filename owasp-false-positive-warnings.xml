@@ -29,6 +29,7 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2018-1258</cve>
+        <cve>CVE-2024-38828</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
