@@ -91,6 +91,50 @@ public class ResourcePageGrid extends DComponent {
 
     }
 
+    public boolean isElementPresentInTheGrid(String columnName, String value) {
+
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
+        int numOfPages;
+        try {
+            numOfPages = getGridPagination().getTotalPageNumber();
+        } catch (Exception e) {
+            LOG.debug("No pagination found");
+            numOfPages = 1;
+        }
+        List<WebElement> rowHeaders = getGridHeaders();
+        int columnIndex = -1;
+        for (int i = 0; i < rowHeaders.size(); i++) {
+            if (rowHeaders.get(i).getText().equals(columnName)) {
+                columnIndex = i;
+                break;
+            }
+        }
+        if (columnIndex == -1) {
+            LOG.error("No element found");
+            throw new NoSuchElementException("Column not found");
+        }
+        for (int pageNr = 0; pageNr < numOfPages + 1; pageNr++) {
+
+            List<WebElement> rows = getRows();
+            for (WebElement row : rows) {
+                List<WebElement> cells = getCells(row);
+                WebElement currentCell = cells.get(columnIndex);
+                if (currentCell.getText().equals(value)) {
+                    LOG.debug("[{}] found on page [{}]", value, pageNr);
+                    return true;
+                }
+            }
+
+            if (numOfPages > 1) {
+                getGridPagination().goToNextPage();
+            }
+        }
+        return false;
+
+
+    }
+
+
     public void openSubresource(String resourceColumn, String resourceValue, String columnNameSubresouce, String valueSubresource) {
 
         wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
@@ -165,12 +209,9 @@ public class ResourcePageGrid extends DComponent {
                 isElementPresent = true;
                 WebElement urlCell = cells.get(2);
                 urlCell.findElement(By.cssSelector("a")).click();
+                return;
             }
         }
-        if (isElementPresent) {
-            return;
-        }
-
         if (!isElementPresent) {
             throw new NoSuchElementException("Value [" + value + "] was not found in the grid");
 

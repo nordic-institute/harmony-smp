@@ -70,10 +70,11 @@ public class SMLIntegrationTab extends DComponent {
 
     }
     public void saveChanges() {
-        if (saveBtn.isEnabled()) {
-            saveBtn.click();
+        if (weToDButton(saveBtn).isEnabled()) {
+            weToDButton(saveBtn).click();
             wait.forElementToBeDisabled(saveBtn);
-            if (saveBtn.getDomAttribute("disabled").equals("true")) {
+
+            if (!(weToDButton(saveBtn).getAttribute("disabled") == null)) {
                 LOG.debug("SML Integration tab changes were succesfully saved");
             } else {
                 LOG.error("SML Integration  tab changes were not saved");
@@ -129,6 +130,9 @@ public class SMLIntegrationTab extends DComponent {
         return weToDSelect(smlClientCertificateAliasDdl);
     }
 
+    public DInput getSMLDomainInput() {
+        return weToDInput(smlDomainInput);
+    }
 
 
 }
