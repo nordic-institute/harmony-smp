@@ -1,16 +1,17 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SecurityService} from '../../security/security.service';
 import {DomainService} from '../../security/domain.service';
 import {Domain} from '../../security/domain.model';
 import {MatDialog} from '@angular/material/dialog';
 import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'domain-selector',
   templateUrl: './domain-selector.component.html',
   styleUrls: ['./domain-selector.component.css']
 })
-export class DomainSelectorComponent implements OnInit {
+export class DomainSelectorComponent {
 
   showDomains: boolean;
   currentDomainCode: string;
@@ -23,21 +24,10 @@ export class DomainSelectorComponent implements OnInit {
   constructor (private domainService: DomainService, private securityService: SecurityService, private dialog: MatDialog) {
   }
 
-  ngOnInit () {
-    /*
-    this.domainService.isMultiDomain().subscribe((isMultiDomain: boolean) => {
-      if (isMultiDomain && this.securityService.isCurrentUserSuperAdmin()) {
-        this.showDomains = true;
-        this.domainService.getCurrentDomain().subscribe((domain: Domain) => this.domainCode = this.currentDomainCode = domain ? domain.code : null);
-        this.domainService.getDomains().subscribe((domains: Domain[]) => this.domains = domains);
-      }
-    });*/
-  }
-
   changeDomain () {
     let canChangeDomain = Promise.resolve(true);
-    if (this.currentComponent && this.currentComponent.isDirty && this.currentComponent.isDirty()) {
-      canChangeDomain = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+    if (this.currentComponent?.isDirty && this.currentComponent.isDirty()) {
+      canChangeDomain = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
     }
 
     canChangeDomain.then((canChange: boolean) => {

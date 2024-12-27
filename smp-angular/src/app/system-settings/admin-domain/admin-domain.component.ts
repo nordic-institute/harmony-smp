@@ -1,31 +1,50 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {AdminDomainService} from "./admin-domain.service";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  AlertMessageService
+} from "../../common/alert-message/alert-message.service";
+import {
+  ConfirmationDialogComponent
+} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {AdminKeystoreService} from "../admin-keystore/admin-keystore.service";
-import {CertificateRo} from "../user/certificate-ro.model";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {ResourceDefinitionRo} from "../admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../admin-extension/resource-definition-ro.model";
 import {ExtensionService} from "../admin-extension/extension.service";
 import {ExtensionRo} from "../admin-extension/extension-ro.model";
 import {MatTabGroup} from "@angular/material/tabs";
-import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
+import {
+  CancelDialogComponent
+} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
 import {DomainPanelComponent} from "./domain-panel/domain-panel.component";
-import {DomainResourceTypePanelComponent} from "./domain-resource-type-panel/domain-resource-type-panel.component";
-import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-integration-panel.component";
+import {
+  DomainResourceTypePanelComponent
+} from "./domain-resource-type-panel/domain-resource-type-panel.component";
+import {
+  DomainSmlIntegrationPanelComponent
+} from "./domain-sml-panel/domain-sml-integration-panel.component";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
-import {Subscription} from "rxjs";
+import {firstValueFrom, lastValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
+import {CertificateRo} from "../../common/model/certificate-ro.model";
+import {GlobalLookups} from "../../common/global-lookups";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './admin-domain.component.html',
   styleUrls: ['./admin-domain.component.css']
 })
@@ -58,18 +77,22 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   constructor(private domainService: AdminDomainService,
               private keystoreService: AdminKeystoreService,
               private extensionService: ExtensionService,
+              protected lookups: GlobalLookups,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
 
-    this.domainUpdatedEventSub = domainService.onDomainUpdatedEvent().subscribe(updateDomainList => {
-        this.updateDomainList(updateDomainList);
-      }
-    );
+    this.domainUpdatedEventSub = domainService.onDomainUpdatedEvent()
+      .subscribe((updateDomainList: DomainRo[]): void => {
+          this.updateDomainList(updateDomainList);
+        }
+      );
 
-    this.domainEntryUpdatedEventSub = domainService.onDomainEntryUpdatedEvent().subscribe(updateEntry => {
-        this.updateDomain(updateEntry);
-      }
-    );
+    this.domainEntryUpdatedEventSub = domainService.onDomainEntryUpdatedEvent()
+      .subscribe((updateEntry: DomainRo): void => {
+          this.updateDomain(updateEntry);
+        }
+      );
 
     keystoreService.onKeystoreUpdatedEvent().subscribe(keystoreCertificates => {
         this.keystoreCertificates = keystoreCertificates;
@@ -90,11 +113,9 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     this.domainEntryUpdatedEventSub.unsubscribe();
   }
 
-  updateExtensions(extensions: ExtensionRo[]) {
-
+  updateExtensions(extensions: ExtensionRo[]): void {
     let allResourceDefinition: ResourceDefinitionRo[] = [];
     extensions.forEach(ext => allResourceDefinition.push(...ext.resourceDefinitions))
-
     this.domiSMPResourceDefinitions = allResourceDefinition;
   }
 
@@ -109,7 +130,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    // currenctly  MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
+    // currently  MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
     // _handleClick handler
     this.registerTabClick();
   }
@@ -128,7 +149,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       }
 
       if (this.isCurrentTabDirty()) {
-        let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+        let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
         canChangeTab.then((canChange: boolean) => {
           if (canChange) {
             // reset
@@ -152,7 +173,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     this.dataSource.data = this.domainList;
   }
 
-  updateDomain(domain: DomainRo) {
+  async updateDomain(domain: DomainRo) {
     if (domain == null) {
       return;
     }
@@ -160,18 +181,18 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     if (domain.status == EntityStatus.NEW) {
       this.domainList.push(domain)
       this.selected = domain;
-      this.alertService.success("Domain: [" + domain.domainCode + "] was created!");
+      this.alertService.success(await lastValueFrom(this.translateService.get("admin.domain.success.create", {domainCode: domain.domainCode})));
     } else if (domain.status == EntityStatus.UPDATED) {
       // update value in the array
       let itemIndex = this.domainList.findIndex(item => item.domainId == domain.domainId);
       this.domainList[itemIndex] = domain;
       this.selected = domain;
     } else if (domain.status == EntityStatus.REMOVED) {
-      this.alertService.success("Domain: [" + domain.domainCode + "]  is removed!");
+      this.alertService.success(await lastValueFrom(this.translateService.get("admin.domain.success.remove", {domainCode: domain.domainCode})));
       this.selected = null;
       this.domainList = this.domainList.filter(item => item.domainCode !== domain.domainCode)
     } else if (domain.status == EntityStatus.ERROR) {
-      this.alertService.error("ERROR: " + domain.actionMessage);
+      this.alertService.error(await lastValueFrom(this.translateService.get("admin.domain.error", {actionMessage: domain.actionMessage})));
     }
     this.dataSource.data = this.domainList;
 
@@ -195,7 +216,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       return true;
     }
 
-    let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+    let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
     canChangeTab.then((canChange: boolean) => {
       if (canChange) {
         // reset
@@ -228,8 +249,10 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       status: EntityStatus.NEW,
       smlRegistered: false,
       smlClientCertAuth: false,
+      adminMemberCount: 0,
     }
   }
+
   onSaveEvent(domain: DomainRo) {
     if (this.isNewDomain()) {
       this.domainService.createDomain(domain);
@@ -248,6 +271,11 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
 
   onSaveSmlIntegrationDataEvent(domain: DomainRo) {
     this.domainService.updateDomainSMLIntegrationData(domain);
+
+  }
+
+  onSavePropertiesDataEvent(domain: DomainRo) {
+    this.domainService.updateDomainData(domain);
   }
 
 
@@ -265,7 +293,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   }
 
   deleteDomain(domain: DomainRo) {
-    this.domainService.deleteDomains(domain);
+    this.domainService.deleteDomain(domain);
   }
 
   public domainSelected(domainSelected: DomainRo) {
@@ -273,12 +301,11 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       this.registerTabClick();
     }
 
-
     if (this.selected == domainSelected) {
       return;
     }
     if (this.isCurrentTabDirty()) {
-      let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+      let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
       canChangeTab.then((canChange: boolean) => {
         if (canChange) {
           // reset
@@ -287,8 +314,6 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
         }
       });
     } else {
-      console.log("domain selected")
-
       this.selected = domainSelected;
     }
   }
@@ -311,8 +336,15 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     return false;
   }
 
+  /**
+   * Method checks if domain entity is set and domainId does not exists.
+   * @return true if domain is set and domainId does not exists otherwise false
+   */
   isNewDomain(): boolean {
-    return this.selected != null && !this.selected.domainId
+    if (!this.selected) {
+      return false;
+    }
+    return !this.selected.domainId
   }
 
 
@@ -331,8 +363,25 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     }
   }
 
+  /**
+   * The domain can not be deleted if it is  not selected or it is registered in the SML
+   * or it is new domain
+   */
   get canNotDelete(): boolean {
-    return !this.selected || this.domainSmlIntegrationPanelComponent?.isDomainRegistered || this.isNewDomain()
+    return !this.selected || this.isNewDomain() || this.isSelectedSMPRegister ;
+
+  }
+
+  /**
+   *  Method returns true if the SML integration is enabled and the domain is  registered
+   *
+   */
+  get isSelectedSMPRegister(): boolean {
+    return this.isSMLIntegrationEnabled && this.selected?.smlRegistered;
+  }
+
+  get isSMLIntegrationEnabled() {
+    return !!this.lookups.cachedApplicationConfig?.smlIntegrationOn
   }
 
   get editMode(): boolean {

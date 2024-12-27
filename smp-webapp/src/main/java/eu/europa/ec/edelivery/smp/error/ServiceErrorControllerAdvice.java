@@ -1,24 +1,29 @@
-/*
- * Copyright 2017 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.error;
 
 import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,7 +31,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.FORMAT_ERROR;
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -38,7 +43,8 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers"})
 public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
-    @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class, SMPResponseStatusException.class, AuthenticationException.class,})
+    @Override
+    @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class,  AuthenticationException.class,})
     public ResponseEntity handleRuntimeException(RuntimeException ex) {
         return super.handleRuntimeException(ex);
     }
@@ -58,16 +64,16 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
         return buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage() + " - Only SMP Admin or owner of given ServiceGroup is allowed to perform this action", ex);
     }
 
-    ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
+    ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, ErrorBusinessCode businessCode, String msg, Exception exception) {
 
         ResponseEntity response = ErrorResponseBuilder.status(status)
                 .businessCode(businessCode)
+                .errorCode(errorCode)
                 .errorDescription(msg)
                 .build();
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
-        String logMsg = format("Error unique ID: %s", errorUniqueId);
-
+        String logMsg = errorUniqueId == null ? "Null Error ID" : format("UI Error unique ID: %s", errorUniqueId);
         LOG.warn(logMsg, exception);
         return response;
     }

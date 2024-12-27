@@ -1,14 +1,20 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.testutil;
@@ -20,7 +26,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.*;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
@@ -30,6 +35,8 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -37,6 +44,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -61,9 +69,16 @@ public class SignatureUtil {
     private static KeyStore.PrivateKeyEntry privateKeyEntry;
     private static KeyInfo keyInfo;
 
+    private static XMLSignatureFactory getDomSigFactory() {
+        // According to Javadoc, only static methods of this factory are thread-safe
+        // We cannot share and re-use the same instance in every place
+        // set apache santuario xmlsec signature factory
+        return XMLSignatureFactory.getInstance("DOM", new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI());
+    }
+
     private static void setupSigner(String keystoreResPath, String keystorePass, String keyPairAlias, String keyPairPass) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableEntryException, IOException {
         // Initialize all stuff needed for signing: Load keys from keystore and prepare signature factory
-        sigFactory = XMLSignatureFactory.getInstance("DOM");
+        sigFactory = getDomSigFactory();
         KeyStore ks = KeyStore.getInstance("JKS");
         InputStream keystoreStream = SignatureUtil.class.getResourceAsStream(keystoreResPath);
         ks.load(keystoreStream, keystorePass.toCharArray());
@@ -102,7 +117,7 @@ public class SignatureUtil {
     }
 
     public static void validateSignature(Element sigPointer) throws Exception {
-        XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
+        XMLSignatureFactory fac = getDomSigFactory();
 
         // Create a DOMValidateContext and specify a KeySelector and document context.
         DOMValidateContext valContext = new DOMValidateContext(new X509KeySelector(), sigPointer);
@@ -122,7 +137,7 @@ public class SignatureUtil {
         }
 
         // Check core validation status.
-        if (coreValidity == false) {
+        if (!coreValidity) {
             printErrorDetails(valContext, signature);
             throw new Exception("+++ Signature not valild +++");
         } else {
@@ -135,7 +150,7 @@ public class SignatureUtil {
         System.err.println("Signature failed core validation");
         boolean sv = signature.getSignatureValue().validate(valContext);
         System.out.println("signature validation status: " + sv);
-        if (sv == false) {
+        if (!sv) {
             // Check the validation status of each Reference.
             Iterator i1 = signature.getSignedInfo().getReferences().iterator();
             for (int j = 0; i1.hasNext(); j++) {
@@ -164,7 +179,6 @@ public class SignatureUtil {
     }
 
 
-
     public static Element findServiceInfoSig(Document doc) throws ParserConfigurationException, SAXException, IOException {
         Element extension = findExtensionInServiceInformation(doc);
         return findSignatureByParentNode(extension);
@@ -178,7 +192,6 @@ public class SignatureUtil {
         }
         throw new RuntimeException("Signature not found in given node.");
     }
-
 
 
     public static Element findExtensionInServiceInformation(Document doc) throws ParserConfigurationException, SAXException, IOException {
@@ -198,6 +211,19 @@ public class SignatureUtil {
         return extension;
     }
 
+    public static Document loadDocument(String docResourcePath) throws ParserConfigurationException, SAXException, IOException {
+        InputStream inputStreamm = SignatureUtil.class.getResourceAsStream(docResourcePath);
+        return getDocumentBuilder().parse(inputStreamm);
+    }
+
+
+    public static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        return dbf.newDocumentBuilder();
+    }
+
+
     public static Element findFirstElementByName(Document doc, String elementName) {
         NodeList elements = doc.getElementsByTagNameNS(OASIS_NS, elementName);
         return (Element) elements.item(0);
@@ -213,7 +239,7 @@ public class SignatureUtil {
 
     public static String loadDocumentAsString(String docResourcePath) throws IOException {
         InputStream inputStream = SignatureUtil.class.getResourceAsStream(docResourcePath);
-        return org.apache.commons.io.IOUtils.toString(inputStream, "UTF-8");
+        return org.apache.commons.io.IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 
 }

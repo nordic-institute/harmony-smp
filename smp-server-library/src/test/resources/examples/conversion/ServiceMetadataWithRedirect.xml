@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
-    <Redirect href="http://poland.pl">
-        <CertificateUID>SAMPLE CERTIFICATE VALUE</CertificateUID>
-    </Redirect>
-</ServiceMetadata>

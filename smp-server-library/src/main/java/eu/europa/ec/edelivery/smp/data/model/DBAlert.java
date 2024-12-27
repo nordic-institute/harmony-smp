@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
@@ -60,7 +78,6 @@ public class DBAlert extends BaseEntity {
     private String mailSubject;
     @Column(name = "MAIL_TO", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String mailTo;
-
     @Column(name = "FOR_USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH)
     private String username;
 
@@ -167,16 +184,14 @@ public class DBAlert extends BaseEntity {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("DBAlert{");
-        sb.append("id=").append(id);
-        sb.append(", username=").append(username);
-        sb.append(", processedTime=").append(processedTime);
-        sb.append(", alertType=").append(alertType);
-        sb.append(", reportingTime=").append(reportingTime);
-        sb.append(", alertStatus=").append(alertStatus);
-        sb.append(", alertLevel=").append(alertLevel);
-        sb.append(", properties=").append(String.join(",", properties.keySet()));
-        sb.append('}');
-        return sb.toString();
+        return "DBAlert{" + "id=" + id +
+                ", username=" + username +
+                ", processedTime=" + processedTime +
+                ", alertType=" + alertType +
+                ", reportingTime=" + reportingTime +
+                ", alertStatus=" + alertStatus +
+                ", alertLevel=" + alertLevel +
+                ", properties=" + String.join(",", properties.keySet()) +
+                '}';
     }
 }

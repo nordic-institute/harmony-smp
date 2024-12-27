@@ -1,32 +1,37 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.utils;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 22/02/2017.
  */
-public class BCryptPasswordHashTest {
+class BCryptPasswordHashTest {
 
     private static final String PASSWORD = "this_is_sample_password";
 
@@ -34,7 +39,7 @@ public class BCryptPasswordHashTest {
     private PrintStream initialPrintStream=null;
 
 
-    @After
+    @AfterEach
     public void cleanUpStreams() {
         if (initialPrintStream!=null){
             System.setOut(initialPrintStream);
@@ -42,7 +47,7 @@ public class BCryptPasswordHashTest {
     }
 
     @Test
-    public void generatedHashIsValidTest() {
+    void generatedHashIsValidTest() {
         //when
         String hash = BCryptPasswordHash.hashPassword(PASSWORD);
         //then
@@ -50,7 +55,7 @@ public class BCryptPasswordHashTest {
     }
 
     @Test
-    public void generatedHashIsAlwaysSaltedTest() {
+    void generatedHashIsAlwaysSaltedTest() {
         //when
         String hash1 = BCryptPasswordHash.hashPassword(PASSWORD);
         String hash2 = BCryptPasswordHash.hashPassword(PASSWORD);
@@ -60,7 +65,7 @@ public class BCryptPasswordHashTest {
     }
 
     @Test
-    public void mainMethodSupportsMultiplePasswordsAndPrintsThemToStandardOutputTest() {
+    void mainMethodSupportsMultiplePasswordsAndPrintsThemToStandardOutputTest() {
         //given
         initialPrintStream = System.out;
         System.setOut(new PrintStream(outContent));

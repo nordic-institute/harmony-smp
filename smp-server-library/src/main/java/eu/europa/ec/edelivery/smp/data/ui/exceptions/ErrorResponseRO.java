@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.ui.exceptions;
 
 
@@ -10,6 +28,7 @@ import java.util.Objects;
  */
 public class ErrorResponseRO {
     protected String businessCode;
+    protected String errorCode;
     protected String errorDescription;
     protected String errorUniqueId;
 
@@ -49,6 +68,13 @@ public class ErrorResponseRO {
         this.errorDescription = value;
     }
 
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
 
     public String getErrorUniqueId() {
         return errorUniqueId;
@@ -76,11 +102,10 @@ public class ErrorResponseRO {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("ErrorResponseRO{");
-        sb.append("'businessCode'='").append(businessCode).append('\'');
-        sb.append(", 'errorDescription'='").append(errorDescription).append('\'');
-        sb.append(", 'errorUniqueId'='").append(errorUniqueId).append('\'');
-        sb.append('}');
-        return sb.toString();
+        String sb = "ErrorResponseRO{" + "'businessCode'='" + businessCode + '\'' +
+                ", 'errorDescription'='" + errorDescription + '\'' +
+                ", 'errorUniqueId'='" + errorUniqueId + '\'' +
+                '}';
+        return sb;
     }
 }

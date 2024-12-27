@@ -1,10 +1,10 @@
 <div class="search-table-row-limiter">
-
-  <mat-select placeholder="Rows" [(ngModel)]="pageSize" name="pageSize" (selectionChange)="changePageSize($event)"
+  <select matNativeControl placeholder="{{ 'row.limiter.placeholder' | translate }}" [(ngModel)]="pageSize" name="pageSize"
+          (change)="changePageSize($event.target)"
              id="pagesize_id">
-    <mat-option class="row-limiter-item" *ngFor="let rowLimit of pageSizes" [value]="rowLimit.value">
-      {{rowLimit.key}}
-    </mat-option>
-  </mat-select>
+    <option class="row-limiter-item" *ngFor="let rowLimit of pageSizes" [value]="rowLimit.value">
+      {{rowLimit.value}}
+    </option>
+  </select>
 </div>
 

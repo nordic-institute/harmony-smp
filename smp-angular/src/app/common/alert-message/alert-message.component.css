@@ -12,14 +12,6 @@
   z-index: 2000;
 }
 
-.stickyError {
-  position: fixed;
-  z-index: 1000;
-  top: 0;
-  right: 0;
-  left: 180px;
-}
-
 .closebtn {
   margin-left: 15px;
   color: white;

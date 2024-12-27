@@ -1,20 +1,47 @@
 <div id="user-access-token-panel">
-  <data-panel title="Access token"
-              text="You can generate a access token for each application you use that needs access to the DomiSMP API."
+  <data-panel title="{{ 'user.access.tokens.title' | translate }}"
+              text="{{ 'user.access.tokens.text' | translate }}"
               [labelColumnContent]="commonToolbar">
-    <access-token-panel *ngFor="let item of accessTokens; trackBy: trackListItem"
-                        (onDeleteEvent)="onDeleteItemClicked(item)"
-                        (onSaveEvent)="onSaveItemClicked(item)"
-                        [credential]="item"></access-token-panel>
+
+    <table mat-table id="user-access-token-table" [dataSource]="dataSource"
+           class="panel smp-data-panel">
+      <ng-container matColumnDef="accessTokens">
+        <th mat-header-cell
+            *matHeaderCellDef>{{ "user.access.tokens.label.access.tokens" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let token"
+            [ngClass]="{'datatable-row-error': token.invalid}"
+            [matTooltip]="token.name"
+        class="access-token-panel">
+          <access-token-panel class="access-token-panel"
+                              (onDeleteEvent)="onDeleteItemClicked(token)"
+                              (onSaveEvent)="onSaveItemClicked(token)"
+                              [credential]="token"></access-token-panel>
+
+        </td>
+        <tr mat-header-row class="user-access-token-table-header"
+            *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row class="user-access-token-table-data"
+            *matRowDef="let myRowData; columns: displayedColumns"></tr>
+      </ng-container>
+    </table>
+
+    <mat-paginator class="mat-elevation-z2" id="tokens-paginator"
+                   [hidePageSize]="true"
+                   [pageSize]="5"
+                   attr.aria-label="{{ 'user.access.tokens.label.select.page' | translate }}"></mat-paginator>
   </data-panel>
+
 </div>
 
 <ng-template #commonToolbar>
 
-  <button id="createAccessTokenButton" mat-raised-button color="primary" matTooltip="Create new Access token " style="margin: 2em "
-  (click)="createNewAccessToken()">
+  <button id="createAccessTokenButton" mat-raised-button color="primary"
+          matTooltip="{{ 'user.access.tokens.tooltip.create' | translate }}"
+          style="margin: 2em "
+          (click)="createNewAccessToken()">
     <mat-icon>key</mat-icon>
-    <span>Create access Token</span>
+    <span>{{ "user.access.tokens.button.create" | translate }}</span>
   </button>
 
 </ng-template>

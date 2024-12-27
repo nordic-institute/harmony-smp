@@ -22,23 +22,23 @@
         </button>
         <button id="changePassword_id" *ngIf="isUserAuthPasswdEnabled" mat-menu-item
                 (click)="changeCurrentUserPassword()">
-          <span>Change password</span>
+          <span>{{ "toolbar.component.button.change.password" | translate }}</span>
         </button>
         <button id="showSSODetails_id" *ngIf="isUserAuthSSOEnabled" mat-menu-item
                 (click)="openCurrentCasUserData()">
-          <span>Open CAS user data</span>
+          <span>{{ "toolbar.component.button.open.cas.profile" | translate }}</span>
         </button>
         <hr/>
         <button id="logout_id" mat-menu-item (click)="logout($event)">
           <mat-icon>power_settings_new</mat-icon>
-          <span>Logout</span>
+          <span>{{ 'toolbar.component.button.logout' | translate }}</span>
         </button>
 
       </div>
       <div *ngIf="!currentUser" style="text-align: center; vertical-align: middle;margin: 2px;">
         <button id="notLoggedInButton" mat-menu-item disabled="true">
           <mat-icon>person_outline</mat-icon>
-          <span>Not logged in</span>
+          <span>{{ "toolbar.component.button.not.logged.in" | translate }}</span>
         </button>
       </div>
     </mat-menu>

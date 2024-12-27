@@ -1,7 +1,25 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.utils.ExtLibraryClassLoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -10,14 +28,14 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPWebApplicationInitializerTest {
+class SMPWebApplicationInitializerTest {
 
     SMPWebApplicationInitializer testInstance = new SMPWebApplicationInitializer();
 
     @Test
-    public void logBuildProperties() {
+    void logBuildProperties() {
         Logger log = Mockito.mock(Logger.class);
         testInstance.logBuildProperties(log, "/test-application.properties");
 
@@ -39,19 +57,19 @@ public class SMPWebApplicationInitializerTest {
     }
 
     @Test
-    public void createLibraryClassLoaderNotExists() {
+    void createLibraryClassLoaderNotExists() {
         ExtLibraryClassLoader loader= testInstance.createLibraryClassLoader(new File("FileNotExists"));
         assertNull(loader);
     }
 
     @Test
-    public void createLibraryClassLoaderIsNotFolder() {
+    void createLibraryClassLoaderIsNotFolder() {
         ExtLibraryClassLoader loader= testInstance.createLibraryClassLoader(new File("./pom.xml"));
         assertNull(loader);
     }
 
     @Test
-    public void createLibraryClassLoader() {
+    void createLibraryClassLoader() {
         // folder contains one library jar simple-extension.jar with the resource logback-test.xml
         Path path = Paths.get("src","test","resources", "test-libs");
         ExtLibraryClassLoader loader= testInstance.createLibraryClassLoader(path.toFile());

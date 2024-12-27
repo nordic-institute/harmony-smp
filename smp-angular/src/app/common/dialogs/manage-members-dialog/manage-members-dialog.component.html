@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
-<mat-dialog-content style="width:700px">
+<mat-dialog-content style="width:700px;height: 600px">
  <domain-member-panel
   [membershipType]="membershipType"
  [domain]="_currentDomain"
@@ -11,7 +11,7 @@
 <mat-dialog-actions>
   <button id="closeDialogButton" mat-raised-button color="primary" (click)="closeDialog()">
     <mat-icon>cancel</mat-icon>
-    <span>Close</span>
+    <span>{{ "manage.members.dialog.button.close" | translate }}</span>
   </button>
 
 </mat-dialog-actions>

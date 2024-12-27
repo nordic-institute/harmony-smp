@@ -1,6 +1,4 @@
-import {Component, QueryList, ViewChildren,} from '@angular/core';
-import {SecurityService} from "../../security/security.service";
-import {UserService} from "../../system-settings/user/user.service";
+import {AfterViewInit, Component, QueryList, ViewChild, ViewChildren,} from '@angular/core';
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -8,22 +6,30 @@ import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/credential-dialog.component";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {AccessTokenPanelComponent} from "./access-token-panel/access-token-panel.component";
-
+import {MatPaginator} from "@angular/material/paginator";
+import {MatTableDataSource} from "@angular/material/table";
+import {UserService} from "../../common/services/user.service";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   templateUrl: './user-access-tokens.component.html',
   styleUrls: ['./user-access-tokens.component.scss']
 })
-export class UserAccessTokensComponent implements BeforeLeaveGuard {
+export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuard {
+  displayedColumns: string[] = ['accessTokens'];
+  dataSource: MatTableDataSource<CredentialRo> = new MatTableDataSource();
   accessTokens: CredentialRo[] = [];
+
   @ViewChildren(AccessTokenPanelComponent)
   userTokenCredentialComponents: QueryList<AccessTokenPanelComponent>;
 
-  constructor(private securityService: SecurityService,
-              private userService: UserService,
-              public dialog: MatDialog) {
+  @ViewChild(MatPaginator)
+  paginator: MatPaginator;
 
-
+  constructor(private userService: UserService,
+              public dialog: MatDialog,
+              private translateService: TranslateService) {
     this.userService.onAccessTokenCredentialsUpdateSubject().subscribe((credentials: CredentialRo[]) => {
       this.updateAccessTokenCredentials(credentials);
     });
@@ -37,6 +43,11 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
 
   public updateAccessTokenCredentials(userAccessTokens: CredentialRo[]) {
     this.accessTokens = userAccessTokens;
+    this.dataSource.data = this.accessTokens;
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
   }
 
   public updateAccessTokenCredential(userAccessToken: CredentialRo) {
@@ -57,17 +68,23 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
         userAccessToken];
     }
 
+    // show current page after update if possible or previous page
+    let pageIndex = Math.min(this.paginator.pageIndex,
+      Math.floor(this.accessTokens.length / this.paginator.pageSize));
+    // set the data source
+    this.dataSource.data = this.accessTokens;
+    this.paginator.pageIndex = pageIndex;
   }
 
   public trackListItem(index: number, credential: CredentialRo) {
     return credential.credentialId;
   }
 
-  public onDeleteItemClicked(credential: CredentialRo) {
+  public async onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete Access token",
-        description: "Action will delete access token: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("user.access.tokens.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("user.access.tokens.delete.confirmation.dialog.description", {credentialName: credential.name}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -76,21 +93,20 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
     })
   }
 
-  public createNewAccessToken() {
+  public async createNewAccessToken() {
     this.dialog.open(CredentialDialogComponent, {
       data: {
         credentialType: CredentialDialogComponent.ACCESS_TOKEN_TYPE,
-        formTitle: "Access token generation dialog"
+        formTitle: await lastValueFrom(this.translateService.get("user.access.tokens.credentials.dialog.title"))
       }
     }).afterClosed();
   }
 
-  public onSaveItemClicked(credential: CredentialRo) {
-
+  public async onSaveItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Update Access token",
-        description: "Action will update access token: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("user.access.tokens.update.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("user.access.tokens.update.confirmation.dialog.description", {credentialName: credential.name}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

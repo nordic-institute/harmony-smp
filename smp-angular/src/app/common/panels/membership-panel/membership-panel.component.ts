@@ -1,22 +1,35 @@
-import {Component, Input, ViewChild,} from '@angular/core';
+import {Component, Input,} from '@angular/core';
 import {DomainRo} from "../../model/domain-ro.model";
-import {AdminDomainService} from "../../../system-settings/admin-domain/admin-domain.service";
+import {
+  AdminDomainService
+} from "../../../system-settings/admin-domain/admin-domain.service";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {
+  BeforeLeaveGuard
+} from "../../../window/sidenav/navigation-on-leave-guard";
+import {PageEvent} from "@angular/material/paginator";
 import {MemberRo} from "../../model/member-ro.model";
 import {finalize} from "rxjs/operators";
 import {TableResult} from "../../model/table-result.model";
-import {MemberDialogComponent} from "../../dialogs/member-dialog/member-dialog.component";
-import {MembershipService} from "./membership.service";
+import {
+  MemberDialogComponent
+} from "../../dialogs/member-dialog/member-dialog.component";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {GroupRo} from "../../model/group-ro.model";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {SearchTableResult} from "../../search-table/search-table-result.model";
-import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  ConfirmationDialogComponent
+} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {ResourceRo} from "../../model/resource-ro.model";
+import {TranslateService} from "@ngx-translate/core";
+import {MembershipService} from "../../services/membership.service";
+import {
+  SmpTableColDef
+} from "../../components/smp-table/smp-table-coldef.model";
+import {MatTableDataSource} from "@angular/material/table";
 
 
 @Component({
@@ -27,44 +40,101 @@ import {ResourceRo} from "../../model/resource-ro.model";
 export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   pageSize: number = 10;
+  pageIndex: number = 0;
+  dataLength: number = 0;
   @Input() membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
+
 
   private _domain: DomainRo;
   private _group: GroupRo;
   private _resource: ResourceRo;
 
+  columns: SmpTableColDef[];
 
-  displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
-  data: MemberRo[] = [];
+  dataSource: MatTableDataSource<MemberRo> = new MatTableDataSource();
   selectedMember: MemberRo;
   filter: any = {};
-  resultsLength = 0;
+
   isLoadingResults = false;
-  @ViewChild('memberPaginator') paginator: MatPaginator;
+  formTitle = "";
+
+  //@ViewChild('memberPaginator') paginator: MatPaginator;
 
   constructor(private domainService: AdminDomainService,
               private membershipService: MembershipService,
               private alertService: AlertMessageService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
+    (async () => await this.updateTitle()) ();
+
+    this.columns = [
+      {
+        columnDef: 'username',
+        header: 'membership.panel.label.username',
+        cell: (row: MemberRo) => row.username
+      } as SmpTableColDef,
+      {
+        columnDef: 'fullName',
+        header: 'membership.panel.label.full.name',
+        cell: (row: MemberRo) => row.fullName
+      } as SmpTableColDef,
+      {
+        columnDef: 'roleType',
+        header: 'membership.panel.label.role.type',
+        cell: (row: MemberRo) => row.roleType,
+        style: 'padding: 0 5px;flex-grow: 0;flex-basis:120px;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'hasPermissionToReview',
+        header: 'membership.panel.label.permission.review',
+        cell: (row: MemberRo) => row.hasPermissionReview,
+        style: 'padding: 0 5px;flex-grow: 0;flex-basis:100px;'
+      } as SmpTableColDef,
+      {
+        columnDef: 'memberOf',
+        header: 'membership.panel.label.member.of',
+        cell: (row: MemberRo) => row.memberOf,
+        style: 'padding: 0 5px;flex-grow: 0;flex-basis:100px;'
+      } as SmpTableColDef
+
+    ];
+
   }
   ngAfterViewInit() {
     this.loadMembershipData();
   }
 
-  get title() {
+  async updateTitle() {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-
-        return "Direct Domain members" + (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")
+        this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.domain", {value: (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")}));
+        break;
       case MemberTypeEnum.GROUP:
-        return "Direct Group members" + (!!this._group ? ": [" + this._group.groupName + "]" : "")
+        this.formTitle =  await lastValueFrom(this.translateService.get("membership.panel.title.group", {value: (!!this._group ? ": [" + this._group.groupName + "]" : "")}));
+        break;
       case MemberTypeEnum.RESOURCE:
-        return "Resource direct members"
+        this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.resource"));
+        break;
     }
   }
 
   get domain(): DomainRo {
     return this._domain;
+  }
+
+  public get membershipCount(): number {
+    return this.dataLength;
+  }
+
+  public get displayedColumns(): string[] {
+    switch (this.membershipType) {
+      case MemberTypeEnum.DOMAIN:
+        return  ['username', 'fullName', 'roleType'];
+      case MemberTypeEnum.GROUP:
+        return ['username', 'fullName', 'roleType'];
+      case MemberTypeEnum.RESOURCE:
+        return ['username', 'fullName', 'roleType', 'hasPermissionToReview'];
+    }
   }
 
   @Input() set domain(value: DomainRo) {
@@ -104,6 +174,8 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   onPageChanged(page: PageEvent) {
+    this.pageIndex = page.pageIndex;
+    this.pageSize = page.pageSize;
     this.loadMembershipData();
   }
 
@@ -120,15 +192,14 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
           this.isLoadingResults = false;
         }))
       .subscribe((result: TableResult<MemberRo>) => {
-          this.data = [...result.serviceEntities];
-          this.resultsLength = result.count;
+          this.dataSource.data = [...result.serviceEntities];
+          this.dataLength = result.count;
           this.isLoadingResults = false;
         }
       );
   }
 
-  applyMemberFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  applyMemberFilter(filterValue: string) {
     this.filter["filter"] = filterValue.trim().toLowerCase();
     this.refresh();
   }
@@ -146,9 +217,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public refresh() {
-    if (!!this.paginator) {
-      this.paginator.firstPage();
-    }
+
     this.loadMembershipData();
   }
 
@@ -173,19 +242,17 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         member: member,
       }
     }).afterClosed().subscribe(value => {
-
       this.refresh();
     });
   }
 
-  public onDeleteSelectedButtonClicked() {
+  public async onDeleteSelectedButtonClicked() {
 
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Remove member",
-        description: "Action will remove member  [" + this.selectedMember.username + "]! " +
-          "<br/><br/>Do you wish to continue?"
+        title: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.description", {username: this.selectedMember.username}))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -215,8 +282,8 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   protected getMembershipListService(): Observable<SearchTableResult> {
-    let page = this.paginator ? this.paginator.pageIndex : 0;
-    let pageSize = this.paginator ? this.paginator.pageSize : this.pageSize;
+    let page = this.pageIndex
+    let pageSize = this.pageSize;
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
         return !this._domain ? null : this.membershipService.getDomainMembersObservable(this._domain.domainId, this.filter, page, pageSize);

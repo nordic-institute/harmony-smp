@@ -2,26 +2,25 @@ import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
-import {ServiceMetadataWizardRo} from "./service-metadata-wizard-edit-ro.model";
+import {SubresourceWizardRo} from "./subresource-wizard-edit-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {CertificateService} from "../../../system-settings/user/certificate.service";
 import {GlobalLookups} from "../../../common/global-lookups";
-import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
+import {CertificateService} from "../../../common/services/certificate.service";
+import {CertificateRo} from "../../../common/model/certificate-ro.model";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 
 @Component({
-  selector: 'service-metadata-wizard-dialog',
   templateUrl: './subresource-document-wizard.component.html',
   styleUrls: ['./subresource-document-wizard.component.css']
 })
 export class SubresourceDocumentWizardComponent {
 
-  static readonly NEW_MODE = 'New ServiceMetadata XML';
-  static readonly EDIT_MODE = 'Edit ServiceMetadata XML';
   static readonly EBCORE_IDENTIFIER_PREFIX = "urn:oasis:names:tc:ebcore:partyid-type:";
 
-  isNewServiceMetadata: boolean;
-  current: ServiceMetadataWizardRo
+  isNewSubresource: boolean;
+  current: SubresourceWizardRo
     & { confirmation?: string };
   dialogForm: UntypedFormGroup;
   certificateValidationMessage: string;
@@ -36,8 +35,9 @@ export class SubresourceDocumentWizardComponent {
     private dialogFormBuilder: UntypedFormBuilder,
     private certificateService: CertificateService,
     private lookups: GlobalLookups,
+    private translateService: TranslateService
   ) {
-    this.isNewServiceMetadata = this.data.isNewServiceMetadata;
+    this.isNewSubresource = this.data.isNewSubresource;
 
     this.current = {...this.data}
 
@@ -45,8 +45,8 @@ export class SubresourceDocumentWizardComponent {
       'participantIdentifier': new UntypedFormControl({value: '', disabled: true}, null),
       'participantScheme': new UntypedFormControl({value: '', disabled: true}, null),
 
-      'documentIdentifier': new UntypedFormControl({value: '', disabled: !this.isNewServiceMetadata}, [Validators.required]),
-      'documentIdentifierScheme': new UntypedFormControl({value: '', disabled: !this.isNewServiceMetadata}, null),
+      'documentIdentifier': new UntypedFormControl({value: '', disabled: !this.isNewSubresource}, [Validators.required]),
+      'documentIdentifierScheme': new UntypedFormControl({value: '', disabled: !this.isNewSubresource}, null),
       'processScheme': new UntypedFormControl({value: ''}, null),
       'processIdentifier': new UntypedFormControl({value: ''}, [Validators.required]),
 
@@ -78,18 +78,21 @@ export class SubresourceDocumentWizardComponent {
   uploadCertificate(event) {
     const file = event.target.files[0];
     this.certificateValidationMessage = null;
-    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe(async (res: CertificateRo) => {
         if (res && res.certificateId) {
 
           this.dialogForm.patchValue({
             'endpointCertificate': res.encodedValue
           });
         } else {
-          this.certificateValidationMessage = 'Error occurred while reading certificate. Check if uploaded file has valid certificate type';
+          this.certificateValidationMessage = await lastValueFrom(this.translateService.get("subresource.document.wizard.error.read"));
         }
       },
-      err => {
-        this.certificateValidationMessage = 'Error uploading certificate file [' + file.name + '] ' + err.error?.errorDescription;
+      async err => {
+        this.certificateValidationMessage = await lastValueFrom(this.translateService.get("subresource.document.wizard.error.upload", {
+          fileName: file.name,
+          errorDescription: err.error?.errorDescription
+        }));
       }
     );
   }
@@ -111,7 +114,7 @@ export class SubresourceDocumentWizardComponent {
       });
   }
 
-  public getCurrent(): ServiceMetadataWizardRo {
+  public getCurrent(): SubresourceWizardRo {
 
     this.current.participantIdentifier = this.dialogForm.controls['participantIdentifier'].value;
     this.current.participantScheme = this.dialogForm.controls['participantScheme'].value;

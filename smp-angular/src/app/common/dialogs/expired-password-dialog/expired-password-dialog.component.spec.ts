@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ExpiredPasswordDialogComponent } from './expired-password-dialog.component';
+import {ExpiredPasswordDialogComponent} from './expired-password-dialog.component';
 
 describe('ExpiredPasswordDialogComponent', () => {
   let component: ExpiredPasswordDialogComponent;

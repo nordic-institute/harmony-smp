@@ -1,42 +1,78 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services;
 
 
+import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
+import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
+import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static eu.europa.ec.edelivery.smp.services.ui.UITruststoreServiceIntegrationTest.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {CredentialService.class})
-public class CredentialServiceTest extends AbstractServiceIntegrationTest {
+class CredentialServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
     CredentialService testInstance;
+    @Autowired
+    ConfigurationService configurationService;
+    @Autowired
+    ConfigurationDao configurationDao;
 
-    @Before
+    ConfigurationService spyConfigurationService;
+
+    @BeforeEach
     public void beforeMethods() throws IOException {
         testUtilsDao.clearData();
         testUtilsDao.createUsers();
         resetKeystore();
-        configurationDao.refreshProperties();
+        configurationDao.reloadPropertiesFromDatabase();
+
+        spyConfigurationService = Mockito.spy(configurationService);
+        ReflectionTestUtils.setField(testInstance, "configurationService", spyConfigurationService);
     }
 
     @Test
-    public void authenticateByUsernamePasswordTestBadUsername() {
+    void authenticateByUsernamePasswordTestBadUsername() {
         // given
         String username = "usernameNotExists";
         String password = "password";
@@ -46,7 +82,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByUsernamePasswordTestOk() {
+    void authenticateByUsernamePasswordTestOk() {
         // given
         String username = TestConstants.USERNAME_1;
         String password = TestConstants.USERNAME_1_PASSWORD;
@@ -60,8 +96,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    @Ignore
-    public void authenticateByUsernamePasswordTestBadPassword() {
+    void authenticateByUsernamePasswordTestBadPassword() {
         // given
         String username = TestConstants.USERNAME_1;
         String password = "password";
@@ -71,7 +106,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByUsernamePasswordInactive() {
+    void authenticateByUsernamePasswordInactive() {
         testUtilsDao.deactivateUser(TestConstants.USERNAME_1);
 
         // given
@@ -83,7 +118,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByUsernameCredentialsInactive() {
+    void authenticateByUsernameCredentialsInactive() {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setActive(false);
         testUtilsDao.merge(credential);
@@ -97,7 +132,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByUsernameCredentialsSuspended() {
+    void authenticateByUsernameCredentialsSuspended() {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         credential.setSequentialLoginFailureCount(100);
@@ -112,7 +147,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByUsernameCredentialsNotSuspendedAnymore() {
+    void authenticateByUsernameCredentialsNotSuspendedAnymore() {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now().minusDays(100));
         credential.setSequentialLoginFailureCount(100);
@@ -130,7 +165,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
 
 
     @Test
-    public void authenticateByAccessTokenBadUsername() {
+    void authenticateByAccessTokenBadUsername() {
         // given
         String accessTokenName = "usernameNotExists";
         String accessTokenValue = "password";
@@ -140,7 +175,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByAccessTokenTestOk() {
+    void authenticateByAccessTokenTestOk() {
         // given
         String accessTokenName = TestConstants.USERNAME_3_AT;
         String accessTokenValue = TestConstants.USERNAME_3_AT_PASSWORD;
@@ -154,7 +189,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByAccessTokenBadPassword() {
+    void authenticateByAccessTokenBadPassword() {
         // given
         String accessTokenName = TestConstants.USERNAME_3_AT;
         String accessTokenValue = "badPassword";
@@ -165,7 +200,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByAccessTokenInactive() {
+    void authenticateByAccessTokenInactive() {
         testUtilsDao.deactivateUser(TestConstants.USERNAME_3);
 
         String accessTokenName = TestConstants.USERNAME_3_AT;
@@ -178,7 +213,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByAccessTokenCredentialsInactive() {
+    void authenticateByAccessTokenCredentialsInactive() {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setActive(false);
         testUtilsDao.merge(credential);
@@ -194,7 +229,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByAccessTokenSuspended() {
+    void authenticateByAccessTokenSuspended() {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         credential.setSequentialLoginFailureCount(100);
@@ -210,7 +245,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void authenticateByAccessTokenCredentialsNotSuspendedAnymore() {
+    void authenticateByAccessTokenCredentialsNotSuspendedAnymore() {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now().minusDays(100));
         credential.setSequentialLoginFailureCount(100);
@@ -224,5 +259,73 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         // then
         assertEquals(TestConstants.USERNAME_3_AT, authentication.getName());
     }
+
+
+    @Test
+    void authenticateByCertificateTokenOkWithRole() throws Exception {
+        // given
+
+        // must match the TestConstants.USER_CERT_3
+        X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest("CN=test example,O=European Commission,C=BE",
+                new BigInteger("0dd0d2f98cc25205bc6c854d1cd88411", 16), Collections.emptyList());
+
+        PreAuthenticatedCertificatePrincipal principal = X509CertificateUtils.extractPrincipalFromCertificate(cert);
+
+        // when
+        Authentication authentication = testInstance.authenticateByCertificateToken(principal);
+        // then
+        assertEquals(TestConstants.USER_CERT_3, authentication.getName());
+        assertTrue(authentication.isAuthenticated());
+        assertEquals(1, authentication.getAuthorities().size());
+        assertEquals("ROLE_WS_USER", authentication.getAuthorities().iterator().next().getAuthority());
+    }
+
+    @Test
+    void authenticateByCertificateTokenNotTrusted() throws Exception {
+        // given
+        X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest("CN=NotRegistered,O=European Commission,C=BE",
+                new BigInteger("111111", 16), Collections.emptyList());
+
+        PreAuthenticatedCertificatePrincipal principal = X509CertificateUtils.extractPrincipalFromCertificate(cert);
+
+        // when
+        BadCredentialsException result = assertThrows(BadCredentialsException.class, () -> testInstance.authenticateByCertificateToken(principal));
+        // then
+        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.startsWith("Login failed"));
+    }
+
+    @Test
+    void testValidateCertificatePolicyLegacyMatchOk() {
+        String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
+        Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
+                .when(spyConfigurationService).getAllowedCertificatePolicies();
+        List<String> certPolicies = Collections.singletonList(CERTIFICATE_POLICY_QCP_NATURAL);
+        testInstance.validateCertificatePolicyMatchLegacy(certID, certPolicies);
+    }
+
+    @Test
+    void testValidateCertificatePolicyLegacyMatchMatchEmpty() {
+        String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
+        Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
+                .when(spyConfigurationService).getAllowedCertificatePolicies();
+        List<String> certPolicies = Collections.emptyList();
+
+        AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
+                () -> testInstance.validateCertificatePolicyMatchLegacy(certID, certPolicies));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate [" + certID + "] does not have CertificatePolicy extension."));
+    }
+
+    @Test
+    void testValidateCertificatePolicyLegacyMatchMismatch() {
+        String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
+        Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
+                .when(spyConfigurationService).getAllowedCertificatePolicies();
+        List<String> certPolicies = Collections.singletonList(CERTIFICATE_POLICY_QCP_LEGAL_QSCD);
+
+        AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
+                () -> testInstance.validateCertificatePolicyMatchLegacy(certID, certPolicies));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
+    }
+
 
 }

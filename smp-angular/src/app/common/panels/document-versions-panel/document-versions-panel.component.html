@@ -1,0 +1,13 @@
+<smp-table
+  filterLabel="document.versions.panel.label.filter"
+  filterPlaceholder="document.versions.panel.label.filter"
+  noResultLabel="document.events.panel.label.no.data.found"
+  noResultForFilterLabel="document.versions.panel.label.no.filter.found"
+  [dataSource]="versionDataSource"
+  [selectedRow]="selected"
+  [columnDefList]="columns"
+  [displayedColumns]="displayedColumns"
+  (onFilterChanged)="applyFilter($event)"
+  (onRowDoubleClicked)="onRowSelect($event)"
+>
+</smp-table>

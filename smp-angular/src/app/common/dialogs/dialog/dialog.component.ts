@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import {Component, Input} from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'smp-dialog',
@@ -15,12 +15,16 @@ export class DialogComponent {
 
   @Input() dialogRef: MatDialogRef<any>;
 
-  public isConfirmationDialog() {
+  public isConfirmationDialog(): boolean {
     return this.type === 'confirmation';
   }
 
-  public isInformationDialog() {
+  public isInformationDialog(): boolean {
     return this.type === 'information';
+  }
+
+  public isWarningDialog(): boolean {
+    return this.type === 'warning';
   }
 
 }

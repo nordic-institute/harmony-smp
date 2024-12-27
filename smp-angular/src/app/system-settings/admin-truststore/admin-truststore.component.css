@@ -12,7 +12,6 @@
   padding-top: 1em;
 }
 
-
 #admin-truststore-table {
   width: 100%;
   padding-top: 1em;
@@ -25,4 +24,11 @@
 .custom-file-upload {
   display: block;
   cursor: pointer;
+}
+
+.truststore-table-cell-header {
+  font-weight: bold;
+  font-size: 0.9em;
+  padding: 1px 5px;
+  text-align: center;
 }

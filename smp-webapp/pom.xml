@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.niis</groupId>
@@ -27,7 +27,7 @@
             <artifactId>harmonysmp-angular</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!-- oasis SMP is included by default to smp deployment-->
+        <!-- oasis SMP is included by default to smp deployment-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>oasis-smp-spi</artifactId>
@@ -51,7 +51,7 @@
             <groupId>eu.europa.ec.dynamic-discovery</groupId>
             <artifactId>dynamic-discovery-client</artifactId>
         </dependency>
-<!-- end oasis SMP is included by default to smp deployment-->
+        <!-- end oasis SMP is included by default to smp deployment-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -61,8 +61,8 @@
             <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
@@ -80,10 +80,13 @@
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -100,8 +103,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
         <!-- the default JDBC driver -->
@@ -110,17 +118,24 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
-                <filtering>false</filtering>
-            </testResource>
-            <testResource>
-                <directory>src/test/resources/keystores</directory>
-                <targetPath>${project.build.directory}/keystores</targetPath>
                 <filtering>false</filtering>
             </testResource>
         </testResources>
@@ -135,13 +150,10 @@
                 <targetPath>${project.build.directory}/webapp-classes</targetPath>
             </resource>
         </resources>
-
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.0.2</version>
                 <configuration>
                     <warName>${project.artifactId}</warName>
                     <archive>
@@ -162,7 +174,9 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <descriptor>src/main/smp-setup/smp-setup.xml</descriptor>
+                            <descriptors>
+                                <descriptor>src/main/smp-setup/smp-setup.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>

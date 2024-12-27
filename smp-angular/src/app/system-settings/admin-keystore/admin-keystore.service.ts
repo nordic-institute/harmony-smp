@@ -5,9 +5,9 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../../smp.constants";
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
-import {CertificateRo} from "../user/certificate-ro.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {KeystoreResult} from "../domain/keystore-result.model";
+import {CertificateRo} from "../../common/model/certificate-ro.model";
+import {KeystoreResult} from "../../common/model/keystore-result.model";
 
 @Injectable()
 export class AdminKeystoreService {

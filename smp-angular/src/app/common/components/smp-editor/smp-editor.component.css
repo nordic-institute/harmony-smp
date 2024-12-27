@@ -1,0 +1,9 @@
+
+.smp-document-editor {
+  display:block;
+  overflow: auto;
+  flex: 1;
+  align-self: stretch;
+  flex-direction: column;
+  border: ridge 3px #b0bec5
+}

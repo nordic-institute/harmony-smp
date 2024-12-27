@@ -1,8 +1,26 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.auth.cas;
 
-import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import org.junit.Test;
+import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
@@ -15,18 +33,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-public class SMPCasConfigurerTest {
+class SMPCasConfigurerTest {
     ConfigurationService mockConfigService = Mockito.mock(ConfigurationService.class);
     SmpUrlBuilder mockSmpUrlBuilder = Mockito.mock(SmpUrlBuilder.class);
 
     SMPCasConfigurer testInstance = new SMPCasConfigurer(mockSmpUrlBuilder, mockConfigService);
 
     @Test
-    public void serviceProperties() throws MalformedURLException {
+    void serviceProperties() throws MalformedURLException {
         String callbackString = "http://callback.local/smp";
         URL callBackURL = new  URL(callbackString);
         doReturn(callBackURL).when(mockConfigService).getCasCallbackUrl();
@@ -35,11 +53,11 @@ public class SMPCasConfigurerTest {
         assertNotNull(serviceProperties);
         assertEquals(callbackString, serviceProperties.getService());
         assertEquals(ServiceProperties.DEFAULT_CAS_ARTIFACT_PARAMETER, serviceProperties.getArtifactParameter());
-        assertEquals(true, serviceProperties.isAuthenticateAllArtifacts());
+        assertTrue(serviceProperties.isAuthenticateAllArtifacts());
     }
 
     @Test
-    public void casAuthenticationEntryPoint() throws MalformedURLException {
+    void casAuthenticationEntryPoint() throws MalformedURLException {
         String casUrl = "http://cas-server.local/cas";
         String casLoginPath = "login";
         doReturn(true).when(mockConfigService).isSSOEnabledForUserAuthentication();
@@ -54,7 +72,7 @@ public class SMPCasConfigurerTest {
     }
 
     @Test
-    public void ecasServiceTicketValidator() throws MalformedURLException {
+    void ecasServiceTicketValidator() throws MalformedURLException {
         String casUrl = "http://cas-server.local/cas";
         String tokenValidator = "laxValidate";
 
@@ -68,7 +86,7 @@ public class SMPCasConfigurerTest {
     }
 
     @Test
-    public void getCustomParameters() {
+    void getCustomParameters() {
         Map<String, String> testMap = new HashMap<>();
         testMap.put("key1","val1");
         testMap.put("key2","val2");
@@ -86,7 +104,7 @@ public class SMPCasConfigurerTest {
     }
 
     @Test
-    public void casAuthenticationProvider() {
+    void casAuthenticationProvider() {
         ServiceProperties serviceProperties = mock(ServiceProperties.class);
         SMPCas20ServiceTicketValidator smpCas20ServiceTicketValidator = mock(SMPCas20ServiceTicketValidator.class);
         SMPCasUserService smpCasUserService = mock(SMPCasUserService.class);

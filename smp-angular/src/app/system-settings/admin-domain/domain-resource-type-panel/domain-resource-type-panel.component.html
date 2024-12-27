@@ -6,17 +6,17 @@
         <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
                 [disabled]="!resetButtonEnabled">
           <mat-icon>refresh</mat-icon>
-          <span>Reset</span>
+          <span>{{ "domain.resource.type.panel.button.reset" | translate }}</span>
         </button>
         <button id="saveButton" mat-raised-button (click)="onSaveClicked()" color="primary"
                 [disabled]="!submitButtonEnabled">
           <mat-icon>save</mat-icon>
-          <span>Save</span>
+          <span>{{ "domain.resource.type.panel.button.save" | translate }}</span>
         </button>
 
       </mat-toolbar-row>
     </mat-toolbar>
-    <h3>Domain resource type configuration</h3>
+    <h3>{{ "domain.resource.type.label.domain.resource.type.configuration" | translate }}</h3>
     <mat-selection-list formControlName="resourceDefinitions">
       <mat-list-option *ngFor="let resDef of domiSMPResourceDefinitions"
                        [matTooltip]="resDef.description"

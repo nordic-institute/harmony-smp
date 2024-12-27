@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.model.ext;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
@@ -33,6 +51,30 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_RESOURCE_DEF_BY_DOMAIN, query = "SELECT d FROM DBResourceDef d JOIN d.domainResourceDefs dr where dr.domain.id = :domain_id order by d.id asc")
 @NamedQuery(name = QUERY_RESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBResourceDef d WHERE d.urlSegment = :url_segment")
 @NamedQuery(name = QUERY_RESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBResourceDef d WHERE d.identifier = :identifier")
+@NamedQuery(name = QUERY_RESOURCE_DEF_FOR_USER, query = "SELECT distinct rd FROM DBResourceDef rd " +
+        " JOIN DBDomainResourceDef drd ON drd.resourceDef.id = rd.id " +
+        " JOIN DBDomain d ON d.id = drd.domain.id " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " WHERE d.visibility = :domain_visibility " +
+        "   or (:user_id IS NOT NULL " +
+        "         AND  (" +
+        "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
+        "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
+        "   ) " )
+@NamedQuery(name = QUERY_RESOURCE_DEF_FOR_USER_COUNT, query = "SELECT count(distinct rd.id) FROM DBResourceDef rd " +
+        " JOIN DBDomainResourceDef drd ON drd.resourceDef.id = rd.id " +
+        " JOIN DBDomain d ON d.id = drd.domain.id " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " WHERE d.visibility = :domain_visibility " +
+        "   or (:user_id IS NOT NULL " +
+        "         AND  (" +
+        "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
+        "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
+        "   ) " )
 public class DBResourceDef extends BaseEntity {
     private static final long serialVersionUID = 1008583888835630001L;
 
@@ -59,7 +101,7 @@ public class DBResourceDef extends BaseEntity {
     @ColumnDescription(comment = "resources are published under url_segment.")
     String urlSegment;
 
-    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_256 )
+    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
     private String handlerImplementationName;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,14 +1,40 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.auth.*;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.ui.CredentialRequestResetRO;
+import eu.europa.ec.edelivery.smp.data.ui.CredentialResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,10 +47,14 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.*;
+import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
+import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_USER;
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
 /**
+ * The AuthenticationController class is a REST controller that provides endpoints for user authentication actions as
+ * login, logout, logged user data retrieval, request credential reset.
+ *
  * @author Sebastian-Ion TINCU
  * @since 4.0
  */
@@ -39,9 +69,9 @@ public class AuthenticationController {
 
     protected SMPAuthorizationService authorizationService;
 
-    private ConfigurationService configurationService;
+    private final ConfigurationService configurationService;
 
-    private CsrfTokenRepository csrfTokenRepository;
+    private final CsrfTokenRepository csrfTokenRepository;
 
     SMPCookieWriter smpCookieWriter;
 
@@ -59,7 +89,7 @@ public class AuthenticationController {
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
-    @PostMapping(value = "authentication")
+    @PostMapping(value = ResourceConstants.PATH_ACTION_AUTHENTICATION)
     @Transactional(noRollbackFor = BadCredentialsException.class)
     public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletRequest request, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
@@ -72,11 +102,70 @@ public class AuthenticationController {
                 loginRO.getPassword());
         SMPUserDetails user = authentication.getUserDetails();
 
-
-        return authorizationService.getUserData(user.getUser());
+        return authorizationService.getUserData(user.getUser(), authentication.getAuthorities());
     }
 
-    @DeleteMapping(value = "authentication")
+    /**
+     * Request reset of the credentials. The method generates a reset token and sends an email to the user.
+     *
+     * @param requestResetRO - the request object containing the credential name and type
+     */
+    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL_REQUEST)
+    public void requestResetCredentials(@RequestBody CredentialRequestResetRO requestResetRO) {
+        LOG.debug("credentialRequestResetRO  [{}]", requestResetRO.getCredentialName());
+        if (requestResetRO.getCredentialType() == CredentialType.USERNAME_PASSWORD) {
+            authenticationService.requestResetUsername(requestResetRO.getCredentialName());
+        } else {
+            LOG.warn("Invalid or null credential type [{}] not supported for reset!",
+                    requestResetRO.getCredentialType());
+            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+
+        }
+    }
+
+    /**
+     * Reset the credentials. The method validates the reset token and updates the credentials.
+     *
+     * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
+     */
+    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL)
+    public void resetCredentials(@RequestBody CredentialResetRO resetRO) {
+        LOG.debug("resetCredentials [{}]", resetRO);
+        if (resetRO == null
+                || resetRO.getResetToken() == null
+                || StringUtils.isBlank(resetRO.getResetToken())
+                || StringUtils.isBlank(resetRO.getCredentialName())
+                || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
+            LOG.warn("Invalid or incomplete reset token!");
+            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+        }
+        authenticationService.resetUsernamePassword(resetRO.getCredentialName(),
+                resetRO.getResetToken(),
+                resetRO.getCredentialValue());
+
+    }
+
+    /**
+     * Method validates if the reset token is valid (exists and is not expired)
+     * for the given credential type.
+     *
+     * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
+     *                Return 200 if token is valid, 401 if token is invalid
+     */
+    @PostMapping(value = ResourceConstants.PATH_ACTION_VALIDATE_RESET_TOKEN)
+    public void validateResetToken(@RequestBody CredentialResetRO resetRO) {
+        LOG.debug("validateResetToken [{}]", resetRO);
+        if (resetRO == null
+                || StringUtils.isBlank(resetRO.getResetToken())
+                || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
+            LOG.warn("Invalid or null reset token or invalid reset token type!");
+            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+        }
+
+        authenticationService.validateUsernamePasswordResetToken(resetRO.getResetToken());
+    }
+
+    @DeleteMapping(value = ResourceConstants.PATH_ACTION_AUTHENTICATION)
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         LOG.info("Logging out user for the session");
         authenticationService.logout(request, response);

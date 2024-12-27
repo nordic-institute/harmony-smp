@@ -1,10 +1,28 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.security.DomainGuard;
+import eu.europa.ec.edelivery.smp.security.DomainGroupGuard;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
@@ -50,13 +68,16 @@ public class ResourceController {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceController.class);
     // set them to lower case for fast comparing with the  http headers
     private static final List<String> SUPPORTED_HEADERS = Arrays.asList(lowerCase(HTTP_PARAM_DOMAIN),
-            lowerCase(HTTP_PARAM_OWNER),
+            lowerCase(HTTP_PARAM_ADMIN),
+            lowerCase(HTTP_PARAM_ADMIN_OBSOLETE),
+            lowerCase(HTTP_PARAM_RESOURCE_GROUP),
+            lowerCase(HTTP_PARAM_RESOURCE_VISIBILITY),
             lowerCase(HTTP_PARAM_RESOURCE_TYPE));
     final ResourceService resourceService;
-    final DomainGuard domainGuard;
+    final DomainGroupGuard domainGuard;
 
 
-    public ResourceController(ResourceService resourceLocatorService, DomainGuard domainGuard) {
+    public ResourceController(ResourceService resourceLocatorService, DomainGroupGuard domainGuard) {
         this.resourceService = resourceLocatorService;
         this.domainGuard = domainGuard;
     }
@@ -110,6 +131,7 @@ public class ResourceController {
         ResourceRequest resourceRequest = fromServletRequest(httpReq, pathParameters);
         LOG.debug("Got resource request [{}]", resourceRequest);
         SMPUserDetails user = authorizeForDomain(resourceRequest);
+
         ResourceResponse resourceResponse = fromServletResponse(httpRes);
         // handle the request
         resourceService.handleRequest(user, resourceRequest, resourceResponse);
@@ -131,7 +153,8 @@ public class ResourceController {
         }
         // resolve domain and test authorization for the domain.
         domainGuard.resolveAndAuthorizeForDomain(resourceRequest, user);
-
+        // resolve group and test authorization for the group.
+        domainGuard.resolveAndAuthorizeForGroup(resourceRequest, user);
         return user;
     }
 
@@ -194,6 +217,4 @@ public class ResourceController {
             throw new SMPRuntimeException(INVALID_REQUEST, "Can not read input stream!", e);
         }
     }
-
-
 }

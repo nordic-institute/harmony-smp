@@ -1,6 +1,13 @@
-import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  Component, EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
-import {Observable} from 'rxjs';
+import {lastValueFrom, Observable} from 'rxjs';
 import {AlertMessageService} from '../alert-message/alert-message.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ColumnPicker} from '../column-picker/column-picker.model';
@@ -9,15 +16,24 @@ import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
 import {EntityStatus} from '../enums/entity-status.enum';
-import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
-import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
+import {
+  CancelDialogComponent
+} from '../dialogs/cancel-dialog/cancel-dialog.component';
+import {
+  SaveDialogComponent
+} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpParams} from '@angular/common/http';
-import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SearchTableValidationResult} from "./search-table-validation-result.model";
+import {
+  ConfirmationDialogComponent
+} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  SearchTableValidationResult
+} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
 import {Router} from "@angular/router";
 import ObjectUtils from "../utils/object-utils";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'smp-search-table',
@@ -25,11 +41,14 @@ import ObjectUtils from "../utils/object-utils";
   styleUrls: ['./search-table.component.css']
 })
 export class SearchTableComponent implements OnInit {
+  @Output() onRowDoubleClicked: EventEmitter<SearchTableEntity> = new EventEmitter<SearchTableEntity>();
+
   @ViewChild('searchTable', {static: true}) searchTable: any;
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
   @ViewChild('rowIndex', {static: true}) rowIndex: TemplateRef<any>;
   @Input() additionalToolButtons: TemplateRef<any>;
+  @Input() additionalSearchAreaButtons: TemplateRef<any>;
   @Input() additionalRowActionButtons: TemplateRef<any>;
   @Input() searchPanel: TemplateRef<any>;
   @Input() tableRowDetailContainer: TemplateRef<any>;
@@ -69,24 +88,25 @@ export class SearchTableComponent implements OnInit {
   forceRefresh: boolean = false;
   showSpinner: boolean = false;
   currentResult: SearchTableResult = null;
- // override datatable messages to remove selectedMessage message
- datatableMessages: any =  {
-  // Message to show when array is presented
-  // but contains no values
-  emptyMessage: 'No data to display',
+  // override datatable messages to remove selectedMessage message
+  datatableMessages: any = {
+    // Message to show when array is presented
+    // but contains no values
+    emptyMessage: 'No data to display',
 
-  // Footer total message
-  totalMessage: 'total',
+    // Footer total message
+    totalMessage: 'total',
 
-  // Footer selected message
-  selectedMessage: null
-};
+    // Footer selected message
+    selectedMessage: null
+  };
 
   constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertMessageService,
               private downloadService: DownloadService,
               public dialog: MatDialog,
-              private router: Router) {
+              private router: Router,
+              private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -118,7 +138,7 @@ export class SearchTableComponent implements OnInit {
   }
 
 
-  tableColumnInit(){
+  tableColumnInit() {
     // Add actions to last column
     if (this.columnPicker) {
       // prepend columns
@@ -175,13 +195,13 @@ export class SearchTableComponent implements OnInit {
     );
   }
 
-  page(offset: number, pageSize: number, orderBy: string, asc: boolean) {
+  async page(offset: number, pageSize: number, orderBy: string, asc: boolean) {
     if (this.safeRefresh) {
 
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
-          title: "Not persisted data",
-          description: "Action will refresh all data and not saved data will be lost. <br/><br/>Do you wish to continue?"
+          title: await lastValueFrom(this.translateService.get("search.table.dirty.confirmation.dialog.title")),
+          description: await lastValueFrom(this.translateService.get("search.table.dirty.confirmation.dialog.description"))
         }
       }).afterClosed().subscribe(result => {
         if (result) {
@@ -239,6 +259,7 @@ export class SearchTableComponent implements OnInit {
 
   onActivate(event) {
     if ("dblclick" === event.type) {
+      this.onRowDoubleClicked.emit(event.row);
       this.editSearchTableEntityRow(event.row);
     }
   }
@@ -253,7 +274,7 @@ export class SearchTableComponent implements OnInit {
 
 
   onNewButtonClicked() {
-        this.fireCreateNewEntityEvent();
+    this.fireCreateNewEntityEvent();
   }
 
   fireCreateNewEntityEvent() {
@@ -274,7 +295,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteButtonClicked() {
-        this.fireDeleteEntityEvent();
+    this.fireDeleteEntityEvent();
   }
 
   fireDeleteEntityEvent() {
@@ -282,11 +303,11 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteRowActionClicked(row: SearchTableEntity) {
-        this.deleteSearchTableEntities([row]);
+    this.deleteSearchTableEntities([row]);
   }
 
   onEditButtonClicked() {
-        this.fireEditEntityEvent();
+    this.fireEditEntityEvent();
   }
 
   fireEditEntityEvent() {
@@ -297,33 +318,32 @@ export class SearchTableComponent implements OnInit {
     this.editSearchTableEntity(this.rowNumber);
   }
 
-
-  onSaveButtonClicked(withDownloadCSV: boolean) {
+  async onSaveButtonClicked(withDownloadCSV: boolean) {
     try {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
           const modifiedRowEntities = this.rows.filter(el => el.status !== EntityStatus.PERSISTED);
           this.showSpinner = true;
-          this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
+          this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(async res => {
             this.showSpinner = false;
-            this.alertService.success('The operation \'update\' completed successfully.', false);
+            this.alertService.success(await lastValueFrom(this.translateService.get("search.table.success.update")), false);
             this.forceRefresh = true;
             this.onRefresh();
             this.searchTableController.dataSaved();
             if (withDownloadCSV) {
               this.downloadService.downloadNative(/*UserComponent.USER_CSV_URL TODO: use CSV url*/ '');
             }
-          }, err => {
+          }, async err => {
             this.showSpinner = false;
             try {
               console.log("eror: " + err)
               let parser = new DOMParser();
               let xmlDoc = parser.parseFromString(err.error, "text/xml");
               let errDesc = xmlDoc.getElementsByTagName("ErrorDescription")[0].childNodes[0].nodeValue;
-              this.alertService.exception('The operation \'update\' not completed successfully.', errDesc, false);
+              this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.update")), errDesc, false);
             } catch (err2) {
               // if parse failed
-              this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
+              this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.update")), err, false);
             }
           });
         } else {
@@ -336,7 +356,7 @@ export class SearchTableComponent implements OnInit {
     } catch (err) {
       // this.isBusy = false;
       this.showSpinner = false;
-      this.alertService.exception('The operation \'update\' completed with errors.', err);
+      this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.update")), err);
     }
   }
 
@@ -355,7 +375,8 @@ export class SearchTableComponent implements OnInit {
   getRowsAsString(): number {
     return this.rows.length;
   }
-  getCurrentResult(){
+
+  getCurrentResult() {
     return this.currentResult;
   }
 
@@ -364,7 +385,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   get managementUrl(): string {
-    return (this.manageUrl == null || this.manageUrl.length === 0)? this.url:this.manageUrl;
+    return (this.manageUrl == null || this.manageUrl.length === 0) ? this.url : this.manageUrl;
   }
 
   get deleteButtonEnabled(): boolean {
@@ -388,7 +409,7 @@ export class SearchTableComponent implements OnInit {
   private editSearchTableEntity(rowNumber: number) {
     const row = this.rows[rowNumber];
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
-      data: {edit: row?.status!=EntityStatus.NEW, row}
+      data: {edit: row?.status != EntityStatus.NEW, row}
     });
     if (!formRef) {
       return;
@@ -400,7 +421,10 @@ export class SearchTableComponent implements OnInit {
           const status = ObjectUtils.isEqual(row.status, EntityStatus.PERSISTED)
             ? EntityStatus.UPDATED
             : row.status;
-          this.rows[rowNumber] = {...formRef.componentInstance.getCurrent(), status};
+          this.rows[rowNumber] = {
+            ...formRef.componentInstance.getCurrent(),
+            status
+          };
           this.rows = [...this.rows];
         }
       }
@@ -423,9 +447,9 @@ export class SearchTableComponent implements OnInit {
 
   private deleteSearchTableEntities(rows: Array<SearchTableEntity>) {
 
-    this.searchTableController.validateDeleteOperation(rows).subscribe((res: SearchTableValidationResult) => {
+    this.searchTableController.validateDeleteOperation(rows).subscribe(async (res: SearchTableValidationResult) => {
       if (!res.validOperation) {
-        this.alertService.exception("Delete validation error", res.stringMessage, false);
+        this.alertService.exception(await lastValueFrom(this.translateService.get("search.table.error.delete")), res.stringMessage, false);
       } else {
         for (const row of rows) {
           if (row.status === EntityStatus.NEW) {

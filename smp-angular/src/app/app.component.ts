@@ -1,20 +1,19 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, HostListener, ViewChild} from '@angular/core';
 import {SecurityService} from './security/security.service';
 import {Router} from '@angular/router';
 import {Authority} from "./security/authority.model";
-import {AlertMessageService} from "./common/alert-message/alert-message.service";
+import {
+  AlertMessageService
+} from "./common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {GlobalLookups} from "./common/global-lookups";
-import {UserController} from "./system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
-import {AlertMessageComponent} from "./common/alert-message/alert-message.component";
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/mode/markdown/markdown';
-import 'codemirror/mode/xml/xml';
-import 'codemirror/mode/properties/properties';
+import {UserController} from "./common/services/user-controller";
+import {TranslateService} from "@ngx-translate/core";
+import {WindowSpinnerService} from "./common/services/window-spinner.service";
 
 
 @Component({
@@ -23,8 +22,6 @@ import 'codemirror/mode/properties/properties';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-
-  @ViewChild('alertMessage') alertMessage: AlertMessageComponent;
 
   @ViewChild('sidenav') sidenav: SidenavComponent;
   @ViewChild('windowToolbar') windowToolbar: ToolbarComponent;
@@ -37,16 +34,19 @@ export class AppComponent {
   constructor(
     private alertService: AlertMessageService,
     private securityService: SecurityService,
+    private windowSpinnerService: WindowSpinnerService,
     private router: Router,
     private http: HttpClient,
     private dialog: MatDialog,
     private lookups: GlobalLookups,
     private themeService: ThemeService,
+    private translateService: TranslateService,
   ) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
-    themeService.updateThemeFromLocalStorage();
-  }
+    this.themeService.updateThemeFromLocalStorage();
 
+    this.translateService.setDefaultLang("en");
+  }
 
   isCurrentUserSystemAdmin(): boolean {
     return this.securityService.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
@@ -60,21 +60,9 @@ export class AppComponent {
     return this.securityService.isCurrentUserInRole([Authority.SERVICE_GROUP_ADMIN]);
   }
 
-
   get currentUser(): string {
     let user = this.securityService.getCurrentUser();
     return user ? user.username : "";
-  }
-
-  get currentUserRoleDescription(): string {
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      return "System administrator";
-    } else if (this.securityService.isCurrentUserSMPAdmin()) {
-      return "SMP administrator";
-    } else if (this.securityService.isCurrentUserServiceGroupAdmin()) {
-      return "Service group administrator";
-    }
-    return "";
   }
 
   logout(event: Event): void {
@@ -106,9 +94,42 @@ export class AppComponent {
     this.alertService.clearAlert();
   }
 
-  onDrawerContentScroll(scrollEvent: any){
+  onDrawerContentScroll(scrollEvent: any) {
     let scrollTop = scrollEvent.srcElement.scrollTop;
-    this.alertMessage.setSticky(scrollTop > 0)
+    this.alertService.setKeepAfterNavigationChange(scrollTop > 0)
   }
 
+  get showSpinner(): boolean {
+    return this.windowSpinnerService.showSpinner
+  }
+
+// Listeners for activity monitoring
+// Every time one of these events are triggered, all the "watches" are reseted
+  @HostListener('window:mousemove')
+  mouseMove() {
+    this.refreshUserState();
+  }
+
+  @HostListener('keydown')
+  keyboardClick() {
+    this.refreshUserState();
+  }
+
+  @HostListener('touchstart')
+  screenTouched() {
+    this.refreshUserState();
+  }
+
+  @HostListener('touchmove')
+  screenDragged() {
+    this.refreshUserState();
+  }
+
+  refreshUserState() {
+    // if user is not logged in, do nothing
+    if (!this.securityService.isAuthenticated(false)) {
+      return;
+    }
+    this.securityService.uiUserActivityDetected()
+  }
 }

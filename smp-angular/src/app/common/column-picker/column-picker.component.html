@@ -1,8 +1,8 @@
 <div style="margin-bottom:10px">
   <a class="smpLink hide-show-column" href="#" *ngIf="!columnSelection" (click)="toggleColumnSelection()"
-     id="columnslinkoff_id" click-stop-propagation>Show columns</a>
+     id="columnslinkoff_id" click-stop-propagation>{{ "column.selection.link.show" | translate }}</a>
   <a class="smpLink hide-show-column" href="#" *ngIf="columnSelection" (click)="toggleColumnSelection()"
-     id="columnslinkon_id" click-stop-propagation>Hide columns</a>
+     id="columnslinkon_id" click-stop-propagation>{{ "column.selection.link.hide" | translate }}</a>
 </div>
 
 <div *ngIf="columnSelection" style="margin-bottom: 10px;">
@@ -10,7 +10,7 @@
     <mat-checkbox [id]="col.name" (click)='toggle(col)' [(ngModel)]="col.isSelected">{{col.name}}</mat-checkbox>
   </div>
   <div class="all-none-selection">
-    <a href="#" class="smpLink" id="all_id" (click)="selectAllColumns()" click-stop-propagation>All</a>
-    <a href="#" class="smpLink" id="none_id" (click)="selectNoColumns()" click-stop-propagation>None</a>
+    <a href="#" class="smpLink" id="all_id" (click)="selectAllColumns()" click-stop-propagation>{{ "column.selection.link.all" | translate }}</a>
+    <a href="#" class="smpLink" id="none_id" (click)="selectNoColumns()" click-stop-propagation>{{ "column.selection.link.none" | translate }}</a>
   </div>
 </div>

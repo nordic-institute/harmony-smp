@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
@@ -5,20 +23,20 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class DomainMemberDaoTest extends AbstractBaseDao {
+class DomainMemberDaoTest extends AbstractBaseDao {
 
     @Autowired
     UserDao userDao;
@@ -27,7 +45,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     @Autowired
     DomainMemberDao testInstance;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
         testUtilsDao.createUsers();
@@ -36,7 +54,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void testIsUserDomainsMember() {
+    void testIsUserDomainsMember() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);
@@ -47,7 +65,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserDomainsMemberFalse() {
+    void testIsUserDomainsMemberFalse() {
 
         // then
         boolean result = testInstance.isUserDomainsMember(testUtilsDao.getUser1(), Collections.singletonList(testUtilsDao.getD1()));
@@ -56,7 +74,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserDomainsMemberWithRoleTrue() {
+    void testIsUserDomainsMemberWithRoleTrue() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);
@@ -68,7 +86,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersEmpty() {
+    void testGetDomainMembersEmpty() {
         DBDomain domain = testUtilsDao.getD1();
         // then
         Long resultCount = testInstance.getDomainMemberCount(domain.getId(), null);
@@ -78,7 +96,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersOne() {
+    void testGetDomainMembersOne() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);
@@ -90,7 +108,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersOneFilter() {
+    void testGetDomainMembersOneFilter() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);

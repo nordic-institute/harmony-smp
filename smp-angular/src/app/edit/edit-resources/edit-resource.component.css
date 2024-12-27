@@ -1,4 +1,3 @@
-
 #admin-resource-panel {
   display: flex;
   flex-flow: column;
@@ -7,12 +6,25 @@
   min-height: 600px;
   padding: 0 2em;
 }
-#resource-filter {
-  width: 100%;
-  padding-top: 1em;
+
+.edit-resource-tab-group {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  height: 100%;
 }
 
-#admin-resource-table {
-  width: 100%;
-  padding-top: 1em;
+.edit-resource-selection-panel {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+
 }
+
+.edit-resource-container {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+}
+
+

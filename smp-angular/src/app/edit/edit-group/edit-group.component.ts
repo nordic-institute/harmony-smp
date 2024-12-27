@@ -1,15 +1,26 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {EditDomainService} from "../edit-domain/edit-domain.service";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {EditGroupService} from "./edit-group.service";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
-import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  HttpErrorHandlerService
+} from "../../common/error/http-error-handler.service";
+
 @Component({
-  moduleId: module.id,
   templateUrl: './edit-group.component.html',
   styleUrls: ['./edit-group.component.css']
 })
@@ -37,7 +48,6 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
       this.groupList = [];
       this._selectedDomainResourceDef = [];
     }
-
   };
 
   get selectedGroup(): GroupRo {
@@ -55,7 +65,7 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
 
   constructor(private domainService: EditDomainService,
               private groupService: EditGroupService,
-              private alertService: AlertMessageService) {
+              private httpErrorHandlerService: HttpErrorHandlerService) {
 
   }
 
@@ -66,11 +76,13 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   refreshDomains() {
     this.loading = true;
     this.domainService.getDomainsForGroupAdminUserObservable()
-      .subscribe((result: DomainRo[]) => {
-        this.updateDomainList(result)
-      }, (error: any) => {
-        this.loading = false;
-        this.alertService.error(error.error?.errorDescription)
+      .subscribe({
+        next: (result: DomainRo[]) => {
+          this.updateDomainList(result)
+        }, error: (error: any) => {
+          this.loading = false;
+          this.httpErrorHandlerService.handleHttpError(error);
+        }
       });
   }
 
@@ -82,20 +94,24 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
     }
     this.loading = true;
     this.groupService.getDomainGroupsForGroupAdminObservable(this.selectedDomain)
-      .subscribe((result: GroupRo[]) => {
-        this.updateGroupList(result)
-      }, (error: any) => {
-        this.alertService.error(error.error?.errorDescription)
-        this.loading = false;
+      .subscribe({
+        next: (result: GroupRo[]) => {
+          this.updateGroupList(result)
+        }, error: (error: any) => {
+          this.httpErrorHandlerService.handleHttpError(error);
+          this.loading = false;
+        }
       });
   }
 
   refreshDomainsResourceDefinitions() {
     this.domainService.getDomainResourceDefinitionsObservable(this.selectedDomain)
-      .subscribe((result: ResourceDefinitionRo[]) => {
-        this._selectedDomainResourceDef = result
-      }, (error: any) => {
-        this.alertService.error(error.error?.errorDescription)
+      .subscribe({
+        next: (result: ResourceDefinitionRo[]) => {
+          this._selectedDomainResourceDef = result
+        }, error: (error: any) => {
+          this.httpErrorHandlerService.handleHttpError(error);
+        }
       });
   }
 
@@ -112,7 +128,7 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
     this.groupList = list
     if (!!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
-    }else {
+    } else {
       this.loading = false;
     }
   }

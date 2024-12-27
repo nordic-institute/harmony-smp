@@ -1,9 +1,33 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.servlet;
 
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.resource.ResolvedData;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,8 +35,14 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
 
+/**
+ * The ResourceRequest is used to pass the request data to the resource handler.
+ *
+ * @author Joze Rihtarsic
+ * @since 5.0
+ */
 public class ResourceRequest {
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceRequest.class);
     ResourceAction action;
 
     Map<String, String> httpHeaders;
@@ -21,6 +51,7 @@ public class ResourceRequest {
     InputStream getInputStream;
 
     DBDomain authorizedDomain;
+    List<DBGroup> authorizedGroup = new ArrayList<>();
 
     ResolvedData resolvedData;
 
@@ -41,8 +72,14 @@ public class ResourceRequest {
     }
 
     public String getOwnerHttpParameter() {
-        String owner =  getHeader(WebConstants.HTTP_PARAM_OWNER);
-
+        String owner = getHeader(WebConstants.HTTP_PARAM_ADMIN);
+        if (StringUtils.isBlank(owner)) {
+            LOG.debug("Try with obsolete owner parameter: 'ServiceGroup-Owner'");
+            owner = getHeader(WebConstants.HTTP_PARAM_ADMIN_OBSOLETE);
+            if (StringUtils.isNotBlank(owner)) {
+                LOG.debug("Using obsolete owner parameter: 'ServiceGroup-Owner'. Move to new parameter: 'Resource-Admin'");
+            }
+        }
         return owner;
     }
 
@@ -52,6 +89,22 @@ public class ResourceRequest {
 
     public String getResourceTypeHttpParameter() {
         return getHeader(WebConstants.HTTP_PARAM_RESOURCE_TYPE);
+    }
+
+    /**
+     * Returns the visibility of the resource. If value can not be parsed,
+     * the IllegalArgumentException is thrown.
+     * If the visibility is not set, the default value is PUBLIC.
+     * @return the visibility of the resource
+     * @throws IllegalArgumentException if the value can not be parsed.
+     */
+    public VisibilityType getResourceVisibilityParameter() {
+        VisibilityType visibility = VisibilityType.fromString(getHeader(WebConstants.HTTP_PARAM_RESOURCE_VISIBILITY));
+        return visibility == null ? VisibilityType.PUBLIC : visibility;
+    }
+
+    public String getResourceGroupParameter() {
+        return getHeader(WebConstants.HTTP_PARAM_RESOURCE_GROUP);
     }
 
     public List<String> getUrlPathParameters() {
@@ -64,6 +117,10 @@ public class ResourceRequest {
 
     public void setAuthorizedDomain(DBDomain authorizedDomain) {
         this.authorizedDomain = authorizedDomain;
+    }
+
+    public List<DBGroup> getAuthorizedGroups() {
+        return authorizedGroup;
     }
 
     public InputStream getInputStream() {
@@ -114,15 +171,15 @@ public class ResourceRequest {
                 '}';
     }
 
-    private String headersToString(){
-        return  httpHeaders == null? null:
+    private String headersToString() {
+        return httpHeaders == null ? null :
                 httpHeaders.keySet().stream()
-                .map(key -> key + "=" + httpHeaders.get(key))
-                .collect(Collectors.joining(", ", "{", "}"));
+                        .map(key -> key + "=" + httpHeaders.get(key))
+                        .collect(Collectors.joining(", ", "{", "}"));
     }
 
-    private String pathParameterToString(){
-        return  urlPathParameters == null? null:
+    private String pathParameterToString() {
+        return urlPathParameters == null ? null :
                 urlPathParameters.stream()
                         .collect(Collectors.joining(", ", "{", "}"));
     }

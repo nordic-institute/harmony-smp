@@ -1,5 +1,12 @@
 /*
+ * #START_LICENSE#
+ * dynamic-discovery-cli
+ * %%
+ * #START_LICENSE#
+ * DomiSMP
+ * %%
  * Copyright 2017 European Commission | CEF eDelivery
+ * %%
  *
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
@@ -8,14 +15,16 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and limitations under the Licence.
+* See the Licence for the specific language governing permissions and limitations under the Licence.
+* #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.error;
 
-import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -34,19 +43,16 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
  */
 public class ErrorResponseBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ErrorResponseBuilder.class);
-
     public static final MediaType CONTENT_TYPE_TEXT_XML_UTF8 = MediaType.valueOf("text/xml; charset=UTF-8");
     private HttpStatus status = INTERNAL_SERVER_ERROR;
     private ErrorBusinessCode errorBusinessCode = TECHNICAL;
+    private ErrorCode errorCode = ErrorCode.INTERNAL_ERROR_GENERIC;
     private String strErrorDescription = "Unexpected technical error occurred.";
 
     private static String getErrorUniqueId() {
-        StringBuilder errId = new StringBuilder();
-        errId.append(OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
-                .append(":")
-                .append(UUID.randomUUID());
-        return String.valueOf(errId);
+        return OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) +
+                ":" +
+                UUID.randomUUID();
     }
 
     public ErrorResponseBuilder() {
@@ -72,6 +78,7 @@ public class ErrorResponseBuilder {
     public ErrorResponseRO buildJSonBody() {
         ErrorResponseRO err = new ErrorResponseRO();
         err.setBusinessCode(errorBusinessCode.name());
+        err.setErrorCode(errorCode.getErrorCode());
         err.setErrorDescription(strErrorDescription);
         err.setErrorUniqueId(getErrorUniqueId());
         return err;
@@ -79,6 +86,11 @@ public class ErrorResponseBuilder {
 
     public ErrorResponseBuilder businessCode(ErrorBusinessCode newErrorBusinessCode) {
         this.errorBusinessCode = newErrorBusinessCode;
+        return this;
+    }
+
+    public ErrorResponseBuilder errorCode(ErrorCode errorCode) {
+        this.errorCode = errorCode;
         return this;
     }
 
