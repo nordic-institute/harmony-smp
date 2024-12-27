@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.niis</groupId>
     <artifactId>harmonysmp-tests-api</artifactId>
-    <version>2.1.1</version>
+    <version>2.2.0</version>
     <name>harmonysmp-tests-api</name>
     <description>Integration tests suit for SMP API (WebService) testing using SOAPUI framework</description>
 
