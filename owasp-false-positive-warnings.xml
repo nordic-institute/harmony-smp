@@ -29,6 +29,7 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2018-1258</cve>
+        <cve>CVE-2024-38828</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -46,7 +47,16 @@
    ]]></notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
-
+    <suppress>
+        <notes><![CDATA[
+   file name: logback-core-1.2.13.jar
+   - both vulnerabilities are not exploitable by SMP usage of the library, Because attacker need a write
+   access to configuration files.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback-core@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-12798</vulnerabilityName>
+        <vulnerabilityName>CVE-2024-12801</vulnerabilityName>
+    </suppress>
     <suppress>
         <notes><![CDATA[
         CVE-2020-8908 -  we don't use com.google.common.io.Files.createTempDir()
