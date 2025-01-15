@@ -1,4 +1,4 @@
-package pages.administration.editResourcesPage.editResourceDocumentPage;
+package pages.administration.editResourcesPage.editSubresourceDocumentPage;
 
 import ddsl.dcomponents.DComponent;
 import ddsl.dobjects.DInput;

@@ -1,4 +1,4 @@
-package pages.administration.editResourcesPage.editResourceDocumentPage;
+package pages.administration.editResourcesPage.common;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.ConfirmationDialog;
@@ -6,8 +6,12 @@ import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentConfigurationSection;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentPropertiesSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,24 +48,32 @@ public class CommonEditDocumentPage extends DomiSMPPage {
     private WebElement cancelBtn;
     @FindBy(id = "reviewResource_id")
     private WebElement reviewRequestBtn;
-
     @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(8)")
     private WebElement approveBtn;
     @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(9)")
     private WebElement rejectBtn;
-
     @FindBy(id = "publishResource_id")
     private WebElement publishBtn;
-
-    @FindBy(css = "ngx-codemirror[formcontrolname= \"payload\"] div textarea")
+    @FindBy(css = ".cm-content")
     private WebElement codeEditorSendValueElement;
-
     @FindBy(css = "div.cm-line")
     private List<WebElement> codeEditorReadValueElement;
 
+    ///// Right Menu buttons
+
+    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(2)")
+    private WebElement currentDocumentVersionsMenuBtn;
+    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(3)")
+    private WebElement documentConfigurationMenuBtn;
+    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(4)")
+    private WebElement documentPropertiesnMenuBtn;
+    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(5)")
+    private WebElement AllDocumentVersionsMenuBtn;
 
     public CommonEditDocumentPage(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
+
         LOG.debug("Loading Edit resource document page.");
     }
 
@@ -82,6 +94,12 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         return formatedDoc;
     }
 
+    public void setDocumentValue(String documentValue) throws Exception {
+        weToDInput(codeEditorSendValueElement).click();
+        weToDInput(codeEditorSendValueElement).clear();
+        weToDInput(codeEditorSendValueElement).fill(documentValue);
+
+    }
     public void clickOnNewVersion() {
         weToDButton(newVersionBtn).click();
     }
@@ -129,5 +147,21 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         weToMatSelect(versionDdl).selectByVisibleText(String.valueOf(version));
     }
 
+    public SubresourceDocumentConfigurationSection getDocumentConfiguration() {
+        weToDButton(documentConfigurationMenuBtn).click();
+        //Click again to remove the tooltip of the button
+        weToDButton(documentConfigurationMenuBtn).click();
 
+        return new
+                SubresourceDocumentConfigurationSection(driver);
+    }
+
+    public SubresourceDocumentPropertiesSection getDocumentPropertiesSection() {
+        wait.forXMillis(500);
+        weToDButton(documentPropertiesnMenuBtn).click();
+        //Click again to remove the tooltip of the button
+        weToDButton(documentPropertiesnMenuBtn).click();
+        LOG.debug("Opening Document properties section.");
+        return new SubresourceDocumentPropertiesSection(driver);
+    }
 }

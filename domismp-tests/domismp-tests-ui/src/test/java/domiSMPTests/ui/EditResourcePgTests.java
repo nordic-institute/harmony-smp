@@ -13,8 +13,9 @@ import pages.administration.editResourcesPage.CreateSubresourceDetailsDialog;
 import pages.administration.editResourcesPage.EditResourcePage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentPage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentWizardDialog;
-import pages.administration.editResourcesPage.editResourceDocumentPage.EditSubresourceDocumentPage;
-import pages.administration.editResourcesPage.editResourceDocumentPage.SubresourceWizardDialog;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.EditSubresourceDocumentPage;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentPropertiesSection;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceWizardDialog;
 import pages.search.ResourcesPage;
 import rest.models.*;
 import utils.FileUtils;
@@ -272,6 +273,46 @@ public class EditResourcePgTests extends SeleniumTest {
 
         soft.assertAll();
     }
+
+    @Test(description = "EDTRES-08 Resource admin is able to add subresources with valid document", priority = 1)
+    public void resourceAdminIsAbleToAddSubresourceWithValidDocument() throws Exception {
+
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
+
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModel);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModel);
+        //validate document metadata
+        soft.assertEquals(editSubresourceDocumentPage.getDocumentConfiguration().getDocumentPublishedVersion(), "1", "Published version is wrong");
+
+        SubresourceDocumentPropertiesSection subresourceDocumentPropertiesSection = editSubresourceDocumentPage.getDocumentPropertiesSection();
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("document.name"), subresourceModel.getIdentifierValue(), "Document name is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("document.mimetype"), "text/xml", "Mime type value is wrong");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("resource.identifier.value"), resourceModelOasis1.getIdentifierValue(), "Resource identifier value is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("resource.identifier.scheme"), resourceModelOasis1.getIdentifierScheme(), "Resource identifier scheme is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("subresource.identifier.value"), subresourceModel.getIdentifierValue(), "Subresource identifier value is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("subresource.identifier.scheme"), subresourceModel.getIdentifierScheme(), "Subresource identifier scheme is wrong!");
+
+        //Validate is document is present and can be opened
+        ResourcesPage resourcesPage = editSubresourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLSubResouceDocument(resourceModelOasis1.getIdentifierValue(), resourceModelOasis1.getIdentifierScheme(), subresourceModel.getIdentifierValue());
+        soft.assertNotNull(documentXML);
+        soft.assertEquals(documentXML.getNodeValue("ParticipantIdentifier"), resourceModelOasis1.getIdentifierValue(), "EndpointURI value is wrong");
+        soft.assertAll();
+
+    }
+
 
     @Test(description = "EDTRES-11 Resource admin is able to delete subresource", priority = 1)
     public void resourceAdminsIsAbleToDeleteSubResource() throws Exception {

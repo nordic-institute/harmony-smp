@@ -8,7 +8,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
-import pages.administration.editResourcesPage.EditResourcePage;
 import pages.search.ResourcesPage;
 import rest.models.*;
 import utils.TestRunData;
@@ -20,7 +19,6 @@ import java.util.List;
 public class SearchResourcesOgTests extends SeleniumTest {
     DomiSMPPage homePage;
     LoginPage loginPage;
-    EditResourcePage editResourcePage;
     UserModel adminUser;
     DomainModel domainModel;
     GroupModel groupModel;
@@ -86,7 +84,7 @@ public class SearchResourcesOgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "SRCRES-09 User is able to Open URL for resource with OASIS 1.0")
+    @Test(description = "SRCRES-09 User is able to Open URL for resource with OASIS 2.0")
     public void userIsAbleToOpenURLForResourceWithOASIS2() throws Exception {
         ResourceModel resourceModelOasis2 = ResourceModel.generatePublicResourceUnregisteredToSML();
         resourceModelOasis2.setResourceTypeIdentifier(ResourceTypes.OASIS2.getName());
@@ -100,7 +98,7 @@ public class SearchResourcesOgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "SRCRES-09 User is able to Open URL for resource with OASIS 1.0")
+    @Test(description = "SRCRES-09 User is able to Open URL for resource with OASIS 3.0")
     public void userIsAbleToOpenURLForResourceWithOASIS3() throws Exception {
         ResourceModel resourceModelOasis3 = ResourceModel.generatePublicResourceUnregisteredToSML();
         resourceModelOasis3.setResourceTypeIdentifier(ResourceTypes.OASIS3.getName());
