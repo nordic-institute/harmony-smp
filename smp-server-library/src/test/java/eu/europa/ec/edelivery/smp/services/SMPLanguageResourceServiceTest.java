@@ -32,7 +32,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -116,8 +118,9 @@ class SMPLanguageResourceServiceTest {
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
         assertEquals(2, files.length);
-        assertEquals(LANGUAGE_FILENAME_UI_PREFIX + "en.json", files[0].getName());
-        assertEquals(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json", files[1].getName());
+        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName());
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_UI_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"));
     }
 
     @Test
@@ -143,8 +146,9 @@ class SMPLanguageResourceServiceTest {
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
         assertEquals(2, files.length);
-        assertEquals(LANGUAGE_FILENAME_UI_PREFIX + "en.json", files[0].getName());
-        assertEquals(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json", files[1].getName());
+        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName());
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_UI_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"));
 
         JsonNode result = objectMapper.readTree(pathToFile.toFile());
         assertEquals(testText, result.get(testKey).asText());
