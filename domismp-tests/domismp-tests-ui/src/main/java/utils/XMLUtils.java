@@ -1,5 +1,6 @@
 package utils;
 
+import org.apache.xerces.dom.DeferredElementNSImpl;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.slf4j.Logger;
@@ -50,10 +51,16 @@ public class XMLUtils {
         return nList.getLength() != 0;
     }
 
-    public void setContextValueForNode(String nodeName, String attributeName, String attributeValue) {
+    public void setContextValueForNode(String nodeName, String attributeValue) {
         NodeList nList = doc.getElementsByTagName(nodeName);
         Node nNode = nList.item(0);
         nNode.setTextContent(attributeValue);
+    }
+
+    public void setAttributeValueForNode(String nodeName, String attributeName, String attributeValue) {
+        NodeList nList = doc.getElementsByTagName(nodeName);
+        Node nNode = nList.item(0);
+        ((DeferredElementNSImpl) nNode).setAttribute(attributeName, attributeValue);
     }
 
     public String getNodeValue(String nodeName) {

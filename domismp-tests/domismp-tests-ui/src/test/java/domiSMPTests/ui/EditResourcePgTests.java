@@ -274,6 +274,49 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "EDTRES-06 Resource admin is not able to Save invalid documents", priority = 1)
+    public void resourceAdminIsNotAbleToSaveInvalidDocuments() throws Exception {
+        //Generate resource Oasis 3
+        ResourceModel resourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
+        resourceModel.setResourceTypeIdentifier(ResourceTypes.OASIS1.getName());
+        resourceModel = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModel, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModel);
+        editResourcePage.goToTab("Resource details");
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
+
+        String currentGeneratedValue = editResourceDocumentPage.getDocumentValue();
+        XMLUtils documentXML = new XMLUtils(currentGeneratedValue);
+
+        //set invalid value for scheme
+        String invalidScheme = "wrong-scheme";
+        documentXML.setAttributeValueForNode("ParticipantIdentifier", "scheme", invalidScheme);
+        editResourceDocumentPage.setDocumentValue(documentXML.printDoc());
+        editResourceDocumentPage.clickOnSave();
+        String error = editResourceDocumentPage.getAlertArea().getAlertMessage();
+        soft.assertEquals(error, "Invalid Identifier: [" + invalidScheme + "::" + resourceModel.getIdentifierValue() + "]. Invalid scheme [" + invalidScheme + "]!", "Wrong error message for invalid scheme: ");
+
+
+        editResourceDocumentPage.clickOnCancelAndConfirm();
+        editResourceDocumentPage.clickOnNewVersion();
+
+        documentXML = new XMLUtils(currentGeneratedValue);
+
+        //set invalid value for scheme
+        String invalidParticipant = "wrong-participant";
+        documentXML.setContextValueForNode("ParticipantIdentifier", invalidParticipant);
+        editResourceDocumentPage.setDocumentValue(documentXML.printDoc());
+        editResourceDocumentPage.clickOnSave();
+        error = editResourceDocumentPage.getAlertArea().getAlertMessage();
+        soft.assertTrue(error.startsWith("Invalid request [StoreResourceValidation]. Error: ResourceException: Participant identifiers don't match between URL parameter [ResourceIdentifier"), "Wrong error message for invalid participant identifier: ");
+
+
+        soft.assertAll();
+    }
+
     @Test(description = "EDTRES-08 Resource admin is able to add subresources with valid document", priority = 1)
     public void resourceAdminIsAbleToAddSubresourceWithValidDocument() throws Exception {
 

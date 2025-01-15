@@ -110,6 +110,12 @@ public class CommonEditDocumentPage extends DomiSMPPage {
 
     public void clickOnSave() {
         weToDButton(saveBtn).click();
+
+    }
+
+    public void clickOnCancelAndConfirm() {
+        weToDButton(cancelBtn).click();
+        new ConfirmationDialog(driver).confirm();
     }
 
     public DButton getRequestReviewBtn() {
