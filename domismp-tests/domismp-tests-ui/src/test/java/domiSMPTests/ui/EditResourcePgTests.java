@@ -530,7 +530,7 @@ public class EditResourcePgTests extends SeleniumTest {
         //Select resource and document which will use as a reference the shared document
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectRefenceBtn();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
         selectResourceDocumentDialog.selectResourceReferenceByResourceIdentifier(resourceModelOasis1ToBeShared.getIdentifierValue());
         editResourceDocumentPage.clickOnSave();
         soft.assertEquals(editResourceDocumentPage.getDocumentConfigurationSection().getReferenceDocumentName(), resourceModelOasis1ToBeShared.getIdentifierValue(), "Wrong reference name");
