@@ -496,7 +496,9 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "EDTRES-21- Resource Administrator can share a document as reference by clicking on the sharing enabled", priority = 1)
+    @Test(description = "EDTRES-21- Resource Administrator can share a document as reference by clicking on the sharing enabled" +
+            "EDTRES-24- Resource Administrator is able to see the refence document if the current document uses a reference", priority = 1)
+
     public void resourceAdministratorCanShareADocumentAsAReferenceByClickingOnSharingEnabled() throws Exception {
 
         ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
