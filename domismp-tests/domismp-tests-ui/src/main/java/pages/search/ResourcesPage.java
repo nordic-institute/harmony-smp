@@ -90,4 +90,13 @@ public class ResourcesPage extends DomiSMPPage {
         }
 
     }
+
+    public boolean isResourcePresent(String resourceIdentifier, String resourceScheme) {
+        weToDInput(resourceIdentifierInput).fill(resourceIdentifier);
+        weToDInput(resourceSchemeInput).fill(resourceScheme);
+        LOG.debug("Click on Open URL for " + resourceIdentifier);
+        weToDButton(searchBtn).click();
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
+        return getGrid().isElementPresentInTheGrid("Resource URL", "Open URL");
+    }
 }

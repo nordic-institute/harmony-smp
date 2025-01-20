@@ -13,8 +13,11 @@ import pages.administration.editResourcesPage.CreateSubresourceDetailsDialog;
 import pages.administration.editResourcesPage.EditResourcePage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentPage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentWizardDialog;
-import pages.administration.editResourcesPage.editResourceDocumentPage.EditSubresourceDocumentPage;
-import pages.administration.editResourcesPage.editResourceDocumentPage.SubresourceWizardDialog;
+import pages.administration.editResourcesPage.editResourceDocumentPage.ResourceDocumentEditor;
+import pages.administration.editResourcesPage.editResourceDocumentPage.SelectResourceDocumentDialog;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.EditSubresourceDocumentPage;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentPropertiesSection;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceWizardDialog;
 import pages.search.ResourcesPage;
 import rest.models.*;
 import utils.FileUtils;
@@ -273,6 +276,88 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "EDTRES-06 Resource admin is not able to Save invalid documents", priority = 1)
+    public void resourceAdminIsNotAbleToSaveInvalidDocuments() throws Exception {
+        //Generate resource Oasis 3
+        ResourceModel resourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
+        resourceModel.setResourceTypeIdentifier(ResourceTypes.OASIS1.getName());
+        resourceModel = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModel, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModel);
+        editResourcePage.goToTab("Resource details");
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
+
+        String currentGeneratedValue = editResourceDocumentPage.getDocumentValue();
+        XMLUtils documentXML = new XMLUtils(currentGeneratedValue);
+
+        //set invalid value for scheme
+        String invalidScheme = "wrong-scheme";
+        documentXML.setAttributeValueForNode("ParticipantIdentifier", "scheme", invalidScheme);
+        editResourceDocumentPage.setDocumentValue(documentXML.printDoc());
+        editResourceDocumentPage.clickOnSave();
+        String error = editResourceDocumentPage.getAlertArea().getAlertMessage();
+        soft.assertEquals(error, "Invalid Identifier: [" + invalidScheme + "::" + resourceModel.getIdentifierValue() + "]. Invalid scheme [" + invalidScheme + "]!", "Wrong error message for invalid scheme: ");
+
+
+        editResourceDocumentPage.clickOnCancelAndConfirm();
+        editResourceDocumentPage.clickOnNewVersion();
+
+        documentXML = new XMLUtils(currentGeneratedValue);
+
+        //set invalid value for scheme
+        String invalidParticipant = "wrong-participant";
+        documentXML.setContextValueForNode("ParticipantIdentifier", invalidParticipant);
+        editResourceDocumentPage.setDocumentValue(documentXML.printDoc());
+        editResourceDocumentPage.clickOnSave();
+        error = editResourceDocumentPage.getAlertArea().getAlertMessage();
+        soft.assertTrue(error.startsWith("Invalid request [StoreResourceValidation]. Error: ResourceException: Participant identifiers don't match between URL parameter [ResourceIdentifier"), "Wrong error message for invalid participant identifier: ");
+
+        soft.assertAll();
+    }
+
+    @Test(description = "EDTRES-08 Resource admin is able to add subresources with valid document", priority = 1)
+    public void resourceAdminIsAbleToAddSubresourceWithValidDocument() throws Exception {
+
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
+
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModel);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModel);
+        //validate document metadata
+        soft.assertEquals(editSubresourceDocumentPage.getDocumentConfigurationSection().getDocumentPublishedVersion(), "1", "Published version is wrong");
+
+        SubresourceDocumentPropertiesSection subresourceDocumentPropertiesSection = editSubresourceDocumentPage.getDocumentPropertiesSection();
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("document.name"), subresourceModel.getIdentifierValue(), "Document name is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("document.mimetype"), "text/xml", "Mime type value is wrong");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("resource.identifier.value"), resourceModelOasis1.getIdentifierValue(), "Resource identifier value is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("resource.identifier.scheme"), resourceModelOasis1.getIdentifierScheme(), "Resource identifier scheme is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("subresource.identifier.value"), subresourceModel.getIdentifierValue(), "Subresource identifier value is wrong!");
+        soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("subresource.identifier.scheme"), subresourceModel.getIdentifierScheme(), "Subresource identifier scheme is wrong!");
+
+        //Validate is document is present and can be opened
+        ResourcesPage resourcesPage = editSubresourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLSubResouceDocument(resourceModelOasis1.getIdentifierValue(), resourceModelOasis1.getIdentifierScheme(), subresourceModel.getIdentifierValue());
+        soft.assertNotNull(documentXML);
+        soft.assertEquals(documentXML.getNodeValue("ParticipantIdentifier"), resourceModelOasis1.getIdentifierValue(), "EndpointURI value is wrong");
+        soft.assertAll();
+
+    }
+
+
     @Test(description = "EDTRES-11 Resource admin is able to delete subresource", priority = 1)
     public void resourceAdminsIsAbleToDeleteSubResource() throws Exception {
 
@@ -410,6 +495,62 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertEquals(documentXML.getNodeValue("EndpointURI"), "www.domibustest.com", "EndpointURI value is wrong");
         soft.assertAll();
     }
+
+    @Test(description = "EDTRES-21- Resource Administrator can share a document as reference by clicking on the sharing enabled" +
+            "EDTRES-24- Resource Administrator is able to see the refence document if the current document uses a reference", priority = 1)
+
+    public void resourceAdministratorCanShareADocumentAsAReferenceByClickingOnSharingEnabled() throws Exception {
+
+        ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceModelOasis1UsesReference = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        //add resource to group
+        resourceModelOasis1ToBeShared = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        resourceModelOasis1UsesReference = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1UsesReference);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1ToBeShared, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1UsesReference, adminMember);
+
+        //Select resource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
+
+        //Add extension tag to highlight the reference
+        ResourceDocumentEditor editor = editResourceDocumentPage.getEditor();
+        editor.addExtensionTag();
+        editor.addNewExtesionCode("referenceNode", "test", "referenceValue");
+        editResourceDocumentPage.setDocumentValue(editor.printDoc());
+        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.clickOnPublishAndConfirm();
+        editResourceDocumentPage.getDocumentConfigurationSection().enableSharing();
+        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.clickOnBack();
+
+        //Select resource and document which will use as a reference the shared document
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        selectResourceDocumentDialog.selectResourceReferenceByResourceIdentifier(resourceModelOasis1ToBeShared.getIdentifierValue());
+        editResourceDocumentPage.clickOnSave();
+        soft.assertEquals(editResourceDocumentPage.getDocumentConfigurationSection().getReferenceDocumentName(), resourceModelOasis1ToBeShared.getIdentifierValue(), "Wrong reference name");
+        soft.assertTrue(editResourceDocumentPage.getViewDocumentSelect().getCurrentText().equals("Reference document"), "View document select current value is wrong");
+
+        //Validate that opened document contains the reference
+        ResourcesPage resourcesPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLResouceDocument(resourceModelOasis1UsesReference.getIdentifierValue(), resourceModelOasis1UsesReference.getIdentifierScheme());
+        soft.assertNotNull(documentXML);
+        soft.assertEquals(documentXML.getNodeValue("ParticipantIdentifier"), resourceModelOasis1UsesReference.getIdentifierValue(), "Open document does not contain the referenced document");
+        soft.assertEquals(documentXML.getAttributeValueForNode("ParticipantIdentifier", "scheme"), resourceModelOasis1UsesReference.getIdentifierScheme(), "Open document does not contain the referenced document");
+
+        soft.assertEquals(documentXML.getNodeValue("ext:referenceNode"), "referenceValue", "Open document does not contain the referenced document");
+
+
+        soft.assertAll();
+
+    }
+
+
 }
 
 
