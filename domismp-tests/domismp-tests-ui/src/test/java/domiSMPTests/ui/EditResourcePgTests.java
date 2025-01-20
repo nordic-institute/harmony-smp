@@ -13,6 +13,8 @@ import pages.administration.editResourcesPage.CreateSubresourceDetailsDialog;
 import pages.administration.editResourcesPage.EditResourcePage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentPage;
 import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentWizardDialog;
+import pages.administration.editResourcesPage.editResourceDocumentPage.ResourceDocumentEditor;
+import pages.administration.editResourcesPage.editResourceDocumentPage.SelectResourceDocumentDialog;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.EditSubresourceDocumentPage;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentPropertiesSection;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceWizardDialog;
@@ -313,7 +315,6 @@ public class EditResourcePgTests extends SeleniumTest {
         error = editResourceDocumentPage.getAlertArea().getAlertMessage();
         soft.assertTrue(error.startsWith("Invalid request [StoreResourceValidation]. Error: ResourceException: Participant identifiers don't match between URL parameter [ResourceIdentifier"), "Wrong error message for invalid participant identifier: ");
 
-
         soft.assertAll();
     }
 
@@ -337,7 +338,7 @@ public class EditResourcePgTests extends SeleniumTest {
 
         EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModel);
         //validate document metadata
-        soft.assertEquals(editSubresourceDocumentPage.getDocumentConfiguration().getDocumentPublishedVersion(), "1", "Published version is wrong");
+        soft.assertEquals(editSubresourceDocumentPage.getDocumentConfigurationSection().getDocumentPublishedVersion(), "1", "Published version is wrong");
 
         SubresourceDocumentPropertiesSection subresourceDocumentPropertiesSection = editSubresourceDocumentPage.getDocumentPropertiesSection();
         soft.assertEquals(subresourceDocumentPropertiesSection.getPropertyValue("document.name"), subresourceModel.getIdentifierValue(), "Document name is wrong!");
@@ -494,6 +495,60 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertEquals(documentXML.getNodeValue("EndpointURI"), "www.domibustest.com", "EndpointURI value is wrong");
         soft.assertAll();
     }
+
+    @Test(description = "EDTRES-21- Resource Administrator can share a document as reference by clicking on the sharing enabled", priority = 1)
+    public void resourceAdministratorCanShareADocumentAsAReferenceByClickingOnSharingEnabled() throws Exception {
+
+        ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceModelOasis1UsesReference = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        //add resource to group
+        resourceModelOasis1ToBeShared = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        resourceModelOasis1UsesReference = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1UsesReference);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1ToBeShared, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1UsesReference, adminMember);
+
+        //Select resource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnNewVersion();
+
+        //Add extension tag to highlight the reference
+        ResourceDocumentEditor editor = editResourceDocumentPage.getEditor();
+        editor.addExtensionTag();
+        editor.addNewExtesionCode("referenceNode", "test", "referenceValue");
+        editResourceDocumentPage.setDocumentValue(editor.printDoc());
+        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.clickOnPublishAndConfirm();
+        editResourceDocumentPage.getDocumentConfigurationSection().enableSharing();
+        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.clickOnBack();
+
+        //Select resource and document which will use as a reference the shared document
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectRefenceBtn();
+        selectResourceDocumentDialog.selectResourceReferenceByResourceIdentifier(resourceModelOasis1ToBeShared.getIdentifierValue());
+        editResourceDocumentPage.clickOnSave();
+        soft.assertEquals(editResourceDocumentPage.getDocumentConfigurationSection().getReferenceDocumentName(), resourceModelOasis1ToBeShared.getIdentifierValue(), "Wrong reference name");
+        soft.assertTrue(editResourceDocumentPage.getViewDocumentSelect().getCurrentText().equals("Reference document"), "View document select current value is wrong");
+
+        //Validate that opened document contains the reference
+        ResourcesPage resourcesPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLResouceDocument(resourceModelOasis1UsesReference.getIdentifierValue(), resourceModelOasis1UsesReference.getIdentifierScheme());
+        soft.assertNotNull(documentXML);
+        soft.assertEquals(documentXML.getNodeValue("ParticipantIdentifier"), resourceModelOasis1UsesReference.getIdentifierValue(), "Open document does not contain the referenced document");
+        soft.assertEquals(documentXML.getAttributeValueForNode("ParticipantIdentifier", "scheme"), resourceModelOasis1UsesReference.getIdentifierScheme(), "Open document does not contain the referenced document");
+
+        soft.assertEquals(documentXML.getNodeValue("ext:referenceNode"), "referenceValue", "Open document does not contain the referenced document");
+
+
+        soft.assertAll();
+
+    }
+
+
 }
 
 

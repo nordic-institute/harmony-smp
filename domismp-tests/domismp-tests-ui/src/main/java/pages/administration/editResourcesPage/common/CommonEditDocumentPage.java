@@ -2,6 +2,7 @@ package pages.administration.editResourcesPage.common;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.ConfirmationDialog;
+import ddsl.dcomponents.mat.MatSelect;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,16 +33,13 @@ public class CommonEditDocumentPage extends DomiSMPPage {
     private WebElement generateBtn;
     @FindBy(id = "validateResource_id")
     private WebElement validateBtn;
-    @FindBy(css = "smp-titled-label[title=\"Resource identifier:\"] div.smp-tl-value")
-    private WebElement resourceIdentifierLbl;
-    @FindBy(css = "smp-titled-label[title=\"Resource scheme:\"] div.smp-tl-value")
-    private WebElement resourceSchemeLbl;
-    @FindBy(css = "smp-titled-label[title=\"Document name:\"] div.smp-tl-value")
-    private WebElement documentNameLbl;
+    @FindBy(css = "mat-select[formcontrolname=\"selectDocumentSource\"]")
+    private WebElement viewDocumentDdl;
     @FindBy(css = "smp-titled-label[title=\"Document mimeType:\"] div.smp-tl-value")
-    private WebElement documentMimeTypeLbl;
-    @FindBy(css = "smp-titled-label[title=\"Current document version:\"] div.smp-tl-value")
     private WebElement currentDocumentVersionLbl;
+    @FindBy(id = "back_id")
+    // Bottom page buttons
+    private WebElement backBtn;
     @FindBy(id = "saveResource_id")
     private WebElement saveBtn;
     @FindBy(id = "cancel_id")
@@ -58,9 +56,7 @@ public class CommonEditDocumentPage extends DomiSMPPage {
     private WebElement codeEditorSendValueElement;
     @FindBy(css = "div.cm-line")
     private List<WebElement> codeEditorReadValueElement;
-
-    ///// Right Menu buttons
-
+    // Right Menu buttons
     @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(2)")
     private WebElement currentDocumentVersionsMenuBtn;
     @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(3)")
@@ -108,14 +104,18 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         weToDButton(generateBtn).click();
     }
 
-    public void clickOnSave() {
-        weToDButton(saveBtn).click();
+    public void clickOnBack() {
+        weToDButton(backBtn).click();
 
     }
-
     public void clickOnCancelAndConfirm() {
         weToDButton(cancelBtn).click();
         new ConfirmationDialog(driver).confirm();
+    }
+
+    public void clickOnSave() {
+        weToDButton(saveBtn).click();
+
     }
 
     public DButton getRequestReviewBtn() {
@@ -153,7 +153,7 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         weToMatSelect(versionDdl).selectByVisibleText(String.valueOf(version));
     }
 
-    public SubresourceDocumentConfigurationSection getDocumentConfiguration() {
+    public SubresourceDocumentConfigurationSection getDocumentConfigurationSection() {
         weToDButton(documentConfigurationMenuBtn).click();
         //Click again to remove the tooltip of the button
         weToDButton(documentConfigurationMenuBtn).click();
@@ -169,5 +169,9 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         weToDButton(documentPropertiesnMenuBtn).click();
         LOG.debug("Opening Document properties section.");
         return new SubresourceDocumentPropertiesSection(driver);
+    }
+
+    public MatSelect getViewDocumentSelect() {
+        return weToMatSelect(viewDocumentDdl);
     }
 }
