@@ -340,10 +340,10 @@ public class DomainsPgTests extends SeleniumTest {
         ResourcesPage searchResourcesPage = domainsPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
         soft.assertTrue(searchResourcesPage.isResourcePresent(resourceModel.getIdentifierValue(), resourceModel.getIdentifierScheme()), "System admin is NOT able to see private resource with private domain");
 
-        //Not login user is not able to see  private resource with private domain.
+        //Not logged user is not able to see  private resource with private domain.
         searchResourcesPage.logout();
         searchResourcesPage = homePage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
-        soft.assertFalse(searchResourcesPage.isResourcePresent(resourceModel.getIdentifierValue(), resourceModel.getIdentifierScheme()), "Not login user is able to see private resource with private domain");
+        soft.assertFalse(searchResourcesPage.isResourcePresent(resourceModel.getIdentifierValue(), resourceModel.getIdentifierScheme()), "Not logged user is able to see private resource with private domain");
 
         //Admin user with domain Admin rights can see private resource with private domain
         loginPage = homePage.goToLoginPage();
