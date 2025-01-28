@@ -80,7 +80,7 @@ See the Licence for the specific language governing permissions and limitations 
         <commons-net.version>3.11.1</commons-net.version>
         <commons-validator.version>1.9.0</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.4</cxf-xjc-runtime.version>
-        <cxf.version>3.5.9</cxf.version>
+        <cxf.version>3.5.10</cxf.version>
         <ehcache.version>3.10.8</ehcache.version>
         <h2.version>2.2.224</h2.version>
         <hamcrest.version>2.2</hamcrest.version>
@@ -804,7 +804,7 @@ See the Licence for the specific language governing permissions and limitations 
                         <version>${plugin.dependency-check-maven.version}</version>
                         <inherited>false</inherited>
                         <configuration>
-                            <nvdApiServerId>${owasp.nvd-api-key}</nvdApiServerId>
+                            <nvdApiKey>${owasp.nvd-api-key}</nvdApiKey>
                             <skipProvidedScope>true</skipProvidedScope>
                             <skipRuntimeScope>true</skipRuntimeScope>
                             <!-- Disable .Net Assembly Analyzer -->
