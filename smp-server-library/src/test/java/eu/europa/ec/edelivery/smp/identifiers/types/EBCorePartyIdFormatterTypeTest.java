@@ -163,9 +163,11 @@ public class EBCorePartyIdFormatterTypeTest {
         }
 
         String result = testInstance.format(schemaPart, idPart);
+        String resultOasisSeparator = new EBCorePartyIdFormatterType(true).format(schemaPart, idPart);
 
         String schema = trimToEmpty(schemaPart);
         assertEquals(schema + ":" + trimToEmpty(idPart), result);
+        assertEquals(schema + "::" + trimToEmpty(idPart), resultOasisSeparator);
     }
 
     @ParameterizedTest

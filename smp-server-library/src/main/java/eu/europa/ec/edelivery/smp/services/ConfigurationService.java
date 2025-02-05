@@ -74,6 +74,11 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_REGEXP_MSG);
     }
 
+    public boolean getParticipantIdentifierEbcoreConcatWithDoubleColon() {
+        Boolean value = configurationDAO.getCachedPropertyValue(RESOURCE_SCH_EBCORE_CONCAT_WITH_DOUBLE_COLON);
+        return value != null && value;
+    }
+
     public Pattern getPasswordPolicyRexExp() {
         return configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_REGULAR_EXPRESSION);
     }

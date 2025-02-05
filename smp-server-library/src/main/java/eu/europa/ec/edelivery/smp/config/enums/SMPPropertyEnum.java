@@ -70,6 +70,9 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     RESOURCE_SCH_MANDATORY("identifiersBehaviour.scheme.mandatory", "true", "Scheme for participant identifier is mandatory",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    RESOURCE_SCH_EBCORE_CONCAT_WITH_DOUBLE_COLON("identifiersBehaviour.ParticipantIdentifierScheme.ebCore.ConcatWithDoubleColon", "false",
+            "If true, concatenate ebCore participant identifiers using double colon",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, BOOLEAN),
     // Template identifier configuration
     RESOURCE_IDENTIFIER_TMPL_MATCH_REGEXP("identifiersBehaviour.template.match.regexp",
             "^(?i)(urn:ehealth(:.*)?|mailto(:.*)?)\\s*$", "Regular expression to detect if this is template identifiers. If the party identifier schema (or identifier it self if scheme is null ) matches the regexp. Then Identifier is processed as the template identifier. Example: ^(?i)(urn:)|(mailto:).*$",

@@ -87,7 +87,9 @@ public class IdentifierFormatterService {
 
         IdentifierFormatter.Builder builder = IdentifierFormatter.Builder
                 .create()
-                .addFormatterTypes(new EBCorePartyIdFormatterType());
+                .addFormatterTypes(new EBCorePartyIdFormatterType(
+                        configurationService.getParticipantIdentifierEbcoreConcatWithDoubleColon()
+                ));
 
         // template for formating the identifier
         List<DBDomainConfiguration> listDomainConf = domainConfigurationDao.getDomainConfiguration(domain);
@@ -95,7 +97,6 @@ public class IdentifierFormatterService {
         if (templateFormatterType != null) {
             builder.addFormatterTypes(templateFormatterType);
         }
-        builder.addFormatterTypes(new EBCorePartyIdFormatterType());
 
         IdentifierFormatter identifierFormatter = builder.build();
         identifierFormatter.setCaseSensitiveSchemas(getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES));
@@ -114,7 +115,9 @@ public class IdentifierFormatterService {
     private IdentifierFormatter getDefaultResourceIdentifierFormatter() {
         IdentifierFormatter.Builder builder = IdentifierFormatter.Builder
                 .create()
-                .addFormatterTypes(new EBCorePartyIdFormatterType());
+                .addFormatterTypes(new EBCorePartyIdFormatterType(
+                    configurationService.getParticipantIdentifierEbcoreConcatWithDoubleColon()
+                ));
 
         Pattern matchRegExp = configurationService.getParticipantIdentifierTmplMatchRexExp();
         Pattern splitRegExp = configurationService.getParticipantIdentifierTmplSplitRexExp();
