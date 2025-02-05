@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
@@ -40,11 +58,12 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
     /**
      * Method returns UI  resource object list for page.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @return
+     * @param page    - page number (0..n)
+     * @param pageSize - page size (0..n) - if -1 return all results
+     * @param sortField - sort field name (null - sorts by id)
+     * @param sortOrder - sort order (null - sorts by acs )
+     * @param filter - filter object (null - no filter)
+     * @return ServiceResult<R> - list of UI resource objects
      */
     public ServiceResult<R> getTableList(int page, int pageSize,
                                          String sortField,

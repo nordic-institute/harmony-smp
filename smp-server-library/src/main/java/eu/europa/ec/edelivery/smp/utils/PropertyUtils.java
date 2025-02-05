@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
@@ -9,7 +27,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.event.Level;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.io.File;
@@ -17,6 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -31,8 +50,9 @@ public class PropertyUtils {
     private static final String REG_EXP_VALUE_SEPARATOR = "\\|";
     private static final String REG_EXP_MAP_SEPARATOR = ":";
 
-    private static UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
-
+    private PropertyUtils() {
+        // private constructor
+    }
 
     public static Object parseProperty(SMPPropertyEnum prop, String value, File rootFolder) {
         if (StringUtils.isBlank(value)) {
@@ -73,7 +93,7 @@ public class PropertyUtils {
             parsePropertyType(type, value, confFolder);
             return true;
         } catch (SMPRuntimeException ex) {
-            LOG.debug("Invalid property value [{}] for type [{}]. Error: ", value, type, ExceptionUtils.getRootCauseMessage(ex));
+            LOG.debug("Invalid property value [{}] for type [{}]. Error: [{}]", value, type, ExceptionUtils.getRootCauseMessage(ex));
             return false;
         }
     }
@@ -112,7 +132,7 @@ public class PropertyUtils {
                 return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR));
             }
             case MAP_STRING: {
-                if (!value.contains(value)) {
+                if (!value.contains(":")) {
                     throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid map: ["
                             + value + "]. Error: Map must have at least one key:value entry!");
                 }
@@ -177,18 +197,54 @@ public class PropertyUtils {
         if (propOpt.isPresent()) {
             return propOpt.get().isEncrypted() || property.toLowerCase().contains(".password.decrypted");
         }
-        LOG.warn("Database property [{}] is not recognized by the SMP!", property);
-        return false;
+        LOG.debug("Database property [{}] is not recognized by the SMP. Basic mask rule applied for masking!", property);
+        return StringUtils.contains(property.toLowerCase(), "passw");
     }
 
     /**
      * Method returns 'masked' value for sensitive property data
      *
-     * @param property
-     * @param value
+     * @param property - property name
+     * @param value   - property value
      * @return masked value for sensitive properties. Else it returns value!
      */
     public static String getMaskedData(String property, String value) {
-        return isSensitiveData(property) ? MASKED_VALUE : value;
+        return isSensitiveData(property) ? getMaskedData(value) : value;
+    }
+
+    public static String getMaskedData(String value) {
+        return isNotBlank(value) ? MASKED_VALUE : "Null/Empty/Blank";
+    }
+
+    public static  void printProperties(Properties properties, Level loggingLevel) {
+        if (properties != null) {
+            LOG.debug("------ Print properties ------");
+            properties.entrySet().stream().forEach(e ->
+                    printProperty((String) e.getKey(), (String) e.getValue(), loggingLevel)
+            );
+        }
+    }
+
+    public static void printProperty(String key, String value, Level loggingLevel) {
+        String logValue = "\t[" + key + "] --> [" + getMaskedData(key, value) + "]";
+        switch (loggingLevel) {
+            case TRACE:
+                LOG.trace(logValue);
+                break;
+            case DEBUG:
+                LOG.debug(logValue);
+                break;
+            case INFO:
+                LOG.info(logValue);
+                break;
+            case WARN:
+                LOG.warn(logValue);
+                break;
+            case ERROR:
+                LOG.error(logValue);
+                break;
+            default:
+                LOG.debug(logValue);
+        }
     }
 }

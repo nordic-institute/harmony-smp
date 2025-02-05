@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SaveDialogComponent } from './save-dialog.component';
+import {SaveDialogComponent} from './save-dialog.component';
 
 describe('SaveDialogComponent', () => {
   let component: SaveDialogComponent;

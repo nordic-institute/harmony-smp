@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
@@ -5,8 +23,10 @@ import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
+import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
@@ -38,16 +58,29 @@ import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static java.util.Locale.US;
 
+/**
+ * The CredentialService class is a service that provides methods for user authentication and credential management.
+ * The service is intended for stateful service calls to validate credentials with audit logs, credential reset.
+ *
+ * @author Joze Rihtarsic
+ * @since 5.0
+ */
 @Service
 public class CredentialService {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialService.class);
     protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
+    protected static final BadCredentialsException UNAUTHORIZED_INVALID_RESET_TOKEN = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_RESET_TOKEN.getMessage());
     protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_CREDENTIAL_SUSPENDED.getMessage());
-    final UserDao mUserDao;
-    final CredentialDao mCredentialDao;
+    protected static final int RESET_TOKEN_LENGTH = 64;
+
+    private static final String USER_ID_REQUEST_TYPE = "UserId";
+
+    final UserDao userDao;
+    final CredentialDao credentialDao;
     final ConversionService conversionService;
     final CRLVerifierService crlVerifierService;
     final UITruststoreService truststoreService;
@@ -60,9 +93,9 @@ public class CredentialService {
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US));
 
 
-    public CredentialService(UserDao mUserDao, CredentialDao mCredentialDao, ConversionService conversionService, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService, CredentialsAlertService alertService) {
-        this.mUserDao = mUserDao;
-        this.mCredentialDao = mCredentialDao;
+    public CredentialService(UserDao mUserDao, CredentialDao credentialDao, ConversionService conversionService, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService, CredentialsAlertService alertService) {
+        this.userDao = mUserDao;
+        this.credentialDao = credentialDao;
         this.conversionService = conversionService;
         this.crlVerifierService = crlVerifierService;
         this.truststoreService = truststoreService;
@@ -78,9 +111,9 @@ public class CredentialService {
         LOG.debug("authenticateByUsernamePassword: start [{}]", username);
         DBCredential credential;
         try {
-            Optional<DBCredential> dbCredential = mCredentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
+            Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
             if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
-                LOG.debug("User with username does not exists [{}], continue with next authentication provider");
+                LOG.debug("User with username does not exists [{}], continue with next authentication provider", username);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, "Username does not exits", username);
                 delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
                 throw BAD_CREDENTIALS_EXCEPTION;
@@ -109,7 +142,7 @@ public class CredentialService {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username, credential.getName(), credential.getCredentialType(), credential.getCredentialTarget());
                 loginAttemptFailedAndThrowError(credential, true, startTime);
             }
-            LOG.debug("authenticateByUsernamePassword: reset failed attempts for user token [{}]", username);
+            LOG.debug("authenticateByUsernamePassword: clear failed attempts for user token [{}]", username);
             credential.setSequentialLoginFailureCount(0);
             credential.setLastFailedLoginAttempt(null);
         } catch (IllegalArgumentException ex) {
@@ -132,7 +165,7 @@ public class CredentialService {
 
         DBCredential credential;
         try {
-            Optional<DBCredential> dbCredential = mCredentialDao.findAccessTokenCredentialForAPI(authenticationTokenId);
+            Optional<DBCredential> dbCredential = credentialDao.findAccessTokenCredentialForAPI(authenticationTokenId);
 
             if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, authenticationTokenId);
@@ -159,7 +192,7 @@ public class CredentialService {
             }
             credential.setSequentialLoginFailureCount(0);
             credential.setLastFailedLoginAttempt(null);
-            mCredentialDao.update(credential);
+            credentialDao.update(credential);
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed
             loginAttemptFailedAndThrowError(credential, true, startTime);
@@ -203,14 +236,9 @@ public class CredentialService {
     @Transactional(noRollbackFor = {AuthenticationException.class, BadCredentialsException.class, SMPRuntimeException.class})
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
-
-
         X509Certificate x509Certificate = principal.getCertificate();
         String certificateIdentifier = principal.getName();
-
-
         long startTime = Calendar.getInstance().getTimeInMillis();
-
 
         if (x509Certificate != null) {
             try {
@@ -224,7 +252,7 @@ public class CredentialService {
         }
         DBCredential credential;
         try {
-            Optional<DBCredential> optCredential = mCredentialDao.findUserByCertificateId(certificateIdentifier, true);
+            Optional<DBCredential> optCredential = credentialDao.findUserByCertificateId(certificateIdentifier, true);
             if (!optCredential.isPresent() || isNotValidCredential(optCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, certificateIdentifier);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
@@ -305,11 +333,194 @@ public class CredentialService {
     }
 
     /**
+     * Method retrieves user credentials by username. First it validates if credentials have already active reset token
+     * and if not it creates new one.
+     *
+     * @param username
+     */
+    @Transactional
+    public void requestResetUsername(String username) {
+        LOG.debug("requestResetUsername [{}]", username);
+        // retrieve user Optional credentials by username
+        Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, true);
+        if (!optCredential.isPresent()) {
+            LOG.info("Skip generating reset token for username [{}]. User is not active!", username);
+            return;
+        }
+        DBCredential dbCredential = optCredential.get();
+        generateResetTokenAndSubmitMail(dbCredential);
+    }
+
+    /**
+     * Method validates if the reset token is valid (exists and is not expired)
+     * and updates the password.
+     *
+     * @param username of the user
+     * @param resetToken active reset token
+     * @param newPassword new password
+     * @throws AuthenticationServiceException if the reset token is invalid
+     */
+    @Transactional
+    public void resetUsernamePassword(String username, String resetToken, String newPassword) {
+        LOG.debug("resetUsernamePassword [{}]", username);
+        // retrieve user Optional credentials by username
+        Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, false);
+        if (!optCredential.isPresent()) {
+            LOG.warn("User [{}] does not have active reset token!", username);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+        }
+        DBCredential dbCredential = optCredential.get();
+        if (!resetToken.equals(dbCredential.getResetToken())) {
+            LOG.warn("User [{}] reset token does not match the active reset token!", username);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+        }
+
+        Pattern pattern = configurationService.getPasswordPolicyRexExp();
+        if (pattern != null && !pattern.matcher(newPassword).matches()) {
+            LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because it does not match password policy!: [{}]", username);
+            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL, configurationService.getPasswordPolicyValidationMessage());
+        }
+
+        if (StringUtils.isNotBlank(dbCredential.getValue()) && BCrypt.checkpw(newPassword, dbCredential.getValue())) {
+            LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", username);
+            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL, configurationService.getPasswordPolicyValidationMessage());
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        dbCredential.setValue(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+
+        dbCredential.setExpireAlertOn(null);
+        dbCredential.setSequentialLoginFailureCount(0);
+        dbCredential.setLastFailedLoginAttempt(null);
+        dbCredential.setChangedOn(now);
+        dbCredential.setExpireOn(now.plusDays(configurationService.getPasswordPolicyValidDays()));
+
+        dbCredential.setResetToken(null);
+        dbCredential.setResetExpireOn(null);
+
+        // submit mail with reset token
+        alertService.alertCredentialChanged(dbCredential);
+    }
+
+
+    /**
+     * Method gets User password credential entity for active user and validates
+     * resent token exists and if active.
+     *
+     * @param username of the user
+     * @return Optional of DBCredential: if the user has active credentials and active else empty is returned
+     */
+    private Optional<DBCredential> getActiveCredentialsForUsernameToReset(String username, boolean toGenerateResetToken) {
+
+        Optional<DBCredential> optCredential = credentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
+        DBCredential dbCredential;
+        if (!optCredential.isPresent()) {
+            DBUser user = userDao.findUserByUsername(username).orElseThrow(() -> {
+                LOG.warn("There is no user with username [{}]!", username);
+                return new SMPRuntimeException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD, "User not found!");
+            });
+            LOG.info("User [{}] does not have username/password credentials. Create new credentials!", username);
+            dbCredential = createCredentialsForUser(user.getId(),
+                    CredentialType.USERNAME_PASSWORD,
+                    CredentialTargetType.UI);
+            // persist new credential
+            credentialDao.persist(dbCredential);
+            optCredential = Optional.of(dbCredential);
+        } else {
+            dbCredential = optCredential.get();
+        }
+
+        if (!dbCredential.getUser().isActive() || !dbCredential.isActive()) {
+            LOG.info("User [{}] or credentials are not active. Skip reset password request!", username);
+            return Optional.empty();
+        }
+
+        // When toGenerateResetToken check if the user has already active reset token
+        boolean hasValidResetToken = hasValidResetToken(dbCredential);
+        if (toGenerateResetToken && hasValidResetToken) {
+            LOG.warn("User [{}] has already active reset token. Generate new reset token!", username);
+        }
+        // If action is reset then check if the user has active reset token
+        if (!toGenerateResetToken && !hasValidResetToken) {
+            LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_INVALID, dbCredential.getName(), CredentialType.USERNAME_PASSWORD);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+        }
+
+        return optCredential;
+    }
+
+
+    /**
+     * Method creates Username/passwords credentials for the user with given userId.
+     * The method must be called inside active transactions.
+     *
+     * @param userID               to change/create username-password credentials
+     * @param credentialType       the credential type
+     * @param credentialTargetType the credential target
+     */
+    public DBCredential createCredentialsForUser(Long userID, CredentialType credentialType, CredentialTargetType credentialTargetType) {
+
+        DBUser dbUserToUpdate = userDao.find(userID);
+        if (dbUserToUpdate == null) {
+            LOG.error("Can not create user password credentials, because user [{}] does not exist!", userID);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id to update!");
+        }
+        DBCredential credential = new DBCredential();
+        credential.setUser(dbUserToUpdate);
+        credential.setName(dbUserToUpdate.getUsername());
+        credential.setCredentialType(credentialType);
+        credential.setCredentialTarget(credentialTargetType);
+        return credential;
+    }
+
+
+    public void validatePasswordResetToken(String resetToken){
+        Optional<DBCredential> optCredential = credentialDao.findUCredentialForUsernamePasswordTypeAndResetToken(resetToken);
+        if (!optCredential.isPresent()) {
+            LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_NOT_EXISTS, resetToken, CredentialType.USERNAME_PASSWORD);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+        }
+        DBCredential dbCredential = optCredential.get();
+        if (!hasValidResetToken(dbCredential)) {
+            LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_INVALID, dbCredential.getName(), CredentialType.USERNAME_PASSWORD);
+            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+        }
+    }
+
+    /**
+     * Method validates if the user has valid reset token. The token is valid if it is not empty
+     * and the expiry date is after the current date.
+     * @param dbCredential
+     * @return true if the reset token is valid, else false
+     */
+    private boolean hasValidResetToken(DBCredential dbCredential) {
+        return StringUtils.isNotBlank(dbCredential.getResetToken())
+                && dbCredential.getResetExpireOn() != null
+                && dbCredential.getResetExpireOn().isAfter(OffsetDateTime.now());
+    }
+
+    /**
+     * Method generates reset token and submit mail with reset token. The method must be invoked from a transactional
+     * parent method.
+     *
+     * @param dbCredential credential for which the reset token is generated.
+     */
+    private void generateResetTokenAndSubmitMail(DBCredential dbCredential) {
+        boolean isDevMode = SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode();
+        dbCredential.setResetToken(SecurityUtils.generateAuthenticationTokenIdentifier(isDevMode, RESET_TOKEN_LENGTH));
+        dbCredential.setResetExpireOn(OffsetDateTime.now().plusMinutes(configurationService.getCredentialsResetPolicyValidMinutes()));
+        // submit mail with reset token
+        dbCredential.getUser().getEmailAddress();
+        alertService.alertCredentialRequestReset(dbCredential);
+    }
+
+    /**
      * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
      * the whole chain. Because in some configuration cases does not use the truststore
      *
-     * @param certificateId
-     * @throws CertificateException
+     * @param certificateId certificate id to be validated
+     * @param certPolicyList certificate policy list
+     * @throws AuthenticationServiceException
      */
     protected void validateCertificatePolicyMatchLegacy(String certificateId, List<String> certPolicyList) throws AuthenticationServiceException {
 
@@ -335,7 +546,7 @@ public class CredentialService {
     }
 
 
-    protected void delayResponse(CredentialType credentialType, long startTime) {
+    public void delayResponse(CredentialType credentialType, long startTime) {
         int delayInMS = getLoginFailDelayInMilliSeconds(credentialType) - (int) (Calendar.getInstance().getTimeInMillis() - startTime);
         if (delayInMS > 0) {
             try {
@@ -353,7 +564,7 @@ public class CredentialService {
         CredentialType credentialType = credential.getCredentialType();
         credential.setSequentialLoginFailureCount(credential.getSequentialLoginFailureCount() != null ? credential.getSequentialLoginFailureCount() + 1 : 1);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
-        mCredentialDao.update(credential);
+        credentialDao.update(credential);
         String username = credential.getUser().getUsername();
         LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username,
                 credential.getName(),
@@ -415,7 +626,7 @@ public class CredentialService {
             LOG.warn("User [{}] for credential [{}:{}] suspension is expired! Clear failed login attempts and last failed login attempt", credential.getName(), credentialType, credential.getName());
             credential.setLastFailedLoginAttempt(null);
             credential.setSequentialLoginFailureCount(0);
-            mCredentialDao.update(credential);
+            credentialDao.update(credential);
             return;
         }
 

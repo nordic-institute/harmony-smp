@@ -1,0 +1,170 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
+package eu.europa.ec.edelivery.smp.ui.external;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
+import eu.europa.ec.edelivery.smp.data.ui.PasswordChangeRO;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.context.WebApplicationContext;
+
+import javax.ws.rs.core.MediaType;
+
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+/**
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
+class UserResourceIT {
+
+    private static final String PATH_PUBLIC = ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
+
+    @Autowired
+    private WebApplicationContext webAppContext;
+
+    private MockMvc mvc;
+
+    ObjectMapper mapper = JsonMapper.builder()
+            .findAndAddModules()
+            .build();
+
+    @BeforeEach
+    public void setup() {
+
+        mvc = initializeMockMvc(webAppContext);
+    }
+
+    @Test
+    void testUpdateCurrentUserOK() throws Exception {
+        // login
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        // when update data
+        UserRO userRO = getLoggedUserData(mvc, session);
+        userRO.setActive(!userRO.isActive());
+        userRO.setEmailAddress("test@mail.com");
+
+        mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId())
+                .with(csrf())
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(userRO))
+        ).andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    void testUpdateCurrentUserNotAuthenticatedUser() throws Exception {
+
+        // given when - log as SMP admin
+        // then change values and list uses for changed value
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        assertNotNull(userRO);
+        // when
+        userRO.setActive(!userRO.isActive());
+        userRO.setEmailAddress("test@mail.com");
+
+
+        mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId())
+                .with(getHttpBasicSystemAdminCredentials()) // authenticate with system admin
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(userRO))
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @Disabled
+    void generateAccessTokenForUser() throws Exception {
+        MockHttpSession session = loginWithUser2(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        assertNotNull(userRO);
+
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/" + userRO.getUserId() + "/generate-access-token")
+                .with(csrf())
+                .session(session)
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(SG_USER2_PASSWD)
+        ).andExpect(status().isOk()).andReturn();
+
+        MvcResult resultUser = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY_USER)
+                .with(csrf())
+                .session(session)
+        ).andExpect(status().isOk()).andReturn();
+
+        UserRO updateUserData = mapper.readValue(resultUser.getResponse().getContentAsString(), UserRO.class);
+        AccessTokenRO resAccessToken = mapper.readValue(result.getResponse().getContentAsString(), AccessTokenRO.class);
+        assertNotNull(resAccessToken);
+
+    }
+
+    @Test
+    void changePassword() throws Exception {
+        String newPassword = "TESTtest1234!@#$";
+
+        MockHttpSession session = loginWithUser2(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        assertNotNull(userRO);
+        PasswordChangeRO newPass = new PasswordChangeRO();
+        newPass.setUsername(SG_USER2_USERNAME);
+        newPass.setCurrentPassword(SG_USER2_PASSWD);
+        newPass.setNewPassword(newPassword);
+        assertNotEquals(newPassword, SG_USER2_PASSWD);
+
+        mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId() + "/change-password")
+                .with(csrf())
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(newPass))
+        ).andExpect(status().isOk()).andReturn();
+
+        // test to login with new password
+        MockHttpSession sessionNew = loginWithCredentials(mvc, SG_USER2_USERNAME, newPassword);
+        assertNotNull(sessionNew);
+    }
+}

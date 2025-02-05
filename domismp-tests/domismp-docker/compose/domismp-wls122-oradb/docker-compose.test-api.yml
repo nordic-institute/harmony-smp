@@ -1,0 +1,15 @@
+services:
+  ##
+  ## API Tests
+  ##
+  testapi:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TESTS}:${SMP_VERSION}
+    environment:
+      - TEST_PLAN=api
+      - TEST_URL=http://smp-httpd/smp/
+    networks:
+      - test-network
+networks:
+  test-network:
+    name: ${DOCKER_NETWORK_NAME:-domismp-tomcat-mysql_default}
+    external: true

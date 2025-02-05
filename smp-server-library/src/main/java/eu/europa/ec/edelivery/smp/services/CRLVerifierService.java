@@ -1,23 +1,22 @@
-package eu.europa.ec.edelivery.smp.services;
-
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
+package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
@@ -39,7 +38,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.x500.X500Principal;
@@ -66,9 +64,12 @@ public class CRLVerifierService implements ICRLVerifierService {
     private static final X500Principal NULL_ISSUER = new X500Principal("");
     private static final CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
 
-    @Autowired
-    ConfigurationService configurationService;
 
+    protected final ConfigurationService configurationService;
+
+    public CRLVerifierService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
+    }
 
     @Override
     public void verifyCertificateCRLs(X509Certificate cert) throws CertificateRevokedException, CertificateParsingException {
@@ -156,13 +157,13 @@ public class CRLVerifierService implements ICRLVerifierService {
                 crl = (X509CRL) cf.generateCRL(crlStream);
             }
         } catch (IOException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL+"'"
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL + "'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (CertificateException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL+"'"
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL + "'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (CRLException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL+"'"
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL + "'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (SMPRuntimeException exc) {
             exception = exc;
@@ -201,7 +202,7 @@ public class CRLVerifierService implements ICRLVerifierService {
             }
             return inputStream;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL+"'", ExceptionUtils.getRootCauseMessage(exc) );
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL + "'", ExceptionUtils.getRootCauseMessage(exc));
         }
     }
 
@@ -235,7 +236,7 @@ public class CRLVerifierService implements ICRLVerifierService {
         return execute(HttpClients.createDefault(), new HttpGet(url));
     }
 
-    private InputStream execute(CloseableHttpClient httpclient, HttpGet httpget) throws IOException {
+    protected InputStream execute(CloseableHttpClient httpclient, HttpGet httpget) throws IOException {
         try (CloseableHttpResponse response = httpclient.execute(httpget)) {
             return IOUtils.loadIntoBAIS(response.getEntity().getContent());
         }
@@ -250,14 +251,14 @@ public class CRLVerifierService implements ICRLVerifierService {
         return true;
     }
 
-    private boolean isValidParameter(String... parameters) {
+    protected boolean isValidParameter(String... parameters) {
         if (parameters == null || parameters.length == 0) {
             return false;
         }
 
-        for (String parameter : Arrays.asList(parameters)) {
+        for (String parameter : parameters) {
 
-            if (StringUtils.isEmpty(parameter)) {
+            if (StringUtils.isBlank(parameter)) {
                 return false;
             }
         }

@@ -1,21 +1,38 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
-import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-public class CredentialValidatorServiceTest {
+class CredentialValidatorServiceTest {
 
     ConfigurationService mockConfigService = Mockito.mock(ConfigurationService.class);
     CredentialsAlertService mockAlertService = Mockito.mock(CredentialsAlertService.class);
@@ -24,14 +41,14 @@ public class CredentialValidatorServiceTest {
     CredentialValidatorService testInstance = new CredentialValidatorService(mockConfigService, mockAlertService, mockCredentialDao);
 
     @Test
-    public void testSkipCredentialValidationFalseNotCluster() {
+    void testSkipCredentialValidationFalseNotCluster() {
         doReturn(false).when(mockConfigService).isClusterEnabled();
         boolean result = testInstance.skipCredentialValidation();
         assertFalse(result);
     }
 
     @Test
-    public void testSkipCredentialValidationFalseClusterNotTargetServer() {
+    void testSkipCredentialValidationFalseClusterNotTargetServer() {
         doReturn(true).when(mockConfigService).isClusterEnabled();
         doReturn("NotTargetServer").when(mockConfigService).getTargetServerForCredentialValidation();
         boolean result = testInstance.skipCredentialValidation();
@@ -41,7 +58,7 @@ public class CredentialValidatorServiceTest {
     }
 
     @Test
-    public void testSkipCredentialValidationClusterNotTargetServer() {
+    void testSkipCredentialValidationClusterNotTargetServer() {
         String currentHostName = HttpUtils.getServerAddress();
         doReturn(true).when(mockConfigService).isClusterEnabled();
         doReturn(currentHostName).when(mockConfigService).getTargetServerForCredentialValidation();
@@ -52,7 +69,7 @@ public class CredentialValidatorServiceTest {
     }
 
     @Test
-    public void validateCredentialsForBeforeExpireUsernames() {
+    void validateCredentialsForBeforeExpireUsernames() {
         DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
@@ -85,7 +102,7 @@ public class CredentialValidatorServiceTest {
     }
 
     @Test
-    public void validateCredentialsForExpiredUsernames() {
+    void validateCredentialsForExpiredUsernames() {
         DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
@@ -118,7 +135,7 @@ public class CredentialValidatorServiceTest {
     }
 
     @Test
-    public void validateCredentialsForBeforeExpireAccessToken() {
+    void validateCredentialsForBeforeExpireAccessToken() {
         DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
@@ -151,7 +168,7 @@ public class CredentialValidatorServiceTest {
     }
 
     @Test
-    public void validateCredentialsForExpiredAccessToken() {
+    void validateCredentialsForExpiredAccessToken() {
         DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
@@ -184,7 +201,7 @@ public class CredentialValidatorServiceTest {
     }
 
     @Test
-    public void validateCredentialsForBeforeExpireCertificate() {
+    void validateCredentialsForBeforeExpireCertificate() {
         DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
@@ -217,7 +234,7 @@ public class CredentialValidatorServiceTest {
     }
 
     @Test
-    public void validateCredentialsForExpiredCertificate() {
+    void validateCredentialsForExpiredCertificate() {
         DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;

@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -12,6 +30,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiRequestData;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
+import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
@@ -21,13 +40,17 @@ import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AbstractResourceHandler {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(AbstractResourceHandler.class);
+    private static final String EXPECTED_RESOURCE_CHARSET= "UTF-8";
     // the Spring beans for the resource definitions
     final List<ResourceDefinitionSpi> resourceDefinitionSpiList;
     final ResourceStorage resourceStorage;
@@ -47,7 +70,7 @@ public class AbstractResourceHandler {
                 resourceDef.getIdentifier(),
                 "Can not find resource definition for identifier: [" + resourceDef.getIdentifier() + "] Registered resource SPI IDs ["
                         + resourceDefinitionSpiList.stream()
-                        .map(rd -> rd.identifier())
+                        .map(ResourceDefinitionSpi::identifier)
                         .collect(Collectors.joining(","))
                         + "]"));
     }
@@ -62,14 +85,14 @@ public class AbstractResourceHandler {
         ResourceDefinitionSpi resourceDefinitionSpi = getResourceDefinition(resourceDef);
         String subResourceId = subresourceDef.getIdentifier();
         // get subresource implementation by identifier
-        Optional<SubresourceDefinitionSpi> optSubresourceDefinitionSpi = resourceDefinitionSpi.getSuresourceSpiList().stream()
+        Optional<SubresourceDefinitionSpi> optSubresourceDefinitionSpi = resourceDefinitionSpi.getSubresourceSpiList().stream()
                 .filter(def -> StringUtils.equals(def.identifier(), subResourceId)).findFirst();
 
         return optSubresourceDefinitionSpi.orElseThrow(
                 () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, subResourceId,
                         "Can not find subresource definition: [" + subResourceId + "]. Registered subresource IDs ["
-                                + resourceDefinitionSpi.getSuresourceSpiList().stream()
-                                .map(rd -> rd.identifier())
+                                + resourceDefinitionSpi.getSubresourceSpiList().stream()
+                                .map(SubresourceDefinitionSpi::identifier)
                                 .collect(Collectors.joining(","))
                                 + "]"));
     }
@@ -87,35 +110,69 @@ public class AbstractResourceHandler {
      * @return data handler request data
      */
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
+
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
-        if (content==null || content.length == 0) {
+        if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
-        return buildRequestDataForResource(domain,
-                resource,
-                inputStream);
+        return buildRequestDataForResource(domain, resource, new ByteArrayInputStream(content));
     }
 
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
-        return new SpiRequestData(domain.getDomainCode(),
-                SPIUtils.toUrlIdentifier(resource),
-                inputStream);
+        Map<String, String> docProp = resourceStorage.getResourceProperties(resource);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            if (inputStream != null && inputStream.available() != 0) {
+                StringNamedSubstitutor.resolve(inputStream, docProp, baos, EXPECTED_RESOURCE_CHARSET);
+            }
+            return new SpiRequestData(domain.getDomainCode(),
+                    SPIUtils.toUrlIdentifier(resource),
+                    new ByteArrayInputStream(baos.toByteArray()));
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
     }
 
-    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource) {
+    /**
+     * Build handler RequestData and add resource from the database for the subresource
+     * It reads the content of the subresource from the database and replaces the properties in the document.
+     * @param domain
+     * @param resource
+     * @param subresource
+     * @return
+     */
+    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource,
+                                                      DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
-        return new SpiRequestData(domain.getDomainCode(),
-                SPIUtils.toUrlIdentifier(resource),
-                SPIUtils.toUrlIdentifier(subresource),
-                new ByteArrayInputStream(content == null?new byte[]{}:content));
+        if (content == null || content.length == 0) {
+            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING,
+                    subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
+                    resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
+        return buildRequestDataForSubResource(domain, resource, subresource, new ByteArrayInputStream(content));
     }
 
+    /**
+     * Build handler RequestData and add resource from the database. The input stream is used to replace the properties
+     * in the document and the new bytearrays is used as stream  to create the RequestData.
+     * @param domain of the resource
+     * @param resource the parent resource of the subresource
+     * @param subresource an entity with the subresource data
+     * @param inputStream the input stream to replace the properties in the document
+     * @return request data for the subresource
+     */
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
-        return new SpiRequestData(domain.getDomainCode(),
-                SPIUtils.toUrlIdentifier(resource),
-                SPIUtils.toUrlIdentifier(subresource),
-                inputStream);
+        Map<String, String> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            if (inputStream != null && inputStream.available() != 0) {
+                StringNamedSubstitutor.resolve(inputStream, docProp, baos, EXPECTED_RESOURCE_CHARSET);
+            }
+            return new SpiRequestData(domain.getDomainCode(),
+                    SPIUtils.toUrlIdentifier(resource),
+                    SPIUtils.toUrlIdentifier(subresource),
+                    new ByteArrayInputStream(baos.toByteArray()));
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
     }
 
     public void handleReadResource(ResourceHandlerSpi handlerSpi, RequestData requestData, ResponseData responseData, ResourceResponse resourceResponse) {
@@ -124,8 +181,7 @@ public class AbstractResourceHandler {
             if (StringUtils.isNotBlank(responseData.getContentType())) {
                 resourceResponse.setContentType(responseData.getContentType());
             }
-            responseData.getHttpHeaders().entrySet().stream()
-                    .forEach(entry -> resourceResponse.setHttpHeader(entry.getKey(), entry.getValue()));
+            responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
 
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the subresource!", e);

@@ -1,0 +1,78 @@
+services:
+  smp-oracle-db:
+    # image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    hostname: smp-oracle-db
+    shm_size: '1gb'
+    environment:
+      - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding
+      - NLS_LANG=.AL32UTF8  # set sqlplus encoding for starting up scripts
+    volumes:
+      - ./properties/db-scripts:/docker-entrypoint-initdb.d/startup  # init script.
+    #ports:
+    #  - 1821:1521
+
+  smp-wls-admin:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}
+    hostname: smp-wls-admin
+    depends_on:
+      smp-oracle-db:
+        condition: service_healthy
+    environment:
+      - JAVA_OPTIONS="-Dweblogic.webservice.i18n.charset=utf-8"
+      - WL_START_ADMIN=true
+      - WL_PRODUCTION_MODE_ENABLED=true # to enable production deployment
+      - WL_DEPLOYMENT_TARGET=smp-cluster
+    volumes:
+      - ./properties/weblogic-init:/u01/init/
+      - ./data:/data
+  #    ports:
+  #      - 7801:7001
+
+  smp-node-01:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}
+    depends_on:
+      smp-wls-admin:
+        condition: service_healthy
+    environment:
+      - WL_START_ADMIN=false
+      - WL_ADMIN_HOST=smp-wls-admin
+      - WL_MANAGED_SERV_NAME=smp-node-1
+    volumes:
+      - ./data:/data
+    #  - ./status-folder:/u01/status/
+    #    ports:
+    #      - "18453:8453"
+    #      - "18001:8001"
+
+  smp-node-02:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}
+    depends_on:
+      smp-wls-admin:
+        condition: service_healthy
+    command: [ bash, -c, "/u01/oracle/startServer.sh" ]
+    environment:
+      - WL_START_ADMIN=false
+      - WL_ADMIN_HOST=smp-wls-admin
+      - WL_MANAGED_SERV_NAME=smp-node-2
+      - WL_DELAY_STARTUP_IN_S=20 # delay startup to allow node 01 to initialize the database, truststore and keystore
+    volumes:
+      - ./data:/data
+    #    ports:
+    #      - "18454:8453"
+    #      - "18002:8001"
+
+  smp-httpd:
+    image: ${IMAGE_TAG:-edeliverytest}/smp-httpd:${SMP_VERSION}
+    depends_on:
+      - smp-node-01
+      - smp-node-02
+    environment:
+      - VHOST_CORNER_HOSTNAME=smp.edelivery.eu
+      - NODES_COUNT=2
+      - NODE_HOSTNAMES=smp-node-01,smp-node-02
+      - NODE_PORT_NUMBERS=8001,8001
+      - AllowEncodedSlashes=NoDecode
+    restart: always
+    #ports:
+    #  - "7880:80"

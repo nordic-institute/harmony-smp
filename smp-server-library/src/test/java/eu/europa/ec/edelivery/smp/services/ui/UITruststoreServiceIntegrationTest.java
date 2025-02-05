@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
@@ -11,15 +29,11 @@ import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.security.auth.x500.X500Principal;
@@ -33,9 +47,9 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     public static final String CERTIFICATE_POLICY_ANY = "2.5.29.32.0";
@@ -63,7 +77,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     @Autowired
     protected CRLVerifierService crlVerifierService;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         configurationService = Mockito.spy(configurationService);
         crlVerifierService = Mockito.spy(crlVerifierService);
@@ -90,7 +104,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testGetKeystoreEntriesList() {
+    void testGetKeystoreEntriesList() {
         List<String> lst = testInstance.getNormalizedTrustedList();
         assertEquals(2, lst.size());
         assertEquals(S_SUBJECT_PEPPOL, lst.get(0));
@@ -98,28 +112,28 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testSubjectValid() {
+    void testSubjectValid() {
         // given when
         // then
         assertTrue(testInstance.isSubjectOnTrustedList(S_SUBJECT_PEPPOL));
     }
 
     @Test
-    public void testSubjectValidExpanded() {
+    void testSubjectValidExpanded() {
         // given when
         // then
         assertTrue(testInstance.isSubjectOnTrustedList(S_SUBJECT_PEPPOL_EXPANDED));
     }
 
     @Test
-    public void testSubjectNotTrusted() {
+    void testSubjectNotTrusted() {
         // given when
         // then
         assertFalse(testInstance.isSubjectOnTrustedList(S_SUBJECT_PEPPOL_NOT_TRUSTED));
     }
 
     @Test
-    public void testAddCertificate() throws Exception {
+    void testAddCertificate() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         String alias = UUID.randomUUID().toString();
@@ -135,7 +149,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testAddCertificateRDN() throws Exception {
+    void testAddCertificateRDN() throws Exception {
         // given
         String certSubject = "GIVENNAME=John+SERIALNUMBER=1+CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         String alias = UUID.randomUUID().toString();
@@ -152,7 +166,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testDeleteCertificate() throws Exception {
+    void testDeleteCertificate() throws Exception {
         // given
         List<CertificateRO> list = testInstance.getCertificateROEntriesList();
         int iSize = list.size();
@@ -168,7 +182,16 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testIsTruststoreChanged() throws Exception {
+    void testDeleteCertificateNotExists() throws Exception {
+        // given
+        // when
+        X509Certificate cert = testInstance.deleteCertificate("alias-not-exists");
+        // then
+        assertNull(cert);
+    }
+
+    @Test
+    void testIsTruststoreChanged() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         String alias = UUID.randomUUID().toString();
@@ -183,7 +206,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
 
 
     @Test
-    public void testGetCertificateDataPEMAndFullValidationExpired() throws IOException {
+    void testGetCertificateDataPEMAndFullValidationExpired() throws IOException {
         // given
 
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/SMPtest.crt"));
@@ -203,16 +226,16 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void  validateCertificateWithTruststoreNullCertificate()  {
+    void validateCertificateWithTruststoreNullCertificate() {
 
         CertificateException result = assertThrows(CertificateException.class,
-                () ->testInstance.validateCertificateWithTruststore(null));
+                () -> testInstance.validateCertificateWithTruststore(null));
 
         assertThat(result.getMessage(), containsString("The X509Certificate is null "));
     }
 
     @Test
-    public void  validateCertificateWithTruststoreNullTruststore() throws Exception {
+    void validateCertificateWithTruststoreNullTruststore() throws Exception {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
         Mockito.doReturn(null).when(testInstance).getTrustStore();
@@ -223,7 +246,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testGetCertificateDataError() throws IOException, CertificateException {
+    void testGetCertificateDataError() throws IOException, CertificateException {
         // given
 
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/certificates/cert-not-parsable.pem"));
@@ -232,12 +255,12 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateRO cer = testInstance.getCertificateData(buff);
 
         //then
-        assertTrue( cer.isInvalid());
+        assertTrue(cer.isInvalid());
         assertEquals("Can not read the certificate!", cer.getInvalidReason());
     }
 
     @Test
-    public void testGetCertificateDataPEMWithHeader() throws IOException, CertificateException {
+    void testGetCertificateDataPEMWithHeader() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/pem-with-header.crt"));
 
@@ -255,7 +278,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testGetCertificateDataSMime() throws IOException, CertificateException {
+    void testGetCertificateDataSMime() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/certificates/cert-smime.pem"));
 
@@ -273,7 +296,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testGetCertificateDataDER() throws IOException, CertificateException {
+    void testGetCertificateDataDER() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/NewPeppolAP.crt"));
 
@@ -291,7 +314,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testCheckFullCertificateValidityNotYetValid() throws Exception {
+    void testCheckFullCertificateValidityNotYetValid() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest("10af", certSubject, certSubject,
@@ -305,7 +328,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testCheckFullCertificateValidityExpired() throws Exception {
+    void testCheckFullCertificateValidityExpired() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
 
@@ -322,7 +345,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testCheckFullCertificateNotTrusted() throws Exception {
+    void testCheckFullCertificateNotTrusted() throws Exception {
         // given
         String crlUrl = "https://localhost/crl";
         String revokedSerialFromList = "0011";
@@ -345,12 +368,12 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateNotTrustedException result = assertThrows(CertificateNotTrustedException.class, () ->
                 testInstance.checkFullCertificateValidity(certificate));
         //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate is not trusted!"));
+        assertThat(result.getMessage(), CoreMatchers.containsString("Certificate is not trusted!"));
     }
 
 
     @Test
-    public void testCheckFullCertificateValidityRevoked() throws Exception {
+    void testCheckFullCertificateValidityRevoked() throws Exception {
         // given
         String crlUrl = "https://localhost/crl";
         String revokedSerialFromList = "0011";
@@ -372,11 +395,11 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateRevokedException result = assertThrows(CertificateRevokedException.class, () ->
                 testInstance.checkFullCertificateValidity(certificate));
         //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate has been revoked"));
+        assertThat(result.getMessage(), CoreMatchers.containsString("Certificate has been revoked"));
     }
 
     @Test
-    public void testCheckFullCertificateValidityInvalidKey() throws Exception {
+    void testCheckFullCertificateValidityInvalidKey() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
@@ -385,7 +408,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
                 OffsetDateTime.now().plusYears(1),
                 Collections.emptyList()
         );
-        Mockito.doReturn(Arrays.asList("InvalidKeyTest")).when(configurationService).getAllowedCertificateKeyTypes();
+        Mockito.doReturn(Collections.singletonList("InvalidKeyTest")).when(configurationService).getAllowedCertificateKeyTypes();
         // add as trusted certificate
         testInstance.addCertificate(UUID.randomUUID().toString(), certificate);
 
@@ -393,11 +416,11 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
                 testInstance.checkFullCertificateValidity(certificate));
 
         //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate does not have allowed key algorithm type!"));
+        assertThat(result.getMessage(), CoreMatchers.containsString("Certificate does not have allowed key algorithm type!"));
     }
 
     @Test
-    public void testCheckFullCertificateValidityNotForceCRL() throws Exception {
+    void testCheckFullCertificateValidityNotForceCRL() throws Exception {
         // given
         String crlUrl = "https://localhost/crl";
         String revokedSerialFromList = "0011";
@@ -422,7 +445,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testCheckFullCertificateValidityOK() throws Exception {
+    void testCheckFullCertificateValidityOK() throws Exception {
         // given
         String crlUrl = "https://localhost/crl";
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -443,7 +466,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testCreateAliasForCert() throws Exception {
+    void testCreateAliasForCert() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
@@ -456,7 +479,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
 
 
     @Test
-    public void testCreateAliasFoMultiValuerCert() throws Exception {
+    void testCreateAliasFoMultiValuerCert() throws Exception {
         // given
         String certSubject = "GIVENNAME=John+SERIALNUMBER=1+CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
@@ -468,38 +491,38 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void testValidateCertificatePolicyLegacyMatchOk() throws Exception {
+    void testValidateCertificatePolicyLegacyMatchOk() throws Exception {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Arrays.asList(CERTIFICATE_POLICY_QCP_NATURAL));
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Collections.singletonList(CERTIFICATE_POLICY_QCP_NATURAL));
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
         testInstance.validateCertificatePolicyMatchLegacy(certificate);
     }
 
     @Test
-    public void testValidateCertificatePolicyLegacyMatchEmpty() throws Exception {
+    void testValidateCertificatePolicyLegacyMatchEmpty() throws Exception {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, null);
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
 
         CertificateException result = assertThrows(CertificateException.class,
                 () -> testInstance.validateCertificatePolicyMatchLegacy(certificate));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate has empty CertificatePolicy extension. Certificate:"));
+        assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate has empty CertificatePolicy extension. Certificate:"));
     }
 
     @Test
-    public void testValidateCertificatePolicyLegacyMatchMismatch() throws Exception {
+    void testValidateCertificatePolicyLegacyMatchMismatch() throws Exception {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL_QSCD));
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Collections.singletonList(CERTIFICATE_POLICY_QCP_LEGAL_QSCD));
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
 
         CertificateException result = assertThrows(CertificateException.class,
                 () -> testInstance.validateCertificatePolicyMatchLegacy(certificate));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
+        assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
     }
 
     @Test
-    public void validateCertificateNotUsed() throws CertificateException {
-        String certId = "cn=test" + UUID.randomUUID().toString() + ",o=test,c=eu:123456";
+    void validateCertificateNotUsed() throws CertificateException {
+        String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
         // when

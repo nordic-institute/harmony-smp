@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.ui.edit;
 
 
@@ -7,6 +25,7 @@ import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIGroupPublicService;
@@ -21,7 +40,7 @@ import java.util.List;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 /**
- * Purpose of the DomainResource is to provide search method to retrieve configured domains in SMP.
+ * Purpose of the GroupEditController is to provide search method to retrieve configured groups in SMP.
  * base path for the resource includes two variables user who is editing and domain for the group
  * /ui/edit/rest/[user-id]/domain/[domain-id]/group
  *
@@ -127,7 +146,7 @@ public class GroupEditController {
                                                       @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
                                                       @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
                                                       @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
-                                                      @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
+                                                      @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) @Filter String filter) {
 
         LOG.info("Search for group members with filter  [{}], paging: [{}/{}], user: {}", filter, page, pageSize, userEncId);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);

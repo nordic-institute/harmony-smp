@@ -78,28 +78,6 @@ insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, 
 insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values
 (18, 'CN=utf-8_z_SMP,O=EC,C=BE:0000000000000666', null,null, NOW(),  NOW());
 
-
-
--- insert into SMP_USER(ID, USERNAME, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (8, 'Cert3', 'SMP_ADMIN', 1, NOW(),  NOW());
--- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (8, 'CN=utf-8_ż_SMP,O=EC,C=BE:0000000000000666', null,null, NOW(),  NOW());
-
--- insert into SMP_USER(ID, USERNAME, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (9, 'Cert4', 'SMP_ADMIN', 1, NOW(),  NOW());
--- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (9, 'CN=EHEALTH_SMP_EC,O=European Commission,C=BE:f71ee8b11cb3b787', null,null, NOW(),  NOW());
-
--- insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (10, 'cert5', '',                                                             'SMP_ADMIN', 1, NOW(),  NOW());
--- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (10, 'CN=common name UPPER database SN,O=org,C=BE:000000000000BB66', null,null, NOW(),  NOW());
-
--- insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (11, 'cert6', '',                                                             'SMP_ADMIN', 1, NOW(),  NOW());
--- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (11, 'CN=ncp.fi.ehealth.testa.eu,O=Kansanelakelaitos,C=FI:f71ee8b11cb3b787', null,null, NOW(),  NOW());
-
--- insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (12, 'cert7', '',                                                             'SMP_ADMIN', 1, NOW(),  NOW());
--- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (12, 'CN=Internal Business CA 2,O=T-Systems International GmbH,C=DE:f71ee8b11cb3b787', null,null, NOW(),  NOW());
-
--- insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (13, 'cert8', '',                                                             'SMP_ADMIN', 1, NOW(),  NOW());
--- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (13, 'CN=GRP:test_proxy_01,O=European Commission,C=BE:0000000000001234', null,null, NOW(),  NOW());
-
--- insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (14, 'cert9', '',                                                             'SMP_ADMIN', 1, NOW(),  NOW());
--- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (14, 'CN=GRP:TEST_\+\,& \=eau!,O=European Commission,C=BE:0000000000001234', null,null, NOW(),  NOW());
 -- --------------
 -- Configure domains
 insert into SMP_DOMAIN (ID, VISIBILITY, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS,SML_REGISTERED,SML_CLIENT_CERT_AUTH, CREATED_ON, LAST_UPDATED_ON) values
@@ -107,7 +85,9 @@ insert into SMP_DOMAIN (ID, VISIBILITY, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, 
 (2, 'PUBLIC', 'domainTwo','newdomain', 'CEF-SMP-002','single_domain_key',0,1,NOW(),  NOW());
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'domain group', 'PUBLIC', NOW(),  NOW());
+(1, 1, 'domain group', 'PUBLIC', NOW(),  NOW()),
+(2, 1, 'Second group', 'PUBLIC', NOW(),  NOW()),
+(3, 1, 'Third group', 'PUBLIC', NOW(),  NOW());
 
 -- --------------
 -- configure extension and document types service group and servicemetadata
@@ -123,6 +103,7 @@ insert into SMP_SUBRESOURCE_DEF (ID,FK_RESOURCE_DEF_ID,URL_SEGMENT, IDENTIFIER, 
 insert into SMP_DOMAIN_RESOURCE_DEF (ID, FK_RESOURCE_DEF_ID, FK_DOMAIN_ID,CREATED_ON, LAST_UPDATED_ON ) values
 (1, 1, 1, NOW(),  NOW());
 
+
 -- ----------------------------------
 -- add documents
 insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_UPDATED_ON) values
@@ -130,10 +111,10 @@ insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_
 (-2, 1, 'application/xml', 'service-group', NOW(),  NOW()),
 (-3, 1, 'application/xml', 'service-metadata', NOW(),  NOW());
 
-insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
-(-1, -1, 1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
-(-2, -2, 1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
-(-3, -3, 1, FILE_READ('classpath:/input/ServiceMetadata.xml') , NOW(),  NOW());
+insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, STATUS, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
+(-1, -1, 1, 'PUBLISHED', '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
+(-2, -2, 1, 'PUBLISHED', '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
+(-3, -3, 1, 'PUBLISHED', FILE_READ('classpath:/input/ServiceMetadata.xml') , NOW(),  NOW());
 
 insert into SMP_RESOURCE ( ID, FK_GROUP_ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (-1, 1, -1, 1, 'ehealth-actorid-qns', 'urn:australia:ncpb', 0, 'PUBLIC', NOW(),  NOW()),
@@ -142,15 +123,21 @@ insert into SMP_RESOURCE ( ID, FK_GROUP_ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDEN
 insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_SCHEME, IDENTIFIER_VALUE, CREATED_ON, LAST_UPDATED_ON) values
 (-1, -1, 1, -3, 'busdox-docid-qn', 'doc_7', NOW(),  NOW());
 
+insert into SMP_DOMAIN_MEMBER (ID, FK_DOMAIN_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
+(1, 1, 3, 'ADMIN', NOW(),  NOW());
+
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 1, 'ADMIN', NOW(),  NOW());
+(1, 1, 1, 'ADMIN', NOW(),  NOW()),
+(2, 3, 1, 'ADMIN', NOW(),  NOW()),
+(3, 1, 3, 'ADMIN', NOW(),  NOW());
 -- set ownership
 insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (-1, -1, 1, 'ADMIN', NOW(),  NOW()),
-(-2, -2, 1, 'ADMIN', NOW(),  NOW()),
-(-3, -1, 5, 'ADMIN', NOW(),  NOW()),
-(-4, -1, 2, 'ADMIN', NOW(),  NOW()),
-(-5, -1, 6, 'ADMIN', NOW(),  NOW());
+(-2, -1, 3, 'ADMIN', NOW(),  NOW()),
+(-3, -2, 1, 'ADMIN', NOW(),  NOW()),
+(-4, -1, 5, 'ADMIN', NOW(),  NOW()),
+(-5, -1, 2, 'ADMIN', NOW(),  NOW()),
+(-6, -1, 6, 'ADMIN', NOW(),  NOW());
 
 
 

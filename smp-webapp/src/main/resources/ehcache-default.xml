@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #START_LICENSE#
+  smp-webapp
+  %%
+  Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+  %%
+  Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+  versions of the EUPL (the "Licence");
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  
+  Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+  distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and limitations under the Licence.
+  #END_LICENSE#
+  -->
+
+<config
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
+        xmlns='http://www.ehcache.org/v3'
+        xsi:schemaLocation="
+        http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.5.xsd
+        http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.5.xsd">
+
+    <service>
+        <jsr107:defaults enable-management="false" enable-statistics="true"/>
+    </service>
+
+    <!-- cache definitions start here -->
+    <cache uses-template="ttl-60-heap-500" alias="domain-resource-identifier-formatter"/>
+    <cache uses-template="ttl-60-heap-500" alias="domain-subresource-identifier-formatter"/>
+    <cache uses-template="ttl-3600-heap-5000" alias="mail-templates-translations"/>
+
+    <!-- cache definitions ends here -->
+    <cache-template name="ttl-60-heap-500">
+        <expiry>
+            <ttl>60</ttl>
+        </expiry>
+        <heap unit="entries">5000</heap>
+    </cache-template>
+    <cache-template name="ttl-3600-heap-5000">
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <heap unit="entries">5000</heap>
+    </cache-template>
+</config>

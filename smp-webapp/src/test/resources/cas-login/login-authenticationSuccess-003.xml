@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #START_LICENSE#
+  smp-webapp
+  %%
+  Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+  %%
+  Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+  versions of the EUPL (the "Licence");
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  
+  Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+  distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and limitations under the Licence.
+  #END_LICENSE#
+  -->
+
+<!-- The following snippet is the eu-login example -->
+<cas:serviceResponse xmlns:cas="https://ecas.ec.europa.eu/cas/schemas"
+                     server="EU Login MOCKUP version 6.2.7.LOCAL - 05/04/2019 - 18:15"
+                     date="2024-02-14T07:13:49.051+01:00"
+                     version="5.8">
+    <cas:authenticationSuccess>
+        <cas:user>user</cas:user>
+        <cas:authenticationFactors >
+            <cas:moniker>moniker1</cas:moniker>
+            <cas:moniker>moniker2</cas:moniker>
+            <cas:moniker>moniker3</cas:moniker>
+        </cas:authenticationFactors>
+    </cas:authenticationSuccess>
+</cas:serviceResponse>
+

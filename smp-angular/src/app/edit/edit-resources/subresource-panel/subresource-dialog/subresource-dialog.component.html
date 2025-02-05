@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="width:700px">
+  <form [formGroup]="resourceForm">
+    <b *ngIf="newMode">{{ "subresource.dialog.description" | translate }}</b>
+    <mat-form-field style="width:100%">
+      <mat-label>{{ "subresource.dialog.label.resource.type"  | translate }}</mat-label>
+      <select matNativeControl placeholder="{{ 'subresource.dialog.placeholder.resource.type' | translate }}"
+                  matTooltip="{{ 'subresource.dialog.tooltip.resource.type' | translate }}"
+                  id="subresourceTypeIdentifier"
+                  formControlName="subresourceTypeIdentifier"
+                  required>
+        <option *ngFor="let resDef of subresourceDefs"
+                    [value]="resDef.identifier">
+          {{resDef.name}} ({{resDef.identifier}})
+        </option>
+
+      </select>
+    </mat-form-field>
+    <mat-form-field  style="width: 100%">
+      <mat-label>{{ "subresource.dialog.label.subresource.id" | translate }}</mat-label>
+      <input id="identifierValue_id" type="text" matInput #identifierValue
+             formControlName="identifierValue"
+             auto-focus-directive maxlength="500" required>
+    </mat-form-field>
+
+    <mat-form-field  style="width: 100%">
+      <mat-label>{{ "subresource.dialog.label.subresource.scheme" | translate }}</mat-label>
+      <input id="identifierScheme_id" type="text" matInput
+             formControlName="identifierScheme" maxlength="500"
+             >
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    <mat-icon>cancel</mat-icon>
+    <span>{{ "subresource.dialog.button.close" | translate }}</span>
+  </button>
+  <button id="createButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary" *ngIf="newMode"
+          [disabled]="!submitButtonEnabled">
+    <mat-icon>save</mat-icon>
+    <span>{{ "subresource.dialog.button.create" | translate }}</span>
+  </button>
+</mat-dialog-actions>
+

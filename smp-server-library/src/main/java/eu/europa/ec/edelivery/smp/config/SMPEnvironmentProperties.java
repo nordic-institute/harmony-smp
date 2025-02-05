@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.config;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -10,6 +28,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +43,7 @@ import java.util.Properties;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED;
+import static eu.europa.ec.edelivery.smp.utils.PropertyUtils.printProperties;
 
 /**
  * DomiSMP environment property initialization.
@@ -83,11 +103,11 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
      * Initialize the default properties in to the cache for faster lookup of the default values
      */
     private void init() {
-        LOG.debug("Initialize DomiSMP environment properties");
+        LOG.info("Initialize DomiSMP environment properties");
         classPathEnvFileProperties = readProperties(CLASSPATH_PROPERTIES, true);
         if (classPathEnvFileProperties != null) {
             LOG.debug("------ Print classPathEnvFileProperties ------");
-            classPathEnvFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
         // get init file property
@@ -95,28 +115,33 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
         extInitFileProperties = readProperties(extInitPropFilePath, false);
         if (extInitFileProperties != null) {
             LOG.debug("------ Print classPathEnvFileProperties ------");
-            extInitFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
         // get init file property
         extSpringBootFileProperties = readProperties(INIT_SPRINGBOOT_PROPERTIES, false);
         if (extSpringBootFileProperties != null) {
             LOG.debug("------ Print extSpringBootFileProperties ------");
-            extSpringBootFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
         String extAppFilePath = getEnvPropertyValue(CONFIGURATION_FILE);
         extEnvFileProperties = readProperties(extAppFilePath, false);
         if (extInitFileProperties != null) {
             LOG.debug("------ Print extInitFileProperties ------");
-            extEnvFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+            printProperties(extInitFileProperties, Level.DEBUG);
         }
 
 
         // update log configuration
         updateLogConfiguration(getEnvPropertyValue(LOG_FOLDER),
                 getEnvPropertyValue(LOG_CONFIGURATION_FILE));
+
+        LOG.info("DomiSMP environment properties initialized!");
+        Properties properties = getEnvProperties();
+        printProperties(properties, Level.INFO);
     }
+
 
     protected Properties readProperties(String path, boolean inClasspath) {
 
@@ -318,6 +343,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
 
     /**
      * For the precaution the mode must be in development mode to enable  create ddl!
+     *
      * @return
      */
     @Override
@@ -333,9 +359,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
     }
 
 
-
-
-    public boolean isSMPStartupInDevMode(){
+    public boolean isSMPStartupInDevMode() {
         return Boolean.parseBoolean(getEnvPropertyValue(SMP_MODE_DEVELOPMENT));
     }
 }

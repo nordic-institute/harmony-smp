@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -5,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,16 +32,16 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-public class SMPSecurityExceptionHandlerTest {
+class SMPSecurityExceptionHandlerTest {
 
     SMPSecurityExceptionHandler testInstance = new SMPSecurityExceptionHandler();
 
     @Test
-    public void isUITRestRequestPublic() {
+    void isUITRestRequestPublic() {
         // given
         HttpServletRequest request = mock(HttpServletRequest.class);
         Mockito.doReturn(ResourceConstants.CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT).when(request).getRequestURI();
@@ -34,7 +52,7 @@ public class SMPSecurityExceptionHandlerTest {
     }
 
     @Test
-    public void isUITRestRequestInternal() {
+    void isUITRestRequestInternal() {
         // given
         HttpServletRequest request = mock(HttpServletRequest.class);
         Mockito.doReturn("smp" + ResourceConstants.CONTEXT_PATH_INTERNAL_APPLICATION).when(request).getRequestURI();
@@ -45,7 +63,7 @@ public class SMPSecurityExceptionHandlerTest {
     }
 
     @Test
-    public void isUITRestRequestSMPServiceEndpoint() {
+    void isUITRestRequestSMPServiceEndpoint() {
         // given
         HttpServletRequest request = mock(HttpServletRequest.class);
         Mockito.doReturn("/smp").when(request).getContextPath();
@@ -57,7 +75,7 @@ public class SMPSecurityExceptionHandlerTest {
 
 
     @Test
-    public void marshallToXML() throws JAXBException {
+    void marshallToXML() throws JAXBException {
         ErrorResponse error = ErrorResponseBuilder.status(UNAUTHORIZED)
                 .businessCode(ErrorBusinessCode.UNAUTHORIZED)
                 .errorDescription("Test error Message")
@@ -77,7 +95,7 @@ public class SMPSecurityExceptionHandlerTest {
     }
 
     @Test
-    public void marshallToJSon() throws IOException {
+    void marshallToJSon() throws IOException {
         ErrorResponse error = ErrorResponseBuilder.status(UNAUTHORIZED)
                 .businessCode(ErrorBusinessCode.UNAUTHORIZED)
                 .errorDescription("Test json error Message")
@@ -94,7 +112,7 @@ public class SMPSecurityExceptionHandlerTest {
         assertEquals(error.getErrorUniqueId(), result.getErrorUniqueId());
     }
     @Test
-    public void marshallUIError() throws JsonProcessingException {
+    void marshallUIError() throws JsonProcessingException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         Mockito.doReturn(ResourceConstants.CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT).when(request).getRequestURI();
         ErrorResponse error = ErrorResponseBuilder.status(UNAUTHORIZED)
@@ -114,7 +132,7 @@ public class SMPSecurityExceptionHandlerTest {
     }
 
     @Test
-    public void marshallXMLError() throws  JAXBException {
+    void marshallXMLError() throws  JAXBException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         Mockito.doReturn("/smp/test-test-test::0001:test").when(request).getRequestURI();
         ErrorResponse error = ErrorResponseBuilder.status(UNAUTHORIZED)

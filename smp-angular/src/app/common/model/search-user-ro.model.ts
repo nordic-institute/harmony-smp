@@ -4,6 +4,5 @@ export interface SearchUserRo extends SearchTableEntity {
   userId: string,
   username: string;
   fullName: string;
-
 }
 

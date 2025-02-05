@@ -1,28 +1,30 @@
-/**
- * (C) Copyright 2018 - European Commission | CEF eDelivery
- * <p>
- * Licensed under the EUPL, Version 1.2 (the "License");
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * \BDMSL\bdmsl-parent-pom\LICENSE-EUPL-v1.2.pdf or https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/eupl_v1.2_en.pdf
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.utils;
 
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 
 import java.io.IOException;
 import java.security.Security;
@@ -33,23 +35,23 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@RunWith(JUnitParamsRunner.class)
+
 public class X509CertificateUtilsTest {
 
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
-    private static final Object[] crlTestListCases() {
+    private static Object[] crlTestListCases() {
         return new Object[][]{
                 {"smp-crl-test-all.pem", "https://localhost/clr,http://localhost/clr,ldap://localhost/clr"},
                 {"smp-crl-test-https.pem", "https://localhost/clr"},
@@ -58,7 +60,7 @@ public class X509CertificateUtilsTest {
         };
     }
 
-    private static final Object[] crlExtractHTTPSTestListCases() {
+    private static Object[] crlExtractHTTPSTestListCases() {
         return new Object[][]{
                 {"ldap://localhost/clr,https://localhost/clr,http://localhost/clr", "https://localhost/clr"},
                 {"https://localhost/clr", "https://localhost/clr"},
@@ -68,7 +70,7 @@ public class X509CertificateUtilsTest {
         };
     }
 
-    private static final Object[] parseTestCases() {
+    private static Object[] parseTestCases() {
         return new Object[][]{
                 {"certificate-pem-with-header.cer"},
                 {"PeppolTestSMP-DER-encoded.crt"},
@@ -77,9 +79,9 @@ public class X509CertificateUtilsTest {
         };
     }
 
-    @Test
-    @Parameters(method = "parseTestCases")
-    public void parseCertificateTest(String certificateFileName) throws CertificateException, IOException {
+    @ParameterizedTest
+    @MethodSource("parseTestCases")
+    void parseCertificateTest(String certificateFileName) throws CertificateException, IOException {
         //given
         byte[] buff = getBytes(certificateFileName);
 
@@ -89,10 +91,9 @@ public class X509CertificateUtilsTest {
 
     }
 
-
-    @Test
-    @Parameters(method = "crlTestListCases")
-    public void getCrlDistributionPointsTest(String certificatFileName, String clrLists) throws CertificateException {
+    @ParameterizedTest
+    @MethodSource("crlTestListCases")
+    void getCrlDistributionPointsTest(String certificatFileName, String clrLists) throws CertificateException {
         //given
         X509Certificate certificate = loadCertificate(certificatFileName);
         List<String> lstExpected = clrLists == null ? Collections.emptyList() : Arrays.asList(clrLists.split(","));
@@ -100,15 +101,12 @@ public class X509CertificateUtilsTest {
         List<String> lstValues = X509CertificateUtils.getCrlDistributionPoints(certificate);
         // then
         assertEquals(lstExpected.size(), lstValues.size());
-        lstValues.forEach(crl -> {
-            lstExpected.contains(crl);
-        });
+        lstValues.forEach(crl -> lstExpected.contains(crl));
     }
 
-
-    @Test
-    @Parameters(method = "crlExtractHTTPSTestListCases")
-    public void extractHttpCrlDistributionPoints(String clrLists, String value) {
+    @ParameterizedTest
+    @MethodSource("crlExtractHTTPSTestListCases")
+    void extractHttpCrlDistributionPoints(String clrLists, String value) {
         //given
         List<String> urlList = clrLists == null ? Collections.emptyList() : Arrays.asList(clrLists.split(","));
         // when
@@ -117,18 +115,14 @@ public class X509CertificateUtilsTest {
         assertEquals(value, url);
     }
 
-
     public static X509Certificate loadCertificate(String filename) throws CertificateException {
         CertificateFactory fact = CertificateFactory.getInstance("X.509");
 
-        X509Certificate cer = (X509Certificate)
-                fact.generateCertificate(X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
-        return cer;
+        return (X509Certificate) fact.generateCertificate(
+                X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
     }
 
-    public static byte[] getBytes(String filename) throws CertificateException, IOException {
+    public static byte[] getBytes(String filename) throws IOException {
         return IOUtils.toByteArray(X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
     }
-
-
 }

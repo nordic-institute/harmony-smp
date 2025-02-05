@@ -1,14 +1,20 @@
-/*
- * Copyright 2017 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.controllers;
@@ -56,19 +62,27 @@ public class RootController {
             "image/ico", "image/x-ico"
     },
             value = {"/index.html", "/favicon.png", "/favicon.ico"})
-    public byte[] getServiceGroup(HttpServletRequest httpReq, HttpServletResponse httpRes) throws IOException {
+    public byte[] getStaticResources(HttpServletRequest httpReq, HttpServletResponse httpRes) throws IOException {
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT, host, httpReq.getPathInfo());
         String value = httpReq.getPathInfo();
-        if (value != null && value.endsWith("favicon.png")) {
-            httpRes.setContentType("image/x-ico");
-            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.png"));
-        } else if (value != null && value.endsWith("favicon.ico")) {
-            httpRes.setContentType(MediaType.IMAGE_PNG_VALUE);
-            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.ico"));
-        } else {
+
+        if (StringUtils.isBlank(value)) {
+            httpRes.setContentType(MediaType.TEXT_HTML_VALUE);
             return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
         }
+
+        if (value.endsWith("favicon.png")) {
+            httpRes.setContentType(MediaType.IMAGE_PNG_VALUE);
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.png"));
+        } else if (value.endsWith("favicon.ico")) {
+            httpRes.setContentType("image/x-ico");
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.ico"));
+        }
+
+        httpRes.setContentType(MediaType.TEXT_HTML_VALUE);
+        return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
+
     }
 
     /**
@@ -88,6 +102,4 @@ public class RootController {
         String host = httpReq.getHeader("X-Forwarded-For");
         return StringUtils.isBlank(host) ? httpReq.getRemoteHost() : host;
     }
-
-
 }

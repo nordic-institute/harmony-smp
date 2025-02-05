@@ -1,11 +1,29 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.error;
 
 
+import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
-import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.MalformedIdentifierException;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +43,13 @@ abstract class AbstractErrorControllerAdvice {
         ResponseEntity response;
         if (runtimeException instanceof SMPRuntimeException) {
             SMPRuntimeException ex = (SMPRuntimeException)runtimeException;
-            response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()), ex.getErrorCode().getErrorBusinessCode(), ex.getMessage(), ex);
-        } else if (runtimeException instanceof SMPResponseStatusException ){
-            SMPResponseStatusException ex = (SMPResponseStatusException)runtimeException;
-            response = buildAndLog(ex.getStatus(), ex.getErrorBusinessCode(), ex.getMessage(), ex);
+            response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()), ex.getErrorCode(), ex.getMessage(), ex);
         } else if (runtimeException instanceof AuthenticationException ){
             AuthenticationException ex = (AuthenticationException)runtimeException;
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
         }else if (runtimeException instanceof AccessDeniedException){
             AccessDeniedException ex = (AccessDeniedException)runtimeException;
-            response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
+            response = buildAndLog(FORBIDDEN, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
         }else if (runtimeException instanceof BadRequestException){
             BadRequestException ex = (BadRequestException)runtimeException;
             response = buildAndLog(UNPROCESSABLE_ENTITY, ex.getErrorBusinessCode(), ex.getMessage(), ex);
@@ -48,7 +63,7 @@ abstract class AbstractErrorControllerAdvice {
         }
 
 
-        String errorCodeId = response.getBody() instanceof  ErrorResponseRO?
+        String errorCodeId = response.getBody()!=null && response.getBody() instanceof  ErrorResponseRO?
                 ((ErrorResponseRO) response.getBody()).getErrorUniqueId(): null;
 
 
@@ -56,5 +71,16 @@ abstract class AbstractErrorControllerAdvice {
         return response;
     }
 
-    abstract ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception);
+
+    ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
+        return buildAndLog(status, ErrorCode.INTERNAL_ERROR_GENERIC, businessCode, msg, exception);
+    }
+
+    ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, String msg, Exception exception) {
+        return buildAndLog(status, errorCode, errorCode.getErrorBusinessCode(), msg, exception);
+    }
+
+    abstract ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode,
+                                        ErrorBusinessCode businessCode,
+                                        String msg, Exception exception);
 }

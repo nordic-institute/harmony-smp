@@ -1,7 +1,17 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 
 .smp-container-limited {
   display: flex;
   flex-flow: row;
+  flex-grow: 1;
   gap: 10px;
   align-items: center;
 
@@ -16,6 +26,8 @@
   display: flex;
   flex-direction: column;
   align-self: stretch;
+  border-left: 1px solid rgba(150, 150, 150, 0.5);
+  padding-left: 0.5em;
 }
 
 .smp-data-panel-field {
@@ -30,12 +42,11 @@
   display: flex;
   flex-direction: column;
   align-self: stretch;
-
-
 }
+
 .smp-column-label p {
   border-bottom: 1px solid black;
-  margin: 0em 2em 2em 1em;
+  margin: 0 2em 2em 1em;
   font-weight: bold;
 
 }

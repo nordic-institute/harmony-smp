@@ -1,33 +1,46 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao.utils;
 
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(JUnitParamsRunner.class)
-public class SMPSchemaGeneratorTest {
+class SMPSchemaGeneratorTest {
 
-    private static final String DIALECT_ORACLE="org.hibernate.dialect.Oracle10gDialect";
-    private static final String DIALECT_MYSQL_INNO5="org.hibernate.dialect.MySQL5InnoDBDialect";
+    private static final String DIALECT_ORACLE = "org.hibernate.dialect.Oracle10gDialect";
+    private static final String DIALECT_MYSQL_INNO5 = "org.hibernate.dialect.MySQL5InnoDBDialect";
 
-    protected static String ENTITY_PACKAGES= "eu.europa.ec.edelivery.smp.data.model,eu.europa.ec.edelivery.smp.data.model.user,eu.europa.ec.edelivery.smp.data.model.doc,eu.europa.ec.edelivery.smp.data.model.ext";
+    protected static String ENTITY_PACKAGES = "eu.europa.ec.edelivery.smp.data.model," +
+            "eu.europa.ec.edelivery.smp.data.model.user," +
+            "eu.europa.ec.edelivery.smp.data.model.doc," +
+            "eu.europa.ec.edelivery.smp.data.model.ext";
 
-
-    private static final Object[] dialectTestCases() {
+    private static Object[] dialectTestCases() {
         return new Object[][]{
                 {DIALECT_MYSQL_INNO5, "eu.europa.ec.edelivery.smp.data.dao.utils.SMPMySQL5InnoDBDialect"},
                 {DIALECT_ORACLE, DIALECT_ORACLE},
@@ -37,38 +50,33 @@ public class SMPSchemaGeneratorTest {
         };
     }
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
-
     SMPSchemaGenerator testInstance = new SMPSchemaGenerator();
 
-
     @Test
-    public void createDDLScript() throws ClassNotFoundException, IOException {
+    void createDDLScript() throws ClassNotFoundException, IOException {
         // given
         String folder = "target";
         String dialect = DIALECT_ORACLE;
-        String version = "4.1.0-SNAPSHOT";
+        String version = "5.1-SNAPSHOT";
         List<String> lstPackages = Arrays.asList(ENTITY_PACKAGES.split(","));
         File f = new File("target/oracle10g.ddl");
         File fDrop = new File("target/oracle10g-drop.ddl");
         f.delete(); // delete if exists
         fDrop.delete(); // delete if exists
-        assertTrue(!f.exists());
-        assertTrue(!fDrop.exists());
+        assertFalse(f.exists());
+        assertFalse(fDrop.exists());
 
 
         testInstance.createDDLScript(folder, dialect, lstPackages, version);
 
         assertTrue(f.exists());
-        assertTrue(f.length()>0);
+        assertTrue(f.length() > 0);
         assertTrue(fDrop.exists());
-        assertTrue(fDrop.length()>0);
+        assertTrue(fDrop.length() > 0);
     }
 
     @Test
-    public void createFileNameOracleDialect() {
+    void createFileNameOracleDialect() {
         String dialect = DIALECT_ORACLE;
         //when
         String filaName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameTemplate);
@@ -77,7 +85,7 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void createFileNameMySQLDialect() {
+    void createFileNameMySQLDialect() {
         // given
         String dialect = DIALECT_MYSQL_INNO5;
         //when
@@ -87,7 +95,7 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void createDropFileNameOracleDialect() {
+    void createDropFileNameOracleDialect() {
         String dialect = DIALECT_ORACLE;
         //when
         String fileName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameDropTemplate);
@@ -96,7 +104,7 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void createDropFileNameMySQLDialect() {
+    void createDropFileNameMySQLDialect() {
         // given
         String dialect = DIALECT_MYSQL_INNO5;
         //when
@@ -105,9 +113,10 @@ public class SMPSchemaGeneratorTest {
         assertEquals("mysql5innodb-drop.ddl", fileName);
     }
 
-    @Test
-    @Parameters(method = "dialectTestCases")
-    public void getDialect(String input, String output) {
+
+    @ParameterizedTest
+    @MethodSource("dialectTestCases")
+    void getDialect(String input, String output) {
 
         //when
         String result = testInstance.getDialect(input);
@@ -116,18 +125,17 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void getAllEntityClassesNotFound() throws ClassNotFoundException {
+    void getAllEntityClassesNotFound() {
 
-        expectedEx.expect(ClassNotFoundException.class);
-
-        testInstance.getAllEntityClasses("eu.not.exists");
+        assertThrows(ClassNotFoundException.class, () -> testInstance.getAllEntityClasses("eu.not.exists"));
     }
+
     @Test
-    public void getAllEntityClasses() throws ClassNotFoundException {
+    void getAllEntityClasses() throws ClassNotFoundException {
 
         // given when
-        List<Class> result =  testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
+        List<Class> result = testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
 
-        assertEquals(10, result.size());
+        assertEquals(11, result.size());
     }
 }

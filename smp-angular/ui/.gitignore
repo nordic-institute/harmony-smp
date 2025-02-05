@@ -1,0 +1,8 @@
+# Ignore everything in this directory
+# Fix angular cli issue with angular@16.
+# [INFO] - Generating browser application bundles (phase: setup)...
+# [INFO] An unhandled exception occurred: ENOENT: no such file or directory, scandir '/home/edelivery/gitlab/builds/YKGn_Nvq/1/edelivery/smp/smp-angular/ui/'
+# Check iif this is needed in 16+ versions of angular cli
+..
+# Except the following
+!.gitignore

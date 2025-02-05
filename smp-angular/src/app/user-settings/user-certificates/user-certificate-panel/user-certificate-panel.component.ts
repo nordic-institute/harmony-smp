@@ -2,6 +2,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {GlobalLookups} from "../../../common/global-lookups";
+import {DateTimeService} from "../../../common/services/date-time.service";
 
 
 @Component({
@@ -15,13 +17,12 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
 
   @Output() onShowCertificate: EventEmitter<CredentialRo> = new EventEmitter();
 
-  dateFormat: string = 'yyyy-MM-dd'
-
   _credential: CredentialRo;
-
+  _expanded: boolean = false;
   credentialForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder,
+              private dateTimeService: DateTimeService) {
     this.credentialForm = formBuilder.group({
       // common values
       'active': new FormControl({value: '', disabled: false}),
@@ -59,13 +60,14 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
     this.credentialForm.markAsPristine();
   }
 
-  onDeleteButtonClicked() {
-
+  onDeleteButtonClicked(event: MouseEvent) {
     this.onDeleteEvent.emit(this.credential);
+    event?.stopPropagation();
   }
 
-  onSaveButtonClicked() {
+  onSaveButtonClicked(event: MouseEvent) {
     this.onSaveEvent.emit(this.credential);
+    event?.stopPropagation();
   }
 
   onShowCertificateButtonClicked(){
@@ -93,6 +95,10 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
 
   isDirty(): boolean {
     return this.credentialForm.dirty;
+  }
+
+  get dateFormat(): string {
+    return this.dateTimeService.userDateFormat;
   }
 
 }

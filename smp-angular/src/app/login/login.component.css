@@ -1,6 +1,41 @@
-a:link { text-decoration: none; }
-a:visited { text-decoration: none; }
-a:hover { text-decoration: none; }
-a:active { text-decoration: none; }
+a:link {
+  text-decoration: none;
+}
 
+a:visited {
+  text-decoration: none;
+}
 
+a:hover {
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}
+
+.login-panel {
+  /** ensure all panels have the same size if possible **/
+  min-height: 350px;
+  min-width: 445px;
+  margin: 10px;
+}
+
+.login-panel-content {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 200px;
+  min-width: 380px;
+  min-height: 260px;
+  margin: 15px;
+}
+
+.login-panel-content button {
+  width: 250px;
+}
+
+.form-control {
+  margin: 10px;
+  padding: 0;
+}

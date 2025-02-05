@@ -7,5 +7,6 @@
   'alert-error':  type === 'error'}"
 >
   <mat-icon *ngIf="icon" style="width:50px">{{icon}}</mat-icon>
-  <span>{{label}}</span>
+  <span *ngIf="label">{{label}}</span>
+  <span *ngIf="htmlContent" [innerHTML]="htmlContent"></span>
 </div>

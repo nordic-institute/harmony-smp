@@ -7,12 +7,10 @@ import {User} from "../../security/user.model";
 import {TableResult} from "../../common/model/table-result.model";
 import {MemberRo} from "../../common/model/member-ro.model";
 import {SmpConstants} from "../../smp.constants";
-import {UserRo} from "../user/user-ro.model";
-
+import {UserRo} from "../../common/model/user-ro.model";
 
 @Injectable()
 export class AdminUserService {
-
 
   constructor(
     private http: HttpClient,

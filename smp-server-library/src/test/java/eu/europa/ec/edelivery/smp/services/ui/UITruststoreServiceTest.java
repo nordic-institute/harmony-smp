@@ -1,17 +1,37 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
-import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.apache.commons.io.FileUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -19,23 +39,28 @@ import org.springframework.core.convert.ConversionService;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.math.BigInteger;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
-import java.security.Security;
 import java.security.cert.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UITruststoreServiceTest {
+class UITruststoreServiceTest {
+    // test data
+    protected Path resourceDirectory = Paths.get("src", "test", "resources", "truststore");
+    protected Path targetDirectory = Paths.get("target", "test-uitruststoreservice");
+    protected Path targetTruststore = targetDirectory.resolve("smp-truststore.jks");
+
+    String truststorePassword = "test123";
+    // mocked services
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     CRLVerifierService crlVerifierService = Mockito.mock(CRLVerifierService.class);
     ConversionService conversionService = Mockito.mock(ConversionService.class);
@@ -43,14 +68,15 @@ public class UITruststoreServiceTest {
 
     UITruststoreService testInstance = spy(new UITruststoreService(configurationService, crlVerifierService, conversionService, userDao));
 
-    @Before
-    public void setup() {
-        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
+    @BeforeEach
+    public void setup() throws IOException {
+        testInstance.init();
+        resetKeystore();
     }
 
     @Test
-    public void validateCertificateNotUsedOk() throws CertificateException {
-        String certId = "cn=test" + UUID.randomUUID().toString() + ",o=test,c=eu:123456";
+    void validateCertificateNotUsedOk() throws CertificateException {
+        String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
         doReturn(Optional.empty()).when(userDao).findUserByCertificateId(ArgumentMatchers.anyString());
@@ -64,8 +90,8 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateCertificateNotUsedIsUsed() {
-        String certId = "cn=test" + UUID.randomUUID().toString() + ",o=test,c=eu:123456";
+    void validateCertificateNotUsedIsUsed() {
+        String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
         doReturn(Optional.of(new DBUser())).when(userDao).findUserByCertificateId(ArgumentMatchers.anyString());
@@ -75,7 +101,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateOk() throws CertificateException {
+    void validateNewCertificateOk() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doNothing().when(testInstance).checkFullCertificateValidity(cert);
@@ -88,7 +114,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateExpiredException() throws CertificateException {
+    void validateNewCertificateCertificateExpiredException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateExpiredException("Expired")).when(testInstance).checkFullCertificateValidity(cert);
@@ -100,7 +126,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateCertificateNotYetValidException() throws CertificateException {
+    void validateNewCertificateCertificateCertificateNotYetValidException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateNotYetValidException("Error")).when(testInstance).checkFullCertificateValidity(cert);
@@ -112,7 +138,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateCertificateRevokedException() throws CertificateException {
+    void validateNewCertificateCertificateCertificateRevokedException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(Mockito.mock(CertificateRevokedException.class)).when(testInstance).checkFullCertificateValidity(cert);
@@ -124,7 +150,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateCertificateNotTrustedException() throws CertificateException {
+    void validateNewCertificateCertificateCertificateNotTrustedException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(Mockito.mock(CertificateNotTrustedException.class)).when(testInstance).checkFullCertificateValidity(cert);
@@ -136,7 +162,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertPathValidatorException() throws CertificateException {
+    void validateNewCertificateCertPathValidatorException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateException(Mockito.mock(CertPathValidatorException.class))).when(testInstance).checkFullCertificateValidity(cert);
@@ -148,7 +174,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateException() throws CertificateException {
+    void validateNewCertificateCertificateException() throws CertificateException {
         String errorMessage = "Error Message";
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
@@ -160,16 +186,15 @@ public class UITruststoreServiceTest {
         assertEquals(errorMessage, certData.getInvalidReason());
     }
 
-
     @Test
-    public void validateCertificateSubjectExpressionLegacyIfNullSkip() throws CertificateException {
+    void validateCertificateSubjectExpressionLegacyIfNullSkip() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         doReturn(null).when(configurationService).getCertificateSubjectRegularExpression();
         testInstance.validateCertificateSubjectExpressionLegacy(cert);
     }
 
     @Test
-    public void validateCertificateSubjectExpressionLegacyValidatedNotMatch() throws Exception {
+    void validateCertificateSubjectExpressionLegacyValidatedNotMatch() throws Exception {
         String regularExpression = ".*CN=SomethingNotExists.*";
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
@@ -177,14 +202,14 @@ public class UITruststoreServiceTest {
         CertificateException resultException = assertThrows(CertificateException.class, () -> testInstance.validateCertificateSubjectExpressionLegacy(certificate));
 
         assertEquals("Certificate subject ["
-                +certificate.getSubjectX500Principal().getName(X500Principal.RFC2253)
-                +"] does not match the regular expression configured ["+regularExpression+"]",
+                        + certificate.getSubjectX500Principal().getName(X500Principal.RFC2253)
+                        + "] does not match the regular expression configured [" + regularExpression + "]",
                 resultException.getMessage());
     }
 
 
     @Test
-    public void validateCertificateSubjectExpressionLegacyValidatedMatch() throws Exception {
+    void validateCertificateSubjectExpressionLegacyValidatedMatch() throws Exception {
         String regularExpression = ".*CN=Something.*";
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
@@ -195,7 +220,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void loadTruststoreDoNotThrowError(){
+    void loadTruststoreDoNotThrowError() {
         // test for null file
         KeyStore result = testInstance.loadTruststore(null);
         assertNull(result);
@@ -203,35 +228,220 @@ public class UITruststoreServiceTest {
         result = testInstance.loadTruststore(new File(UUID.randomUUID().toString()));
         assertNull(result);
         // test for file credentials not exist
-        Path resourceDirectory = Paths.get("src", "test", "resources", "truststore","smp-truststore.jks");
-        assertTrue(resourceDirectory.toFile().exists());
+
+        assertTrue(targetTruststore.toFile().exists());
         doReturn(null).when(configurationService).getTruststoreCredentialToken();
-        result = testInstance.loadTruststore(resourceDirectory.toFile());
+        result = testInstance.loadTruststore(targetTruststore.toFile());
         assertNull(result);
     }
 
-
-    /**
-     * This method is not a tests is it done for generating the  tests Soapui certificates
-     * @throws Exception
-     */
     @Test
-    @Ignore
-    public void generateSoapUITestCertificates() throws Exception {
+    void testTruststoreNotConfiguredNotConfigured() {
+        doReturn(null).when(configurationService).getTruststoreFile();
+        boolean result = testInstance.truststoreNotConfigured();
+        assertTrue(result);
+    }
 
-        List <String[]> listCerts = Arrays.asList( new String[]{"f71ee8b11cb3b787","CN=EHEALTH_SMP_EC,O=European Commission,C=BE","ehealth_smp_ec",},
-                new String[]{"E07B6b956330a19a","CN=blue_gw,O=eDelivery,C=BE","blue_gw"},
-                new String[]{"9792ce69BC89F14C","CN=red_gw,O=eDelivery,C=BE","red_gw"}
-        );
-        String token = "test123";
-        File keystoreFile = new File( "./target/smp-test-examples.p12");
-        KeyStore keyStore = KeystoreUtils.createNewKeystore(keystoreFile, token);
-        for (String[] data: listCerts) {
-            BigInteger serial = new BigInteger(data[0],16);
-            X509CertificateUtils.createAndStoreSelfSignedCertificate(serial, data[1],data[2], keyStore, token);
-        }
-        try (FileOutputStream fos = new FileOutputStream(keystoreFile)) {
-            keyStore.store(fos, token.toCharArray());
-        }
+    @Test
+    void testTruststoreNotConfiguredConfigured() {
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        boolean result = testInstance.truststoreNotConfigured();
+        assertFalse(result);
+    }
+
+    @Test
+    void testRefreshDataNoConfiguration() {
+
+        doReturn(null).when(configurationService).getTruststoreFile();
+        // must not throw error
+        testInstance.refreshData();
+        //then
+        assertNull(testInstance.getTrustStore());
+        assertNull(testInstance.getTrustManagers());
+        assertTrue(testInstance.getNormalizedTrustedList().isEmpty());
+    }
+
+    @Test
+    void testRefreshDataOk() {
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        // must not throw error
+        testInstance.refreshData();
+        //then
+        assertNotNull(testInstance.getTrustStore());
+        assertNotNull(testInstance.getTrustManagers());
+        assertFalse(testInstance.getNormalizedTrustedList().isEmpty());
+    }
+
+    @Test
+    void getCertificateDataNullEmpty() {
+
+        // must not throw error
+        CertificateRO certificateRO = testInstance.getCertificateData(null);
+        //then
+        assertNotNull(certificateRO);
+        assertTrue(certificateRO.isInvalid());
+        assertTrue(certificateRO.isError());
+        assertEquals("Can not read [null/empty] certificate!", certificateRO.getInvalidReason());
+    }
+
+    @Test
+    void getCertificateDataInvalidCertificate() {
+
+        // must not throw error
+        CertificateRO certificateRO = testInstance.getCertificateData("notACertificate".getBytes());
+        //then
+        assertNotNull(certificateRO);
+        assertTrue(certificateRO.isInvalid());
+        assertTrue(certificateRO.isError());
+        assertEquals("Can not read the certificate!", certificateRO.getInvalidReason());
+    }
+
+    @Test
+    void getCertificateDataNoValidationOK() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+        CertificateRO convertedCert = Mockito.mock(CertificateRO.class);
+        doReturn(convertedCert).when(conversionService).convert(certificate, CertificateRO.class);
+        // must not throw error
+        CertificateRO certificateRO = testInstance.getCertificateData(certificate.getEncoded());
+        //then
+        assertNotNull(certificateRO);
+        assertEquals(convertedCert, certificateRO);
+    }
+
+    @Test
+    void getCertificateDataNoValidationBase64OK() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+        String base64Cert = Base64.getEncoder().encodeToString(certificate.getEncoded());
+        CertificateRO convertedCert = Mockito.mock(CertificateRO.class);
+        doReturn(convertedCert).when(conversionService).convert(certificate, CertificateRO.class);
+
+        // must not throw error
+        CertificateRO certificateRO = testInstance.getCertificateData(base64Cert, false, false);
+        //then
+        assertNotNull(certificateRO);
+        assertEquals(convertedCert, certificateRO);
+    }
+
+    @Test
+    void getCertificateDataValidateOK() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+        CertificateRO convertedCert = Mockito.mock(CertificateRO.class);
+        doReturn(convertedCert).when(conversionService).convert(certificate, CertificateRO.class);
+        // must not throw error
+        CertificateRO certificateRO = testInstance.getCertificateData(certificate.getEncoded(), true, true);
+        //then
+        assertNotNull(certificateRO);
+        assertEquals(convertedCert, certificateRO);
+    }
+
+    @Test
+    void testValidateCertificateWithTruststoreNull() {
+        // when
+        CertificateException result = assertThrows(CertificateException.class, () -> testInstance.validateCertificateWithTruststore(null));
+        // then
+        MatcherAssert.assertThat(result.getMessage(), Matchers.containsString("The X509Certificate is null"));
+    }
+
+    @Test
+    void testValidateCertificateWithTruststoreNoTruststoreConfigured() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+        doReturn(null).when(configurationService).getTruststoreFile();
+        // when
+        testInstance.refreshData();
+        testInstance.validateCertificateWithTruststore(certificate);
+        // then
+        // no error is thrown
+        Mockito.verify(configurationService, Mockito.times(1)).getTruststoreFile();
+    }
+
+    @Test
+    void testValidateCertificateWithTruststoreNotTrusted() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        // when
+        testInstance.refreshData();
+        CertificateException result = assertThrows(CertificateException.class,
+                () -> testInstance.validateCertificateWithTruststore(certificate));
+        // then
+        MatcherAssert.assertThat(result.getMessage(), Matchers.containsString("is not trusted!"));
+    }
+
+    @Test
+    void testValidateAllowedCertificateKeyTypes() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+        doReturn(Collections.singletonList("FutureKeyAlgorithm")).when(configurationService).getAllowedCertificateKeyTypes();
+        //when
+        CertificateException result = assertThrows(CertificateException.class,
+                () -> testInstance.validateAllowedCertificateKeyTypes(certificate));
+        // then
+        MatcherAssert.assertThat(result.getMessage(), Matchers.containsString("Certificate does not have allowed key algorithm type!"));
+    }
+
+
+    @Test
+    void testAddCertificate() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        testInstance.refreshData();
+        int count = testInstance.getNormalizedTrustedList().size();
+        // when
+        testInstance.addCertificate(null, certificate);
+
+        assertEquals(count + 1, testInstance.getNormalizedTrustedList().size());
+    }
+
+    @Test
+    void testAddCertificate_DuplicateCertificate() throws Exception {
+        String alias = "duplicate";
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        testInstance.refreshData();
+        int count = testInstance.getNormalizedTrustedList().size();
+
+        // when
+        testInstance.addCertificate(alias, certificate);
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () -> testInstance.addCertificate(alias, certificate));
+
+        // then
+        Assertions.assertEquals("Certificate error [duplicate]. Error: The certificate you are trying to upload already exists under the [duplicate] entry!", smpRuntimeException.getMessage());
+    }
+
+    @Test
+    void testDeleteCertificate() throws Exception {
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        String alias = "testInstanceCertificate";
+        testInstance.addCertificate(alias, certificate);
+        int count = testInstance.getNormalizedTrustedList().size();
+
+        //then
+        X509Certificate result = testInstance.deleteCertificate(alias);
+        //when
+        assertNotNull(result);
+        assertEquals(count - 1, testInstance.getNormalizedTrustedList().size());
+    }
+
+    protected void resetKeystore() throws IOException {
+        FileUtils.deleteDirectory(targetDirectory.toFile());
+        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
     }
 }

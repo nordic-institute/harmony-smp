@@ -1,14 +1,20 @@
-/*
- * Copyright 2017 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.data.dao;
@@ -18,20 +24,24 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 /**
  * Database abstract resource file. Class implements all common methods for all resources.
@@ -184,7 +194,6 @@ public abstract class BaseDao<E extends BaseEntity> {
             }
         }
 
-
         // set order by
         if (searchParams != null) {
             List<Predicate> lstPredicate = createPredicates(searchParams, om, cb);
@@ -221,7 +230,7 @@ public abstract class BaseDao<E extends BaseEntity> {
                 // get return parameter
                 Object searchValue;
                 try {
-                    searchValue = m.invoke(searchParams, new Object[]{});
+                    searchValue = m.invoke(searchParams);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     LOG.error("Error setting retrieveing search parameters", ex);
                     continue;
@@ -241,10 +250,11 @@ public abstract class BaseDao<E extends BaseEntity> {
                     }
                 } else {
                     try {
-                        cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
+                        cls.getMethod("set" + fieldName, m.getReturnType());
                     } catch (NoSuchMethodException | SecurityException ex) {
                         // method does not have setter // ignore other methods
-                        LOG.error("Field '" + fieldName + "' does not have a setter!", ex);
+                        LOG.warn("Can not set value [{}] to entity [{}]! Search parameter is ignored!. Root cause: [{}]",
+                                fieldName, om.getModel(), ExceptionUtils.getRootCauseMessage(ex));
                         continue;
                     }
 
@@ -370,6 +380,31 @@ public abstract class BaseDao<E extends BaseEntity> {
                 null,
                 null);
         return memEManager.createQuery(cqCount).getSingleResult();
+    }
+
+    /**
+     * Method sets pagination to the query
+     * @param query query to set pagination
+     * @param iPage page number
+     * @param iPageSize page size
+     */
+    protected void setPaginationParametersToQuery(TypedQuery<?> query, int iPage, int iPageSize) {
+        if (iPageSize > -1 && iPage > -1) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize > 0) {
+            query.setMaxResults(iPageSize);
+        }
+    }
+
+    /**
+     * Method prepare like parameter for query. If parameter is blank, than null is returned, otherwise
+     * parameter is converted to lower case and % is added to the beginning and end of the parameter.
+     * @param param parameter to prepare
+     * @return prepared parameter
+     */
+    protected String likeParam(String param) {
+        return trimToNull(param) == null? null: "%" + lowerCase(param) + "%";
     }
 
 

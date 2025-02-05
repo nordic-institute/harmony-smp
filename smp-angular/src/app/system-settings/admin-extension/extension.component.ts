@@ -8,7 +8,6 @@ import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './extension.component.html',
   styleUrls: ['./extension.component.css']
 })
@@ -21,7 +20,6 @@ export class ExtensionComponent implements OnInit, AfterViewInit, BeforeLeaveGua
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(extensionService: ExtensionService) {
-
     extensionService.onExtensionsUpdatesEvent().subscribe(updatedExtensions => {
         this.updateExtensions(updatedExtensions);
       }

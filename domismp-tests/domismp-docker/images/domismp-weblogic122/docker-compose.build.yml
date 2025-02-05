@@ -1,0 +1,27 @@
+#
+# Docker compose project used to build the smp-weblogic14 image with all the required dependencies
+#
+version: '3.8'
+services:
+  oracle-jdk8:
+    image: oracle/serverjre:8
+    build:
+      context: ../oracle/OracleJava/java-8/
+      dockerfile: Dockerfile
+
+  oracle-weblogic122:
+    image: oracle/weblogic:12.2.1.4-developer
+    depends_on:
+      - oracle-jdk8
+    build:
+      context: ../oracle/weblogic-12.2.1.4/
+      dockerfile: Dockerfile.developer
+
+  domismp-weblogic122:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}
+    depends_on:
+      - oracle-weblogic122
+    build:
+      context: .
+      args:
+        - SMP_VERSION

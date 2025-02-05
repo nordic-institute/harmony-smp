@@ -3,7 +3,6 @@ import {SmpInfoService} from '../../app-info/smp-info.service';
 import {SmpInfo} from '../../app-info/smp-info.model';
 
 @Component({
-  moduleId: module.id,
   templateUrl: './footer.component.html',
   selector: 'footer',
   styleUrls: ['./footer.component.css']

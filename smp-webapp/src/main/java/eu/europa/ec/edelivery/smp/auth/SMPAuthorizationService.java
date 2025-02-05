@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
@@ -19,12 +37,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -84,19 +104,25 @@ public class SMPAuthorizationService {
 
     public boolean isGroupAdministrator(String groupEncId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long groupId  = getIdFromEncryptedString(groupEncId, false);
+        Long groupId = getIdFromEncryptedString(groupEncId, false);
         return groupMemberDao.isUserGroupMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(groupId), MembershipRoleType.ADMIN);
     }
 
     public boolean isResourceAdministrator(String resourceEncId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long resourceId  = getIdFromEncryptedString(resourceEncId, false);
+        Long resourceId = getIdFromEncryptedString(resourceEncId, false);
         return resourceMemberDao.isUserResourceMemberWithRole(userDetails.getUser().getId(), resourceId, MembershipRoleType.ADMIN);
+    }
+
+    public boolean isResourceReviewer(String resourceEncId) {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        Long resourceId = getIdFromEncryptedString(resourceEncId, false);
+        return resourceMemberDao.isUserResourceMemberWithReviewPermission(userDetails.getUser().getId(), resourceId);
     }
 
     public boolean isResourceMember(String resourceEncId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long resourceId  = getIdFromEncryptedString(resourceEncId, false);
+        Long resourceId = getIdFromEncryptedString(resourceEncId, false);
         return resourceMemberDao.isUserResourceMember(userDetails.getUser().getId(), resourceId);
     }
 
@@ -112,6 +138,7 @@ public class SMPAuthorizationService {
 
     /**
      * Returns true if logged user is administrator for any of the domain group
+     *
      * @param domainEncId
      * @return true if logged user is group administrator in domain
      */
@@ -123,6 +150,7 @@ public class SMPAuthorizationService {
 
     /**
      * Returns true if logged user is administrator for any of the resources on group
+     *
      * @param groupEncId
      * @return true if logged user is resource administrator in the group
      */
@@ -191,14 +219,14 @@ public class SMPAuthorizationService {
                     userDetails.getUser().getUsername());
             return null;
         }
-        UserRO userRO = getUserData(dbUser);
+        UserRO userRO = getUserData(dbUser, userDetails.getAuthorities());
         userRO.setCasAuthenticated(userDetails.isCasAuthenticated());
         return userRO;
     }
 
-    public UserRO getUserData(DBUser user) {
+    public UserRO getUserData(DBUser user, Collection<? extends GrantedAuthority> authorities) {
         UserRO userRO = conversionService.convert(user, UserRO.class);
-        return getUpdatedUserData(userRO);
+        return userRO == null ? null : getUpdatedUserData(userRO, authorities);
     }
 
     /**
@@ -208,7 +236,7 @@ public class SMPAuthorizationService {
      * @param userRO
      * @return updated user data according to SMP configuration
      */
-    public UserRO getUpdatedUserData(UserRO userRO) {
+    public UserRO getUpdatedUserData(UserRO userRO, Collection<? extends GrantedAuthority> authorities) {
         userRO.setShowPasswordExpirationWarning(userRO.getPasswordExpireOn() != null &&
                 OffsetDateTime.now().plusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
                         .isAfter(userRO.getPasswordExpireOn()));
@@ -219,6 +247,9 @@ public class SMPAuthorizationService {
             URL casUrlData = configurationService.getCasUserDataURL();
             userRO.setCasUserDataUrl(casUrlData != null ? casUrlData.toString() : null);
         }
+
+        int sessionTimeoutForRoles = configurationService.getSessionTimeoutForRoles(authorities);
+        userRO.setSessionMaxIntervalTimeoutInSeconds(sessionTimeoutForRoles);
 
         return sanitize(userRO);
     }
