@@ -48,7 +48,7 @@
             <artifactId>jaxb-runtime</artifactId>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.dynamic-discovery</groupId>
+            <groupId>org.niis.dynamic-discovery</groupId>
             <artifactId>dynamic-discovery-client</artifactId>
         </dependency>
         <!-- end oasis SMP is included by default to smp deployment-->

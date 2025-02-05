@@ -52,7 +52,7 @@ See the Licence for the specific language governing permissions and limitations 
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <edelivery.ssl-auth.version>1.16</edelivery.ssl-auth.version>
-        <edelivery.dynamic-discovery-client.version>2.3</edelivery.dynamic-discovery-client.version>
+        <dynamic-discovery-client.version>2.3</dynamic-discovery-client.version>
         <bdmsl-api.version>4.3</bdmsl-api.version>
         <!-- plugin versions -->
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
@@ -167,6 +167,16 @@ See the Licence for the specific language governing permissions and limitations 
             </snapshots>
         </repository>
         <repository>
+            <id>harmony-releases</id>
+            <url>https://artifactory.niis.org/artifactory/harmony-release-maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>cefdigital-releases</id>
             <url>https://ec.europa.eu/digital-building-blocks/artifact/content/repositories/eDelivery/</url>
             <releases>
@@ -187,9 +197,9 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${edelivery.ssl-auth.version}</version>
             </dependency>
             <dependency>
-                <groupId>eu.europa.ec.dynamic-discovery</groupId>
+                <groupId>org.niis.dynamic-discovery</groupId>
                 <artifactId>dynamic-discovery-client</artifactId>
-                <version>${edelivery.dynamic-discovery-client.version}</version>
+                <version>${dynamic-discovery-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>eu.europa.ec.bdmsl</groupId>

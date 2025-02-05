@@ -40,7 +40,7 @@
             <artifactId>edelivery-springsecurity-2-way-ssl-auth</artifactId>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.dynamic-discovery</groupId>
+            <groupId>org.niis.dynamic-discovery</groupId>
             <artifactId>dynamic-discovery-client</artifactId>
         </dependency>
         <dependency>
