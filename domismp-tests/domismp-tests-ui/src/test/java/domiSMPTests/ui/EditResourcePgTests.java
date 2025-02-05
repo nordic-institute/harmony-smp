@@ -143,14 +143,15 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis3);
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        editResourceDocumentPage.clickOnNewVersion();
-        editResourceDocumentPage.clickOnGenerate();
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getGenerateBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+
         editResourceDocumentPage.getAlertArea().closeAlert();
 
         String currentGeneratedValue = editResourceDocumentPage.getDocumentValue();
 
-        editResourceDocumentPage.clickOnValidate();
+        editResourceDocumentPage.getValidateBtn().click();
         soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.", "Generated document is not valid");
 
         soft.assertNotNull(currentGeneratedValue, "Document is empty");
@@ -169,13 +170,14 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis2);
         editResourcePage.goToTab("Resource details");
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        editResourceDocumentPage.clickOnNewVersion();
-        editResourceDocumentPage.clickOnGenerate();
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getGenerateBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+
         editResourceDocumentPage.getAlertArea().closeAlert();
         String oasis2GeneratedDocumentValue = editResourceDocumentPage.getDocumentValue();
 
-        editResourceDocumentPage.clickOnValidate();
+        editResourceDocumentPage.getValidateBtn().click();
 
         soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.", "Generated document is not valid");
         soft.assertNotNull(oasis2GeneratedDocumentValue, "Document is empty");
@@ -193,15 +195,16 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
         editResourcePage.goToTab("Resource details");
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        editResourceDocumentPage.clickOnNewVersion();
-        editResourceDocumentPage.clickOnGenerate();
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getGenerateBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+
         editResourceDocumentPage.getAlertArea().closeAlert();
 
 
         String oasis1GeneratedDocumentValue = editResourceDocumentPage.getDocumentValue();
 
-        editResourceDocumentPage.clickOnValidate();
+        editResourceDocumentPage.getValidateBtn().click();
 
         soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.", "Generated document is not valid");
         soft.assertNotNull(oasis1GeneratedDocumentValue, "Document is empty");
@@ -225,11 +228,12 @@ public class EditResourcePgTests extends SeleniumTest {
 
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        editResourceDocumentPage.clickOnNewVersion();
-        editResourceDocumentPage.clickOnGenerate();
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getGenerateBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+
         editResourceDocumentPage.getAlertArea().closeAlert();
-        editResourceDocumentPage.clickOnValidate();
+        editResourceDocumentPage.getValidateBtn().click();
         soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.");
 
         EditResourceDocumentWizardDialog editResourceDocumentWizardDialog = editResourceDocumentPage.clickOnDocumentWizard();
@@ -256,8 +260,9 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentWizardDialog.getExtensionReasonInput().fill(generatedExtensionReasonvalue);
 
         editResourceDocumentWizardDialog.clickOK();
-        editResourceDocumentPage.clickOnSave();
-        editResourceDocumentPage.clickOnValidate();
+        editResourceDocumentPage.getSaveBtn().click();
+
+        editResourceDocumentPage.getValidateBtn().click();
 
         String document = editResourceDocumentPage.getDocumentValue();
         XMLUtils documentXML = new XMLUtils(document);
@@ -288,7 +293,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModel);
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        editResourceDocumentPage.clickOnNewVersion();
+        editResourceDocumentPage.getNewVersionBtn().click();
 
         String currentGeneratedValue = editResourceDocumentPage.getDocumentValue();
         XMLUtils documentXML = new XMLUtils(currentGeneratedValue);
@@ -297,13 +302,14 @@ public class EditResourcePgTests extends SeleniumTest {
         String invalidScheme = "wrong-scheme";
         documentXML.setAttributeValueForNode("ParticipantIdentifier", "scheme", invalidScheme);
         editResourceDocumentPage.setDocumentValue(documentXML.printDoc());
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getSaveBtn().click();
+
         String error = editResourceDocumentPage.getAlertArea().getAlertMessage();
         soft.assertEquals(error, "Invalid Identifier: [" + invalidScheme + "::" + resourceModel.getIdentifierValue() + "]. Invalid scheme [" + invalidScheme + "]!", "Wrong error message for invalid scheme: ");
 
 
         editResourceDocumentPage.clickOnCancelAndConfirm();
-        editResourceDocumentPage.clickOnNewVersion();
+        editResourceDocumentPage.getNewVersionBtn().click();
 
         documentXML = new XMLUtils(currentGeneratedValue);
 
@@ -311,7 +317,8 @@ public class EditResourcePgTests extends SeleniumTest {
         String invalidParticipant = "wrong-participant";
         documentXML.setContextValueForNode("ParticipantIdentifier", invalidParticipant);
         editResourceDocumentPage.setDocumentValue(documentXML.printDoc());
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getSaveBtn().click();
+
         error = editResourceDocumentPage.getAlertArea().getAlertMessage();
         soft.assertTrue(error.startsWith("Invalid request [StoreResourceValidation]. Error: ResourceException: Participant identifiers don't match between URL parameter [ResourceIdentifier"), "Wrong error message for invalid participant identifier: ");
 
@@ -407,10 +414,11 @@ public class EditResourcePgTests extends SeleniumTest {
 
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        editResourceDocumentPage.clickOnNewVersion();
+        editResourceDocumentPage.getNewVersionBtn().click();
         editResourceDocumentPage.clickOnDocumentWizard().getExtensionAgencyIdnput().fill("NewVersion");
         new EditResourceDocumentWizardDialog(driver).clickOK();
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getSaveBtn().click();
+
         editResourceDocumentPage.getAlertArea().closeAlert();
 
         soft.assertTrue(editResourceDocumentPage.getRequestReviewBtn().isEnabled(), "Request review button is not enabled");
@@ -439,7 +447,7 @@ public class EditResourcePgTests extends SeleniumTest {
 
     @Test(description = "EDTRES-16 - Resource Administrator can publish SubResource documents with approve status", priority = 1)
 
-    public void resourceAdministratorsCanPublisSUBResourceDocumentsWithApproveStatus() throws Exception {
+    public void resourceAdministratorsCanPublishSUBResourceDocumentsWithApproveStatus() throws Exception {
 
         ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
         SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
@@ -457,7 +465,7 @@ public class EditResourcePgTests extends SeleniumTest {
         createSubresourceDetailsDialog.tryClickOnSave();
 
         EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModel);
-        editSubresourceDocumentPage.clickOnNewVersion();
+        editSubresourceDocumentPage.getNewVersionBtn().click();
         SubresourceWizardDialog subresourceWizardDialog = editSubresourceDocumentPage.clickOnDocumentWizard();
         subresourceWizardDialog.processIdentifierInput().fill("123-123-123");
         subresourceWizardDialog.accessPointUrlInput().fill("www.domibustest.com");
@@ -467,7 +475,7 @@ public class EditResourcePgTests extends SeleniumTest {
         subresourceWizardDialog.uploadCertificateBtn(path);
         subresourceWizardDialog.clickOK();
 
-        editSubresourceDocumentPage.clickOnSave();
+        editSubresourceDocumentPage.getSaveBtn().click();
         editSubresourceDocumentPage.getAlertArea().closeAlert();
 
         soft.assertTrue(editSubresourceDocumentPage.getRequestReviewBtn().isEnabled(), "Request review button is not enabled");
@@ -496,6 +504,83 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "EDTRES-19 - Resource Administrator with review rights are able to review documents inside the Edit Resource document screen", priority = 1)
+
+    public void resourceAdministratorWithReviewRightsAreAbleToReviewDocumentsInsideTheEditResourceDocumentScreen() throws Exception {
+
+        ResourceModel resource = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        //add resource to group
+        resource = rest.resources().createResourceForGroup(domainModel, groupModel, resource);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resource, adminMember);
+
+        //Select resource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resource);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getNewVersionBtn().click();
+
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+        soft.assertTrue(editResourceDocumentPage.getApproveBtn().isEnabled(), "Approve button is not enabled");
+        soft.assertTrue(editResourceDocumentPage.getRejectBtn().isEnabled(), "Reject button is not enabled");
+
+        editResourceDocumentPage.clickOnARejectAndConfirm();
+        soft.assertTrue(editResourceDocumentPage.getApproveBtn().isDisabled(), "Approve button is enabled in REJECTED status.");
+        soft.assertTrue(editResourceDocumentPage.getRejectBtn().isDisabled(), "Reject button is  enabled in REJECTED status.");
+
+        editResourceDocumentPage.getRequestReviewBtn().click();
+        editResourceDocumentPage.clickOnApproveAndConfirm();
+        soft.assertTrue(editResourceDocumentPage.getApproveBtn().isDisabled(), "Approve button is enabled in APPROVED status.");
+        soft.assertFalse(editResourceDocumentPage.getRejectBtn().isDisabled(), "Reject button is  enabled in APPROVED status.");
+
+        editResourceDocumentPage.clickOnPublishAndConfirm();
+        soft.assertAll();
+
+    }
+
+    @Test(description = "EDTRES-20- Resource Administrator with review rights are able to review documents inside the Edit Subresource document screen", priority = 1)
+
+    public void resourceAdministratorWithReviewRightsAreAbleToReviewDocumentsInsideTheEditResourceSubDocumentScreen() throws Exception {
+
+        ResourceModel resource = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resource = rest.resources().createResourceForGroup(domainModel, groupModel, resource);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resource, adminMember);
+
+        //Select resource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resource);
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModel);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModel);
+        editSubresourceDocumentPage.getNewVersionBtn().click();
+        editSubresourceDocumentPage.getSaveBtn().click();
+        editSubresourceDocumentPage.getRequestReviewBtn().click();
+        soft.assertTrue(editSubresourceDocumentPage.getApproveBtn().isEnabled(), "Approve button is not enabled");
+        soft.assertTrue(editSubresourceDocumentPage.getRejectBtn().isEnabled(), "Reject button is not enabled");
+
+        editSubresourceDocumentPage.clickOnARejectAndConfirm();
+        soft.assertTrue(editSubresourceDocumentPage.getApproveBtn().isDisabled(), "Approve button is enabled in REJECTED status.");
+        soft.assertTrue(editSubresourceDocumentPage.getRejectBtn().isDisabled(), "Reject button is  enabled in REJECTED status.");
+
+        editSubresourceDocumentPage.getRequestReviewBtn().click();
+        editSubresourceDocumentPage.clickOnApproveAndConfirm();
+        soft.assertTrue(editSubresourceDocumentPage.getApproveBtn().isDisabled(), "Approve button is enabled in APPROVED status.");
+        soft.assertFalse(editSubresourceDocumentPage.getRejectBtn().isDisabled(), "Reject button is  enabled in APPROVED status.");
+
+        editSubresourceDocumentPage.clickOnPublishAndConfirm();
+        soft.assertAll();
+
+    }
+
+
     @Test(description = "EDTRES-21- Resource Administrator can share a document as reference by clicking on the sharing enabled" +
             "EDTRES-24- Resource Administrator is able to see the refence document if the current document uses a reference", priority = 1)
 
@@ -514,25 +599,28 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.refreshPage();
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-        editResourceDocumentPage.clickOnNewVersion();
+        editResourceDocumentPage.getNewVersionBtn().click();
 
         //Add extension tag to highlight the reference
         ResourceDocumentEditor editor = editResourceDocumentPage.getEditor();
         editor.addExtensionTag();
         editor.addNewExtesionCode("referenceNode", "test", "referenceValue");
         editResourceDocumentPage.setDocumentValue(editor.printDoc());
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getSaveBtn().click();
+
         editResourceDocumentPage.clickOnPublishAndConfirm();
         editResourceDocumentPage.getDocumentConfigurationSection().enableSharing();
-        editResourceDocumentPage.clickOnSave();
-        editResourceDocumentPage.clickOnBack();
+        editResourceDocumentPage.getSaveBtn().click();
+
+        editResourceDocumentPage.getBackBtn().click();
 
         //Select resource and document which will use as a reference the shared document
         editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
         SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
         selectResourceDocumentDialog.selectResourceReferenceByResourceIdentifier(resourceModelOasis1ToBeShared.getIdentifierValue());
-        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getSaveBtn().click();
+
         soft.assertEquals(editResourceDocumentPage.getDocumentConfigurationSection().getReferenceDocumentName(), resourceModelOasis1ToBeShared.getIdentifierValue(), "Wrong reference name");
         soft.assertTrue(editResourceDocumentPage.getViewDocumentSelect().getCurrentText().equals("Reference document"), "View document select current value is wrong");
 
@@ -545,6 +633,121 @@ public class EditResourcePgTests extends SeleniumTest {
 
         soft.assertEquals(documentXML.getNodeValue("ext:referenceNode"), "referenceValue", "Open document does not contain the referenced document");
 
+
+        soft.assertAll();
+
+    }
+
+    @Test(description = "EDTRES-25 The document using a shared reference sees only the published version of the reference", priority = 1)
+
+    public void documentUsingASharedReferenceSeesOnlyThePublishedVersionOfTheReference() throws Exception {
+
+        ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        ResourceModel resourceModelOasis1UsesReference = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        //add resource to group
+        resourceModelOasis1ToBeShared = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        resourceModelOasis1UsesReference = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1UsesReference);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1ToBeShared, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1UsesReference, adminMember);
+
+        //Select resource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getNewVersionBtn().click();
+
+        //Add extension tag to highlight the reference
+        ResourceDocumentEditor editor = editResourceDocumentPage.getEditor();
+        editor.addExtensionTag();
+        editor.addNewExtesionCode("referenceNode", "test", "referenceValue");
+        editResourceDocumentPage.setDocumentValue(editor.printDoc());
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+
+        editResourceDocumentPage.clickOnApproveAndConfirm();
+        editResourceDocumentPage.clickOnPublishAndConfirm();
+        editResourceDocumentPage.getDocumentConfigurationSection().enableSharing();
+        editResourceDocumentPage.getSaveBtn().click();
+
+        //create document in draft status
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editor.addNewExtesionCode("draftReferenceNode", "test", "referenceValue");
+        editResourceDocumentPage.getSaveBtn().click();
+
+
+        //create document in approved status
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editor.addNewExtesionCode("approvedReferenceNode", "test", "referenceValue");
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+        editResourceDocumentPage.clickOnApproveAndConfirm();
+
+        //create document in rejected status
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editor.addNewExtesionCode("rejectedReferenceNode", "test", "referenceValue");
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+        editResourceDocumentPage.clickOnARejectAndConfirm();
+
+        editResourceDocumentPage.getBackBtn().click();
+
+        //Select resource and document which will use as a reference the shared document
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        selectResourceDocumentDialog.selectResourceReferenceByResourceIdentifier(resourceModelOasis1ToBeShared.getIdentifierValue());
+        editResourceDocumentPage.getSaveBtn().click();
+
+        //Validate that opened document contains the reference
+        ResourcesPage resourcesPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLResouceDocument(resourceModelOasis1UsesReference.getIdentifierValue(), resourceModelOasis1UsesReference.getIdentifierScheme());
+        soft.assertEquals(documentXML.getNodeValue("ext:referenceNode"), "referenceValue", "Open document does not contain the referenced document");
+        soft.assertEquals(documentXML.getNodeValue("ext:draftReferenceNode"), null, "Open document contains node from draft version of referenced document");
+        soft.assertEquals(documentXML.getNodeValue("ext:approvedReferenceNode"), null, "Open document contains node from draft version of referenced document");
+        soft.assertEquals(documentXML.getNodeValue("ext:rejectedReferenceNode"), null, "Open document contains node from draft version of referenced document");
+
+
+        soft.assertAll();
+
+    }
+
+    @Test(description = "EDTRES-27- Resource administratoris not able to see shared documents for private resources", priority = 1)
+
+    public void resourceAdministratorsAreNotAbleToSeeSharedDocumentsForPrivateResources() throws Exception {
+
+        ResourceModel resouceModelPrivateToBeShared = ResourceModel.generatePrivateResource(ResourceTypes.OASIS1);
+        ResourceModel resourceModelOasis1UsesReference = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        //add resource to group
+        resouceModelPrivateToBeShared = rest.resources().createResourceForGroup(domainModel, groupModel, resouceModelPrivateToBeShared);
+        resourceModelOasis1UsesReference = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1UsesReference);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resouceModelPrivateToBeShared, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1UsesReference, adminMember);
+
+        //Select resource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resouceModelPrivateToBeShared);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getDocumentConfigurationSection().enableSharing();
+        editResourceDocumentPage.getSaveBtn().click();
+
+        editResourceDocumentPage.getBackBtn().click();
+
+        //Select resource and document which will use as a reference the shared document
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        soft.assertFalse(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resouceModelPrivateToBeShared.getIdentifierValue()), "Shared private resource is visible");
+
+        // make current group private and resource public
+        groupModel.setVisibility("PRIVATE");
+        rest.domains().updateGroupForDomain(domainModel, groupModel);
+
+        resouceModelPrivateToBeShared.setVisibility("PUBLIC");
+        rest.resources().updateResource(domainModel, groupModel, resouceModelPrivateToBeShared);
+
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resouceModelPrivateToBeShared.getIdentifierValue()), "Shared private resource is visible");
 
         soft.assertAll();
 

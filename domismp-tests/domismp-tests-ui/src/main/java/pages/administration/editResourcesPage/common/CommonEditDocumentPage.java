@@ -96,16 +96,17 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         weToDInput(codeEditorSendValueElement).fill(documentValue);
 
     }
-    public void clickOnNewVersion() {
-        weToDButton(newVersionBtn).click();
+
+    public DButton getNewVersionBtn() {
+        return weToDButton(newVersionBtn);
     }
 
-    public void clickOnGenerate() {
-        weToDButton(generateBtn).click();
+    public DButton getGenerateBtn() {
+        return weToDButton(generateBtn);
     }
 
-    public void clickOnBack() {
-        weToDButton(backBtn).click();
+    public DButton getBackBtn() {
+        return weToDButton(backBtn);
 
     }
     public void clickOnCancelAndConfirm() {
@@ -113,8 +114,8 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         new ConfirmationDialog(driver).confirm();
     }
 
-    public void clickOnSave() {
-        weToDButton(saveBtn).click();
+    public DButton getSaveBtn() {
+        return weToDButton(saveBtn);
 
     }
 
@@ -122,6 +123,9 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         return weToDButton(reviewRequestBtn);
     }
 
+    public DButton getRejectBtn() {
+        return weToDButton(rejectBtn);
+    }
     public DButton getApproveBtn() {
         return weToDButton(approveBtn);
     }
@@ -135,12 +139,17 @@ public class CommonEditDocumentPage extends DomiSMPPage {
         return weToDInput(statusLbl).getText();
     }
 
-    public void clickOnValidate() {
-        weToDButton(validateBtn).click();
+    public DButton getValidateBtn() {
+        return weToDButton(validateBtn);
     }
 
     public void clickOnApproveAndConfirm() {
         weToDButton(approveBtn).click();
+        new ConfirmationDialog(driver).confirm();
+    }
+
+    public void clickOnARejectAndConfirm() {
+        weToDButton(rejectBtn).click();
         new ConfirmationDialog(driver).confirm();
     }
 

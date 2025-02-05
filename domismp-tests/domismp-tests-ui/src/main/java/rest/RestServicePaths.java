@@ -45,6 +45,11 @@ public class RestServicePaths {
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/create";
     }
 
+    public static String getUpdateGroupPath(String currentUserId, String domainId, String groupId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/update";
+    }
+
     public static String getGroupAddMemberPath(String currentUserId, String domainId, String groupId) {
 
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/member/put";
@@ -60,6 +65,11 @@ public class RestServicePaths {
     public static String getResourceAddMemberPath(String currentUserId, String domainId, String groupId, String resourceId) {
 
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/member/put";
+    }
+
+    public static String getResourceUpdatePath(String currentUserId, String domainId, String groupId, String resourceId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/update";
     }
 
     //Keystore

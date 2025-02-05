@@ -2,6 +2,7 @@ package rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.sun.jersey.api.client.ClientResponse;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -58,4 +59,19 @@ public class ResourceClient extends BaseRestClient {
         LOG.debug("Member: " + groupMember.getUsername() + " has been added!");
         return response.getEntity(MemberModel.class);
     }
+
+    public ResourceModel updateResource(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceToBeUpdated) {
+        String updateResorcePath = RestServicePaths.getResourceUpdatePath(TestRunData.getInstance().getUserId(), domainModel.getDomainId(), groupModel.getGroupId(), resourceToBeUpdated.getResourceId());
+        ClientResponse response = requestPOST(resource.path(updateResorcePath), new Gson().toJson(resourceToBeUpdated));
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not update resource!", response.getStatus(), response.getEntity(String.class));
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        LOG.debug("Resource " + resourceToBeUpdated.getIdentifierValue() + " has been updated!");
+        return response.getEntity(ResourceModel.class);
+    }
+
 }
