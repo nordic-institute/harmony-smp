@@ -62,11 +62,11 @@ public enum SMPPropertyEnum {
     HTTP_PROXY_USER("smp.proxy.user", "", "The proxy user",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
 
-    RESOURCE_SCH_VALIDATION_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$",
+    RESOURCE_SCH_VALIDATION_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^$|^(?!^.{26})([A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$",
             "Regular expression for validating the participant schema!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     RESOURCE_SCH_REGEXP_MSG("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
-            "Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].", "Error message for UI",
+            "Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [A-Za-z0-9].", "Error message for UI",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     RESOURCE_SCH_MANDATORY("identifiersBehaviour.scheme.mandatory", "true", "Scheme for participant identifier is mandatory",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
