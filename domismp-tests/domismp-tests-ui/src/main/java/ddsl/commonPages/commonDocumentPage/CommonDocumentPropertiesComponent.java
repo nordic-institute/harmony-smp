@@ -1,4 +1,4 @@
-package pages.administration.editResourcesPage.common;
+package ddsl.commonPages.commonDocumentPage;
 
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.MatSmallGrid;

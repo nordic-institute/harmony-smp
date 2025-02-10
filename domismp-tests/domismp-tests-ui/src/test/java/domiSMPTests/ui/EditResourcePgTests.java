@@ -18,6 +18,8 @@ import pages.administration.editResourcesPage.editResourceDocumentPage.SelectRes
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.EditSubresourceDocumentPage;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentPropertiesSection;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceWizardDialog;
+import pages.administration.reviewTasksPage.ReviewDocumentPage;
+import pages.administration.reviewTasksPage.ReviewTasksPage;
 import pages.search.ResourcesPage;
 import rest.models.*;
 import utils.FileUtils;
@@ -89,9 +91,10 @@ public class EditResourcePgTests extends SeleniumTest {
         loginPage = homePage.goToLoginPage();
         loginPage.login(adminUser.getUsername(), TestRunData.getInstance().getNewPassword());
         editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);
+
     }
 
-    @Test(description = "EDTRES-01 Resource admins are able to invite/edit/remove resource members")
+    @Test(description = "EDTRES-01 Resource admins are able to invite        editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);\n/edit/remove resource members")
     public void resourceAdminsAreAbleToInviteEditRemoveMembers() {
 
         UserModel domainMember = UserModel.generateUserWithUSERrole();
@@ -502,6 +505,63 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertEquals(documentXML.getNodeValue("DocumentIdentifier"), subresourceModel.getIdentifierValue(), "EndpointURI value is wrong");
         soft.assertEquals(documentXML.getNodeValue("EndpointURI"), "www.domibustest.com", "EndpointURI value is wrong");
         soft.assertAll();
+    }
+
+    @Test(description = "EDTRES-17 - Resource Administrator AND Resource viewer can approve documents under review", priority = 1)
+
+    public void test() throws Exception {
+
+        ResourceModel resource = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        //add resource to group
+        resource = rest.resources().createResourceForGroup(domainModel, groupModel, resource);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resource, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resource);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+        //Create new version under review for Resource viewer
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+
+        //Reject review task from Review Document screen
+        ReviewTasksPage reviewTasksPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
+        ReviewDocumentPage reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(resource.getIdentifierValue());
+        soft.assertEquals(reviewDocumentPage.getStatusValue(), "UNDER_REVIEW", "Document does not have UNDER_REVIEW status");
+        reviewDocumentPage.clickOnARejectAndConfirm();
+
+
+        //  String documentid =  rest.resources().getDocumentID(resourceModel);
+
+        //rest.startSessionWithUser(adminUser.getUsername(),TestRunData.getInstance().getNewPassword() );
+        String documentid = rest.resources().getDocumentID(resourceModel);
+
+        rest.resources().reviewRequest(resource, documentid, 2);
+        reviewDocumentPage.refreshPage();
+
+
+//        //Send document back to review
+//        editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);
+//        editResourcePage.selectDomain(domainModel, groupModel, resource);
+//        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+//        //Select rejected version of document
+//        editResourceDocumentPage.selectVersion(2);
+//        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "REJECTED", "Document is not in the rejected status");
+//        editResourceDocumentPage.getRequestReviewBtn().click();
+
+        //Approve review task from Review Document screen
+        reviewTasksPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
+        reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(resource.getIdentifierValue());
+
+        reviewDocumentPage.clickOnApproveAndConfirm();
+
+
+        soft.assertAll();
+
     }
 
     @Test(description = "EDTRES-19 - Resource Administrator with review rights are able to review documents inside the Edit Resource document screen", priority = 1)

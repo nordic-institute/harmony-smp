@@ -1,25 +1,26 @@
-package pages.search;
+package pages.administration.reviewTasksPage;
 
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.GridPagination;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.search.ResourcePageGrid;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
-public class ResourcePageGrid extends DComponent {
+public class ReviewTasksGrid extends DComponent {
     protected static final By gridHeadersLocator = By.cssSelector("datatable-header div.datatable-row-center datatable-header-cell");
     protected static final By gridRowsLocator = By.cssSelector("datatable-body-row > div.datatable-row-center.datatable-row-group");
     private final static Logger LOG = LoggerFactory.getLogger(ResourcePageGrid.class);
     private final WebElement parentElement;
 
-    public ResourcePageGrid(WebDriver driver, WebElement parentElement) {
+    public ReviewTasksGrid(WebDriver driver, WebElement parentElement) {
         super(driver);
         PageFactory.initElements(driver, this);
         this.parentElement = parentElement;
@@ -134,8 +135,48 @@ public class ResourcePageGrid extends DComponent {
 
     }
 
+    public ReviewDocumentPage openDocumentTask(String resourceIdentifier) {
 
-    public void openSubresource(String resourceColumn, String resourceValue, String columnNameSubresouce, String valueSubresource) {
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
+
+        List<WebElement> rowHeaders = getGridHeaders();
+        int columnIndex = -1;
+        for (int i = 0; i < rowHeaders.size(); i++) {
+            if (rowHeaders.get(i).getText().equals("Res. value")) {
+                columnIndex = i;
+                break;
+            }
+        }
+        if (columnIndex == -1) {
+            LOG.error("No element found");
+            throw new NoSuchElementException("Column not found");
+        }
+        boolean isElementPresent = false;
+
+        List<WebElement> rows = getRows();
+        for (WebElement row : rows) {
+            List<WebElement> cells = getCells(row);
+            WebElement currentCell = cells.get(columnIndex);
+            if (currentCell.getText().equals(resourceIdentifier)) {
+                isElementPresent = true;
+                Actions action = new Actions(driver);
+                action.doubleClick(row).perform();
+                return new ReviewDocumentPage(driver);
+            }
+        }
+        if (isElementPresent) {
+            return null;
+        }
+
+        if (!isElementPresent) {
+            throw new NoSuchElementException("Value [" + resourceIdentifier + "] was not found in the grid");
+
+        }
+        return null;
+    }
+
+
+    public void openDocumentTask(String resourceColumn, String resourceValue, String columnNameSubresouce, String valueSubresource) {
 
         wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         int numOfPages;

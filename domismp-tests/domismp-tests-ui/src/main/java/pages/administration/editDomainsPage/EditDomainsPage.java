@@ -1,6 +1,6 @@
 package pages.administration.editDomainsPage;
 
-import ddsl.CommonPageWithTabsAndGrid;
+import ddsl.commonPages.CommonPageWithTabsAndGrid;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

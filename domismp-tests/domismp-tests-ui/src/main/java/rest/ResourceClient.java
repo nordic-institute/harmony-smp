@@ -74,4 +74,35 @@ public class ResourceClient extends BaseRestClient {
         return response.getEntity(ResourceModel.class);
     }
 
+    public String getDocumentID(ResourceModel resourceToBeUpdated) {
+        String updateResorcePath = RestServicePaths.getDocumentPath(TestRunData.getInstance().getUserId(), resourceToBeUpdated.getResourceId());
+        ClientResponse response = requestGet(resource.path(updateResorcePath));
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not get document id!", response.getStatus(), response.getEntity(String.class));
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new JSONObject(response.getEntity(String.class)).get("documentId").toString();
+    }
+
+    public String reviewRequest(ResourceModel resourceToBeUpdated, String documentId, int version) {
+        JSONObject resourceJson = new JSONObject();
+        resourceJson.put("documentId", documentId);
+        resourceJson.put("payloadVersion", version);
+
+
+        String updateResorcePath = RestServicePaths.getReviewRequestPath(TestRunData.getInstance().getUserId(), resourceToBeUpdated.getResourceId());
+        ClientResponse response = requestPOST2(resource.path(updateResorcePath), resourceJson);
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not update resource!", response.getStatus(), response.getEntity(String.class));
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        LOG.debug("Document " + documentId + " has been sent to review!");
+        return new JSONObject(response.getEntity(String.class)).get("documentId").toString();
+    }
 }

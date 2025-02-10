@@ -1,9 +1,9 @@
 package pages.administration.editResourcesPage.editSubresourceDocumentPage;
 
+import ddsl.commonPages.commonDocumentPage.CommonDocumentConfigurationComponent;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.administration.editResourcesPage.common.CommonDocumentConfigurationComponent;
 
 /**
  * Page object for the Subresource Document Properties section. This contains the locators of the page and the methods for the behaviour of the page

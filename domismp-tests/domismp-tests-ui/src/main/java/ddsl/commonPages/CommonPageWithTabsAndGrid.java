@@ -1,4 +1,4 @@
-package ddsl;
+package ddsl.commonPages;
 
 import ddsl.dcomponents.Grid.MatSmallGrid;
 import org.openqa.selenium.WebDriver;

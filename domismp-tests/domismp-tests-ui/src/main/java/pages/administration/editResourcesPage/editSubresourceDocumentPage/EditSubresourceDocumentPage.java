@@ -1,12 +1,12 @@
 package pages.administration.editResourcesPage.editSubresourceDocumentPage;
 
+import ddsl.commonPages.commonDocumentPage.CommonExtendedEditDocumentPage;
 import org.openqa.selenium.WebDriver;
-import pages.administration.editResourcesPage.common.CommonEditDocumentPage;
 
 /**
  * Page object for the Edit subresource document page. This contains the locators of the page and the methods for the behaviour of the page
  */
-public class EditSubresourceDocumentPage extends CommonEditDocumentPage {
+public class EditSubresourceDocumentPage extends CommonExtendedEditDocumentPage {
 
     public EditSubresourceDocumentPage(WebDriver driver) {
         super(driver);

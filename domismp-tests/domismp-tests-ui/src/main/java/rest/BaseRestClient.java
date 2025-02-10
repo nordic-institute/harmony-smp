@@ -71,6 +71,13 @@ public class BaseRestClient {
         return builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, body);
     }
 
+    protected ClientResponse requestPOST2(WebResource resource, JSONObject body) {
+        startSession();
+        WebResource.Builder builder = decorateBuilder(resource);
+
+        return builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, body);
+    }
+
     protected ClientResponse requestGet(WebResource resource) {
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
@@ -141,6 +148,35 @@ public class BaseRestClient {
 
     }
 
+    private void createNewSession(String username, String password) throws Exception {
+        log.debug("Rest client using to login: " + this.username);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("password", password);
+
+        ClientResponse response = resource.path(RestServicePaths.LOGIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, new JSONObject(params).toString());
+        JSONObject responseBody = new JSONObject(response.getEntity(String.class));
+
+        if (response.getStatus() == 200) {
+            // extract userId to be used in the Paths of the requests
+            data.setUserId((String) responseBody.get("userId"));
+            log.debug(String.format("UserID: %s is stored!", TestRunData.getInstance().getUserId()));
+
+            data.setCookies(response.getCookies());
+            log.debug("Cookies are stored!");
+
+            if (null != TestRunData.getInstance().getCookies()) {
+                token = extractToken();
+            } else {
+                throw new Exception("Could not login, COOKIES are not found!");
+            }
+        } else {
+            throw new SMPRestException("Login failed", response);
+
+        }
+
+    }
+
     private String extractToken() {
         String mytoken = null;
         for (NewCookie cookie : TestRunData.getInstance().getCookies()) {
@@ -173,6 +209,16 @@ public class BaseRestClient {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public void startSessionWithUser(String username, String password) {
+
+        try {
+
+            createNewSession(username, password);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

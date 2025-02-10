@@ -72,6 +72,16 @@ public class RestServicePaths {
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/update";
     }
 
+    public static String getDocumentPath(String currentUserId, String resourceId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/resource/" + resourceId + "/document";
+    }
+
+    public static String getReviewRequestPath(String currentUserId, String resourceId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/resource/" + resourceId + "/document/review-request";
+    }
+
     //Keystore
     public static String getKeystorePath(String currentUserId) {
 

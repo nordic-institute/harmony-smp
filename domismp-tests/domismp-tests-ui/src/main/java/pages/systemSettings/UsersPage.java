@@ -1,6 +1,6 @@
 package pages.systemSettings;
 
-import ddsl.CommonPageWithTabsAndGrid;
+import ddsl.commonPages.CommonPageWithTabsAndGrid;
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
