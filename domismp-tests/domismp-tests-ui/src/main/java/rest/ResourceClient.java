@@ -92,7 +92,7 @@ public class ResourceClient extends BaseRestClient {
         ClientResponse response = jsonPUT(resource.path(addGroupMemberPath), membersJson);
         if (response.getStatus() != 200) {
             try {
-                throw new SMPRestException("Could not add members to resource", response);
+                throw new SMPRestException("Could not update members to resource", response);
             } catch (SMPRestException e) {
                 throw new RuntimeException(e);
             }
@@ -110,7 +110,7 @@ public class ResourceClient extends BaseRestClient {
         ClientResponse response = requestGET(resource.path(addGroupMemberPath), params);
         if (response.getStatus() != 200) {
             try {
-                throw new SMPRestException("Could not add members to resource", response);
+                throw new SMPRestException("Could not get members of resource", response);
             } catch (SMPRestException e) {
                 throw new RuntimeException(e);
             }
@@ -124,7 +124,6 @@ public class ResourceClient extends BaseRestClient {
 
 
     }
-
 
     public ResourceModel updateResource(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceToBeUpdated) {
         String updateResorcePath = RestServicePaths.getResourceUpdatePath(TestRunData.getInstance().getUserId(), domainModel.getDomainId(), groupModel.getGroupId(), resourceToBeUpdated.getResourceId());
