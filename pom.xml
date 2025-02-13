@@ -108,13 +108,13 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.98</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.99</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.0</xmlunit.version>
 
         <!-- plugins -->
-        <plugin.frontend-maven-plugin.version>1.15.0</plugin.frontend-maven-plugin.version>
+        <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
