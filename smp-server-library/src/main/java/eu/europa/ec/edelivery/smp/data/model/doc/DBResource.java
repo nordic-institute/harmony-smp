@@ -1,14 +1,20 @@
-/*
- * Copyright 2017 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.data.model.doc;
@@ -40,6 +46,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme")
 @NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
+        " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
+        " AND lower(d.identifierValue) = lower(:identifier_value) " +
+        " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR lower(d.identifierScheme) = lower(:identifier_scheme))")
+@NamedQuery(name = QUERY_RESOURCE_BY_CS_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
         " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
         " AND d.identifierValue = :identifier_value " +
         " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
@@ -93,7 +104,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier )" +
         " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) order by r.identifierScheme, r.identifierValue"
 )
-@NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
+@NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r, r.domainResourceDef.domain.domainCode as domainCode, " +
+        "   r.domainResourceDef.resourceDef.urlSegment as urlSegment, r.domainResourceDef.resourceDef.name as documentType " +
+        "FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
         " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
         " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
         " AND ( :user_id IS NOT NULL AND rm.user.id = :user_id "  +
@@ -106,8 +119,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        ")))"+
-        "order by r.identifierScheme, r.identifierValue"
+        "))) " +
+        " AND (:domain_code IS NULL OR r.domainResourceDef.domain.domainCode = :domain_code) " +
+        " AND (:document_type IS NULL OR r.domainResourceDef.resourceDef.name = :document_type) " +
+        " ORDER BY r.identifierScheme, r.identifierValue"
 )
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER_COUNT, query = "SELECT count(distinct r.id) FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
         " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
@@ -122,7 +137,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        ")))"
+        "))) " +
+        " AND (:domain_code IS NULL OR r.domainResourceDef.domain.domainCode = :domain_code) " +
+        " AND (:document_type IS NULL OR r.domainResourceDef.resourceDef.name = :document_type) "
 )
 public class DBResource extends BaseEntity {
 
@@ -139,8 +156,11 @@ public class DBResource extends BaseEntity {
     @Column(name = "IDENTIFIER_SCHEME", length = CommonColumnsLengths.MAX_IDENTIFIER_VALUE_SCHEME_LENGTH)
     String identifierScheme;
 
-    @Column(name = "SML_REGISTERED", nullable = false)
+    @Column(name = "SML_REGISTERED")
     private boolean smlRegistered = false;
+
+    @Column(name = "REVIEW_ENABLED")
+    private Boolean reviewEnabled = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "VISIBILITY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
@@ -257,6 +277,14 @@ public class DBResource extends BaseEntity {
 
     public void setSmlRegistered(boolean smlRegistered) {
         this.smlRegistered = smlRegistered;
+    }
+
+    public Boolean isReviewEnabled() {
+        return reviewEnabled == null ? Boolean.FALSE : reviewEnabled;
+    }
+
+    public void setReviewEnabled(Boolean reviewEnabled) {
+        this.reviewEnabled = reviewEnabled;
     }
 
     /**

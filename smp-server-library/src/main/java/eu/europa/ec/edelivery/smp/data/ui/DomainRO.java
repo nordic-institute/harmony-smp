@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
@@ -25,8 +43,9 @@ public class DomainRO extends BaseRO {
     private boolean smlRegistered;
     private VisibilityType visibility;
     private String defaultResourceTypeIdentifier;
-    private List<GroupRO> groups = new ArrayList<>();
-    private List<String> resourceDefinitions = new ArrayList<>();
+    private final List<GroupRO> groups = new ArrayList<>();
+    private final List<String> resourceDefinitions = new ArrayList<>();
+    private long adminMemberCount = -1;
 
     public String getDomainId() {
         return domainId;
@@ -114,5 +133,13 @@ public class DomainRO extends BaseRO {
 
     public List<String> getResourceDefinitions() {
         return resourceDefinitions;
+    }
+
+    public long getAdminMemberCount() {
+        return adminMemberCount;
+    }
+
+    public void setAdminMemberCount(long adminMemberCount) {
+        this.adminMemberCount = adminMemberCount;
     }
 }

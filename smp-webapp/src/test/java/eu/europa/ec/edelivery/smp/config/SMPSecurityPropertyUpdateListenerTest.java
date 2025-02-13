@@ -1,8 +1,26 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.config.properties.SMPSecurityPropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import org.junit.Test;
+import eu.europa.ec.edelivery.smp.config.properties.SMPSecurityPropertyUpdateListener;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
@@ -13,17 +31,16 @@ import java.util.Map;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPSecurityPropertyUpdateListenerTest {
-
+class SMPSecurityPropertyUpdateListenerTest {
 
     WSSecurityConfigurerAdapter wsSecurityConfigurerAdapter = Mockito.mock(WSSecurityConfigurerAdapter.class);
     ForwardedHeaderTransformer forwardedHeaderTransformer = Mockito.mock(ForwardedHeaderTransformer.class);
     SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(wsSecurityConfigurerAdapter, forwardedHeaderTransformer);
 
     @Test
-    public void testPropertiesUpdateClientCertTrue() {
+    void testPropertiesUpdateClientCertTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, TRUE);
         testInstance.updateProperties(prop);
@@ -33,7 +50,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testPropertiesUpdateSSLClientCertTrue() {
+    void testPropertiesUpdateSSLClientCertTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, TRUE);
         testInstance.updateProperties(prop);
@@ -43,7 +60,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testPropertiesUpdateForwardedHeadersTrue() {
+    void testPropertiesUpdateForwardedHeadersTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(HTTP_FORWARDED_HEADERS_ENABLED, FALSE);
         testInstance.updateProperties(prop);
@@ -53,7 +70,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testPropertiesUpdateFalse() {
+    void testPropertiesUpdateFalse() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, FALSE);
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, FALSE);
@@ -65,7 +82,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testHandledProperties() {
+    void testHandledProperties() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         List<SMPPropertyEnum> result = testInstance.handledProperties();
         assertEquals(3, result.size());
@@ -75,7 +92,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testHandleProperty() {
+    void testHandleProperty() {
         boolean resultTrue = testInstance.handlesProperty(HTTP_FORWARDED_HEADERS_ENABLED);
         assertTrue(resultTrue);
         boolean resultFalse = testInstance.handlesProperty(HTTP_PROXY_HOST);

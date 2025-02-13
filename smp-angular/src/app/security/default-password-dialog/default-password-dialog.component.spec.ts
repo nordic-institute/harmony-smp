@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DefaultPasswordDialogComponent } from './default-password-dialog.component';
+import {DefaultPasswordDialogComponent} from './default-password-dialog.component';
 
 describe('DefaultPasswordDialogComponent', () => {
   let component: DefaultPasswordDialogComponent;

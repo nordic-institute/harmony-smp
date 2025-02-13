@@ -1,14 +1,14 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {SmpConstants} from "../../../smp.constants";
 import {AccessTokenRo} from "../../model/access-token-ro.model";
-import {UserService} from "../../../system-settings/user/user.service";
 import {CredentialRo} from "../../../security/credential.model";
-import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
-import {CertificateService} from "../../../system-settings/user/certificate.service";
 import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
-
+import {CertificateService} from "../../services/certificate.service";
+import {CertificateRo} from "../../model/certificate-ro.model";
+import {UserService} from "../../services/user.service";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   templateUrl: './credential-dialog.component.html',
@@ -18,8 +18,7 @@ export class CredentialDialogComponent {
   public static CERTIFICATE_TYPE: string = "CERTIFICATE";
   public static ACCESS_TOKEN_TYPE: string = "ACCESS_TOKEN";
 
-  dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-  formTitle = "Access token generation dialog";
+  formTitle: string;
   credentialForm: FormGroup;
   certificateForm: FormGroup;
 
@@ -31,14 +30,15 @@ export class CredentialDialogComponent {
   // certificate specific data
   newCertFile: File = null;
   enableCertificateImport: boolean = true;
-
+  accessTokenValue: string;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private userService: UserService,
               private httpErrorHandlerService: HttpErrorHandlerService,
               private certificateService: CertificateService,
               public dialogRef: MatDialogRef<CredentialDialogComponent>,
-              private formBuilder: FormBuilder
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService,
   ) {
     dialogRef.disableClose = true;//disable default close operation
     this.formTitle = data.formTitle;
@@ -125,7 +125,7 @@ export class CredentialDialogComponent {
   uploadCertificate(event) {
     this.newCertFile = null;
     const file = event.target.files[0];
-    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe(async (res: CertificateRo) => {
         if (res && res.certificateId) {
           this.certificateForm.patchValue({
             'subject': res.subject,
@@ -152,16 +152,19 @@ export class CredentialDialogComponent {
           this.newCertFile = file;
         } else {
           this.clearCertificateData()
-          this.showErrorMessage("Error occurred while reading certificate. Check if uploaded file has valid certificate type", true)
+          this.showErrorMessage(await lastValueFrom(this.translateService.get("credentials.dialog.error.read.certificate")), true)
         }
       },
-      err => {
+      async err => {
         this.clearCertificateData()
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           this.closeDialog();
           return;
         }
-        this.showErrorMessage("Error uploading certificate file [" + file.name + "]." + err.error?.errorDescription, true)
+        this.showErrorMessage(await lastValueFrom(this.translateService.get("credentials.dialog.error.upload.certificate", {
+          fileName: file.name,
+          errorDescription: err.error?.errorDescription
+        })), true);
       }
     );
   }
@@ -174,15 +177,17 @@ export class CredentialDialogComponent {
 
 
   generatedAccessToken() {
-
     this.clearAlert();
-    this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe((response: AccessTokenRo) => {
-      this.showSuccessMessage("Token with ID: \"" + response.identifier + "\" and value: \"" + response.value + "\" was generated!" +
-        "<br \><br \>Copy the access token's value and save it in a safe space. <br \><b>You won't be able to see your token's value once you click Close.</b>")
+    this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe(async (response: AccessTokenRo) => {
+      this.accessTokenValue = response.value;
+      this.showSuccessMessage(await lastValueFrom(this.translateService.get("credentials.dialog.success.generate.token", {
+        responseIdentifier: response.identifier,
+        responseValue: response.value
+      })));
       this.userService.notifyAccessTokenUpdated(response.credential);
       this.setDisabled(true);
     }, (err) => {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
         this.closeDialog();
         return;
       }
@@ -200,7 +205,23 @@ export class CredentialDialogComponent {
     }
     if (this.isCertificateType) {
       credential.certificate = this.certificateData;
+    } else {
+      let dateFrom = this.credentialForm.controls['activeFrom'].value;
+      if (dateFrom) {
+        // make date mutable and the modification
+        dateFrom = new Date(dateFrom);
+        dateFrom.setHours(0, 0, 0, 0);
+      }
+      credential.activeFrom = dateFrom
+      let dateTo = this.credentialForm.controls['expireOn'].value;
+      if (dateTo) {
+        // make date mutable and the modification
+        dateTo = new Date(dateTo);
+        dateTo.setHours(23, 59, 59, 999);
+      }
+      credential.expireOn = dateTo
     }
+
     return credential;
   }
 
@@ -229,16 +250,15 @@ export class CredentialDialogComponent {
     this.messageType = "success";
   }
 
-  showErrorMessage(value: string, errorLevel:boolean) {
+  showErrorMessage(value: string, errorLevel: boolean) {
     this.message = value;
-    this.messageType =errorLevel?"error":"warning";
+    this.messageType = errorLevel ? "error" : "warning";
   }
 
   clearAlert() {
     this.message = null;
     this.messageType = null;
   }
-
 
   closeDialog() {
     this.dialogRef.close()

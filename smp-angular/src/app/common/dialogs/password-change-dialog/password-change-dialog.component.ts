@@ -3,11 +3,12 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {User} from "../../../security/user.model";
 import {GlobalLookups} from "../../global-lookups";
-import {UserDetailsService} from "../../../system-settings/user/user-details.service";
-import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {SecurityService} from "../../../security/security.service";
-import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
-import {UserRo} from "../../../system-settings/user/user-ro.model";
+import {UserDetailsService} from "../../services/user-details.service";
+import {UserRo} from "../../model/user-ro.model";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'smp-password-change-dialog',
@@ -16,7 +17,6 @@ import {UserRo} from "../../../system-settings/user/user-ro.model";
 })
 export class PasswordChangeDialogComponent {
 
-  formTitle = "Set/Change password dialog";
   dialogForm: UntypedFormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
@@ -26,16 +26,19 @@ export class PasswordChangeDialogComponent {
   message: string;
   messageType: string = "alert-error";
   forceChange: boolean = false;
+  formTitle = "";
+  passwordTitle = "";
 
   constructor(
     public dialogRef: MatDialogRef<PasswordChangeDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private lookups: GlobalLookups,
     private userDetailsService: UserDetailsService,
-    private alertService: AlertMessageService,
     private securityService: SecurityService,
+    private alertService: AlertMessageService,
     public dialog: MatDialog,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
+    private translateService: TranslateService
   ) {
     // disable close of focus lost
     dialogRef.disableClose = true;
@@ -48,7 +51,7 @@ export class PasswordChangeDialogComponent {
     let currentPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
       this.securityService.getCurrentUser().casAuthenticated && this.adminUser ? null : [Validators.required]);
     let newPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
-      [Validators.required, Validators.pattern(this.passwordValidationRegExp), equal(currentPasswdFormControl, false)]);
+      [Validators.required, Validators.pattern(this.passwordValidationRegExp)]);
     let confirmNewPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
       [Validators.required, equal(newPasswdFormControl, true)]);
 
@@ -71,6 +74,9 @@ export class PasswordChangeDialogComponent {
         this.dialogForm.controls['confirm-new-password'].updateValueAndValidity();
       }
     });
+
+    this.translateService.get("password.change.dialog.title").subscribe(value => this.formTitle = value);
+    (async () => await this.updatePasswordTitle()) ();
   }
 
   get showCurrentPasswordField():boolean {
@@ -93,8 +99,10 @@ export class PasswordChangeDialogComponent {
     return this.lookups.cachedApplicationConfig?.passwordValidationRegExp;
   }
 
-  get getPasswordTitle(): string {
-    return this.adminUser ? "Admin password for user [" + this.securityService.getCurrentUser().username + "]" : "Current password";
+  async updatePasswordTitle() {
+    this.passwordTitle = this.adminUser
+      ? await lastValueFrom(this.translateService.get("password.change.dialog.label.password.admin", {username: this.securityService.getCurrentUser().username}))
+      : await lastValueFrom(this.translateService.get("password.change.dialog.label.password.user"));
   }
 
   changeCurrentUserPassword() {
@@ -128,19 +136,16 @@ export class PasswordChangeDialogComponent {
     }
   }
 
-  showPassChangeDialog() {
-    this.dialog.open(InformationDialogComponent, {
-      data: {
-        title: "Password set/changed",
-        description: "Password has been successfully set/changed." +
-          (!this.adminUser ? " Login again to the application with the new password!" : "")
-      }
-    }).afterClosed().subscribe(result => {
-      if (!this.adminUser) {
-        // logout if changed for itself
-        this.securityService.finalizeLogout(result);
-      }
-    })
+  async showPassChangeDialog() {
+    this.alertService.success(this.adminUser
+        ? await lastValueFrom(this.translateService.get("password.change.dialog.success.password.change.admin"))
+        : await lastValueFrom(this.translateService.get("password.change.dialog.success.password.change.user")), true);
+
+
+    if (!this.adminUser) {
+      // logout if changed for itself
+      this.securityService.finalizeLogout({});
+    }
   }
 
   showSuccessMessage(value: string) {

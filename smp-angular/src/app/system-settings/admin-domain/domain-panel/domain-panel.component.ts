@@ -4,10 +4,12 @@ import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {CertificateRo} from "../../user/certificate-ro.model";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {CertificateRo} from "../../../common/model/certificate-ro.model";
+import {TranslateService} from "@ngx-translate/core";
+import {lastValueFrom} from "rxjs";
 
 @Component({
   selector: 'domain-panel',
@@ -33,6 +35,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   domainForm: FormGroup;
   editMode: boolean;
   createMode: boolean;
+  warningMessage = "";
 
   @Input() keystoreCertificates: CertificateRo[];
   @Input() currentDomains: DomainRo[];
@@ -80,15 +83,18 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   constructor(private domainService: AdminDomainService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService) {
 
     this.domainForm = formBuilder.group({
       'domainCode': new FormControl({value: '', readonly: true}, [Validators.pattern(this.domainCodePattern),
         this.notInList(this.currentDomains?.map(a => a.domainCode), this._domain?.domainCode)]),
       'signatureKeyAlias': new FormControl({value: '', readonly: true}),
+      'adminMemberCount': new FormControl({value: '', readonly: true}),
       'visibility': new FormControl({value: '', readonly: true}),
       'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
     });
+    (async () => await this.updateShowWarningMessage()) ();
   }
 
   get domain(): DomainRo {
@@ -106,6 +112,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     if (!!value) {
       this.domainForm.controls['domainCode'].setValue(this._domain.domainCode);
       this.domainForm.controls['signatureKeyAlias'].setValue(this._domain.signatureKeyAlias);
+      this.domainForm.controls['adminMemberCount'].setValue(this._domain.adminMemberCount);
       this.domainForm.controls['visibility'].setValue(this._domain.visibility);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue(this._domain.defaultResourceTypeIdentifier);
       this.domainForm.enable();
@@ -115,10 +122,12 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     } else {
       this.domainForm.controls['domainCode'].setValue("");
       this.domainForm.controls['signatureKeyAlias'].setValue("");
+      this.domainForm.controls['adminMemberCount'].setValue("0");
       this.domainForm.controls['visibility'].setValue(VisibilityEnum.Public);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
       this.domainForm.disable();
     }
+    (async () => await this.updateShowWarningMessage()) ();
     this.domainForm.markAsPristine();
   }
 
@@ -137,12 +146,27 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
   }
 
-  get showWarning(){
-    return !!this._domain?.domainId && !this.domainResourceTypes?.length
+  get showWarning() {
+    return !!this._domain?.domainId && (!this.domainResourceTypes?.length
+      || !this._domain.signatureKeyAlias
+      || !this._domain.adminMemberCount
+      || this._domain.adminMemberCount < 1)
   }
 
-  get showWarningMessage(){
-    return "To complete domain configuration, please select at least one resource type from the Resource Types tab";
+  async updateShowWarningMessage() {
+    let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
+    if (!this._domain.signatureKeyAlias) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.signature.key"));
+    }
+    if (!this.domainResourceTypes?.length) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.resource.type"));
+    }
+    if (!this._domain.adminMemberCount || this._domain.adminMemberCount < 1) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.admin.member"));
+    }
+    message += "</ul>"; // No need to translate this part
+
+    this.warningMessage = message;
   }
 
   get submitButtonEnabled(): boolean {

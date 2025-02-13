@@ -1,21 +1,38 @@
 <div id="user-certificates-panel">
-  <data-panel title="User X509 Certificates"
-              text="Register a Client X509 certificates to access the DomiSMP API using the mutual TLS authentication."
+  <data-panel title="{{ 'user.certificates.title' | translate }}"
+              text="{{ 'user.certificates.text' | translate }}"
               [labelColumnContent]="commonToolbar">
-    <user-certificate-panel *ngFor="let item of certificates; trackBy: trackListItem"
-                        (onDeleteEvent)="onDeleteItemClicked(item)"
-                        (onSaveEvent)="onSaveItemClicked(item)"
-                       (onShowCertificate)="onShowItemClicked(item)"
-                        [credential]="item"></user-certificate-panel>
+
+    <table mat-table id="user-certificate-table" [dataSource]="dataSource" class="panel smp-data-panel">
+      <ng-container matColumnDef="certificates">
+        <th mat-header-cell *matHeaderCellDef>{{ "user.certificates.label.user.certificate" | translate }}</th>
+        <td mat-cell *matCellDef="let cert"
+            [ngClass]="{'datatable-row-error': cert.invalid}"
+            [matTooltip]="cert.certificateId">
+          <user-certificate-panel (onDeleteEvent)="onDeleteItemClicked(cert)"
+                                  (onSaveEvent)="onSaveItemClicked(cert)"
+                                  (onShowCertificate)="onShowItemClicked(cert)"
+                                  [credential]="cert"></user-certificate-panel>
+
+        </td>
+        <tr mat-header-row class="user-certificate-table-header" *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row class="user-certificate-table-data" *matRowDef="let myRowData; columns: displayedColumns"></tr>
+      </ng-container>
+    </table>
+
+    <mat-paginator class="mat-elevation-z2" id="tokens-paginator"
+                   [hidePageSize]="true"
+                   [pageSize]="5" attr.aria-label="{{ 'user.certificates.label.select.page' | translate }}"></mat-paginator>
   </data-panel>
+
 </div>
 
 <ng-template #commonToolbar>
   <button id="importNewCertificateButton" mat-raised-button color="primary"
-          matTooltip="Import new certificate" style="margin: 2em "
-  (click)="createNew()">
+          matTooltip="{{ 'user.certificates.tooltip.import' | translate }}" style="margin: 2em "
+          (click)="createNew()">
     <mat-icon>article</mat-icon>
-    <span>Import new certificate</span>
+    <span>{{ "user.certificates.button.import" | translate }}</span>
   </button>
 </ng-template>
 

@@ -1,11 +1,14 @@
 import {Component, Inject, Input} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../../../../common/model/domain-ro.model";
 import {AlertMessageService} from "../../../../common/alert-message/alert-message.service";
 import {VisibilityEnum} from "../../../../common/enums/visibility.enum";
 import {GroupRo} from "../../../../common/model/group-ro.model";
 import {EditDomainService} from "../../edit-domain.service";
+import {
+  EditResourceController
+} from "../../../edit-resources/edit-resource.controller";
 
 
 @Component({
@@ -18,7 +21,7 @@ export class GroupDialogComponent {
     .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
-  formTitle = "Group dialog";
+  formTitle = "";
   groupForm: FormGroup;
 
   message: string;
@@ -29,6 +32,7 @@ export class GroupDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private editDomainService: EditDomainService,
+              private editResourceController: EditResourceController,
               public dialogRef: MatDialogRef<GroupDialogComponent>,
               private alertService: AlertMessageService,
               private formBuilder: FormBuilder
@@ -38,8 +42,8 @@ export class GroupDialogComponent {
     this._currentDomain = data.domain;
 
     this.groupForm = formBuilder.group({
-      'name': new FormControl({value: null}),
-      'description': new FormControl({value: null}),
+      'name': new FormControl({value: null},  Validators.maxLength(512)),
+      'description': new FormControl({value: null}, Validators.maxLength(1024)),
       'visibility': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
@@ -112,17 +116,22 @@ export class GroupDialogComponent {
 
     this.editDomainService.createDomainGroupObservable(this._currentDomain.domainId, group).subscribe((group: GroupRo) => {
       if (!!group) {
+        this.editResourceController.dataChanged = true;
         this.closeDialog();
       }
     }, (error) => {
       this.alertService.error(error.error?.errorDescription)
     });
+  }
 
+  public inputDataError = (controlName: string, errorName: string) => {
+    return this.groupForm.controls[controlName].hasError(errorName);
   }
 
   public saveGroup(group: GroupRo) {
     this.editDomainService.saveDomainGroupObservable(this._currentDomain.domainId, group).subscribe((group: GroupRo) => {
       if (!!group) {
+        this.editResourceController.dataChanged = true;
         this.closeDialog();
       }
     }, (error) => {

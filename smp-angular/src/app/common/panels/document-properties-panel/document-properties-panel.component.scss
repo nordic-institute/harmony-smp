@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.deleted {
+  text-decoration: line-through !important;
+  font-weight: bold;
+}
+
+.table-row-new {
+  color: darkgreen !important;
+  font-weight: bold;
+}
+
+.table-row-updated {
+  font-weight: bold;
+}
+
+.table-row {
+  font-weight: normal;
+}

@@ -1,5 +1,6 @@
-﻿import {Injectable} from '@angular/core';
+﻿import {EventEmitter, Injectable} from '@angular/core';
 import {SecurityEventService} from "../../security/security-event.service";
+import {LocalStorageService} from "../services/local-storage.service";
 
 
 /**
@@ -43,12 +44,15 @@ export interface ThemeItem {
  */
 @Injectable()
 export class ThemeService {
-  private static THEME_STORAGE_NAME = "smp-theme";
-  private static DEFAULT_THEME_NAME = "default_theme";
+
+  selectedTheme: EventEmitter<string> = new EventEmitter<string>();
+  private static THEME_STORAGE_NAME: string = "smp-theme";
+  private static DEFAULT_THEME_NAME: string = "default_theme";
 
   private _themes: ThemeItem[] = SMP_THEME_ITEMS;
 
-  constructor(private securityEventService: SecurityEventService) {
+  constructor(private securityEventService: SecurityEventService,
+              private localStorageService: LocalStorageService) {
 
     securityEventService.onLoginSuccessEvent().subscribe(user => {
         // set the last logged user as default theme
@@ -61,6 +65,10 @@ export class ThemeService {
 
   }
 
+  getThemeChangedEventEmitter(): EventEmitter<string> {
+    return this.selectedTheme;
+  }
+
   get themes(): ThemeItem[] {
     return SMP_THEME_ITEMS;
   }
@@ -70,12 +78,12 @@ export class ThemeService {
    * @param theme
    */
   setTheme(theme: string) {
-    console.log("set theme" + theme)
     this.resetTheme();
     if (!!theme) {
       let body = document.getElementsByTagName('body')[0]
       body.classList.add(theme)
     }
+    this.selectedTheme.emit(theme);
   };
 
   /**
@@ -84,11 +92,7 @@ export class ThemeService {
    */
   persistTheme(theme: string) {
     this.setTheme(theme);
-    if (!!theme && theme != ThemeService.DEFAULT_THEME_NAME) {
-      localStorage.setItem(ThemeService.THEME_STORAGE_NAME, theme);
-    } else {
-      localStorage.removeItem(ThemeService.THEME_STORAGE_NAME)
-    }
+    this.localStorageService.saveUserTheme(theme);
   };
 
   /**
@@ -109,7 +113,7 @@ export class ThemeService {
     body.classList.remove(...themeList);
   }
 
-  get currentTheme() {
-    return localStorage.getItem(ThemeService.THEME_STORAGE_NAME);
+  get currentTheme(): string {
+    return this.localStorageService.getUserTheme();
   }
 }

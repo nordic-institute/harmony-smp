@@ -1,0 +1,34 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#domain-properties-panel {
+  padding-left: 5ox;
+  flex-grow:1;
+}
+
+.deleted  {
+  text-decoration: line-through !important;
+  font-weight: bold;
+}
+
+.table-row-new {
+  color: darkgreen !important;
+  font-weight: bold;
+}
+.table-row-updated {
+  font-weight: bold;
+}
+.table-row {
+  font-weight: normal;
+}
+
+
+.domprop-table-cell-header {
+  font-weight: bold;
+  font-size: 0.9em;
+  padding: 1px 5px;
+  text-align: left;
+}

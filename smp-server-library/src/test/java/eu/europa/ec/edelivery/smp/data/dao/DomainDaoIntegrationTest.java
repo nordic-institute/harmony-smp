@@ -1,42 +1,56 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.data.model.*;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- *  Purpose of class is to test all resource methods with database.
+ * Purpose of class is to test all resource methods with database.
  *
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class DomainDaoIntegrationTest extends AbstractBaseDao {
+class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     DomainDao testInstance;
 
-
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
     }
 
 
     @Test
-    public void persistDomain() {
+    void persistDomain() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -50,8 +64,8 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         assertEquals(d, res.get()); // test equal method
     }
 
-    @Test(expected = Exception.class)
-    public void persistDuplicateDomain() {
+    @Test
+    void persistDuplicateDomain() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -60,19 +74,20 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         d2.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
 
         // execute
-        testInstance.persistFlushDetach(d2);
+        Exception exception = assertThrows(Exception.class, () -> testInstance.persistFlushDetach(d2));
+        assertThat(exception.getMessage(), CoreMatchers.containsString("ConstraintViolationException"));
     }
 
     @Test
-    public void getTheOnlyDomainNoDomain() {
+    void getTheOnlyDomainNoDomain() {
 
         // execute
-        IllegalStateException exception = assertThrows(IllegalStateException.class, ()->testInstance.getTheOnlyDomain());
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testInstance.getTheOnlyDomain());
         assertEquals(ErrorCode.NO_DOMAIN.getMessage(), exception.getMessage());
     }
 
     @Test
-    public void getTheOnlyDomainMultipleDomain() {
+    void getTheOnlyDomainMultipleDomain() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -85,11 +100,11 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
         // test
         Optional<DBDomain> res = testInstance.getTheOnlyDomain();
-        assertTrue(!res.isPresent());
+        assertFalse(res.isPresent());
     }
 
     @Test
-    public void getDomainByCodeExists() {
+    void getDomainByCodeExists() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -103,14 +118,14 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByCodeNotExists() {
+    void getDomainByCodeNotExists() {
         // test
         Optional<DBDomain> res = testInstance.getDomainByCode(TestConstants.TEST_DOMAIN_CODE_1);
         assertFalse(res.isPresent());
     }
 
     @Test
-    public void removeByDomainCodeExists() {
+    void removeByDomainCodeExists() {
         // set
 
         DBDomain d = new DBDomain();
@@ -128,7 +143,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void removeByDomainCodeNotExists() {
+    void removeByDomainCodeNotExists() {
         // set
 
         // test
@@ -137,7 +152,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void removeByDomainById() {
+    void removeByDomainById() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -155,7 +170,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testValidateDeleteOKScenario() {
+    void testValidateDeleteOKScenario() {
         // set
         DBDomain d = TestDBUtils.createDBDomain();
         testInstance.persistFlushDetach(d);
@@ -166,11 +181,11 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testValidateDeleteHasResources() {
+    void testValidateDeleteHasResources() {
         // set
         testUtilsDao.createSubresources();
         DBDomain d = testUtilsDao.getD1();
-        Long cnt  = testInstance.getResourceCountForDomain(d.getId());
+        Long cnt = testInstance.getResourceCountForDomain(d.getId());
 
         assertEquals(1, cnt.intValue());
     }

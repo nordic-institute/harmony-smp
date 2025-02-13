@@ -1,0 +1,52 @@
+<div style="display:flex; flex-grow: 1; flex-direction: column">
+  <mat-toolbar *ngIf="shotToolbar"
+               class="mat-elevation-z2"
+               style="flex-grow: 0;">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button id="createButton" mat-mini-fab
+              attr.aria-label="{{ 'document.properties.panel.label.create' | translate }}"
+              matTooltip="{{ 'document.properties.panel.tooltip.create' | translate }}"
+              (click)="onCreateProperty()">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button id="editButton" mat-mini-fab
+              attr.aria-label="{{ 'document.properties.panel.label.edit' | translate }}"
+              matTooltip="{{ 'document.properties.panel.tooltip.edit' | translate }}"
+              (click)="onEditSelectedProperty()"
+              [disabled]="editButtonDisabled">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button id="deleteButton" mat-mini-fab
+              attr.aria-label="{{ 'document.properties.panel.label.delete.remove' | translate }}"
+              matTooltip="{{ 'document.properties.panel.tooltip.delete.remove' | translate }}"
+              (click)="onDeleteSelectedProperty()"
+              [disabled]="deleteButtonDisabled"
+      >
+        <mat-icon>remove</mat-icon>
+      </button>
+      <tool-button-spacer></tool-button-spacer>
+      <button id="resetButton" mat-mini-fab
+              attr.aria-label="{{ 'document.properties.panel.label.reset' | translate }}"
+              matTooltip="{{ 'document.properties.panel.tooltip.reset' | translate }}"
+              (click)="onResetButtonClicked()"
+              color="primary"
+              [disabled]="!cancelButtonEnabled">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <smp-table
+    filterLabel="document.properties.panel.label.filter"
+    filterPlaceholder="document.properties.panel.label.filter"
+    noResultLabel="document.properties.panel.label.no.data.found"
+    noResultForFilterLabel="document.versions.panel.label.no.filter.found"
+    [dataSource]="propertyDataSource"
+    [selectedRow]="selected"
+    [columnDefList]="columns"
+    [displayedColumns]="displayedColumns"
+    (onFilterChanged)="applyFilter($event)"
+    (onRowClicked)="propertySelected($event)"
+    (onRowDoubleClicked)="onEditSelectedProperty()"
+  >
+  </smp-table>
+</div>

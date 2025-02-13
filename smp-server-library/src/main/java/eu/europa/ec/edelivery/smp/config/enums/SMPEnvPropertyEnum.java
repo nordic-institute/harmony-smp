@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.config.enums;
 
 /**
@@ -7,12 +25,13 @@ package eu.europa.ec.edelivery.smp.config.enums;
  * @since 5.0
  */
 public enum SMPEnvPropertyEnum {
-    CONFIGURATION_FILE("smp.configuration.file","smp.conf.properties","Configuration property file path."),
+    CONFIGURATION_FILE("smp.configuration.file","smp.config.properties","Configuration property file path."),
     SECURITY_FOLDER("smp.security.folder","smp","security folder for storing the keystore and the truststore"),
     INIT_CONFIGURATION_FILE("smp.init.configuration.file","smp.init.properties","Init configuration property file path."),
     LOG_CONFIGURATION_FILE("smp.log.configuration.file",null,"The path to custom logback logging configuration file  If configuration file path is blank, the default configuration is used."),
     LOG_FOLDER("smp.log.folder","logs","Configuration property file path."),
     LIBRARY_FOLDER("smp.libraries.folder","libs","Folder for deployment of the DomiSMP extensions."),
+    LOCALE_FOLDER("smp.locale.folder", "locales", "Folder where the application copies the default existing locales and where the user can add extra custom ones"),
 
     DATABASE_JNDI("smp.datasource.jndi",null,"he JNDI name for datasource as example:" +
             "* weblogic datasource JNDI example " +
@@ -32,9 +51,9 @@ public enum SMPEnvPropertyEnum {
     SMP_MODE_DEVELOPMENT("smp.mode.development","false","Set to true in test or development environment to make faster \"semi-random generation of secrets\"."),
     ;
 
-    String property;
-    String defValue;
-    String desc;
+    final String property;
+    final String defValue;
+    final String desc;
 
     SMPEnvPropertyEnum(String property, String defValue, String desc) {
         this.property = property;

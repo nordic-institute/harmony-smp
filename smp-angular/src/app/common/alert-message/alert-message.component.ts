@@ -1,48 +1,49 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AlertMessageService} from './alert-message.service';
+import {Subscription} from "rxjs";
 
+
+/**
+ * This component is used to display alert messages/notifications on the top of the page in an overlay (growl).
+ * In case of success messages, the message will be displayed for a certain amount of time and it will automatically disappear
+ * unless sticky flat is set to true.
+ *
+ * The messages can be of different types: success, error, info, warning.
+ */
 @Component({
-  moduleId: module.id,
   selector: 'alert',
   templateUrl: './alert-message.component.html',
   styleUrls: ['./alert-message.component.css']
 })
+export class AlertMessageComponent implements OnInit, OnDestroy {
 
-export class AlertMessageComponent implements OnInit {
-  @ViewChild('alertMessage') alertMessage;
-  showSticky:boolean = false;
-  message: any=null;
+  message: any;
 
-  readonly successTimeout: number = 3000;
+  private subscription: Subscription;
 
-
-  constructor(private alertService: AlertMessageService) { }
+  constructor(private alertService: AlertMessageService) {
+  }
 
   ngOnInit() {
-    this.alertService.getMessage().subscribe(message => { this.showMessage(message); });
+    this.subscription = this.alertService.getMessage().subscribe(message => {
+      this.showMessage(message);
+    });
   }
 
-  clearAlert():void {
-    this.alertService.clearAlert();
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
-  setSticky(sticky: boolean):void {
-    this.showSticky = sticky;
-  }
-
-  get messageText(){
-    if (!!this.message){
-      return this.message.text;
-    }
+  clearAlert(force = false): void {
+    this.alertService.clearAlert(force);
   }
 
   showMessage(message: any) {
     this.message = message;
-    if (message?.type==='success') {
+    if (message && message.timeoutInSeconds && message.timeoutInSeconds > 0) {
       setTimeout(() => {
         this.clearAlert();
-      }, this.successTimeout);
+      }, this.message.timeoutInSeconds * 1000);
     }
-
   }
 }

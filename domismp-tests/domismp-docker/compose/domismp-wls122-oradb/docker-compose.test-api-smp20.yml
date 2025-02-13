@@ -1,0 +1,8 @@
+services:
+  ##
+  ## API Tests
+  ##
+  testapi:
+    environment:
+      - TEST_FILE_NAME=DomiSMP-Oasis2-soapui-project.xml
+      - TEST_SUITE=AUTO_BAMBOO_SMP20

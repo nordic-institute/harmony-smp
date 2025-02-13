@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ColumnPickerComponent } from './column-picker.component';
+import {ColumnPickerComponent} from './column-picker.component';
 
 describe('ColumnPickerComponent', () => {
   let component: ColumnPickerComponent;

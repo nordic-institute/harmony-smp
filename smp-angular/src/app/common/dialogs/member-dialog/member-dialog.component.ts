@@ -2,15 +2,16 @@ import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {SearchUserRo} from "../../model/search-user-ro.model";
-import {MembershipService} from "../../panels/membership-panel/membership.service";
 import {MemberRo} from "../../model/member-ro.model";
 import {DomainRo} from "../../model/domain-ro.model";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {GroupRo} from "../../model/group-ro.model";
 import {ResourceRo} from "../../model/resource-ro.model";
+import {TranslateService} from "@ngx-translate/core";
+import {MembershipService} from "../../services/membership.service";
 
 
 @Component({
@@ -23,7 +24,7 @@ export class MemberDialogComponent implements OnInit {
 
   message: string;
   messageType: string = "alert-error";
-
+  formTitle = "";
   currentFilter: string;
 
   _currentMember: MemberRo;
@@ -38,12 +39,12 @@ export class MemberDialogComponent implements OnInit {
     return {key: el, value: MembershipRoleEnum[el]}
   });
 
-
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private membershipService: MembershipService,
               public dialogRef: MatDialogRef<MemberDialogComponent>,
               private alertService: AlertMessageService,
-              private formBuilder: FormBuilder
+              private formBuilder: FormBuilder,
+              private translateService: TranslateService
   ) {
     dialogRef.disableClose = true;//disable default close operation
     this._currentDomain = data.domain;
@@ -55,15 +56,20 @@ export class MemberDialogComponent implements OnInit {
       'member-user': new FormControl({value: null}),
       'member-fullName': new FormControl({value: null}),
       'member-memberOf': new FormControl({value: null}),
-      'member-roleType': new FormControl({value: null})
+      'member-roleType': new FormControl({value: null}),
+      'member-can-review': new FormControl({value: null})
     });
     this.member = {
       ...data.member
     };
     this.currentFilter = "";
+    (async () => await this.updateFormTitle()) ();
   }
-  get formTitle(){
-    return (!this._currentMember.memberId? "Invite":"Edit") + " " + this.membershipType + " member"
+
+  async updateFormTitle() {
+    this.formTitle = this._currentMember.memberId
+      ? await lastValueFrom(this.translateService.get("manage.dialog.title.edit.mode", {membershipType: this.membershipType}))
+      : await lastValueFrom(this.translateService.get("manage.dialog.title.invite.mode", {membershipType: this.membershipType}));
   }
 
   get member(): MemberRo {
@@ -72,6 +78,7 @@ export class MemberDialogComponent implements OnInit {
     member.fullName = this.memberForm.get('member-fullName').value;
     member.memberOf = this.memberForm.get('member-memberOf').value;
     member.roleType = this.memberForm.get('member-roleType').value;
+    member.hasPermissionReview = this.memberForm.get('member-can-review').value
     return member;
   }
 
@@ -95,12 +102,14 @@ export class MemberDialogComponent implements OnInit {
       this.memberForm.controls['member-fullName'].setValue(value.fullName);
       this.memberForm.controls['member-memberOf'].setValue(value.memberOf);
       this.memberForm.controls['member-roleType'].setValue(value.roleType);
+      this.memberForm.controls['member-can-review'].setValue(value.hasPermissionReview);
 
     } else {
       this.memberForm.controls['member-user'].setValue("");
       this.memberForm.controls['member-fullName'].setValue("");
       this.memberForm.controls['member-memberOf'].setValue("");
       this.memberForm.controls['member-roleType'].setValue("");
+      this.memberForm.controls['member-can-review'].setValue(false);
     }
     this.memberForm.markAsPristine();
   }
@@ -165,5 +174,9 @@ export class MemberDialogComponent implements OnInit {
       case MemberTypeEnum.RESOURCE:
         return  this.membershipService.addEditMemberToResource(this._currentResource, this._currentGroup,this._currentDomain, this.member)
     }
+  }
+
+  get isResourceMember(): boolean {
+    return this.membershipType === MemberTypeEnum.RESOURCE;
   }
 }

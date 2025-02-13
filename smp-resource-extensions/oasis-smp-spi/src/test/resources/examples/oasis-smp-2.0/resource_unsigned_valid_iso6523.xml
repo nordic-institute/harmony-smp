@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #START_LICENSE#
+  oasis-smp-spi
+  %%
+  Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+  %%
+  Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+  versions of the EUPL (the "Licence");
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  
+  Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+  distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and limitations under the Licence.
+  #END_LICENSE#
+  -->
+
+<ServiceGroup xmlns:smb="http://docs.oasis-open.org/bdxr/ns/SMP/2/BasicComponents"
+              xmlns:sma="http://docs.oasis-open.org/bdxr/ns/SMP/2/AggregateComponents"
+              xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2/ServiceGroup">
+    <smb:SMPVersionID>2.0</smb:SMPVersionID>
+    <smb:ParticipantID schemeID="iso6523-actorid-upis">9925:0367302178</smb:ParticipantID>
+    <sma:ServiceReference>
+        <smb:ID schemeID="bdx-docid-qns">urn::epsos:services##epsos-21</smb:ID>
+        <sma:Process>
+            <smb:ID schemeID="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii05:ver2.0</smb:ID>
+        </sma:Process>
+    </sma:ServiceReference>
+    <sma:ServiceReference>
+        <smb:ID schemeID="bdx-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0::2.1</smb:ID>
+        <sma:Process>
+            <smb:ID schemeID="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii05:ver2.0</smb:ID>
+        </sma:Process>
+    </sma:ServiceReference>
+</ServiceGroup>
+

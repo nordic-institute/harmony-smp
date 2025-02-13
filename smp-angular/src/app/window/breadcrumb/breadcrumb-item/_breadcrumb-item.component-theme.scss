@@ -4,7 +4,6 @@
 
   .smp-breadcrumb-item-selected {
     background-color: smp.get-theme-color($theme, primary, 600) !important;
-
   }
 
   .smp-breadcrumb-item:hover {
@@ -31,8 +30,5 @@
   .smp-breadcrumb-arrow.top {
     border-top: 1px solid smp.get-theme-color($theme, primary, 0.5);
   }
-
-
-
 }
 

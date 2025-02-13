@@ -2,63 +2,63 @@
 <mat-dialog-content style="width:800px">
   <div>
     <div style="padding-left:2em;display: flex;flex-flow: column;">
-      <h3>Selected Resource definition data</h3>
+      <h3>{{ "resource.details.dialog.resource.description" | translate }}</h3>
       <div style="display: flex;flex-flow: row wrap;">
         <mat-form-field style="flex-grow: 1">
-          <mat-label>Resource name</mat-label>
-          <input matInput placeholder="Resource name"
+          <mat-label>{{ "resource.details.dialog.label.resource.name" | translate }}</mat-label>
+          <input matInput placeholder="{{ 'resource.details.dialog.placeholder.resource.name' | translate }}"
                  [value]="current?.name"
                  maxlength="255" readonly>
         </mat-form-field>
         <mat-form-field style="flex-grow: 1">
-          <mat-label>Resource identifier</mat-label>
-          <input matInput placeholder="Resource identifier"
+          <mat-label>{{ "resource.details.dialog.label.resource.id" | translate }}</mat-label>
+          <input matInput placeholder="{{ 'resource.details.dialog.placeholder.resource.id' | translate }}"
                  [value]="current?.identifier"
                  maxlength="255" readonly>
         </mat-form-field>
       </div>
       <div style="display: flex;flex-flow: row wrap;">
         <mat-form-field style="flex-grow: 1">
-          <mat-label>Url path segment/http header</mat-label>
-          <input matInput placeholder="Url path segment/http header"
+          <mat-label>{{ "resource.details.dialog.label.url" | translate }}</mat-label>
+          <input matInput placeholder="{{ 'resource.details.dialog.placeholder.url' | translate }}"
                  [value]="current?.urlSegment"
                  maxlength="255" readonly>
         </mat-form-field>
         <mat-form-field style="flex-grow: 1">
-          <mat-label>Resource MIME Type</mat-label>
-          <input matInput placeholder="Resource MIME Type"
+          <mat-label>{{ "resource.details.dialog.label.resource.mime.type" | translate }}</mat-label>
+          <input matInput placeholder="{{ 'resource.details.dialog.placeholder.resource.mime.type' | translate }}"
                  [value]="current?.mimeType"
                  maxlength="255" readonly>
         </mat-form-field>
       </div>
       <mat-form-field style="width: 100%">
-        <mat-label>Description</mat-label>
-        <textarea matInput extension="Description"
+        <mat-label>{{ "resource.details.dialog.label.description" | translate }}</mat-label>
+        <textarea matInput attr.extension="{{ 'resource.details.dialog.extension.description' | translate }}"
                   [value]="current?.description"
                   maxlength="255" readonly></textarea>
       </mat-form-field>
 
-      <h3>SubResource definitions</h3>
+      <h3>{{ "resource.details.dialog.subresources.description" | translate }}</h3>
       <table mat-table [dataSource]="subresourceDefDataSource" matSort>
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "resource.details.dialog.label.name" | translate }}</th>
           <td mat-cell *matCellDef="let row"> {{row.name}} </td>
         </ng-container>
 
         <!-- Version Column -->
         <ng-container matColumnDef="identifier">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Identifier</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "resource.details.dialog.label.id" | translate }}</th>
           <td mat-cell *matCellDef="let row"> {{row.identifier}}</td>
         </ng-container>
         <ng-container matColumnDef="urlSegment">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Url Segment</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "resource.details.dialog.label.url.segment" | translate }}</th>
           <td mat-cell *matCellDef="let row"> {{row.urlSegment}}</td>
         </ng-container>
 
         <ng-container matColumnDef="mimeType">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Mime Type</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ "resource.details.dialog.label.mime.type" | translate }}</th>
           <td mat-cell *matCellDef="let row"> {{row.identifier}}</td>
         </ng-container>
 
@@ -72,8 +72,7 @@
 
       <mat-paginator #resourcePaginator
                      [hidePageSize]="true"
-                     [showFirstLastButtons]="true"
-                     [pageSize]="5" aria-label="Select page"></mat-paginator>
+                     [pageSize]="5" attr.aria-label="{{ 'resource.details.dialog.label.select.page' | translate }}"></mat-paginator>
     </div>
 
   </div>
@@ -83,7 +82,7 @@
 <mat-dialog-actions>
   <button mat-raised-button color="primary" mat-dialog-close>
     <mat-icon>cancel</mat-icon>
-    <span>Cancel</span>
+    <span>{{ "resource.details.dialog.button.cancel" | translate }}</span>
   </button>
 </mat-dialog-actions>
 

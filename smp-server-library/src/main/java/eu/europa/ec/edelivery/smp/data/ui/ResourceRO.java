@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
@@ -19,11 +37,10 @@ public class ResourceRO extends BaseRO {
     private String resourceTypeIdentifier;
 
     private String identifierValue;
-
     private String identifierScheme;
-
     private boolean smlRegistered = false;
-
+    private Boolean reviewEnabled;
+    private Boolean hasCurrentUserReviewPermission;
     private VisibilityType visibility = VisibilityType.PUBLIC;
 
     public String getResourceId() {
@@ -66,12 +83,28 @@ public class ResourceRO extends BaseRO {
         this.smlRegistered = smlRegistered;
     }
 
+    public Boolean isReviewEnabled() {
+        return reviewEnabled;
+    }
+
+    public void setReviewEnabled(Boolean reviewEnabled) {
+        this.reviewEnabled = reviewEnabled;
+    }
+
     public VisibilityType getVisibility() {
         return visibility;
     }
 
     public void setVisibility(VisibilityType visibility) {
         this.visibility = visibility;
+    }
+
+    public Boolean getHasCurrentUserReviewPermission() {
+        return hasCurrentUserReviewPermission;
+    }
+
+    public void setHasCurrentUserReviewPermission(Boolean hasCurrentUserReviewPermission) {
+        this.hasCurrentUserReviewPermission = hasCurrentUserReviewPermission;
     }
 
     @Override

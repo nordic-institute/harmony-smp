@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
@@ -39,6 +57,7 @@ public class UserRO extends BaseRO {
     private boolean passwordExpired = false;
     private boolean showPasswordExpirationWarning = false;
     private boolean forceChangeExpiredPassword = false;
+    private int sessionMaxIntervalTimeoutInSeconds;
 
     /**
      * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
@@ -206,5 +225,13 @@ public class UserRO extends BaseRO {
 
     public void setSuspendedUtil(OffsetDateTime suspendedUtil) {
         this.suspendedUtil = suspendedUtil;
+    }
+
+    public void setSessionMaxIntervalTimeoutInSeconds(int sessionMaxIntervalTimeoutInSeconds) {
+        this.sessionMaxIntervalTimeoutInSeconds = sessionMaxIntervalTimeoutInSeconds;
+    }
+
+    public int getSessionMaxIntervalTimeoutInSeconds() {
+        return sessionMaxIntervalTimeoutInSeconds;
     }
 }

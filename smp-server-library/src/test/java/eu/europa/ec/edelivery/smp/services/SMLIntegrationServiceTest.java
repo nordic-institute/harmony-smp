@@ -1,47 +1,46 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
  *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
-import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
-import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
-import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
+import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -50,180 +49,171 @@ import static org.mockito.Mockito.verify;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmlIntegrationConfiguration.class,
-        SMLIntegrationService.class})
-public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
-
+class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     IdentifierService identifierService;
-    @Autowired
-    SmlIntegrationConfiguration integrationMock;
-    @Autowired
+    @MockBean
+    private IManageServiceMetadataWS iManageServiceMetadataWS;
+    @MockBean
+    private IManageParticipantIdentifierWS iManageParticipantIdentifierWS;
+    @SpyBean
     protected SmlConnector smlConnector;
     @Autowired
     protected SMLIntegrationService testInstance;
-    @Autowired
+    @SpyBean
     ConfigurationService configurationService;
 
-    @Before
+    @BeforeEach
     @Transactional
     public void prepareDatabase() {
-        ReflectionTestUtils.setField(testInstance, "identifierService", identifierService);
+        //identifierService.configureParticipantIdentifierFormatter(null, false, Pattern.compile(".*"));
 
-        identifierService.configureParticipantIdentifierFormatter(null, false, Pattern.compile(".*"));
-
-        configurationService = Mockito.spy(configurationService);
-        smlConnector = Mockito.spy(smlConnector);
-        Mockito.doNothing().when(smlConnector).configureClient(any(), any(), any());
-
-        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         ReflectionTestUtils.setField(smlConnector, "configurationService", configurationService);
+        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         ReflectionTestUtils.setField(testInstance, "smlConnector", smlConnector);
 
-        Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
-
-        integrationMock.reset();
+        Mockito.reset(smlConnector);
+        Mockito.doNothing().when(smlConnector).configureClient(any(), any(), any());
 
         testUtilsDao.clearData();
         testUtilsDao.createResources();
     }
 
     @Test
-    public void registerDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
-
+    void registerDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(false);
         testUtilsDao.merge(testDomain01);
+        givenSmlIntegrationEnabled(true);
 
         // when
         testInstance.registerDomain(testDomain01);
 
         assertTrue(testDomain01.isSmlRegistered());
-        assertEquals(1, integrationMock.getSmpManagerClientMocks().size());
-        verify(integrationMock.getSmpManagerClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getSmpManagerClientMocks().toArray());
-
+        verify(iManageServiceMetadataWS, times(1)).create(any(ServiceMetadataPublisherServiceType.class));
     }
 
     @Test
-    public void unregisterDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault, NotFoundFault {
-
+    void unregisterDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault, NotFoundFault {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
+        givenSmlIntegrationEnabled(true);
 
         // when
         testInstance.unRegisterDomain(testDomain01);
 
-        assertTrue(!testDomain01.isSmlRegistered());
-        assertEquals(1, integrationMock.getSmpManagerClientMocks().size());
-        verify(integrationMock.getSmpManagerClientMocks().get(0)).delete(testDomain01.getSmlSmpId());
-        Mockito.verifyNoMoreInteractions(integrationMock.getSmpManagerClientMocks().toArray());
+        assertFalse(testDomain01.isSmlRegistered());
+        verify(iManageServiceMetadataWS, times(1)).delete(testDomain01.getSmlSmpId());
 
     }
 
     @Test
-    public void registerParticipant() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
+    void registerParticipant() throws Exception {
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         resource.setSmlRegistered(false);
+        givenSmlIntegrationEnabled(true);
+
         // when
         testInstance.registerParticipant(resource, testDomain01);
 
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-
-    }
-/*
-    @Test
-    public void registerParticipantNullScheme() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        /* given (init database - check setup)
-         * Domain: TEST_DOMAIN_CODE_1
-         * Users: USERNAME_1, USER_CERT_2
-         * ServiceGroup1: TEST_SG_ID_NO_SCHEME, null
-         *    - Domain: TEST_DOMAIN_CODE_1
-         *
-        // when
-        testInstance.registerParticipant(TEST_SG_ID_NO_SCHEME, null, TEST_DOMAIN_CODE_1);
-
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-    }
-
-    /**
-
-
-    @Test
-    public void unRegisterParticipant() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        /* given (init database - check setup)
-         * Domain: TEST_DOMAIN_CODE_1
-         * Users: USERNAME_1, USER_CERT_2
-         * ServiceGroup1: TEST_SG_ID_1, TEST_SG_SCHEMA_1
-         *    - Domain: TEST_DOMAIN_CODE_1
-         *
-        // when
-        testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
-
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-
+        //then
+        verify(iManageParticipantIdentifierWS, times(1)).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
     }
 
     @Test
-    public void registerParticipant_NotExists() {
-        expectedExeption.expect(SMPRuntimeException.class);
-        String notExistsId = TEST_SG_ID_1 + "NotExists";
-        expectedExeption.expectMessage("ServiceGroup not found (part. id: '" + TEST_SG_ID_1 + "NotExists', part. sch.: '" + TEST_SG_SCHEMA_1 + "')!");
+    void participantExists() {
+        // given
+        DBDomain domain = testUtilsDao.getD1();
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
+        givenSmlIntegrationEnabled(true);
+
+        Identifier identifier = identifierService.normalizeParticipant(domain.getDomainCode(),
+                resource.getIdentifierScheme(),
+                resource.getIdentifierValue());
+        Mockito.doReturn(true).when(smlConnector).participantExists(identifier.getScheme(), identifier.getValue(), domain);
 
         // when
-        testInstance.registerParticipant(notExistsId, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
+        boolean participantExists = testInstance.participantExists(resource, domain);
+
+        // then
+        assertTrue(participantExists);
     }
 
     @Test
-    public void registerParticipant_NotOnDomain() {
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage("Service group not registered for domain (domain: " + TEST_DOMAIN_CODE_2 + ", part. id: '" + TEST_SG_ID_1 + "', part. sch.: '" + TEST_SG_SCHEMA_1 + "')!");
+    void registerOnlyDomainToSml_smlIntegrationDisabled() {
+        // given
+        DBDomain testDomain01 = testUtilsDao.getD1();
+        testDomain01.setSmlRegistered(false);
+
+        givenSmlIntegrationEnabled(false);
 
         // when
-        testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_2);
-    }
-
-*/
-    /*
-    @Test
-    public void registerParticipantToSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-        // when
-        testInstance.registerParticipantToSML(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testDomain01);
-
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.registerDomain(testDomain01));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
     @Test
-    public void unregisterParticipantFromSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+    void unregisterOnlyDomainToSml_smlIntegrationDisabled() {
+        // given
+        DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
-        // when
-        testInstance.unregisterParticipantFromSML(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testDomain01);
 
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).delete(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
+        givenSmlIntegrationEnabled(false);
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.unRegisterDomain(testDomain01));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
-     */
+    @Test
+    void registerParticipant_smlIntegrationDisabled() {
+        DBDomain testDomain01 = testUtilsDao.getD1();
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
+
+        givenSmlIntegrationEnabled(false);
+
+        // nothing is expected to be thrown
+        testInstance.registerParticipant(resource, testDomain01);
+    }
+
+    @Test
+    void unregisterParticipant_smlIntegrationDisabled() {
+        DBDomain testDomain01 = testUtilsDao.getD1();
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
+
+        givenSmlIntegrationEnabled(false);
+
+        // nothing is expected to be thrown
+        testInstance.unregisterParticipant(resource, testDomain01);
+    }
+
+    @Test
+    void participantExists_smlIntegrationDisabled() {
+        DBDomain domain = testUtilsDao.getD1();
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
+
+        givenSmlIntegrationEnabled(false);
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.participantExists(resource, domain));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+    }
+
+    @Test
+    void isDomainValid_smlIntegrationDisabled() {
+        DBDomain domain = testUtilsDao.getD1();
+
+        givenSmlIntegrationEnabled(false);
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.isDomainValid(domain));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+    }
+
+    private void givenSmlIntegrationEnabled(boolean enabled) {
+        Mockito.doReturn(enabled).when(configurationService).isSMLIntegrationEnabled();
+    }
 }

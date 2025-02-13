@@ -1,0 +1,57 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+.smp-table-container {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  min-height: 100px;
+  height: 10px;
+  overflow: hidden;
+  padding-right: 5px;
+}
+
+.smp-table-cell {
+  word-break: break-all;
+  word-wrap: break-word;
+  font-size: 0.8em;
+  padding: 1px 5px;
+
+}
+
+.smp-table-cell-header {
+  font-weight: bold;
+  font-size: 0.9em;
+  padding: 1px 5px;
+  text-align: left;
+}
+
+.smp-table-row  {
+  min-height: unset;
+  padding: 0.4em 0;
+}
+
+.smp-table-container mat-table {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow-y: auto;
+  min-height: 100px;
+}
+
+.smp-table-filter {
+  width: 100%;
+  padding-top: 1em;
+}
+
+.smp-table-header-row{
+  min-height: 36px;
+}
+
+

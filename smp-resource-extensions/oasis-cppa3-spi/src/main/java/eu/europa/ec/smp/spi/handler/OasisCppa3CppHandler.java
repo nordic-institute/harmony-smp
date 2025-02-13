@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * oasis-cppa3-spi
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.smp.spi.handler;
 
 import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
@@ -10,6 +28,7 @@ import eu.europa.ec.smp.spi.exceptions.CPPARuntimeException;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.utils.CPPUtils;
+import eu.europa.ec.smp.spi.utils.DomUtils;
 import gen.eu.europa.ec.ddc.api.cppa.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -19,12 +38,8 @@ import org.springframework.util.StreamUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBElement;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -55,8 +70,14 @@ public class OasisCppa3CppHandler extends AbstractHandler {
         this.signatureApi = signatureApi;
     }
 
+    /**
+     * Method generates example CPP document and writes it to the output stream of the response data
+     * @param resourceData the resource data
+     * @param responseData the response data
+     * @param fields the fields to be included in the response
+     * @throws ResourceException if an error occurs
+     */
     public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
-
 
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
         CPP cpp = new CPP();
@@ -133,12 +154,11 @@ public class OasisCppa3CppHandler extends AbstractHandler {
             Document doc = parse(inputStream);
             signatureApi.createEnvelopedSignature(resourceData, doc.getDocumentElement(), Collections.emptyList());
             serialize(doc, responseData.getOutputStream());
-        } catch (SignatureException | SAXException | TransformerException | IOException e) {
+        } catch (SignatureException | SAXException | TransformerException |
+                 IOException e) {
             throw new ResourceException(PROCESS_ERROR, "Error occurred while signing the cpp documen!: ["
                     + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
-
-
     }
 
     @Override
@@ -151,13 +171,11 @@ public class OasisCppa3CppHandler extends AbstractHandler {
 
         inputStream.mark(Integer.MAX_VALUE - 2);
 
-        CPP cppDocument = validateAndParse(resourceData);
+        validateAndParse(resourceData);
 
         try {
             inputStream.reset();
             StreamUtils.copy(inputStream, responseData.getOutputStream());
-            // need to save serviceGroup because of the update on the resource identifier values
-            //reader.serializeNative(cppDocument, responseData.getOutputStream(), true);
         } catch (IOException e) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
         }
@@ -173,14 +191,8 @@ public class OasisCppa3CppHandler extends AbstractHandler {
         validateAndParse(resourceData);
     }
 
-    private static Transformer createNewSecureTransformer() throws TransformerConfigurationException {
-        TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        return factory.newTransformer();
-    }
-
     public static void serialize(Document doc, OutputStream outputStream) throws TransformerException {
-        Transformer transformer = createNewSecureTransformer();
+        Transformer transformer = DomUtils.createNewSecureTransformer();
         transformer.transform(new DOMSource(doc), new StreamResult(outputStream));
     }
 
@@ -204,7 +216,9 @@ public class OasisCppa3CppHandler extends AbstractHandler {
         boolean hasMatchingPartyId = false;
         final PartyInfoType partyInfo = cppDocument.getPartyInfo();
         for (PartyIdType partyId : partyInfo.getPartyIds()) {
-            ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(partyId.getValue(), partyId.getType());
+            ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
+                    resourceData.getDomainCode(),
+                    partyId.getValue(), partyId.getType());
             if (xmlResourceIdentifier.equals(identifier)) {
                 hasMatchingPartyId = true;
                 break;

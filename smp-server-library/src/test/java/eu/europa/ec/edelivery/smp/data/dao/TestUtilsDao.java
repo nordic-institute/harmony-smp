@@ -1,8 +1,27 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
-import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.enums.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
@@ -18,10 +37,12 @@ import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
@@ -46,8 +67,9 @@ public class TestUtilsDao {
 
     DBDomain d1;
     DBDomain d2;
+    DBDomain d3;
     DBResourceDef resourceDefSmp;
-    DBSubresourceDef resourceDefSmpMetadata;
+    DBSubresourceDef subresourceDefSmp;
     DBResourceDef resourceDefCpp;
 
     DBDomainResourceDef domainResourceDefD1R1;
@@ -84,20 +106,40 @@ public class TestUtilsDao {
     DBResourceMember resourceMemberU1R2_D2G1RD1_Viewer;
 
     DBResource resourcePrivateD1G1RD1;
-   // DBResource resourceInternalD1G1RD1;
-
     DBExtension extension;
 
+
     boolean searchDataCreated = false;
+    DBResource searchPubPubPubRes = null;
+    DBResource searchPubPubPrivRes = null;
+    DBResource searchPubPrivPubRes = null;
+    DBResource searchPubPrivPrivRes = null;
+
+    DBResource searchPrivPubPubRes = null;
+    DBResource searchPrivPubPrivRes = null;
+    DBResource searchPrivPrivPubRes = null;
+    DBResource searchPrivPrivPrivRes = null;
+
+    DBSubresource searchPubPubPubSubRes = null;
+    DBSubresource searchPubPubPrivSubRes = null;
+    DBSubresource searchPubPrivPubSubRes = null;
+    DBSubresource searchPubPrivPrivSubRes = null;
+
+    DBSubresource searchPrivPubPubSubRes = null;
+    DBSubresource searchPrivPubPrivSubRes = null;
+    DBSubresource searchPrivPrivPubSubRes = null;
+    DBSubresource searchPrivPrivPrivSubRes = null;
+
 
     /**
      * Database can be cleaned by script before the next test; clean also the objects
      */
-    public void clearData(){
+    public void clearData() {
         d1 = null;
         d2 = null;
+        d3 = null;
         resourceDefSmp = null;
-        resourceDefSmpMetadata = null;
+        subresourceDefSmp = null;
         resourceDefCpp = null;
         domainResourceDefD1R1 = null;
         domainResourceDefD1R2 = null;
@@ -126,10 +168,29 @@ public class TestUtilsDao {
         resourceMemberU1R2_D2G1RD1_Viewer = null;
 
         resourcePrivateD1G1RD1 = null;
-        //resourceInternalD1G1RD1 = null;
 
         extension = null;
         searchDataCreated = false;
+        searchPubPubPubRes = null;
+        searchPubPubPrivRes = null;
+        searchPubPrivPubRes = null;
+        searchPubPrivPrivRes = null;
+
+        searchPrivPubPubRes = null;
+        searchPrivPubPrivRes = null;
+        searchPrivPrivPubRes = null;
+        searchPrivPrivPrivRes = null;
+
+        searchPubPubPubSubRes = null;
+        searchPubPubPrivSubRes = null;
+        searchPubPrivPubSubRes = null;
+        searchPubPrivPrivSubRes = null;
+
+        searchPrivPubPubSubRes = null;
+        searchPrivPubPrivSubRes = null;
+        searchPrivPrivPubSubRes = null;
+        searchPrivPrivPrivSubRes = null;
+
 
     }
 
@@ -177,10 +238,10 @@ public class TestUtilsDao {
             LOG.trace("ResourceDefinitions are already initialized!");
             return;
         }
-        resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10);
-        resourceDefSmpMetadata =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10, resourceDefSmp);
+        resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10_ID, TEST_RESOURCE_DEF_SMP10_URL);
+        subresourceDefSmp =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10_ID, TEST_SUBRESOURCE_DEF_SMP10_URL, resourceDefSmp);
 
-        resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP);
+        resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP, TEST_RESOURCE_DEF_CPP);
 
         assertNotNull(resourceDefSmp.getId());
         assertNotNull(resourceDefCpp.getId());
@@ -201,9 +262,11 @@ public class TestUtilsDao {
         }
         d1 = createDomain(TEST_DOMAIN_CODE_1);
         d2 = createDomain(TEST_DOMAIN_CODE_2);
+        d3 = createRegisteredDomain(TEST_DOMAIN_CODE_3);
 
         assertNotNull(d1.getId());
-        assertNotNull(d1.getId());
+        assertNotNull(d2.getId());
+        assertNotNull(d3.getId());
     }
 
     @Transactional
@@ -223,9 +286,12 @@ public class TestUtilsDao {
         DBCredential c3 = TestDBUtils.createDBCredentialForUserAccessToken(user3, null, null, null);
         c3.setValue(BCrypt.hashpw(USERNAME_3_AT_PASSWORD, BCrypt.gensalt()));
         c3.setName(USERNAME_3_AT);
-        user3.getUserCredentials().add(c3);
+        DBCredential cCert3 = TestDBUtils.createDBCredential(user3, USER_CERT_3, "", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
 
-        user4 = createDBUserByUsername(USERNAME_4);
+        user3.getUserCredentials().add(c3);
+        user3.getUserCredentials().add(cCert3);
+
+        user4 = createDBUserByUsername(USER_CERT_2);
         user5 = createDBUserByUsername(USERNAME_5);
 
         persistFlushDetach(user1);
@@ -243,9 +309,15 @@ public class TestUtilsDao {
 
     @Transactional
     public void deactivateUser(String username) {
-        DBUser user = userDao.findUserByUsername(username).get();
+        Optional<DBUser> userOpt = userDao.findUserByUsername(username);
+        if (!userOpt.isPresent()) {
+            LOG.warn("User [{}] not found and cannot be deactivated!", username);
+            return;
+        }
+        DBUser user = userOpt.get();
         user.setActive(false);
         persistFlushDetach(user);
+
     }
 
 
@@ -281,7 +353,7 @@ public class TestUtilsDao {
     @Transactional
     public void createResourceMemberships() {
         if (resourceMemberU1R1_D2G1RD1_Admin != null) {
-            LOG.trace("GroupMemberships are already initialized!");
+            LOG.trace("ResourceMemberships are already initialized!");
             return;
         }
         createUsers();
@@ -301,50 +373,61 @@ public class TestUtilsDao {
         createUsers();
         createResourceDefinitions();
 
-        DBDomain publicDomain = createDomain("publicDomain", VisibilityType.PUBLIC);
-        DBDomain privateDomain = createDomain("privateDomain", VisibilityType.PRIVATE);
+        d1 = createDomain("publicDomain", VisibilityType.PUBLIC);
+        d2 = createDomain("privateDomain", VisibilityType.PRIVATE);
 
-        DBDomainResourceDef publicDomainResourceDef = registerDomainResourceDefinition(publicDomain, resourceDefSmp);
-        DBDomainResourceDef privateDomainResourceDef= registerDomainResourceDefinition(privateDomain, resourceDefSmp);
+
+        domainResourceDefD1R1 = registerDomainResourceDefinition(d1, resourceDefSmp);
+        domainResourceDefD2R1 = registerDomainResourceDefinition(d2, resourceDefSmp);
+        DBDomainResourceDef privateDomainResourceDef2= registerDomainResourceDefinition(d2, resourceDefCpp);
         // membership of the domain
-        createDomainMembership(MembershipRoleType.VIEWER, user3, privateDomain);
+        createDomainMembership(MembershipRoleType.VIEWER, user3, d2);
 
-        DBGroup pubPubGroup = createGroup("pubPubGroup", VisibilityType.PUBLIC, publicDomain);
-        DBGroup pubPrivGroup = createGroup("pubPrivGroup", VisibilityType.PRIVATE, publicDomain);
-        DBGroup privPubGroup = createGroup("privPubGroup", VisibilityType.PUBLIC, privateDomain);
-        DBGroup privPrivGroup = createGroup("privPrivGroup", VisibilityType.PRIVATE, privateDomain);
+        groupD1G1  = createGroup("pubPubGroup", VisibilityType.PUBLIC, d1);
+        groupD1G2 = createGroup("pubPrivGroup", VisibilityType.PRIVATE, d1);
+        groupD2G1 = createGroup("privPubGroup", VisibilityType.PUBLIC, d2);
+        DBGroup privPrivGroup = createGroup("privPrivGroup", VisibilityType.PRIVATE, d2);
 
         createGroupMembership(MembershipRoleType.VIEWER, user4, privPrivGroup);
 
-        DBResource pubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPubGroup);
-        DBResource pubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPubGroup);
-        DBResource pubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPrivGroup);
-        DBResource pubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPrivGroup);
+        searchPubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, domainResourceDefD1R1,  groupD1G1);
+        searchPubPubPubSubRes = createSubresource(searchPubPubPubRes, "subres-pubPubPub", "s-1-1-1", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, domainResourceDefD1R1,  groupD1G1);
+        searchPubPubPrivSubRes = createSubresource(searchPubPubPrivRes, "subres-pubPubPriv", "s-2-2-2", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, domainResourceDefD1R1,  groupD1G2);
+        searchPubPrivPubSubRes = createSubresource(searchPubPrivPubRes, "subres-pubPrivPub", "s-3-3-3", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, domainResourceDefD1R1,  groupD1G2);
+        searchPubPrivPrivSubRes = createSubresource(searchPubPrivPrivRes, "subres-pubPrivPriv", "s-4-4-4", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
 
-        DBResource privPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, privateDomainResourceDef,  privPubGroup);
-        DBResource privPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, privateDomainResourceDef,  privPubGroup);
-        DBResource privPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, privateDomainResourceDef,  privPrivGroup);
-        DBResource privPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, privateDomainResourceDef,  privPrivGroup);
+        searchPrivPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, domainResourceDefD2R1,  groupD2G1);
+        searchPrivPubPubSubRes = createSubresource(searchPrivPubPubRes, "subres-privPubPub", "s-5-5-5", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPrivPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, domainResourceDefD2R1,  groupD2G1);
+        searchPrivPubPrivSubRes = createSubresource(searchPrivPubPrivRes, "subres-privPubPriv", "s-6-6-6", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPrivPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, domainResourceDefD2R1,  privPrivGroup);
+        searchPrivPrivPubSubRes = createSubresource(searchPrivPrivPubRes, "subres-privPrivPub", "s-7-7-7", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPrivPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, domainResourceDefD2R1,  privPrivGroup);
+        searchPrivPrivPrivSubRes = createSubresource(searchPrivPrivPrivRes, "subres-privPrivPriv", "s-8-8-8", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
 
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPubPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPubPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPubPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPubPrivRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPrivPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPrivPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPrivPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPrivPrivRes);
 
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPubPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPubPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPubPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPubPrivRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPrivPubRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPrivPubRes);
-        createResourceMembership(MembershipRoleType.ADMIN, user1, privPrivPrivRes);
-        createResourceMembership(MembershipRoleType.VIEWER, user2, privPrivPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPubPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPubPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPubPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPubPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPrivPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPrivPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPrivPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPubPrivPrivRes);
 
-        createResourceMembership(MembershipRoleType.VIEWER, user5, privPrivPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPubPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPubPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPubPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPubPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPrivPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPrivPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, searchPrivPrivPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, searchPrivPrivPrivRes);
+
+        createResourceMembership(MembershipRoleType.VIEWER, user5, searchPrivPrivPrivRes);
 
         searchDataCreated = true;
     }
@@ -373,9 +456,15 @@ public class TestUtilsDao {
 
     @Transactional
     public DBResourceMember createResourceMembership(MembershipRoleType roleType, DBUser user, DBResource resource){
+        return createResourceMembership(roleType, user, resource, false);
+    }
+
+    @Transactional
+    public DBResourceMember createResourceMembership(MembershipRoleType roleType, DBUser user, DBResource resource, boolean hasPermissionToReview){
         DBResourceMember member = new DBResourceMember();
         member.setRole(roleType);
         member.setUser(user);
+        member.setHasPermissionToReview(hasPermissionToReview);
         member.setResource(resource);
         persistFlushDetach(member);
         assertNotNull(member.getId());
@@ -398,14 +487,14 @@ public class TestUtilsDao {
         }
         createGroups();
         createResourceDefinitionsForDomains();
-        documentD1G1RD1 = createDocument(2);
-        documentD2G1RD1 = createDocument(2);
+        documentD1G1RD1 = createDocument(2,TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         resourceD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         resourceD1G1RD1.setDocument(documentD1G1RD1);
 
         resourceD1G1RD1.setGroup(groupD1G1);
         resourceD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
 
+        documentD2G1RD1 = createDocument(2, TEST_SG_ID_2, "");
         resourceD2G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_2, null);
         resourceD2G1RD1.setDocument(documentD2G1RD1);
 
@@ -420,17 +509,57 @@ public class TestUtilsDao {
     }
 
     @Transactional
-    public DBResource createResource(String identifier, String schema, VisibilityType visibilityType, DBDomainResourceDef domainResourceDef, DBGroup group) {
+    public DBResource createResource(String identifier, String schema,
+                                     VisibilityType visibilityType,
+                                     DBDomainResourceDef domainResourceDef,
+                                     DBGroup group) {
 
-        DBResource resource = TestDBUtils.createDBResource(identifier, schema);
+        return createResource(identifier, schema, visibilityType, DocumentVersionStatusType.PUBLISHED, domainResourceDef, group);
+    }
+
+    @Transactional
+    public DBResource createResource(String identifier, String schema,
+                                     VisibilityType visibilityType,
+                                     DocumentVersionStatusType status,
+                                     DBDomainResourceDef domainResourceDef,
+                                     DBGroup group) {
+
+        DBResource resource = TestDBUtils.createDBResource(identifier, schema, true, status);
         resource.setVisibility(visibilityType);
         resource.setGroup(group);
         resource.setDomainResourceDef(domainResourceDef);
+        resource.setReviewEnabled(true);
 
         persistFlushDetach(resource);
         assertNotNull(resource.getId());
         return resource;
     }
+
+    @Transactional
+    public DBSubresource createSubresource(DBResource resource, String identifier, String schema,
+                                     DocumentVersionStatusType status, DBSubresourceDef subresourceDefSmp) {
+
+        DBSubresource dbSubresource = TestDBUtils.createDBSubresource(
+                resource.getIdentifierValue(),resource.getIdentifierScheme(),
+                identifier, schema);
+
+
+        dbSubresource.setSubresourceDef(subresourceDefSmp);
+
+        DBDocument doc  = createDocument(1, resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                identifier, schema);
+        doc.getDocumentVersions().get(0).setStatus(status);
+        doc.setSharingEnabled(Boolean.TRUE);
+        dbSubresource.setDocument(doc);
+        dbSubresource.setResource(resource);
+
+
+        persistFlushDetach(dbSubresource);
+        assertNotNull(dbSubresource.getId());
+        return dbSubresource;
+    }
+
+
 
 
     /**
@@ -448,11 +577,15 @@ public class TestUtilsDao {
         }
         createResources();
 
-        documentD1G1RD1_S1 = createDocument(2);
-        documentD2G1RD1_S1 = createDocument(2);
+        documentD1G1RD1_S1 = createDocument(2, resourceD1G1RD1.getIdentifierValue(), resourceD1G1RD1.getIdentifierScheme(),
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
         subresourceD1G1RD1_S1 = TestDBUtils.createDBSubresource(
                 resourceD1G1RD1.getIdentifierValue(),resourceD1G1RD1.getIdentifierScheme(),
                 TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
+
+
+        documentD2G1RD1_S1 = createDocument(2, resourceD2G1RD1.getIdentifierValue(),resourceD2G1RD1.getIdentifierScheme(),
+                TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
         subresourceD2G1RD1_S1 = TestDBUtils.createDBSubresource(
                 resourceD2G1RD1.getIdentifierValue(),resourceD2G1RD1.getIdentifierScheme(),
                 TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
@@ -463,9 +596,8 @@ public class TestUtilsDao {
         subresourceD1G1RD1_S1.setResource(resourceD1G1RD1);
         subresourceD2G1RD1_S1.setResource(resourceD2G1RD1);
 
-        subresourceD1G1RD1_S1.setSubresourceDef(resourceDefSmpMetadata);
-        subresourceD2G1RD1_S1.setSubresourceDef(resourceDefSmpMetadata);
-
+        subresourceD1G1RD1_S1.setSubresourceDef(subresourceDefSmp);
+        subresourceD2G1RD1_S1.setSubresourceDef(subresourceDefSmp);
 
         persistFlushDetach(subresourceD1G1RD1_S1);
         persistFlushDetach(subresourceD2G1RD1_S1);
@@ -475,30 +607,33 @@ public class TestUtilsDao {
     }
 
     @Transactional
-    public DBDocument createAndPersistDocument() {
-        return createAndPersistDocument(3);
-    }
-
-    @Transactional
-    public DBDocument createAndPersistDocument(int versions) {
-        DBDocument document = createDocument(versions);
+    public DBDocument createAndPersistDocument(int versions, String identifier, String schema) {
+        DBDocument document = createDocument(versions, identifier, schema);
         persistFlushDetach(document);
         for (int i= 0; i< versions; i++ ) {
             assertNotNull(document.getDocumentVersions().get(i).getId());
         }
-        // current version is the last version
-        assertEquals(versions-1, document.getCurrentVersion());
+        // current version is first version all others are draft
+        assertEquals(1, document.getCurrentVersion());
 
         return document;
     }
 
-    public DBDocument createDocument(int versions) {
+    public DBDocument createDocument(int versions, String identifier, String schema) {
         DBDocument document = createDBDocument();
         // add document versions to the document
         for (int i= 0; i< versions; i++ ) {
-            document.addNewDocumentVersion(createDBDocumentVersion());
+            document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema));
         }
+        return document;
+    }
 
+    public DBDocument createDocument(int versions, String identifier, String schema, String docIdentifier, String docSchema) {
+        DBDocument document = createDBDocument();
+        // add document versions to the document
+        for (int i= 0; i< versions; i++ ) {
+            document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema, docIdentifier, docSchema));
+        }
         return document;
     }
 
@@ -551,23 +686,56 @@ public class TestUtilsDao {
     }
 
     @Transactional
+    public DBDomain createRegisteredDomain(String domainCode) {
+        DBDomain d = TestDBUtils.createDBDomain(domainCode);
+        d.setSmlRegistered(true);
+        persistFlushDetach(d);
+        return d;
+    }
+
+    @Transactional
     public DBDomain createDomain(String domainCode, VisibilityType visibility) {
         DBDomain d = TestDBUtils.createDBDomain(domainCode);
         d.setVisibility(visibility);
         persistFlushDetach(d);
+
+        createDefaultDomainProperties(d, SMPDomainPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES);
+        createDefaultDomainProperties(d, SMPDomainPropertyEnum.RESOURCE_SCH_VALIDATION_REGEXP);
         return d;
     }
 
     @Transactional
-    public DBResourceDef createResourceDefinition(String urlContextDef) {
-        DBResourceDef d = TestDBUtils.createDBResourceDef(urlContextDef, urlContextDef);
+    public DBDomainConfiguration createDefaultDomainProperties(DBDomain domain, SMPDomainPropertyEnum property ) {
+        DBDomainConfiguration dc = new DBDomainConfiguration();
+        dc.setDomain(domain);
+        dc.setProperty(property.getProperty());
+        dc.setValue(property.getDefValue());
+        dc.setUseSystemDefault(false);
+        persistFlushDetach(dc);
+        return dc;
+    }
+
+    @Transactional
+    public DBDomainConfiguration createDomainProperties(DBDomain domain, String property, String value) {
+        DBDomainConfiguration dc = new DBDomainConfiguration();
+        dc.setDomain(domain);
+        dc.setProperty(property);
+        dc.setValue(value);
+        dc.setUseSystemDefault(false);
+        persistFlushDetach(dc);
+        return dc;
+    }
+
+    @Transactional
+    public DBResourceDef createResourceDefinition(String identifier, String urlContextDef) {
+        DBResourceDef d = TestDBUtils.createDBResourceDef(identifier, urlContextDef);
         persistFlushDetach(d);
         return d;
     }
 
     @Transactional
-    public DBSubresourceDef createSubresourceDefinition(String urlContextDef, DBResourceDef resourceDef) {
-        DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(urlContextDef, urlContextDef);
+    public DBSubresourceDef createSubresourceDefinition(String identifier, String urlContextDef, DBResourceDef resourceDef) {
+        DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(identifier, urlContextDef);
         d.setResourceDef(resourceDef);
         persistFlushDetach(d);
         return d;
@@ -598,6 +766,12 @@ public class TestUtilsDao {
     }
 
 
+    @Transactional
+    public <E> E find(Class<E> clazz, Object id) {
+        LOG.debug("find entity: [{}] for type [{}]", id, clazz);
+        return memEManager.find(clazz, id);
+    }
+
     public void clear() {
         memEManager.clear();
     }
@@ -611,6 +785,10 @@ public class TestUtilsDao {
         return d2;
     }
 
+    public DBDomain getD3() {
+        return d3;
+    }
+
     public DBResourceDef getResourceDefSmp() {
         return resourceDefSmp;
     }
@@ -619,9 +797,7 @@ public class TestUtilsDao {
         return resourceDefCpp;
     }
 
-    public DBDomainResourceDef getDomainResourceDefD1R1() {
-        return domainResourceDefD1R1;
-    }
+    public DBDomainResourceDef getDomainResourceDefD1R1() {return domainResourceDefD1R1;}
 
     public DBDomainResourceDef getDomainResourceDefD1R2() {
         return domainResourceDefD1R2;
@@ -667,8 +843,8 @@ public class TestUtilsDao {
         return resourceD1G1RD1;
     }
 
-    public DBSubresourceDef getResourceDefSmpMetadata() {
-        return resourceDefSmpMetadata;
+    public DBSubresourceDef getSubresourceDefSmpMetadata() {
+        return subresourceDefSmp;
     }
 
     public DBDocument getDocumentD1G1RD1_S1() {
@@ -709,5 +885,86 @@ public class TestUtilsDao {
 
     public DBDomainMember getDomainMemberU1D2Viewer() {
         return domainMemberU1D2Viewer;
+    }
+
+    public DBResourceMember getResourceMemberU1R1_D2G1RD1_Admin() {
+        return resourceMemberU1R1_D2G1RD1_Admin;
+    }
+
+    public DBResourceMember getResourceMemberU1R2_D2G1RD1_Viewer(){
+        return resourceMemberU1R2_D2G1RD1_Viewer;
+    }
+
+    public DBGroupMember getGroupMemberU1D1G1Admin() {
+        return groupMemberU1D1G1Admin;
+    }
+
+    public DBGroupMember getGroupMemberU1D2G1Viewer() {
+        return groupMemberU1D2G1Viewer;
+    }
+
+
+    public DBResource getResourceSearchPubPubPub() {
+        return searchPubPubPubRes;
+    }
+
+    public DBResource getResourceSearchPubPubPriv() {
+        return searchPubPubPrivRes;
+    }
+
+    public DBResource getResourceSearchPubPrivPub() {
+        return searchPubPrivPubRes;
+    }
+
+    public DBResource getResourceSearchPubPrivPriv() {
+        return searchPubPrivPrivRes;
+    }
+
+    public DBResource getResourceSearchPrivPubPub() {
+        return searchPrivPubPubRes;
+    }
+
+    public DBResource getResourceSearchPrivPubPriv() {
+        return searchPrivPubPrivRes;
+    }
+
+    public DBResource getResourceSearchPrivPrivPub() {
+        return searchPrivPrivPubRes;
+    }
+
+    public DBResource getResourceSearchPrivPrivPriv() {
+        return searchPrivPrivPrivRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPubPub() {
+        return searchPubPubPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPubPriv() {
+        return searchPubPubPrivSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPrivPub() {
+        return searchPubPrivPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPubPrivPriv() {
+        return searchPubPrivPrivSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPubPub() {
+        return searchPrivPubPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPubPriv() {
+        return searchPrivPubPrivSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPrivPub() {
+        return searchPrivPrivPubSubRes;
+    }
+
+    public DBSubresource getSubresourceSearchPrivPrivPriv() {
+        return searchPrivPrivPrivSubRes;
     }
 }

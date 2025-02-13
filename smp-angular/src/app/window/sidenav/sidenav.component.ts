@@ -13,7 +13,6 @@ import {SmpConstants} from "../../smp.constants";
  * @since 5.0
  */
 @Component({
-  moduleId: module.id,
   selector: 'smp-sidenav',
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.css']

@@ -1,9 +1,24 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.testutil;
 
-import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import eu.europa.ec.edelivery.smp.data.enums.*;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
@@ -24,14 +39,16 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_EXTENSION_XML;
 
 public class TestDBUtils {
+    // valid key alias for testing from the keystore
+    public static final String TEST_KEY_ALIAS = "single_domain_key";
 
     public static DBDomain createDBDomain(String domainCode) {
         DBDomain domain = new DBDomain();
         domain.setDomainCode(domainCode);
-        domain.setSignatureKeyAlias(anyString());
+        domain.setSignatureKeyAlias(TEST_KEY_ALIAS);
         domain.setSmlClientKeyAlias(anyString());
         domain.setSmlSubdomain(anyString());
         domain.setSmlSmpId(anyString());
@@ -39,10 +56,10 @@ public class TestDBUtils {
     }
 
     public static DBGroup createDBGroup(String groupName) {
-        return  createDBGroup(groupName, VisibilityType.PUBLIC);
+        return createDBGroup(groupName, VisibilityType.PUBLIC);
     }
 
-    public static DBGroup createDBGroup(String groupName, VisibilityType visibility){
+    public static DBGroup createDBGroup(String groupName, VisibilityType visibility) {
         DBGroup group = new DBGroup();
         group.setGroupName(groupName);
         group.setGroupDescription(anyString());
@@ -53,7 +70,7 @@ public class TestDBUtils {
     public static DBExtension createDBExtension(String identifier) {
         DBExtension entity = new DBExtension();
         entity.setIdentifier(identifier);
-        entity.setImplementationName(identifier+"Name");
+        entity.setImplementationName(identifier + "Name");
         entity.setName(anyString());
         entity.setDescription(anyString());
         entity.setVersion(anyString());
@@ -81,7 +98,7 @@ public class TestDBUtils {
     }
 
     public static DBResourceDef createDBResourceDef(String identifier) {
-       return createDBResourceDef(identifier, anyString());
+        return createDBResourceDef(identifier, anyString());
     }
 
     public static DBAlert createDBAlert(String username) {
@@ -141,37 +158,34 @@ public class TestDBUtils {
         return grp;
     }
 
-    public static byte[] generateDocumentSample(String partcId, String partcSch, String docId, String docSch, String desc) {
-        return String.format(SIMPLE_DOCUMENT_XML, partcSch, partcId, docSch, docId, desc).getBytes();
-    }
-
     public static byte[] generateExtension() {
         return String.format(SIMPLE_EXTENSION_XML, anyString()).getBytes();
     }
 
-    public static byte[] generateRedirectDocumentSample(String url) {
-        return String.format(SIMPLE_REDIRECT_DOCUMENT_XML, url).getBytes();
-
-    }
 
     public static DBResource createDBResource(String id, String sch) {
         return createDBResource(id, sch, true);
     }
 
-
-    public static DBResource createDBResource(String id, String sch, boolean withExtension) {
+    public static DBResource createDBResource(String id, String sch, boolean withExtension,
+                                              DocumentVersionStatusType statusType) {
         DBResource resource = new DBResource();
         resource.setIdentifierValue(id);
         resource.setIdentifierScheme(sch);
         resource.setVisibility(VisibilityType.PUBLIC);
         if (withExtension) {
             DBDocument document = createDBDocument();
-            DBDocumentVersion documentVersion = createDBDocumentVersion();
-            createDBDocumentVersion().setContent(generateExtension());
+            document.setSharingEnabled(true);
+            DBDocumentVersion documentVersion = createDBDocumentVersion(id, sch, statusType);
             document.addNewDocumentVersion(documentVersion);
             resource.setDocument(document);
         }
         return resource;
+    }
+
+
+    public static DBResource createDBResource(String id, String sch, boolean withExtension) {
+        return createDBResource(id, sch, withExtension, DocumentVersionStatusType.DRAFT);
     }
 
     public static DBDocument createDBDocument() {
@@ -181,9 +195,36 @@ public class TestDBUtils {
         return doc;
     }
 
-    public static DBDocumentVersion createDBDocumentVersion() {
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch) {
+        return createDBDocumentVersion(id, sch, DocumentVersionStatusType.DRAFT);
+    }
+
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch, DocumentVersionStatusType status) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
-        docuVersion.setContent(anyString().getBytes());
+        docuVersion.setStatus(status);
+        docuVersion.setContent(("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
+                "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
+                "<ServiceMetadataReferenceCollection />" +
+                "</ServiceGroup>").getBytes());
+        return docuVersion;
+    }
+
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch, String docId, String docSch) {
+        DBDocumentVersion docuVersion = new DBDocumentVersion();
+        docuVersion.setContent(("<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ServiceInformation>" +
+                "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
+                "<DocumentIdentifier scheme=\"" + docSch + "\">" + docId + "</DocumentIdentifier>" +
+                "<ProcessList><Process>" +
+                "<ProcessIdentifier scheme=\"[test-schema]\">[test-value]</ProcessIdentifier>" +
+                "<ServiceEndpointList>" +
+                "<Endpoint transportProfile=\"bdxr-transport-ebms3-as4-v1p0\">" +
+                "<EndpointURI>https://mypage.eu</EndpointURI>" +
+                "<Certificate>Q2VydGlmaWNhdGUgZGF0YSA=</Certificate>" +
+                "<ServiceDescription>Service description for partners </ServiceDescription>" +
+                "<TechnicalContactUrl>www.best-page.eu</TechnicalContactUrl>" +
+                "</Endpoint>" +
+                "</ServiceEndpointList>" +
+                "</Process></ProcessList></ServiceInformation></ServiceMetadata>").getBytes());
         return docuVersion;
     }
 
@@ -196,54 +237,83 @@ public class TestDBUtils {
         return createDBCredential(name, "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
     }
 
-    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
-        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+        DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
         credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
-        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
+    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+        DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
         credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
-        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
-        credential.setExpireOn(to);
-        credential.setActiveFrom(from);
+    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+        DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         credential.setExpireAlertOn(lastAlertSent);
+        if (to != null) {
+            credential.setExpireOn(to);
+        }
+        if (from != null) {
+            credential.setActiveFrom(from);
+        }
+
         return credential;
     }
 
 
     public static DBCredential createDBCredential(DBUser dbUser, String name, String value, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         DBCredential dbCredential = new DBCredential();
+        dbCredential.setActive(true);
         dbCredential.setValue(value);
         dbCredential.setName(name);
         dbCredential.setCredentialType(credentialType);
         dbCredential.setCredentialTarget(credentialTargetType);
-        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1l));
-        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2l));
+        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
+        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
         dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
         dbCredential.setUser(dbUser);
+
+        if (CredentialType.CERTIFICATE.equals(credentialType)) {
+
+            DBCertificate certificate = new DBCertificate();
+            certificate.setCertificateId(name);
+            certificate.setValidFrom(dbCredential.getActiveFrom());
+            certificate.setValidTo(dbCredential.getExpireOn());
+
+            int iSplit = name.lastIndexOf(':');
+            if (iSplit > 0) {
+                String subject = name.substring(0, iSplit);
+                certificate.setSubject(subject);
+                certificate.setIssuer(subject);
+                certificate.setSerialNumber(name.substring(iSplit + 1));
+            } else {
+                certificate.setSubject(name);
+                certificate.setIssuer(name);
+                certificate.setSerialNumber("1234567890");
+            }
+            dbCredential.setCertificate(certificate);
+        }
+
         return dbCredential;
     }
 
     public static DBCredential createDBCredential(String name, String value, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         DBCredential dbCredential = new DBCredential();
+        dbCredential.setActive(true);
         dbCredential.setValue(value);
         dbCredential.setName(name);
         dbCredential.setCredentialType(credentialType);
         dbCredential.setCredentialTarget(credentialTargetType);
-        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1l));
-        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2l));
+        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
+        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
         dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
@@ -263,6 +333,7 @@ public class TestDBUtils {
     public static DBUser createDBUserByUsername(String userName) {
         DBUser dbuser = new DBUser();
         dbuser.setUsername(userName);
+        dbuser.setSmpLocale("en");
         dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setActive(true);
         dbuser.setApplicationRole(ApplicationRoleType.USER);
@@ -299,15 +370,15 @@ public class TestDBUtils {
 
     public static DBUser createDBUser(String userName, String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
         DBUser dbuser = createDBUserByUsername(userName);
-        DBCredential credential = createDBCredential(dbuser, certId,"", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        DBCredential credential = createDBCredential(dbuser, certId, "", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         credential.setActiveFrom(validFrom);
         credential.setExpireOn(validTo);
         credential.setCertificate(createDBCertificate(certId, validFrom, validTo));
         dbuser.getUserCredentials().add(credential);
         return dbuser;
     }
-    
-    public static String anyString(){
+
+    public static String anyString() {
         return UUID.randomUUID().toString();
     }
 }

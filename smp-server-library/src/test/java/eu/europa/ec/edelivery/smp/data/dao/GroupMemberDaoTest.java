@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
@@ -5,25 +23,25 @@ import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class GroupMemberDaoTest extends AbstractBaseDao {
+class GroupMemberDaoTest extends AbstractBaseDao {
 
     @Autowired
     GroupMemberDao testInstance;
 
-    @Before
+    @BeforeEach
     public void init() {
         testUtilsDao.clearData();
         testUtilsDao.createUsers();
@@ -32,7 +50,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserGroupMember() {
+    void testIsUserGroupMember() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -48,7 +66,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserGroupMemberFalse() {
+    void testIsUserGroupMemberFalse() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -59,7 +77,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserGroupMemberWithRole() {
+    void testIsUserGroupMemberWithRole() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -76,7 +94,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void isUserAnyDomainGroupResourceMember() {
+    void isUserAnyDomainGroupResourceMember() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -94,7 +112,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void isUserAnyDomainGroupResourceMemberWithRole() {
+    void isUserAnyDomainGroupResourceMemberWithRole() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -111,7 +129,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetGroupMembersOne() {
+    void testGetGroupMembersOne() {
         DBGroup group = testUtilsDao.getGroupD1G1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToGroup(user, group, MembershipRoleType.ADMIN);
@@ -123,7 +141,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersOneFilter() {
+    void testGetDomainMembersOneFilter() {
         DBGroup group = testUtilsDao.getGroupD1G1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToGroup(user, group, MembershipRoleType.ADMIN);

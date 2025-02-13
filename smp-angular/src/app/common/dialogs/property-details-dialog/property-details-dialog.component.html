@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="min-height:100px;width:780px">
+  <form [formGroup]="propertyForm">
+    <mat-card>
+      <mat-card-content>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title  class="property-title">
+              {{propertyForm.controls['property'].value}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <fieldset style="border: solid gray 1px;">
+            <legend>{{ "property.details.dialog.legend.description" | translate }}</legend>
+            <label>{{ propertyForm.controls['desc'].value}}</label>
+          </fieldset>
+        </mat-expansion-panel>
+        <!-- Only for domain property-->
+        <mat-checkbox  *ngIf="isDomainProperty"
+          formControlName="systemDefault"
+                      (change)="updateValueState()"
+                      style="width: 100%">
+          {{ "property.details.dialog.label.use.system.default.value" | translate }}
+        </mat-checkbox>
+
+        <mat-form-field *ngIf="propertyForm.controls['type'].value !== 'BOOLEAN'" appearance="fill" style="width: 100%">
+          <mat-label>{{ "property.details.dialog.label.property.value" | translate }}</mat-label>
+          <input style="width: 100%;padding: 5px"
+            matInput [type]="getInputType(propertyForm.controls['type'].value)"
+            formControlName="value"
+            [pattern]="propertyForm.controls['valuePattern'].value" />
+        </mat-form-field>
+        <mat-checkbox *ngIf="propertyForm.controls['type'].value === 'BOOLEAN'"
+                      formControlName="value"
+                      style="width: 100%">
+          {{ propertyForm.controls['property'].value }}
+        </mat-checkbox>
+        <div *ngIf="propertyForm.controls['errorMessage'].value" class="alert-message-error">
+          {{ propertyForm.controls['errorMessage'].value}}
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button id="updatePropertyButton" mat-raised-button color="primary" (click)="submitForm()"
+          [disabled]="!isDirty || !propertyForm.valid">
+    <mat-icon>check_circle</mat-icon>
+    <span>{{ "property.details.dialog.button.ok" | translate }}</span>
+  </button>
+  <button mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    <span>{{ "property.details.dialog.button.cancel" | translate }}</span>
+  </button>
+</mat-dialog-actions>

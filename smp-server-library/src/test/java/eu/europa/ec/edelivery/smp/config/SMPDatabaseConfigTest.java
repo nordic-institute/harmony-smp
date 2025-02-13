@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.init.DatabaseConnectionBeanCreator;
@@ -5,9 +23,8 @@ import eu.europa.ec.edelivery.smp.config.init.DatabaseConnectionProperties;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -18,8 +35,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SMPDatabaseConfigTest {
 
@@ -32,20 +48,20 @@ public class SMPDatabaseConfigTest {
     DatabaseConnectionProperties environmentProperties = Mockito.mock(DatabaseConnectionProperties.class);
 
     SMPDatabaseConfig testInstance = new SMPDatabaseConfig();
-    @Before
+    @BeforeEach
     public void init(){
         ReflectionTestUtils.setField(testInstance, "databaseConnectionBeanCreator", new DatabaseConnectionBeanCreator(environmentProperties));
     }
 
     @Test
-    public void getDataSourceMissingConfiguration() {
+    void getDataSourceMissingConfiguration() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
 
         assertEquals("Configuration error: [Invalid datasource configuration. Both jndi or jdbc url are empty]!", result.getMessage());
     }
 
     @Test
-    public void getJNDIForDataSourceMissing() {
+    void getJNDIForDataSourceMissing() {
         Mockito.doReturn("jdbc/eDeliverySmpDs").when(environmentProperties).getDatabaseJNDI();
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
@@ -54,40 +70,40 @@ public class SMPDatabaseConfigTest {
     }
 
     @Test
-    public void getDataSource() {
+    void getDataSource() {
         setJdbcProperties();
 
         DataSource result = testInstance.getDataSource();
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(DriverManagerDataSource.class, result.getClass());
+        assertNotNull(result);
+        assertEquals(DriverManagerDataSource.class, result.getClass());
     }
 
     @Test
-    public void jpaVendorAdapter() {
+    void jpaVendorAdapter() {
         setHibernateDatabaseDialect();
         JpaVendorAdapter result = testInstance.jpaVendorAdapter();
 
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
     @Test
-    public void smpEntityManagerFactory() {
+    void smpEntityManagerFactory() {
         setJdbcProperties();
         setHibernateDatabaseDialect();
 
         LocalContainerEntityManagerFactoryBean result = testInstance.smpEntityManagerFactory(testInstance.getDataSource(), testInstance.jpaVendorAdapter());
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
     @Test
-    public void smpTransactionManager() {
+    void smpTransactionManager() {
         setJdbcProperties();
         setHibernateDatabaseDialect();
 
         EntityManagerFactory entityManagerFactory = testInstance.smpEntityManagerFactory(testInstance.getDataSource(), testInstance.jpaVendorAdapter()).getObject();
         PlatformTransactionManager result = testInstance.smpTransactionManager(entityManagerFactory);
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
 

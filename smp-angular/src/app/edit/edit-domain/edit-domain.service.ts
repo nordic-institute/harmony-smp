@@ -3,16 +3,20 @@ import {Observable, Subject} from 'rxjs';
 
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {SecurityService} from "../../security/security.service";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {User} from "../../security/user.model";
 import {SmpConstants} from "../../smp.constants";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {DomainPropertyRo} from "../../common/model/domain-property-ro.model";
+import {
+  AlertMessageService
+} from "../../common/alert-message/alert-message.service";
 
 @Injectable()
 export class EditDomainService {
 
+  private domainPropertyUpdateSubject: Subject<DomainPropertyRo[]> = new Subject<DomainPropertyRo[]>();
 
   constructor(
     private http: HttpClient,
@@ -91,5 +95,48 @@ export class EditDomainService {
     );
   }
 
+  public getDomainProperties(domain: DomainRo): void {
+    const currentUser: User = this.securityService.getCurrentUser();
+    this.http.get<DomainPropertyRo[]>(SmpConstants.REST_EDIT_DOMAIN_PROPERTIES
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId))
+      .subscribe({
+        next: (result: DomainPropertyRo[]): void => {
+          this.notifyPropertiesUpdated(domain, result);
+        },
+        error: (error: any): void => {
+          this.alertService.error(error.error?.errorDescription)
+        }
+      });
+  }
+
+  /**
+   * Update domain property list
+   * @param domain Domain to update
+   * @param domainProperties List of domain properties
+   */
+  public updateDomainProperties(domain: DomainRo, domainProperties: DomainPropertyRo[] ): void {
+    const currentUser: User = this.securityService.getCurrentUser();
+    this.http.post<DomainPropertyRo[]>(SmpConstants.REST_EDIT_DOMAIN_PROPERTIES
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId),
+      domainProperties)
+      .subscribe({
+        next: (result: DomainPropertyRo[]): void => {
+          this.notifyPropertiesUpdated(domain, result);
+        },
+        error: (error: any): void => {
+          this.alertService.error(error.error?.errorDescription)
+        }
+      });
+  }
+
+  onDomainPropertyUpdatedEvent(): Observable<DomainPropertyRo[]> {
+    return this.domainPropertyUpdateSubject.asObservable();
+  }
+
+  notifyPropertiesUpdated(domainRo: DomainRo, properties: DomainPropertyRo[]) {
+    this.domainPropertyUpdateSubject.next(properties);
+  }
 
 }

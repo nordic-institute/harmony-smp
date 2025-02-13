@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.logging;
 
 
@@ -52,6 +70,8 @@ public enum SMPMessageCode implements MessageCode {
     SEC_USER_SUSPENDED("SEC-008", "User [{}] is temporarily suspended."),
     SEC_INVALID_TOKEN("SEC-009", "User [{}] has invalid token value for token id: [{}]."),
     SEC_TRUSTSTORE_CERT_INVALID("SEC-010", "Truststore certificate with alias [{}] is invalid: [{}]."),
+    SEC_RESET_TOKEN_NOT_EXISTS("SEC-011", "Reset token [{}] for type [{}] not exists."),
+    SEC_RESET_TOKEN_INVALID("SEC-012", "Reset token for credential [{}] for type [{}] is invalid."),
     ;
 
     String code;

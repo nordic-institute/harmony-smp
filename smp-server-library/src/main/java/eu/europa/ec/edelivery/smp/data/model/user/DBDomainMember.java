@@ -1,3 +1,21 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
 package eu.europa.ec.edelivery.smp.data.model.user;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
@@ -30,13 +48,18 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS, query = "SELECT c FROM DBDomainMember c " +
         "WHERE c.user.id = :user_id and c.domain.id in (:domain_ids)")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
-        " WHERE c.domain.id = :domain_id")
+        " WHERE c.domain.id = :domain_id AND c.role in (:membership_roles)")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS, query = "SELECT c FROM DBDomainMember c " +
         " WHERE c.domain.id = :domain_id order by c.user.username")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
-        " WHERE c.domain.id = :domain_id AND (lower(c.user.fullName) like lower(:user_filter) OR  lower(c.user.username) like lower(:user_filter))")
+        " WHERE c.domain.id = :domain_id " +
+        "  AND c.role in (:membership_roles)" +
+        "  AND (lower(c.user.fullName) like lower(:user_filter) " +
+        "    OR  lower(c.user.username) like lower(:user_filter))")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER, query = "SELECT c FROM DBDomainMember c " +
-        " WHERE c.domain.id = :domain_id  AND (lower(c.user.fullName) like lower(:user_filter) OR  lower(c.user.username) like lower(:user_filter))  order by c.user.username")
+        " WHERE c.domain.id = :domain_id  " +
+        " AND (lower(c.user.fullName) like lower(:user_filter) " +
+        "   OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
 public class DBDomainMember extends BaseEntity {
 
     @Id

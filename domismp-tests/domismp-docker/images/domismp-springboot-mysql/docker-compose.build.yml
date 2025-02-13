@@ -1,0 +1,13 @@
+#
+# Docker compose project used to build the domibus soapui docker image.
+#
+version: '3.8'
+services:
+  domismp-springboot-mysql:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_SPRINGBOOT_MYSQL}:${SMP_VERSION}
+    build:
+      context: .
+      args:
+        - SMP_VERSION
+
+

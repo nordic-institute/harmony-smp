@@ -1,14 +1,20 @@
-/*
- * Copyright 2018 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.data.model;
@@ -35,6 +41,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         indexes = {@Index(name = "SMP_DOM_UNIQ_CODE_IDX", columnList = "DOMAIN_CODE", unique = true)
         })
 @NamedQuery(name = QUERY_DOMAIN_ALL, query = "SELECT d FROM DBDomain d order by d.id asc")
+@NamedQuery(name = QUERY_DOMAIN_ALL_CODES, query = "SELECT d.domainCode FROM DBDomain d")
 @NamedQuery(name = QUERY_DOMAIN_CODE, query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domain_code")
 @NamedQuery(name = QUERY_DOMAIN_SMP_SML_ID, query = "SELECT d FROM DBDomain d WHERE lower(d.smlSmpId) = lower(:sml_smp_id)")
 
@@ -65,15 +72,33 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " JOIN DBResource r ON  g.id = r.group.id " +
         " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
         " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
-
-
 @NamedQuery(name = QUERY_DOMAIN_BY_USER_RESOURCE_ROLES, query = "SELECT distinct d FROM DBDomain d " +
         " JOIN DBGroup g ON d.id = g.domain.id " +
         " JOIN DBResource r ON  g.id = r.group.id " +
         " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
         " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
 
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
+@NamedQuery(name = QUERY_DOMAIN_FOR_USER, query = "SELECT distinct d FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " WHERE d.visibility = :domain_visibility " +
+        "   or (:user_id IS NOT NULL " +
+        "         AND  (" +
+        "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
+        "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
+        "   ) " )
+@NamedQuery(name = QUERY_DOMAIN_FOR_USER_COUNT, query = "SELECT distinct COUNT( distinct d.id) FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " WHERE d.visibility = :domain_visibility " +
+        "   or (:user_id IS NOT NULL " +
+        "         AND  (" +
+        "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
+        "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
+        "   ) " )
+        @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
     private static final long serialVersionUID = 1008583888835630004L;
@@ -139,6 +164,16 @@ public class DBDomain extends BaseEntity {
             fetch = FetchType.LAZY
     )
     private List<DBDomainResourceDef> domainResourceDefs = new ArrayList<>();
+
+
+    @OneToMany(
+            mappedBy = "domain",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBDomainConfiguration> domainConfigurations = new ArrayList<>();
+
 
     @Override
     public Long getId() {
@@ -231,6 +266,10 @@ public class DBDomain extends BaseEntity {
 
     public List<DBDomainResourceDef> getDomainResourceDefs() {
         return domainResourceDefs;
+    }
+
+    public List<DBDomainConfiguration> getDomainConfigurations() {
+        return domainConfigurations;
     }
 
     public VisibilityType getVisibility() {
