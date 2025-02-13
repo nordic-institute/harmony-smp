@@ -67,6 +67,11 @@ public class RestServicePaths {
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/member/put";
     }
 
+    public static String getResourceMembers(String currentUserId, String domainId, String groupId, String resourceId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/member";
+    }
+
     public static String getResourceUpdatePath(String currentUserId, String domainId, String groupId, String resourceId) {
 
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/update";
@@ -82,6 +87,15 @@ public class RestServicePaths {
         return CONTEXT_PATH_EDIT + currentUserId + "/resource/" + resourceId + "/document/review-request";
     }
 
+    public static String getReviewRejectPath(String currentUserId, String resourceId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/resource/" + resourceId + "/document/review-reject";
+    }
+
+    public static String getReviewApprovePath(String currentUserId, String resourceId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/resource/" + resourceId + "/document/review-approve";
+    }
     //Keystore
     public static String getKeystorePath(String currentUserId) {
 

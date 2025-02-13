@@ -2,6 +2,7 @@ package domiSMPTests.ui;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ddsl.DomiSMPPage;
+import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
 import domiSMPTests.SeleniumTest;
@@ -37,6 +38,7 @@ public class EditResourcePgTests extends SeleniumTest {
     LoginPage loginPage;
     EditResourcePage editResourcePage;
     UserModel adminUser;
+    MemberModel superMember;
     DomainModel domainModel;
     GroupModel groupModel;
     ResourceModel resourceModel;
@@ -58,12 +60,13 @@ public class EditResourcePgTests extends SeleniumTest {
         adminMember.setRoleType("ADMIN");
         adminMember.setHasPermissionReview(true);
 
-        MemberModel superMember = new MemberModel();
+        superMember = new MemberModel();
         superMember.setUsername(TestRunData.getInstance().getAdminUsername());
         superMember.setRoleType("ADMIN");
+        superMember.setHasPermissionReview(true);
 
         //create user
-        rest.users().createUser(adminUser).getString("userId");
+        rest.users().createUser(adminUser);
 
         //create domain
         domainModel = rest.domains().createDomain(domainModel);
@@ -508,17 +511,28 @@ public class EditResourcePgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTRES-17 - Resource Administrator AND Resource viewer can approve documents under review", priority = 1)
+    public void resourceAdministratorsAndResourceViewerCanApproveDocumentsUnderReview() throws Exception {
+        //create data
+        ResourceModel currentResourceWithReview = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        UserModel currentSimpleUser = UserModel.generateUserWithUSERrole();
 
-    public void test() throws Exception {
+        MemberModel resourceViewMemberWithReview = new MemberModel() {
+        };
+        resourceViewMemberWithReview.setUsername(currentSimpleUser.getUsername());
+        resourceViewMemberWithReview.setRoleType("VIEWER");
+        resourceViewMemberWithReview.setHasPermissionReview(true);
 
-        ResourceModel resource = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
-        //add resource to group
-        resource = rest.resources().createResourceForGroup(domainModel, groupModel, resource);
+        rest.users().createUser(currentSimpleUser);
 
-        rest.resources().addMembersToResource(domainModel, groupModel, resource, adminMember);
+        //add currentResourceWithReview to group
+        currentResourceWithReview = rest.resources().createResourceForGroup(domainModel, groupModel, currentResourceWithReview);
 
+        rest.resources().addMembersToResource(domainModel, groupModel, currentResourceWithReview, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, currentResourceWithReview, resourceViewMemberWithReview);
+
+        //Create new version under review for Resource administrator
         editResourcePage.refreshPage();
-        editResourcePage.selectDomain(domainModel, groupModel, resource);
+        editResourcePage.selectDomain(domainModel, groupModel, currentResourceWithReview);
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
         editResourceDocumentPage.getNewVersionBtn().click();
         editResourceDocumentPage.getSaveBtn().click();
@@ -528,37 +542,103 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentPage.getSaveBtn().click();
         editResourceDocumentPage.getRequestReviewBtn().click();
 
-        //Reject review task from Review Document screen
+        ////Validate Resource administrator can approve/reject
+        //Resource administrator - Reject review task from Review Document screen
         ReviewTasksPage reviewTasksPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
-        ReviewDocumentPage reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(resource.getIdentifierValue());
+        ReviewDocumentPage reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(currentResourceWithReview.getIdentifierValue(), 2);
         soft.assertEquals(reviewDocumentPage.getStatusValue(), "UNDER_REVIEW", "Document does not have UNDER_REVIEW status");
         reviewDocumentPage.clickOnARejectAndConfirm();
 
+        String documentid = rest.resources().getDocumentID(currentResourceWithReview);
 
-        //  String documentid =  rest.resources().getDocumentID(resourceModel);
-
-        //rest.startSessionWithUser(adminUser.getUsername(),TestRunData.getInstance().getNewPassword() );
-        String documentid = rest.resources().getDocumentID(resourceModel);
-
-        rest.resources().reviewRequest(resource, documentid, 2);
+        rest.resources().reviewRequest(currentResourceWithReview, documentid, 2);
         reviewDocumentPage.refreshPage();
 
-
-//        //Send document back to review
-//        editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);
-//        editResourcePage.selectDomain(domainModel, groupModel, resource);
-//        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
-//        //Select rejected version of document
-//        editResourceDocumentPage.selectVersion(2);
-//        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "REJECTED", "Document is not in the rejected status");
-//        editResourceDocumentPage.getRequestReviewBtn().click();
-
-        //Approve review task from Review Document screen
-        reviewTasksPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
-        reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(resource.getIdentifierValue());
+        //Resource administrator - Approve review task from Review Document screen
+        reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(currentResourceWithReview.getIdentifierValue(), 2);
 
         reviewDocumentPage.clickOnApproveAndConfirm();
+        soft.assertFalse(reviewTasksPage.getGrid().isDocumentTaskPresent(currentResourceWithReview.getIdentifierValue(), 2));
+        //Validate is Viewer user can approve/reject tasks
+        reviewDocumentPage.logout();
+        homePage.goToLoginPage().login(currentSimpleUser.getUsername(), TestRunData.getInstance().getNewPassword());
+        homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
 
+        //Resource viewer - Reject review task from Review Document screen
+        reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(currentResourceWithReview.getIdentifierValue(), 3);
+        soft.assertEquals(reviewDocumentPage.getStatusValue(), "UNDER_REVIEW", "Document does not have UNDER_REVIEW status");
+        reviewDocumentPage.clickOnARejectAndConfirm();
+
+        rest.resources().reviewRequest(currentResourceWithReview, documentid, 3);
+
+        reviewDocumentPage.refreshPage();
+        //Resource viewer - Approve review task from Review Document screen
+        reviewDocumentPage = reviewTasksPage.getGrid().openDocumentTask(currentResourceWithReview.getIdentifierValue(), 3);
+        reviewDocumentPage.clickOnApproveAndConfirm();
+        soft.assertFalse(reviewTasksPage.getGrid().isDocumentTaskPresent(currentResourceWithReview.getIdentifierValue(), 3));
+
+        soft.assertAll();
+
+    }
+
+    @Test(description = "EDTRES-18 - Resource Administrator AND Resource viewer are seeing/not seeing review tasks  based on changes of resource review status", priority = 1)
+    public void resourceAdministratorsAndResourceViewersAreSeeingReviewTasksBasedOnChangesOfResourceReviewStatus() throws Exception {
+        //create data
+        ResourceModel currentResourceWithReview = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        UserModel currentSimpleUser = UserModel.generateUserWithUSERrole();
+
+        MemberModel resourceViewMemberWithReview = new MemberModel() {
+        };
+        resourceViewMemberWithReview.setUsername(currentSimpleUser.getUsername());
+        resourceViewMemberWithReview.setRoleType("VIEWER");
+        resourceViewMemberWithReview.setHasPermissionReview(true);
+
+        rest.users().createUser(currentSimpleUser);
+
+        //add currentResourceWithReview to group
+        currentResourceWithReview = rest.resources().createResourceForGroup(domainModel, groupModel, currentResourceWithReview);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, currentResourceWithReview, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, currentResourceWithReview, resourceViewMemberWithReview);
+
+        //Create new version under review for Resource administrator
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, currentResourceWithReview);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+        //Create new version under review for Resource viewer
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+
+        //Resource administrator - Can see tasks
+        ReviewTasksPage reviewTasksPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
+
+        soft.assertTrue(reviewTasksPage.getGrid().isDocumentTaskPresent(currentResourceWithReview.getIdentifierValue(), 2), "Resource administrators cannot see tasks for resource with review enabled!");
+
+        reviewTasksPage.logout();
+
+        //Resource viewer - Can see tasks
+        homePage.goToLoginPage().login(currentSimpleUser.getUsername(), TestRunData.getInstance().getNewPassword());
+        reviewTasksPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
+        soft.assertTrue(reviewTasksPage.getGrid().isDocumentTaskPresent(currentResourceWithReview.getIdentifierValue(), 3), "Resource viewers cannot see tasks for resource with review enabled!");
+
+        //Disable review for resource with tasks
+        currentResourceWithReview.setReviewEnabled(false);
+        rest.resources().updateResource(domainModel, groupModel, currentResourceWithReview);
+
+        //Resource viewer - Cannot see task after review was disabled.
+        reviewTasksPage.refreshPage();
+        soft.assertFalse(reviewTasksPage.getGrid().isDocumentTaskPresent(currentResourceWithReview.getIdentifierValue(), 3), "Resource viewers can see tasks for resource with review disabled!");
+
+        reviewTasksPage.logout();
+
+        //Resource administrators - Cannot see task after review was disabled.
+        homePage.goToLoginPage().login(adminMember.getUsername(), TestRunData.getInstance().getNewPassword());
+        reviewTasksPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_REVIEW_TASKS);
+        soft.assertFalse(reviewTasksPage.getGrid().isDocumentTaskPresent(currentResourceWithReview.getIdentifierValue(), 2), "Resource administrators can see tasks for resource with review disabled!");
 
         soft.assertAll();
 
@@ -809,6 +889,80 @@ public class EditResourcePgTests extends SeleniumTest {
 
         soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resouceModelPrivateToBeShared.getIdentifierValue()), "Shared private resource is visible");
 
+        soft.assertAll();
+
+    }
+
+
+    @Test(description = "EDTRES-30- Resource Administrator are able to disable review process for resource which has documents in all states", priority = 1)
+    public void resourceAdministratorsAreAbleToDsiableReviewProcessForResourceWhichHasDocumentsInAllStates() throws Exception {
+        //create data
+        ResourceModel currentResourceWithReview = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+
+        //add currentResourceWithReview to group
+        currentResourceWithReview = rest.resources().createResourceForGroup(domainModel, groupModel, currentResourceWithReview);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, currentResourceWithReview, adminMember);
+
+        //Added review permission to system because the restapi calls are made with system user
+        superMember.setHasPermissionReview(true);
+        //Update system user to have review rights
+        rest.resources().updateMemberOfResource(domainModel, groupModel, currentResourceWithReview, superMember);
+
+
+        String documentid = rest.resources().getDocumentID(currentResourceWithReview);
+
+        //Create new version for under review(version 2)
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, currentResourceWithReview);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+
+        //Create new version for rejected (version 3)
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+
+        rest.resources().rejectReview(currentResourceWithReview, documentid, 3);
+
+        //Create new version for approved (version 4)
+        editResourceDocumentPage.getNewVersionBtn().click();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getRequestReviewBtn().click();
+
+        rest.resources().approveReview(currentResourceWithReview, documentid, 4);
+
+        editResourceDocumentPage.selectVersion(2);
+        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "UNDER_REVIEW");
+
+        editResourceDocumentPage.selectVersion(3);
+        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "REJECTED");
+
+        editResourceDocumentPage.selectVersion(4);
+        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "APPROVED");
+
+        editResourceDocumentPage.getBackBtn().click();
+        editResourcePage.selectDomain(domainModel, groupModel, currentResourceWithReview);
+        editResourcePage.getResourceDetailsTab().getReviewProcessEnabledCheckbox().uncheck();
+        new ConfirmationDialog(driver).confirm();
+        soft.assertEquals(editResourcePage.getResourceDetailsTab().getReviewProcessWarning(), "All document versions with review statuses (UNDER_REVIEW, APPROVED, REJECTED) will be set to DRAFT Do you want to continue?");
+
+        editResourcePage.getResourceDetailsTab().getSaveBtn().click();
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+
+        //Check if version have status draft
+        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "PUBLISHED");
+
+        editResourceDocumentPage.selectVersion(2);
+        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "DRAFT");
+
+        editResourceDocumentPage.selectVersion(3);
+        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "DRAFT");
+
+        editResourceDocumentPage.selectVersion(4);
+        soft.assertEquals(editResourceDocumentPage.getStatusValue(), "DRAFT");
         soft.assertAll();
 
     }

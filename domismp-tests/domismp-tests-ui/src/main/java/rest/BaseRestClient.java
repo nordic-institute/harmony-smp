@@ -40,38 +40,32 @@ public class BaseRestClient {
     }
 
     //	---------------------------------------Default request methods -------------------------------------------------
-    protected ClientResponse requestPUT(WebResource resource, JSONObject body, String type) {
+    protected ClientResponse requestPUT(WebResource resource, JSONObject body) {
 
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
-        return builder.type(type).put(ClientResponse.class, body.toString());
+
+        return builder.type(MediaType.APPLICATION_JSON).put(ClientResponse.class, body.toString());
     }
 
-    protected ClientResponse requestPUT(WebResource resource, String body, String type) {
+    protected ClientResponse requestPUT(WebResource resource, String body) {
 
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
-        return builder.type(type).put(ClientResponse.class, body);
+        return builder.type(MediaType.APPLICATION_JSON).put(ClientResponse.class, body);
     }
 
     protected ClientResponse jsonPUT(WebResource resource, JSONObject body) {
-        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+        return requestPUT(resource, body);
     }
 
     protected ClientResponse jsonPUT(WebResource resource, String body) {
-        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+        return requestPUT(resource, body);
     }
 
     protected ClientResponse requestPOST(WebResource resource, String body) {
-        startSession();
-        WebResource.Builder builder = decorateBuilder(resource);
-
-        return builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, body);
-    }
-
-    protected ClientResponse requestPOST2(WebResource resource, JSONObject body) {
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
@@ -85,7 +79,7 @@ public class BaseRestClient {
         return builder.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
     }
 
-    protected ClientResponse requestGET(WebResource resource, HashMap<String, String> params) throws Exception {
+    protected ClientResponse requestGET(WebResource resource, HashMap<String, String> params) {
 
         if (params != null) {
             for (Map.Entry<String, String> param : params.entrySet()) {
@@ -94,8 +88,7 @@ public class BaseRestClient {
         }
 
         WebResource.Builder builder = decorateBuilder(resource);
-        ClientResponse response = builder.get(ClientResponse.class);
-        return response;
+        return builder.get(ClientResponse.class);
     }
 
 
@@ -124,35 +117,6 @@ public class BaseRestClient {
         HashMap<String, String> params = new HashMap<>();
         params.put("username", this.username);
         params.put("password", this.password);
-
-        ClientResponse response = resource.path(RestServicePaths.LOGIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, new JSONObject(params).toString());
-        JSONObject responseBody = new JSONObject(response.getEntity(String.class));
-
-        if (response.getStatus() == 200) {
-            // extract userId to be used in the Paths of the requests
-            data.setUserId((String) responseBody.get("userId"));
-            log.debug(String.format("UserID: %s is stored!", TestRunData.getInstance().getUserId()));
-
-            data.setCookies(response.getCookies());
-            log.debug("Cookies are stored!");
-
-            if (null != TestRunData.getInstance().getCookies()) {
-                token = extractToken();
-            } else {
-                throw new Exception("Could not login, COOKIES are not found!");
-            }
-        } else {
-            throw new SMPRestException("Login failed", response);
-
-        }
-
-    }
-
-    private void createNewSession(String username, String password) throws Exception {
-        log.debug("Rest client using to login: " + this.username);
-        HashMap<String, String> params = new HashMap<>();
-        params.put("username", username);
-        params.put("password", password);
 
         ClientResponse response = resource.path(RestServicePaths.LOGIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, new JSONObject(params).toString());
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
@@ -209,16 +173,6 @@ public class BaseRestClient {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    public void startSessionWithUser(String username, String password) {
-
-        try {
-
-            createNewSession(username, password);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 }
