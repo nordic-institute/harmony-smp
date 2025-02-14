@@ -131,4 +131,15 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
         <vulnerabilityName>CVE-2024-38816</vulnerabilityName>
     </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: tomcat-embed-websocket-9.0.83.jar
+   The transitive dependency of the spring-boot-starter-web:jar:2.7.18.
+   The library is added only for the spring boot demo module which is used only for the Demo and testing. Final smp.war artefact does not include this library.
+   Test if execption is still needed when spring-boot-starter-web is upgraded
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
+        <cve>CVE-2024-38286</cve>
+    </suppress>
 </suppressions>
