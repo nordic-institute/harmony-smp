@@ -108,6 +108,8 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
   async onShowButtonDocumentClicked() {
     // set selected resource
     this.editResourceService.selectedResource = this.resource;
+    // clear selected subresource
+    this.editResourceService.selectedSubresource = null;
 
     let node: NavigationNode = await this.createNewDocumentNavigationNode();
     this.navigationService.selected.children = [node]
