@@ -61,9 +61,8 @@ public class DomiSMPPage extends DComponent {
         actions.moveToElement(logoutMenuBtn);
         actions.perform();
         logoutMenuBtn.click();
-        data.getCookies().clear();
-        data.setXSRFToken("");
     }
+
 
     public void refreshPage() {
         driver.navigate().refresh();

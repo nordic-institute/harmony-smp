@@ -1,6 +1,6 @@
 package pages.systemSettings.keyStorePage;
 
-import ddsl.CommonCertificatePage;
+import ddsl.commonPages.CommonCertificatePage;
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;

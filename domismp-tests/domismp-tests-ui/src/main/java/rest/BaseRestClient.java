@@ -40,28 +40,29 @@ public class BaseRestClient {
     }
 
     //	---------------------------------------Default request methods -------------------------------------------------
-    protected ClientResponse requestPUT(WebResource resource, JSONObject body, String type) {
+    protected ClientResponse requestPUT(WebResource resource, JSONObject body) {
 
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
-        return builder.type(type).put(ClientResponse.class, body.toString());
+
+        return builder.type(MediaType.APPLICATION_JSON).put(ClientResponse.class, body.toString());
     }
 
-    protected ClientResponse requestPUT(WebResource resource, String body, String type) {
+    protected ClientResponse requestPUT(WebResource resource, String body) {
 
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
-        return builder.type(type).put(ClientResponse.class, body);
+        return builder.type(MediaType.APPLICATION_JSON).put(ClientResponse.class, body);
     }
 
     protected ClientResponse jsonPUT(WebResource resource, JSONObject body) {
-        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+        return requestPUT(resource, body);
     }
 
     protected ClientResponse jsonPUT(WebResource resource, String body) {
-        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+        return requestPUT(resource, body);
     }
 
     protected ClientResponse requestPOST(WebResource resource, String body) {
@@ -78,7 +79,7 @@ public class BaseRestClient {
         return builder.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
     }
 
-    protected ClientResponse requestGET(WebResource resource, HashMap<String, String> params) throws Exception {
+    protected ClientResponse requestGET(WebResource resource, HashMap<String, String> params) {
 
         if (params != null) {
             for (Map.Entry<String, String> param : params.entrySet()) {
@@ -87,8 +88,7 @@ public class BaseRestClient {
         }
 
         WebResource.Builder builder = decorateBuilder(resource);
-        ClientResponse response = builder.get(ClientResponse.class);
-        return response;
+        return builder.get(ClientResponse.class);
     }
 
 

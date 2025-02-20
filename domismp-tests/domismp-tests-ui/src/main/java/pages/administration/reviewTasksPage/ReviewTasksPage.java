@@ -1,7 +1,6 @@
-package pages.administration;
+package pages.administration.reviewTasksPage;
 
 import ddsl.DomiSMPPage;
-import ddsl.dcomponents.Grid.BasicGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -17,8 +16,9 @@ public class ReviewTasksPage extends DomiSMPPage {
         super(driver);
     }
 
-    private BasicGrid getGrid() {
-        return new BasicGrid(driver, propertyTableContainer);
+    public ReviewTasksGrid getGrid() {
+        return new ReviewTasksGrid(driver, propertyTableContainer);
     }
+
 
 }

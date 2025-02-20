@@ -1,4 +1,4 @@
-package pages.administration.editResourcesPage.common;
+package ddsl.commonPages.commonDocumentPage;
 
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.SmallGrid;
@@ -34,6 +34,12 @@ public class CommonSelectReferenceDialog extends DComponent {
         weToDButton(searchBtn).click();
         getGrid().searchAndClickElementInColumn("Res. value", resourceIdentifier);
         weToDButton(saveBtn).click();
+    }
+
+    public boolean isResourceReferenceByResourceIdentifierPresent(String resourceIdentifier) {
+        weToDInput(resourceValueInput).fill(resourceIdentifier);
+        weToDButton(searchBtn).click();
+        return getGrid().isValuePresentInColumn("Res. value", resourceIdentifier);
 
     }
 

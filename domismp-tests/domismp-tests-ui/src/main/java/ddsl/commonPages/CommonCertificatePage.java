@@ -1,4 +1,4 @@
-package ddsl;
+package ddsl.commonPages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
