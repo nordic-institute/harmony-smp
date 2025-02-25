@@ -726,6 +726,7 @@ See the Licence for the specific language governing permissions and limitations 
                     <argLine>${maven.test.argLine} @{argLine}</argLine>
                     <excludes>
                         <exclude>**/*IntegrationTest.java</exclude>
+                        <exclude>**/*IT.java</exclude>
                     </excludes>
                     <systemPropertyVariables>
                         <!-- build directory for test logging -->
@@ -744,6 +745,7 @@ See the Licence for the specific language governing permissions and limitations 
                     <argLine>${maven.test.argLine} @{argLine}</argLine>
                     <includes>
                         <include>**/*IntegrationTest.java</include>
+                        <include>**/*IT.java</include>
                     </includes>
                     <systemPropertyVariables>
                         <!-- build directory for test logging -->
