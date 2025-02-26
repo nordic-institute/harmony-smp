@@ -39,9 +39,6 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
-                    <includes>
-                        <include>eu/europa/ec/edelivery/smp/**</include>
-                    </includes>
                 </configuration>
                 <executions>
                     <execution>

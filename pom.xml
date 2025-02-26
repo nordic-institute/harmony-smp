@@ -120,12 +120,14 @@ See the Licence for the specific language governing permissions and limitations 
         <skipIT>false</skipIT>
         <maven.test.argLine> -XX:+EnableDynamicAgentLoading </maven.test.argLine>
         <jacoco.append>true</jacoco.append>
+        <!-- push the aggregated reports which contains code coverage from linked modules
+        pushing each report like this
+        ${project.basedir}/target/site/jacoco/jacoco.xml,${project.basedir}/target/site/jacoco-it/jacoco.xml
+        will not cover the coverage from dependent modules when executing integration tests
+        -->
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.root.baseUri}/smp-aggregator/target/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <!--sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/target/site/jacoco/jacoco.xml,${project.basedir}/target/site/jacoco-it/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths -->
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
         <sonar.language>java</sonar.language>
         <release.arguments>-DusePreInstallNpm=${usePreInstallNpm} -Dnpm.path=${npm.path} -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
@@ -741,9 +743,6 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
-                    <includes>
-                        <include>eu/europa/ec/edelivery/smp/**</include>
-                    </includes>
                     <formats>
                         <!-- Eclipse uses exec files, SonarQube uses xml reports -->
                         <format>XML</format>
