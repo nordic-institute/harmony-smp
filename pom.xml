@@ -57,6 +57,7 @@ See the Licence for the specific language governing permissions and limitations 
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.12</plugin.jacoco-maven-plugin.version>
+        <plugin.sonar-maven-plugin.version>3.11.0.3922</plugin.sonar-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
         <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
@@ -118,32 +119,15 @@ See the Licence for the specific language governing permissions and limitations 
         <skipUT>false</skipUT>
         <skipIT>false</skipIT>
         <maven.test.argLine> -XX:+EnableDynamicAgentLoading </maven.test.argLine>
-
+        <jacoco.append>true</jacoco.append>
         <sonar.coverage.jacoco.xmlReportPaths>
-            ${maven.multiModuleProjectDirectory}/smp-aggregator/target/site/jacoco/jacoco.xml
+            ${project.root.baseUri}/smp-aggregator/target/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
+        <!--sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/target/site/jacoco/jacoco.xml,${project.basedir}/target/site/jacoco-it/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths -->
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
         <sonar.language>java</sonar.language>
-        <jacoco.append>true</jacoco.append>
-        <sonar.binaries>target/classes</sonar.binaries>
-
-        <sonar.exclusions>
-            **/target/**,
-            **/smp-angular/node_modules/**,
-            **/swagger*.js,
-            **/web.xml,
-            **/smp-examples/**,
-        </sonar.exclusions>
-        <sonar.coverage.exclusions>
-            **/*Entity.java,
-            **/*RO.java,
-            **/DB*.java,
-            **/*Exception.java,
-            **/*Types.java,
-            **/*Constants.java,
-        </sonar.coverage.exclusions>
-      
-        <plugin.sonar-maven-plugin.version>3.11.0.3922</plugin.sonar-maven-plugin.version>
         <release.arguments>-DusePreInstallNpm=${usePreInstallNpm} -Dnpm.path=${npm.path} -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
         </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
@@ -728,11 +712,6 @@ See the Licence for the specific language governing permissions and limitations 
                         <exclude>**/*IntegrationTest.java</exclude>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
-                    <systemPropertyVariables>
-                        <!-- build directory for test logging -->
-                        <buildDirectory>${project.build.directory}</buildDirectory>
-                    </systemPropertyVariables>
-
                 </configuration>
             </plugin>
             <plugin>
@@ -747,16 +726,12 @@ See the Licence for the specific language governing permissions and limitations 
                         <include>**/*IntegrationTest.java</include>
                         <include>**/*IT.java</include>
                     </includes>
-                    <systemPropertyVariables>
-                        <!-- build directory for test logging -->
-                        <buildDirectory>${project.build.directory}</buildDirectory>
-                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>default-integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
-                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -766,7 +741,6 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
                     <includes>
                         <include>eu/europa/ec/edelivery/smp/**</include>
                     </includes>
@@ -778,17 +752,27 @@ See the Licence for the specific language governing permissions and limitations 
                 </configuration>
                 <executions>
                     <execution>
-                        <id>prepare-agent</id>
+                        <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-prepare-agent-integration</id>
+                        <goals>
                             <goal>prepare-agent-integration</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
+                        <id>default-report</id>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report-integration</id>
+                        <goals>
+                            <goal>report-integration</goal>
                         </goals>
                     </execution>
                 </executions>
