@@ -39,9 +39,8 @@ See the Licence for the specific language governing permissions and limitations 
     </modules>
 
     <properties>
+
         <prerequisites.maven_min_version>3.5</prerequisites.maven_min_version>
-        <jacocoRemotePort />
-        <jacocoRemoteAddress />
         <!-- the root/main folder of the project used by aggregation plugins (license).
         Alternative ${session.executionRootDirectory} -->
 
@@ -58,6 +57,7 @@ See the Licence for the specific language governing permissions and limitations 
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.12</plugin.jacoco-maven-plugin.version>
+        <plugin.sonar-maven-plugin.version>3.11.0.3922</plugin.sonar-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
         <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
@@ -70,6 +70,7 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.maven-resources-plugin.version>3.3.1</plugin.maven-resources-plugin.version>
         <plugin.maven-surefire-plugin.version>3.2.5</plugin.maven-surefire-plugin.version>
         <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
+        <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
 
         <aspectj.version>1.9.22.1</aspectj.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -114,35 +115,21 @@ See the Licence for the specific language governing permissions and limitations 
         <xmlunit.version>2.10.0</xmlunit.version>
 
         <!-- plugins -->
-        <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
-        <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
-        <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
+        <skipUT>false</skipUT>
+        <skipIT>false</skipIT>
+        <maven.test.argLine> -XX:+EnableDynamicAgentLoading </maven.test.argLine>
+        <jacoco.append>true</jacoco.append>
+        <!-- push the aggregated reports which contains code coverage from linked modules
+        pushing each report like this
+        ${project.basedir}/target/site/jacoco/jacoco.xml,${project.basedir}/target/site/jacoco-it/jacoco.xml
+        will not cover the coverage from dependent modules when executing integration tests
+        -->
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.root.baseUri}/smp-aggregator/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
         <sonar.language>java</sonar.language>
-        <jacoco.append>true</jacoco.append>
-        <sonar.binaries>target/classes</sonar.binaries>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
-
-        <sonar.exclusions>
-            **/target/**,
-            **/smp-angular/node_modules/**,
-            **/swagger*.js,
-            **/web.xml,
-            **/smp-examples/**,
-        </sonar.exclusions>
-        <sonar.coverage.exclusions>
-            **/*Entity.java,
-            **/*RO.java,
-            **/DB*.java,
-            **/*Exception.java,
-            **/*Types.java,
-            **/*Constants.java,
-        </sonar.coverage.exclusions>
-      
-        <plugin.sonar-maven-plugin.version>3.11.0.3922</plugin.sonar-maven-plugin.version>
         <release.arguments>-DusePreInstallNpm=${usePreInstallNpm} -Dnpm.path=${npm.path} -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
         </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
@@ -719,41 +706,34 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <systemPropertyVariables>
-                        <!-- build directory for test logging -->
-                        <buildDirectory>${project.build.directory}</buildDirectory>
-                    </systemPropertyVariables>
+                    <skipExec>${skipUT}</skipExec>
                     <!-- make sure methods are  always run in same order -->
                     <runOrder>alphabetical</runOrder>
-                    <argLine>-ea ${argLine}</argLine>
+                    <argLine>${maven.test.argLine} @{argLine}</argLine>
+                    <excludes>
+                        <exclude>**/*IntegrationTest.java</exclude>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <systemPropertyVariables>
-                        <!-- build directory for test logging -->
-                        <buildDirectory>${project.build.directory}</buildDirectory>
-                    </systemPropertyVariables>
-
-                    <!-- ... fool Sonar to show test success for both unit and integration tests together by
-                    instructing Failsafe to store its test reports to the same directory as Surefire instead of
-                    the default failsafe-reports.
-
-                    See https://jira.sonarsource.com/browse/SONAR-7526 -->
-
-                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <skipExec>${skipIT}</skipExec>
+                    <!-- make sure methods are  always run in same order -->
+                    <runOrder>alphabetical</runOrder>
+                    <argLine>${maven.test.argLine} @{argLine}</argLine>
                     <includes>
+                        <include>**/*IntegrationTest.java</include>
                         <include>**/*IT.java</include>
                     </includes>
-                    <runOrder>alphabetical</runOrder>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>default-integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
-                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -762,29 +742,37 @@ See the Licence for the specific language governing permissions and limitations 
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <formats>
+                        <!-- Eclipse uses exec files, SonarQube uses xml reports -->
+                        <format>XML</format>
+                        <format>HTML</format>
+                    </formats>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>prepare-agent</id>
+                        <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>package</phase>
+                        <id>default-prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>jacoco-agent-it</id>
+                        <id>default-report-integration</id>
                         <goals>
-                            <goal>prepare-agent-integration</goal>
+                            <goal>report-integration</goal>
                         </goals>
-                        <configuration>
-                            <destFile>${jacoco.report.it}</destFile>
-                            <propertyName>failsafeArgLine</propertyName>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

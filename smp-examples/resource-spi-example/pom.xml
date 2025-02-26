@@ -21,6 +21,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <properties>
+        <sonar.skip>true</sonar.skip>
         <maven.deploy.skip>false</maven.deploy.skip>
         <org.glassfish.jaxb.jaxb-runtime.version>2.3.9</org.glassfish.jaxb.jaxb-runtime.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>

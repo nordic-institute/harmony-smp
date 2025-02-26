@@ -21,9 +21,9 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <properties>
+        <sonar.skip>true</sonar.skip>
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
-
     <artifactId>smp-spi-payload-validation-example</artifactId>
     <name>smp-spi-payload-validation-example</name>
     <description>Example of SMP's SPI Payload validation.</description>
