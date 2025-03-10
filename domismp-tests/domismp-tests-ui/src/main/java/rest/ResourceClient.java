@@ -40,7 +40,7 @@ public class ResourceClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        LOG.debug("Resource have been added!");
+        LOG.debug("Resource [{}] have been added!", resourceModelToBeCreated.getIdentifierValue());
         return response.getEntity(ResourceModel.class);
     }
 
@@ -151,6 +151,44 @@ public class ResourceClient extends BaseRestClient {
         }
         return new JSONObject(response.getEntity(String.class)).get("documentId").toString();
     }
+
+    public JSONObject getResourceDocument(ResourceModel resourceToBeUpdated) {
+        String updateResorcePath = RestServicePaths.getDocumentPath(TestRunData.getInstance().getUserId(), resourceToBeUpdated.getResourceId());
+        ClientResponse response = requestGet(resource.path(updateResorcePath));
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not get document!", response.getStatus(), response.getEntity(String.class));
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        LOG.debug("Document for resource [{}] was received successfully", resourceToBeUpdated.getIdentifierValue());
+        return new JSONObject(response.getEntity(String.class));
+    }
+
+    public JSONObject enableSharingForResourceDocument(ResourceModel resourceModel, boolean sharingEnabled) {
+        JSONObject resourceDocument = getResourceDocument(resourceModel);
+        JSONObject documentConfigurationSection = ((JSONObject) resourceDocument.get("documentConfiguration")).put("sharingEnabled", sharingEnabled);
+        resourceDocument = resourceDocument.put("documentConfiguration", documentConfigurationSection);
+        return setResourceDocument(resourceModel, resourceDocument);
+    }
+
+    public JSONObject setResourceDocument(ResourceModel resourceModel, JSONObject resourceDocument) {
+        String updateResorcePath = RestServicePaths.getDocumentPath(TestRunData.getInstance().getUserId(), resourceModel.getResourceId());
+        ClientResponse response = requestPUT(resource.path(updateResorcePath), resourceDocument.toString());
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not update document!", response.getStatus(), response.getEntity(String.class));
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        LOG.debug("Document for resource [{}] was updated successfully", resourceModel.getIdentifierValue());
+
+        return new JSONObject(response.getEntity(String.class));
+    }
+
+
 
     public String reviewRequest(ResourceModel resourceToBeUpdated, String documentId, int version) {
         JSONObject resourceJson = new JSONObject();

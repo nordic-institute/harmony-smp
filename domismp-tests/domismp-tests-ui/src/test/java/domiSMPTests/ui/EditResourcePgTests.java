@@ -893,6 +893,76 @@ public class EditResourcePgTests extends SeleniumTest {
 
     }
 
+    @Test(description = "EDTRES-28- Resource administrators is able to see public resouces from public groups or the same group as the document")
+    public void resourceAdministratorIsAbleToSeePublicResourceFromPublicGroupsOrTheSameGroupAsTheDocument() throws Exception {
+
+        DomainModel domainPublic_A = DomainModel.generatePublicDomainModelWithoutSML();
+        DomainModel domainPublic_B = DomainModel.generatePublicDomainModelWithoutSML();
+
+        GroupModel group_A1 = GroupModel.generatePublicGroup();
+        GroupModel group_A2 = GroupModel.generatePublicGroup();
+        GroupModel group_B = GroupModel.generatePublicGroup();
+
+        //Generating resources for Public resource Private group Public Domain
+        ResourceModel resourceA_A1_underTest = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceA_A1 = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceA_A2 = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceB = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+
+
+        //generating member models
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        domainPublic_A = rest.domains().createDomain(domainPublic_A);
+        domainPublic_B = rest.domains().createDomain(domainPublic_B);
+
+
+        //add users to domains
+        rest.domains().addMembersToDomain(domainPublic_A, superMember);
+        rest.domains().addMembersToDomain(domainPublic_B, superMember);
+
+
+        //add resource types to domains
+        List<ResourceTypes> resourcesTypesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainPublic_A = rest.domains().addResourcesToDomain(domainPublic_A, resourcesTypesToBeAdded);
+        domainPublic_B = rest.domains().addResourcesToDomain(domainPublic_B, resourcesTypesToBeAdded);
+
+
+        //create groups for domains
+        group_A1 = rest.domains().createGroupForDomain(domainPublic_A, group_A1);
+        group_A2 = rest.domains().createGroupForDomain(domainPublic_A, group_A2);
+        group_B = rest.domains().createGroupForDomain(domainPublic_B, group_B);
+
+
+        //add resources to groups
+        resourceA_A1_underTest = rest.resources().createResourceForGroup(domainPublic_A, group_A1, resourceA_A1_underTest);
+        resourceA_A1 = rest.resources().createResourceForGroup(domainPublic_A, group_A1, resourceA_A1);
+        resourceA_A2 = rest.resources().createResourceForGroup(domainPublic_A, group_A2, resourceA_A2);
+        resourceB = rest.resources().createResourceForGroup(domainPublic_B, group_B, resourceB);
+
+        //Enable sharing for resources
+        rest.resources().enableSharingForResourceDocument(resourceA_A1, true);
+        rest.resources().enableSharingForResourceDocument(resourceA_A2, true);
+        rest.resources().enableSharingForResourceDocument(resourceB, true);
+
+        //Add resources member to resource
+        rest.resources().addMembersToResource(domainPublic_A, group_A1, resourceA_A1_underTest, adminMember);
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainPublic_A, group_A1, resourceA_A1_underTest);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceA_A1.getIdentifierValue()), "Shared public resource of same group is not visible");
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceA_A2.getIdentifierValue()), "Shared public resource of different group of same domain is not visible");
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceB.getIdentifierValue()), "Shared public resource of different domain is not visible");
+
+
+        soft.assertAll();
+    }
+
 
     @Test(description = "EDTRES-30- Resource Administrator are able to disable review process for resource which has documents in all states", priority = 1)
     public void resourceAdministratorsAreAbleToDsiableReviewProcessForResourceWhichHasDocumentsInAllStates() throws Exception {
@@ -906,6 +976,7 @@ public class EditResourcePgTests extends SeleniumTest {
 
         //Added review permission to system because the restapi calls are made with system user
         superMember.setHasPermissionReview(true);
+
         //Update system user to have review rights
         rest.resources().updateMemberOfResource(domainModel, groupModel, currentResourceWithReview, superMember);
 
