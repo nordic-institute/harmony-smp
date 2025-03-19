@@ -164,6 +164,14 @@ public class DomainModel {
         domainModel.visibility = "PUBLIC";
         return domainModel;
     }
+
+    public static DomainModel generatePrivateDomainModelWithoutSML() {
+        DomainModel domainModel = new DomainModel();
+        domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumericValue(6);
+        domainModel.signatureKeyAlias = Utils.randomEnum(ResponseCertificates.values()).getAlias();
+        domainModel.visibility = "PRIVATE";
+        return domainModel;
+    }
 }
 
 
