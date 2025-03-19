@@ -107,6 +107,10 @@ public class TestRunData {
         return getUser(ApplicationRoles.SYSTEM_ADMIN).get("username");
     }
 
+    public String getAdminPassword() {
+        return getUser(ApplicationRoles.SYSTEM_ADMIN).get("password");
+    }
+
     public String getDefaultPassword() {
         return getPropertyValue(TestEnvironmentProperty.TEST_DATA_PASSWORD_DEFAULT);
     }

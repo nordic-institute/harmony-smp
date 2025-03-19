@@ -10,11 +10,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
+import pages.systemSettings.UsersPage;
 import pages.systemSettings.propertiesPage.PropertiesPage;
 import pages.systemSettings.propertiesPage.PropertyPopup;
 import pages.userSettings.ProfilePage;
 import rest.models.UserModel;
 import utils.Generator;
+import utils.TestRunData;
 
 import java.util.List;
 
@@ -149,7 +151,7 @@ public class ProfilePgTests extends SeleniumTest {
         UserModel adminUser = UserModel.generateUserWithADMINrole();
         rest.users().createUser(adminUser);
 
-        loginPage.login(adminUser.getUsername(), data.getNewPassword());
+        loginPage.login(adminUser.getUsername(), TestRunData.getInstance().getNewPassword());
 
         ProfilePage profilePage = loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         String oldLastSet = profilePage.profileData.getLastSetValue();
@@ -157,7 +159,7 @@ public class ProfilePgTests extends SeleniumTest {
 
         String newPass = "Edeltest!23456789Edelt" + Generator.randomAlphaNumericValue(4);
         SetChangePasswordDialog setChangePasswordDialog = profilePage.profileData.clickOnChangePassword();
-        setChangePasswordDialog.fillChangePassword(data.getNewPassword(),
+        setChangePasswordDialog.fillChangePassword(TestRunData.getInstance().getNewPassword(),
                 newPass);
         homePage = setChangePasswordDialog.TryClickOnChangePassword();
         String sucesfullMessage = homePage.getAlertArea().getAlertMessage();
@@ -169,4 +171,83 @@ public class ProfilePgTests extends SeleniumTest {
         Assert.assertNotSame(profilePage.profileData.getLastSetValue(), oldLastSet, "Last set value is not reseted");
         Assert.assertNotSame(profilePage.profileData.getPasswordExpiresOnValue(), oldPasswordExpiresOn, "Password expires on value is not reseted");
     }
+
+    @Test(description = "PROF-06 User loggins attempts are reset after a successfull login")
+    public void userLogginsAttemptsAreShowInProfilePage() throws Exception {
+        UserModel adminUser = UserModel.generateUserWithADMINrole();
+        rest.users().createUser(adminUser);
+        loginPage.login(adminUser.getUsername(), "wrongpassword");
+        loginPage.getAlertArea().closeAlert();
+        loginPage.login(adminUser.getUsername(), "wrongpassword");
+
+        loginPage.login(TestRunData.getInstance().getAdminUsername(), TestRunData.getInstance().getAdminPassword());
+
+        UsersPage usersPage = loginPage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        usersPage.getLeftSideGrid().searchAndClickElementInColumn("Username", adminUser.getUsername());
+        String seqAttempts = usersPage.userData.getSequenceFailedAttempts();
+        soft.assertEquals(Integer.parseInt(seqAttempts), 2, "Wrong number of attempts shown in the Users page!");
+
+        loginPage.logout();
+        loginPage.login(adminUser.getUsername(), data.getNewPassword());
+        ProfilePage profilePage = loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        String resetSeqAttempts = profilePage.profileData.getSequenceFailedAttempts();
+        soft.assertEquals(resetSeqAttempts, "---", "Seq failed attempts is not reset after a successfull login!");
+        soft.assertAll();
+    }
+
+    @Test(description = "PROF-07 Check if password is according to password validity")
+    public void checkIfPasswordIsAccordingToPasswordPolicy() throws Exception {
+
+        UserModel user = UserModel.generateUserWithADMINrole();
+        String normalUserId = rest.users().createUser(user).getString("userId");
+        rest.users().changePassword(normalUserId, data.getNewPassword());
+
+        loginPage.login(user.getUsername(), TestRunData.getInstance().getNewPassword());
+        ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        SetChangePasswordDialog setChangePasswordDialog = profilePage.profileData.clickOnChangePassword();
+
+        //Check minim length of password
+        String minLengthPassword = "!234sdfg*&&^";
+        setChangePasswordDialog.fillChangePassword(TestRunData.getInstance().getNewPassword(), minLengthPassword);
+        List<String> errors = setChangePasswordDialog.getFieldErrorMessage();
+        soft.assertEquals(errors.size(), 1);
+        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
+
+        //Check special character of password
+        String specialCharacterPassword = "QWSQWWqw12qw1212";
+        errors.clear();
+        setChangePasswordDialog.fillChangePassword(TestRunData.getInstance().getNewPassword(), specialCharacterPassword);
+        errors = setChangePasswordDialog.getFieldErrorMessage();
+        soft.assertEquals(errors.size(), 1, "Special character validation does not appear");
+        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
+
+        //Check lower character of password
+        String lowerCharacterPassword = "QA!@QA!@QW12QW12";
+        errors.clear();
+        setChangePasswordDialog.fillChangePassword(TestRunData.getInstance().getNewPassword(), lowerCharacterPassword);
+        errors = setChangePasswordDialog.getFieldErrorMessage();
+        soft.assertEquals(errors.size(), 1, "Lower character validation does not appear");
+        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
+
+
+        //Check upper character of password
+        String upperCharacterPassword = "qw!@qw!@qw12qw12";
+        errors.clear();
+        setChangePasswordDialog.fillChangePassword(TestRunData.getInstance().getNewPassword(), upperCharacterPassword);
+        errors = setChangePasswordDialog.getFieldErrorMessage();
+        soft.assertEquals(errors.size(), 1, "Upper character validation does not appear");
+        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
+
+        //Check upper character of password
+        String validValue = "Qw!@qw!@qw12qw12";
+        errors.clear();
+        setChangePasswordDialog.fillChangePassword(TestRunData.getInstance().getNewPassword(), validValue);
+        errors = setChangePasswordDialog.getFieldErrorMessage();
+        soft.assertEquals(errors.size(), 0, "Validation appears for correct value");
+        soft.assertTrue(setChangePasswordDialog.getSetPasswordBtn().isEnabled(), "Set password button is disabled!");
+
+        soft.assertAll();
+    }
 }
+
+
