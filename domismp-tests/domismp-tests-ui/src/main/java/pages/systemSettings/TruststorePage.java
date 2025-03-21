@@ -34,7 +34,7 @@ public class TruststorePage extends CommonCertificatePage {
             return matcher.group(1);
         }
      else {
-        throw new NullPointerException("No alias found in the message: "+certificateAlias);
+            return certificateAlias;
     }
     }
 
