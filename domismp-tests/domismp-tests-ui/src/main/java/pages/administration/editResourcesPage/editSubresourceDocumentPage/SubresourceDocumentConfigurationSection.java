@@ -15,4 +15,10 @@ public class SubresourceDocumentConfigurationSection extends CommonDocumentConfi
         super(driver);
         LOG.debug("Subresource Document Configuration section is opened!");
     }
+
+    public SelectSubResourceDocumentDialog clickOnSelectReferenceBtn() {
+        weToDButton(selectReferenceBtn).click();
+        return new SelectSubResourceDocumentDialog(driver);
+    }
+
 }

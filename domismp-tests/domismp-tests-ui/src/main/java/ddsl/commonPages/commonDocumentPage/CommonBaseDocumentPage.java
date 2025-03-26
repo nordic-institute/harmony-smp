@@ -10,8 +10,6 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentConfigurationSection;
-import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentPropertiesSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +42,9 @@ public class CommonBaseDocumentPage extends DomiSMPPage {
     @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(2)")
     private WebElement currentDocumentVersionsMenuBtn;
     @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(3)")
-    private WebElement documentConfigurationMenuBtn;
+    public WebElement documentConfigurationMenuBtn;
     @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(4)")
-    private WebElement documentPropertiesnMenuBtn;
+    public WebElement documentPropertiesnMenuBtn;
 
 
     public CommonBaseDocumentPage(WebDriver driver) {
@@ -102,25 +100,6 @@ public class CommonBaseDocumentPage extends DomiSMPPage {
     public void clickOnARejectAndConfirm() {
         weToDButton(rejectBtn).click();
         new ConfirmationDialog(driver).confirm();
-    }
-
-
-    public SubresourceDocumentConfigurationSection getDocumentConfigurationSection() {
-        weToDButton(documentConfigurationMenuBtn).click();
-        //Click again to remove the tooltip of the button
-        weToDButton(documentConfigurationMenuBtn).click();
-
-        return new
-                SubresourceDocumentConfigurationSection(driver);
-    }
-
-    public SubresourceDocumentPropertiesSection getDocumentPropertiesSection() {
-        wait.forXMillis(500);
-        weToDButton(documentPropertiesnMenuBtn).click();
-        //Click again to remove the tooltip of the button
-        weToDButton(documentPropertiesnMenuBtn).click();
-        LOG.debug("Opening Document properties section.");
-        return new SubresourceDocumentPropertiesSection(driver);
     }
 
 }

@@ -22,5 +22,6 @@ public class ResourceTab extends SubcategoryTabComponent {
 
     public void deleteResource(String resourceIdentifier) throws ElementNotInteractableException {
         delete("Identifier", resourceIdentifier);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
     }
 }

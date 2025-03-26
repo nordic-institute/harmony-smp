@@ -10,13 +10,13 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 
 public class CommonSelectReferenceDialog extends DComponent {
     @FindBy(id = "resource-value_id")
-    private WebElement resourceValueInput;
+    public WebElement resourceValueInput;
     @FindBy(id = "resource-scheme_id")
     private WebElement resourceSchemeInput;
     @FindBy(id = "searchbutton_id")
-    private WebElement searchBtn;
+    public WebElement searchBtn;
     @FindBy(id = "saveButton")
-    private WebElement saveBtn;
+    public WebElement saveBtn;
     @FindBy(css = ".mat-mdc-dialog-content")
     private WebElement panel;
 
@@ -29,19 +29,6 @@ public class CommonSelectReferenceDialog extends DComponent {
         return new SmallGrid(driver, panel);
     }
 
-    public void selectResourceReferenceByResourceIdentifier(String resourceIdentifier) {
-        weToDInput(resourceValueInput).fill(resourceIdentifier);
-        weToDButton(searchBtn).click();
-        getGrid().searchAndClickElementInColumn("Res. value", resourceIdentifier);
-        weToDButton(saveBtn).click();
-    }
-
-    public boolean isResourceReferenceByResourceIdentifierPresent(String resourceIdentifier) {
-        weToDInput(resourceValueInput).fill(resourceIdentifier);
-        weToDButton(searchBtn).click();
-        return getGrid().isValuePresentInColumn("Res. value", resourceIdentifier);
-
-    }
 
 
 }

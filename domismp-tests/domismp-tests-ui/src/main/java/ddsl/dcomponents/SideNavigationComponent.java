@@ -37,6 +37,9 @@ public class SideNavigationComponent extends DomiSMPPage {
     //	--------------------Search-------------------------
     @FindBy(id = "search-resourcesButton")
     private WebElement resourcesLnk;
+    @FindBy(id = "dns-toolsButton")
+    private WebElement dnsToolsLnk;
+
 
     @FindBy(id = "search-toolsButton")
     private WebElement searchExpandLnk;
@@ -94,6 +97,9 @@ public class SideNavigationComponent extends DomiSMPPage {
     @FindBy(id = "user-data-certificatesButton")
     private WebElement certificatesLnk;
 
+    @FindBy(id = "user-data-alertButton")
+    private WebElement myAlertsLnk;
+
     @FindBy(id = "user-dataButton")
     private WebElement userSettingsExpand;
     //	----------------------------------------------------
@@ -105,128 +111,198 @@ public class SideNavigationComponent extends DomiSMPPage {
     }
 
     private MenuNavigation getNavigationLinks(Pages pages) {
+        //Search
+        if (Objects.requireNonNull(pages) == Pages.SEARCH_RESOURCES) {
+            return new MenuNavigation(searchExpandLnk, resourcesLnk);
+        }
+        if (Objects.requireNonNull(pages) == Pages.SEARCH_DNS_TOOLS) {
+            return new MenuNavigation(searchExpandLnk, dnsToolsLnk);
+        }
+        //Administration
+        if (Objects.requireNonNull(pages) == Pages.ADMINISTRATION_EDIT_DOMAINS) {
+            return new MenuNavigation(administrationExpand, editDomainsLnk);
+        }
+        if (Objects.requireNonNull(pages) == Pages.ADMINISTRATION_EDIT_GROUPS) {
+            return new MenuNavigation(administrationExpand, editGroupsLnk);
+        }
+        if (Objects.requireNonNull(pages) == Pages.ADMINISTRATION_EDIT_RESOURCES) {
+            return new MenuNavigation(administrationExpand, editResourcesLnk);
+        }
+        if (Objects.requireNonNull(pages) == Pages.ADMINISTRATION_REVIEW_TASKS) {
+            return new MenuNavigation(administrationExpand, reviewTasksLnk);
+        }
+
+        //System settings
+        if (Objects.requireNonNull(pages) == Pages.SYSTEM_SETTINGS_USERS) {
+            return new MenuNavigation(systemSettingsExpand, usersLnk);
+        }
+
+        if (Objects.requireNonNull(pages) == Pages.SYSTEM_SETTINGS_DOMAINS) {
+            return new MenuNavigation(systemSettingsExpand, domainsLnk);
+        }
+        if (Objects.requireNonNull(pages) == Pages.SYSTEM_SETTINGS_KEYSTORE) {
+            return new MenuNavigation(systemSettingsExpand, keystoreLnk);
+        }
+
+        if (Objects.requireNonNull(pages) == Pages.SYSTEM_SETTINGS_TRUSTSTORE) {
+            return new MenuNavigation(systemSettingsExpand, truststoreLnk);
+        }
+        if (Objects.requireNonNull(pages) == Pages.SYSTEM_SETTINGS_EXTENSIONS) {
+            return new MenuNavigation(systemSettingsExpand, extensionsLnk);
+        }
+
+        if (Objects.requireNonNull(pages) == Pages.SYSTEM_SETTINGS_PROPERTIES) {
+            return new MenuNavigation(systemSettingsExpand, propertiesLnk);
+        }
+        if (Objects.requireNonNull(pages) == Pages.SYSTEM_SETTINGS_ALERS) {
+            return new MenuNavigation(systemSettingsExpand, alersLnk);
+        }
+
+        //User Settings
         if (Objects.requireNonNull(pages) == Pages.USER_SETTINGS_PROFILE) {
             return new MenuNavigation(userSettingsExpand, profileLnk);
         }
-        return null;
+        if (Objects.requireNonNull(pages) == Pages.USER_SETTINGS_ACCESS_TOKEN) {
+            return new MenuNavigation(userSettingsExpand, accessTokensLnk);
+        }
+
+        if (Objects.requireNonNull(pages) == Pages.USER_SETTINGS_CERTIFICATES) {
+            return new MenuNavigation(userSettingsExpand, certificatesLnk);
+        }
+
+        if (Objects.requireNonNull(pages) == Pages.USER_SETTINGS_MY_ALERTS) {
+            return new MenuNavigation(userSettingsExpand, myAlertsLnk);
+        }
+
+        throw new NoSuchElementException("Navigation for page " + pages + " does not exist!");
     }
+
 
     @SuppressWarnings("unchecked")
     public <T> T navigateTo(Pages page) {
         LOG.debug("Get link to " + page.name());
-        // DomiSMP behaviour. Button is not expanded if already focused and not expanded - issue when re-login
-        // with this we make sure the starting point from Search
-        openSubmenu(searchExpandLnk, null);
-
         if (page == Pages.SEARCH_RESOURCES) {
-            openSubmenu(searchExpandLnk, resourcesLnk);
+            openSubmenu(getNavigationLinks(page));
+            return (T) new ResourcesPage(driver);
+        }
+        if (page == Pages.SEARCH_DNS_TOOLS) {
+            openSubmenu(getNavigationLinks(page));
             return (T) new ResourcesPage(driver);
         }
         if (page == Pages.ADMINISTRATION_EDIT_DOMAINS) {
-            openSubmenu(administrationExpand, editDomainsLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new EditDomainsPage(driver);
         }
         if (page == Pages.ADMINISTRATION_EDIT_GROUPS) {
-            openSubmenu(administrationExpand, editGroupsLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new EditGroupsPage(driver);
         }
         if (page == Pages.ADMINISTRATION_EDIT_RESOURCES) {
-            openSubmenu(administrationExpand, editResourcesLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new EditResourcePage(driver);
         }
         if (page == Pages.ADMINISTRATION_REVIEW_TASKS) {
-            openSubmenu(administrationExpand, reviewTasksLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new ReviewTasksPage(driver);
         }
         if (page == Pages.SYSTEM_SETTINGS_USERS) {
-            openSubmenu(systemSettingsExpand, usersLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new UsersPage(driver);
         }
         if (page == Pages.SYSTEM_SETTINGS_DOMAINS) {
-            openSubmenu(systemSettingsExpand, domainsLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new DomainsPage(driver);
         }
 
         if (page == Pages.SYSTEM_SETTINGS_KEYSTORE) {
-            openSubmenu(systemSettingsExpand, keystoreLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new KeystorePage(driver);
         }
 
         if (page == Pages.SYSTEM_SETTINGS_TRUSTSTORE) {
-            openSubmenu(systemSettingsExpand, truststoreLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new TruststorePage(driver);
         }
-        //            case SYSTEM_SETTINGS_EXTENSIONS:
-        //                expandSection(systemSettingsExpand);
-        //                return new DLink(driver, extensionsLnk);
+
+        if (page == Pages.SYSTEM_SETTINGS_EXTENSIONS) {
+            openSubmenu(getNavigationLinks(page));
+            return (T) new TruststorePage(driver);
+        }
+
         if (page == Pages.SYSTEM_SETTINGS_PROPERTIES) {
-            openSubmenu(systemSettingsExpand, propertiesLnk);
+            openSubmenu(getNavigationLinks(page));
+            return (T) new PropertiesPage(driver);
+        }
+        if (page == Pages.SYSTEM_SETTINGS_ALERS) {
+            openSubmenu(getNavigationLinks(page));
             return (T) new PropertiesPage(driver);
         }
 
-        //            case SYSTEM_SETTINGS_ALERS:
-        //                expandSection(systemSettingsExpand);
-        //                return new DLink(driver, alersLnk);
         if (page == Pages.USER_SETTINGS_PROFILE) {
-            openSubmenu(userSettingsExpand, profileLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new ProfilePage(driver);
 
         }
         if (page == Pages.USER_SETTINGS_ACCESS_TOKEN) {
-            openSubmenu(userSettingsExpand, accessTokensLnk);
+            openSubmenu(getNavigationLinks(page));
             return (T) new AccessTokensPage(driver);
         }
         if (page == Pages.USER_SETTINGS_CERTIFICATES) {
-            openSubmenu(userSettingsExpand, certificatesLnk);
+            openSubmenu(getNavigationLinks(page));
+            return (T) new CertificatesPage(driver);
+        }
+        if (page == Pages.USER_SETTINGS_MY_ALERTS) {
+            openSubmenu(getNavigationLinks(page));
             return (T) new CertificatesPage(driver);
         }
 
-        return null;
+        throw new NoSuchElementException("Menu for page " + page + " does not exist!");
     }
 
     public Boolean isMenuAvailable(Pages page) {
         MenuNavigation navigationLinks = getNavigationLinks(page);
         try {
-            if (navigationLinks.menuLink.isEnabled()) {
-                navigationLinks.menuLink.click();
-                return navigationLinks.submenuLink.isEnabled();
+            if (navigationLinks.menuBtn.isEnabled()) {
+                navigationLinks.menuBtn.click();
+                return navigationLinks.submenuBtn.isEnabled();
             }
             return false;
         } catch (NoSuchElementException e) {
-            LOG.error("No menu element found");
+            LOG.error("No menu buttons found for page {}!", page);
             return false;
         }
     }
 
-    private void openSubmenu(WebElement menuBtn, WebElement submenuBtn) {
+    private void openSubmenu(MenuNavigation menuNavigation) {
 
-        if (!menuBtn.getAttribute("class").contains("cdk-focused")) {
+        if (!menuNavigation.menuBtn.getAttribute("class").contains("cdk-focused")) {
             // Driver Issue:  is not clickable at point (105, 356). Other element would receive the click:
             Actions actions = new Actions(driver);
-            actions.moveToElement(menuBtn);
+            actions.moveToElement(menuNavigation.menuBtn);
             actions.perform();
 
-            menuBtn.click();
+            menuNavigation.menuBtn.click();
         }
-        if (submenuBtn == null){
+        if (menuNavigation.submenuBtn == null) {
             return;
         }
-        submenuBtn.click();
-        if (submenuBtn.getText().contains(getBreadcrump().getCurrentPage())) {
+        menuNavigation.submenuBtn.click();
+        if (menuNavigation.submenuBtn.getText().contains(getBreadcrump().getCurrentPage())) {
             LOG.info("Current page is " + getBreadcrump().getCurrentPage());
 
         } else {
-            LOG.error("Current page is not as expected. EXPECTED: " + submenuBtn.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
+            LOG.error("Current page is not as expected. EXPECTED: " + menuNavigation.submenuBtn.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
             throw new RuntimeException();
         }
     }
-    public static class MenuNavigation {
-        WebElement menuLink;
-        WebElement submenuLink;
 
-        public MenuNavigation(WebElement menuLink, WebElement submenuLink) {
-            this.menuLink = menuLink;
-            this.submenuLink = submenuLink;
+    public static class MenuNavigation {
+        WebElement menuBtn;
+        WebElement submenuBtn;
+
+        public MenuNavigation(WebElement menuBtn, WebElement submenuBtn) {
+            this.menuBtn = menuBtn;
+            this.submenuBtn = submenuBtn;
         }
     }
 }

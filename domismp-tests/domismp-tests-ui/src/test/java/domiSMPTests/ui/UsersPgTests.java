@@ -137,7 +137,7 @@ public class UsersPgTests extends SeleniumTest {
         String newLocale = "Romanian";
         usersPage.userData.fillUserProfileData(newEmail, newFullname, newTheme, newLocale);
 
-        loginPage.logout();
+        homePage.logout();
         loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
         ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         soft.assertEquals(profilePage.profileData.getEmailAddress(), newEmail, "Email is not updated!");
@@ -202,7 +202,7 @@ public class UsersPgTests extends SeleniumTest {
     @Test(description = "USR-08 Check if accounts are suspended")
     public void checkIfAccountsAreSuspended() throws Exception {
         UserModel newNormalUser = UserModel.generateUserWithUSERrole();
-        String currentDate = Utils.getCurrentDate("MM/d/YY");
+        String currentDate = Utils.getCurrentDate("M/d/YY");
         String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
         rest.users().changePassword(normalUserId, data.getNewPassword());
         //Suspend user

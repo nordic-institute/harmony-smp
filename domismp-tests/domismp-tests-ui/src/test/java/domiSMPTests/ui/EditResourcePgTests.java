@@ -17,6 +17,7 @@ import pages.administration.editResourcesPage.editResourceDocumentPage.EditResou
 import pages.administration.editResourcesPage.editResourceDocumentPage.ResourceDocumentEditor;
 import pages.administration.editResourcesPage.editResourceDocumentPage.SelectResourceDocumentDialog;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.EditSubresourceDocumentPage;
+import pages.administration.editResourcesPage.editSubresourceDocumentPage.SelectSubResourceDocumentDialog;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceDocumentPropertiesSection;
 import pages.administration.editResourcesPage.editSubresourceDocumentPage.SubresourceWizardDialog;
 import pages.administration.reviewTasksPage.ReviewDocumentPage;
@@ -751,7 +752,6 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentPage.clickOnPublishAndConfirm();
         editResourceDocumentPage.getDocumentConfigurationSection().enableSharing();
         editResourceDocumentPage.getSaveBtn().click();
-
         editResourceDocumentPage.getBackBtn().click();
 
         //Select resource and document which will use as a reference the shared document
@@ -772,14 +772,11 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertEquals(documentXML.getAttributeValueForNode("ParticipantIdentifier", "scheme"), resourceModelOasis1UsesReference.getIdentifierScheme(), "Open document does not contain the referenced document");
 
         soft.assertEquals(documentXML.getNodeValue("ext:referenceNode"), "referenceValue", "Open document does not contain the referenced document");
-
-
         soft.assertAll();
 
     }
 
     @Test(description = "EDTRES-25 The document using a shared reference sees only the published version of the reference", priority = 1)
-
     public void documentUsingASharedReferenceSeesOnlyThePublishedVersionOfTheReference() throws Exception {
 
         ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
@@ -846,14 +843,137 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertEquals(documentXML.getNodeValue("ext:draftReferenceNode"), null, "Open document contains node from draft version of referenced document");
         soft.assertEquals(documentXML.getNodeValue("ext:approvedReferenceNode"), null, "Open document contains node from draft version of referenced document");
         soft.assertEquals(documentXML.getNodeValue("ext:rejectedReferenceNode"), null, "Open document contains node from draft version of referenced document");
-
-
         soft.assertAll();
 
     }
 
-    @Test(description = "EDTRES-27- Resource administratoris not able to see shared documents for private resources", priority = 1)
+    @Test(description = "EDTRES-26- Resource administrator is able to remove the sharing option for a document which is already used by other documents", priority = 1)
+    public void resourceAdministratorIsAbleToRemoveTheSharingOptionForADocumentWhichIsAlreadyUsedByOtherDocuments_RESOURCE() throws Exception {
 
+        ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceModelOasis1UsesReference = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        //add resource to group
+        resourceModelOasis1ToBeShared = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        resourceModelOasis1UsesReference = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1UsesReference);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1ToBeShared, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1UsesReference, adminMember);
+
+        //Select resource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getNewVersionBtn().click();
+
+        //Add extension tag to highlight the reference
+        ResourceDocumentEditor editor = editResourceDocumentPage.getEditor();
+        editor.addExtensionTag();
+        editor.addNewExtesionCode("referenceNode", "test", "referenceValue");
+        editResourceDocumentPage.setDocumentValue(editor.printDoc());
+
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.clickOnPublishAndConfirm();
+        editResourceDocumentPage.getDocumentConfigurationSection().enableSharing();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getBackBtn().click();
+
+
+        //Select resource and document which will use as a reference the shared document
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        selectResourceDocumentDialog.selectResourceReferenceByResourceIdentifier(resourceModelOasis1ToBeShared.getIdentifierValue());
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getBackBtn().click();
+
+        //Remove sharing reference option
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.getDocumentConfigurationSection().disableSharing();
+        editResourceDocumentPage.getSaveBtn().click();
+        editResourceDocumentPage.getBackBtn().click();
+
+        //Validate that opened document is not containing the reference anymore
+        ResourcesPage resourcesPage = editResourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLResouceDocument(resourceModelOasis1UsesReference.getIdentifierValue(), resourceModelOasis1UsesReference.getIdentifierScheme());
+        soft.assertNotNull(documentXML);
+        soft.assertEquals(documentXML.getNodeValue("ParticipantIdentifier"), resourceModelOasis1UsesReference.getIdentifierValue(), "Open document contains the referenced document");
+        soft.assertEquals(documentXML.getAttributeValueForNode("ParticipantIdentifier", "scheme"), resourceModelOasis1UsesReference.getIdentifierScheme(), "Open document contains the referenced document");
+        soft.assertNull(documentXML.getNodeValue("ext:referenceNode"), "Open document contains the referenced document");
+
+        soft.assertAll();
+    }
+
+    //Failed due to bug
+    @Test(description = "EDTRES-26- Resource administrator is able to remove the sharing option for a document which is already used by other documents", priority = 1)
+    public void resourceAdministratorIsAbleToRemoveTheSharingOptionForADocumentWhichIsAlreadyUsedByOtherDocuments_SUBRESOURCE() throws Exception {
+
+        ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModelToBeShared = SubresourceModel.generatePublicSubResource();
+
+        ResourceModel resourceModelOasis1UsesReference = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModelToBeUsesReference = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resourceModelOasis1ToBeShared = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        resourceModelOasis1UsesReference = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1UsesReference);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1ToBeShared, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1UsesReference, adminMember);
+
+        //Create and Select subresource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModelToBeShared);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModelToBeShared);
+        editSubresourceDocumentPage.getNewVersionBtn().click();
+        ResourceDocumentEditor editor = editSubresourceDocumentPage.getEditor();
+        editor.setContextValueForNode("EndpointURI", "www.test.test");
+        editSubresourceDocumentPage.setDocumentValue(editor.printDoc());
+        editSubresourceDocumentPage.getSaveBtn().click();
+        editSubresourceDocumentPage.clickOnPublishAndConfirm();
+        editSubresourceDocumentPage.getDocumentConfigurationSection().enableSharing();
+        editSubresourceDocumentPage.getSaveBtn().click();
+        editSubresourceDocumentPage.getBackBtn().click();
+
+
+        //Create and Select subresource and document which will use as a reference the shared document
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
+        editResourcePage.goToTab("Subresources");
+        createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModelToBeUsesReference);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModelToBeUsesReference);
+        SelectSubResourceDocumentDialog selectResourceDocumentDialog = editSubresourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        selectResourceDocumentDialog.selectSubResourceReferenceBySubResourceIdentifier(subresourceModelToBeShared.getIdentifierValue());
+        editSubresourceDocumentPage.getSaveBtn().click();
+        editSubresourceDocumentPage.getBackBtn().click();
+
+        //Remove sharing reference option
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        editResourcePage.goToTab("Subresources");
+        editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModelToBeShared);
+        editSubresourceDocumentPage.getDocumentConfigurationSection().disableSharing();
+        editSubresourceDocumentPage.getSaveBtn().click();
+        editSubresourceDocumentPage.getBackBtn().click();
+
+        //Validate that opened document is not containing the reference anymore
+        ResourcesPage resourcesPage = editSubresourceDocumentPage.getSidebar().navigateTo(Pages.SEARCH_RESOURCES);
+        XMLUtils documentXML = resourcesPage.openURLSubResouceDocument(resourceModelOasis1UsesReference.getIdentifierValue(), resourceModelOasis1UsesReference.getIdentifierScheme(), subresourceModelToBeUsesReference.getIdentifierValue());
+        soft.assertNotNull(documentXML);
+        soft.assertEquals(documentXML.getNodeValue("DocumentIdentifier"), subresourceModelToBeUsesReference.getIdentifierValue(), "Open document contains the referenced document");
+        soft.assertEquals(documentXML.getAttributeValueForNode("DocumentIdentifier", "scheme"), subresourceModelToBeUsesReference.getIdentifierScheme(), "Open document contains the referenced document");
+        soft.assertEquals(documentXML.getNodeValue("EndpointURI"), "https://mypage.eu", "Open document contains the referenced document");
+
+        soft.assertAll();
+    }
+
+    @Test(description = "EDTRES-27- Resource administrators not able to see shared documents for private resources", priority = 1)
     public void resourceAdministratorsAreNotAbleToSeeSharedDocumentsForPrivateResources() throws Exception {
 
         ResourceModel resouceModelPrivateToBeShared = ResourceModel.generatePrivateResource(ResourceTypes.OASIS1);
@@ -888,12 +1008,11 @@ public class EditResourcePgTests extends SeleniumTest {
         rest.resources().updateResource(domainModel, groupModel, resouceModelPrivateToBeShared);
 
         soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resouceModelPrivateToBeShared.getIdentifierValue()), "Shared private resource is visible");
-
         soft.assertAll();
 
     }
 
-    @Test(description = "EDTRES-28- Resource administrators is able to see public resouces from public groups or the same group as the document")
+    @Test(description = "EDTRES-28- Resource administrators is able to see public resources from public groups or the same group as the document")
     public void resourceAdministratorIsAbleToSeePublicResourceFromPublicGroupsOrTheSameGroupAsTheDocument() throws Exception {
 
         DomainModel domainPublic_A = DomainModel.generatePublicDomainModelWithoutSML();
@@ -957,6 +1076,87 @@ public class EditResourcePgTests extends SeleniumTest {
         SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
         soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceA_A1.getIdentifierValue()), "Shared public resource of same group is not visible");
         soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceA_A2.getIdentifierValue()), "Shared public resource of different group of same domain is not visible");
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceB.getIdentifierValue()), "Shared public resource of different domain is not visible");
+
+
+        soft.assertAll();
+    }
+
+    @Test(description = "EDTRES-29- Resource administrators is able to see public resources from public domains or the same domain as the document")
+    public void resourceAdministratorIsAbleToSeePublicResourcesFromPublicDomainsOrTheSameDomainAsTheDocument() throws Exception {
+
+        DomainModel domainPublic_A = DomainModel.generatePublicDomainModelWithoutSML();
+        DomainModel domainPublic_B = DomainModel.generatePublicDomainModelWithoutSML();
+
+        GroupModel group_A1 = GroupModel.generatePublicGroup();
+        GroupModel group_A2 = GroupModel.generatePublicGroup();
+
+        GroupModel group_A3 = GroupModel.generatePublicGroup();
+
+        GroupModel group_B = GroupModel.generatePublicGroup();
+
+        //Generating resources for Public resource Private group Public Domain
+        ResourceModel resourceA_A1_underTest = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceA_A1 = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceA_A2 = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceA_A3 = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        ResourceModel resourceB = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+
+
+        //generating member models
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+
+        //create domain
+        domainPublic_A = rest.domains().createDomain(domainPublic_A);
+        domainPublic_B = rest.domains().createDomain(domainPublic_B);
+
+
+        //add users to domains
+        rest.domains().addMembersToDomain(domainPublic_A, superMember);
+        rest.domains().addMembersToDomain(domainPublic_B, superMember);
+
+
+        //add resource types to domains
+        List<ResourceTypes> resourcesTypesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        domainPublic_A = rest.domains().addResourcesToDomain(domainPublic_A, resourcesTypesToBeAdded);
+        domainPublic_B = rest.domains().addResourcesToDomain(domainPublic_B, resourcesTypesToBeAdded);
+
+
+        //create groups for domains
+        group_A1 = rest.domains().createGroupForDomain(domainPublic_A, group_A1);
+        group_A2 = rest.domains().createGroupForDomain(domainPublic_A, group_A2);
+        group_A3 = rest.domains().createGroupForDomain(domainPublic_A, group_A3);
+
+        group_B = rest.domains().createGroupForDomain(domainPublic_B, group_B);
+
+
+        //add resources to groups
+        resourceA_A1_underTest = rest.resources().createResourceForGroup(domainPublic_A, group_A1, resourceA_A1_underTest);
+        resourceA_A1 = rest.resources().createResourceForGroup(domainPublic_A, group_A1, resourceA_A1);
+        resourceA_A2 = rest.resources().createResourceForGroup(domainPublic_A, group_A2, resourceA_A2);
+        resourceA_A3 = rest.resources().createResourceForGroup(domainPublic_A, group_A3, resourceA_A3);
+
+        resourceB = rest.resources().createResourceForGroup(domainPublic_B, group_B, resourceB);
+
+        //Enable sharing for resources
+        rest.resources().enableSharingForResourceDocument(resourceA_A1, true);
+        rest.resources().enableSharingForResourceDocument(resourceA_A2, true);
+        rest.resources().enableSharingForResourceDocument(resourceA_A3, true);
+        rest.resources().enableSharingForResourceDocument(resourceB, true);
+
+        //Add resources member to resource
+        rest.resources().addMembersToResource(domainPublic_A, group_A1, resourceA_A1_underTest, adminMember);
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainPublic_A, group_A1, resourceA_A1_underTest);
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        SelectResourceDocumentDialog selectResourceDocumentDialog = editResourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceA_A1.getIdentifierValue()), "Shared public resource of same group is not visible");
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceA_A2.getIdentifierValue()), "Shared public resource of different group of same domain is not visible");
+        soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceA_A3.getIdentifierValue()), "Shared public resource of private group of same domain is not visible");
+
         soft.assertTrue(selectResourceDocumentDialog.isResourceReferenceByResourceIdentifierPresent(resourceB.getIdentifierValue()), "Shared public resource of different domain is not visible");
 
 
