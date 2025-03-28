@@ -49,14 +49,6 @@ public class CommonCertificatePage extends CommonPageWithTabsAndGrid {
         return weToDInput(subjectNameInput).getText();
     }
 
-    public String getValidFromValue() {
-        return weToDInput(validFromInput).getText();
-    }
-
-    public String getValidToValue() {
-        return weToDInput(validToInput).getText();
-    }
-
     public String getIssuerValue() {
         return weToDInput(issuerInput).getText();
     }
@@ -65,7 +57,8 @@ public class CommonCertificatePage extends CommonPageWithTabsAndGrid {
         return weToDInput(serialNumberInput).getText();
     }
 
-    public String getCertificateRevolcationListURLValue() {
-        return weToDInput(certificateRevolcationListURLInput).getText();
+    public String getExpiredWarningValue() {
+        return smpWarningLbl.getText();
     }
+
 }

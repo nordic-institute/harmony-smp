@@ -8,7 +8,6 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.administration.editResourcesPage.editResourceDocumentPage.SelectResourceDocumentDialog;
 
 /**
  * Common Page object for the Subresource Document configuration section. This contains the locators of the page and the methods for the behaviour of the page
@@ -25,7 +24,7 @@ public class CommonDocumentConfigurationComponent extends DComponent {
     @FindBy(id = "sharingEnabled_id")
     private WebElement sharingEnableCheckBox;
     @FindBy(css = "document-configuration-panel .mdc-button--unelevated")
-    private WebElement selectReferenceBtn;
+    public WebElement selectReferenceBtn;
     @FindBy(id = "reference-document-name_id")
     private WebElement refereceDocumentName;
 
@@ -49,10 +48,6 @@ public class CommonDocumentConfigurationComponent extends DComponent {
 
     }
 
-    public SelectResourceDocumentDialog clickOnSelectReferenceBtn() {
-        weToDButton(selectReferenceBtn).click();
-        return new SelectResourceDocumentDialog(driver);
-    }
 
     public String getReferenceDocumentName(){
         return weToDInput(refereceDocumentName).getText();

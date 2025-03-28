@@ -108,6 +108,38 @@ public class KeystorePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "KEYS-07 System admin is able to delete keystore")
+    public void systemAdminIsAbleToDeleteKeystore() {
+        String path = FileUtils.getAbsoluteKeystorePath("keystore_black.jks");
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test1234");
+        keyStoreImportDialog.clickImport();
+        keystorePage.getAlertMessageAndClose();
+
+        keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "black_gw");
+        keystorePage.deleteandConfirm();
+        String deletemsg = keystorePage.getAlertMessageAndClose();
+        soft.assertEquals(deletemsg, "Certificates deleted [black_gw]");
+        soft.assertFalse(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", "black_gw"), "Deleted certificate it is present in the grid");
+        soft.assertAll();
+
+    }
+
+    @Test(description = "KEYS-08 System admin is not able to import invalid keys")
+    public void systemAdminIsNotAbleToImportInvalidKeys() {
+        String path = FileUtils.getAbsoluteKeystorePath("corrupted.jks");
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
+        keyStoreImportDialog.clickImport();
+        String errorMessage = keystorePage.getAlertMessageAndClose();
+        soft.assertEquals(errorMessage, "Error occurred while importing keystore: corrupted.jks java.io.IOException occurred while reading the keystore: Invalid keystore format");
+
+        soft.assertAll();
+
+    }
+
     private void sofAssertThatContains(String contains, String value) {
         soft.assertTrue(value.contains(contains), "Expected to contain: ["+contains+"] but the value was: ["+value+"]");
     }

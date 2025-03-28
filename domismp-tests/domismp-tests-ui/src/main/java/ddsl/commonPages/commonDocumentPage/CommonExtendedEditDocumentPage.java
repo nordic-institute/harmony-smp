@@ -10,6 +10,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.administration.editResourcesPage.editResourceDocumentPage.ResourceDocumentEditor;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 public class CommonExtendedEditDocumentPage extends CommonBaseDocumentPage {
 
@@ -93,4 +96,9 @@ public class CommonExtendedEditDocumentPage extends CommonBaseDocumentPage {
     public MatSelect getViewDocumentSelect() {
         return weToMatSelect(viewDocumentDdl);
     }
+
+    public ResourceDocumentEditor getEditor() throws ParserConfigurationException {
+        return new ResourceDocumentEditor(this.getDocumentValue());
+    }
+
 }

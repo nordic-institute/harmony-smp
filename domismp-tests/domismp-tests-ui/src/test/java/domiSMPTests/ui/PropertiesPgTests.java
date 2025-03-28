@@ -53,8 +53,28 @@ public class PropertiesPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "PRP-3 - Edit property dialog lists property name and description which are not editable and value which can be set by the user.")
+    public void editPropertyDialogListsPropertyNameAndDescriptionWhichAreNotEditableAndValueWhichCanBeSetByTheUser() throws Exception {
+
+        String property = "bdmsl.integration.tls.disableCNCheck";
+
+        propertiesPage.propertySearch(property);
+        PropertyPopup propertyEditPoup = propertiesPage.openEditPropertyPopupup(property);
+        soft.assertEquals(propertyEditPoup.getPropertyName(), property, "Wrong property name!");
+        propertyEditPoup.getPropertyNameExpandBtn().click();
+        soft.assertEquals(propertyEditPoup.getPropertyDescription(), "If SML Url is HTTPs - Disable CN check if needed.", "Wrong property description!");
+
+        propertyEditPoup.getPropertyCheckbox().check();
+        propertyEditPoup.clickOK();
+
+        propertiesPage.openEditPropertyPopupup(property);
+        soft.assertTrue(propertyEditPoup.getPropertyCheckbox().isChecked(), "Property value did not change!");
+
+        soft.assertAll();
+    }
+
     @Test(description = "PRP-5 Value is validated according to expected format (URL)", priority = 4)
-    public void propertyValueURLIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueURLIsValidatedAccordingToExpectedFormat() {
 
         String property = "bdmsl.integration.url";
         String wrongValue1 = Generator.randomAlphaNumericValue(6);
@@ -94,7 +114,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-5 Value is validated according to expected format (email)")
-    public void propertyValueEmailIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueEmailIsValidatedAccordingToExpectedFormat() {
 
         String property = "smp.alert.mail.from";
         String wrongValue1 = Generator.randomAlphaNumericValue(6);
@@ -134,7 +154,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-5 Value is validated according to expected format (cron expression)")
-    public void propertyValueCRONexpressionIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueCRONexpressionIsValidatedAccordingToExpectedFormat() {
 
         String property = "smp.alert.credentials.cronJobExpression";
         String wrongValue1 = Generator.randomAlphaNumericValue(6);
@@ -174,7 +194,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-5 Value is validated according to expected format (numeric)")
-    public void propertyValueNumericIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueNumericIsValidatedAccordingToExpectedFormat() {
 
         String property = "smp.ui.session.idle_timeout.user";
         String wrongValue1 = Generator.randomAlphaNumericValue(6);
@@ -212,5 +232,22 @@ public class PropertiesPgTests extends SeleniumTest {
 
         soft.assertAll();
     }
+
+    @Test(description = "PRP-6 - Value is validated when user presses OK and if it’s invalid error is shown:")
+    public void valueIsValidatedWhenUserPressesOkAndIfItsInvalidErrorIsShown() {
+
+        String property = "identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage";
+        String longValue = Generator.randomAlphaNumericValue(2001);
+
+        propertiesPage.propertySearch(property);
+        PropertyPopup propertyEditPoup = propertiesPage.openEditPropertyPopupup(property);
+        propertyEditPoup.editInputField(longValue);
+        propertyEditPoup.clickOK();
+        String error = propertyEditPoup.getErrorMessage();
+        soft.assertEquals(error, "Configuration error: [Invalid property value! Error: Value to long. Max. allowed size 2000 characters!]!");
+
+        soft.assertAll();
+    }
+
 
 }

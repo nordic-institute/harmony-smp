@@ -67,7 +67,6 @@ public class ResourcesPage extends DomiSMPPage {
     public XMLUtils openURLSubResouceDocument(String resourceIdentifier, String resourceScheme, String subresourceIdentifier) {
         weToDInput(resourceIdentifierInput).fill(resourceIdentifier);
         weToDInput(resourceSchemeInput).fill(resourceScheme);
-        LOG.debug("Click on Open URL for " + resourceIdentifier);
         weToDButton(searchBtn).click();
         getGrid().openSubresource("Upd.", "chevron_right", "Subresource identifier", subresourceIdentifier);
         Set<String> handles = driver.getWindowHandles();

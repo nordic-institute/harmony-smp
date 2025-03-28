@@ -49,7 +49,7 @@ public class AccessTokensPgTests extends SeleniumTest {
         createNewAccessTokenDialog.getCreateNewTokenBtn().click();
         String tokenID = createNewAccessTokenDialog.getTokenIdAndCloseDialog();
 
-        String currentDateUiFormat = Utils.getCurrentDate("MM/d/yyyy");
+        String currentDateUiFormat = Utils.getCurrentDate("M/d/yyyy");
         soft.assertTrue(accessTokensPage.isAccessTokenPresent(tokenID), "Access Token ID is not correct");
         HashMap<String, String> accessTokenInfo = accessTokensPage.getAccessTokenInfo(tokenID);
         soft.assertEquals(accessTokenInfo.get("Description"), description, "Access Token description is not correct");
