@@ -25,6 +25,7 @@ export class SmpTableComponent implements AfterViewInit {
   @ViewChild(MatTable) table: MatTable<any>;
   @Input() filterLabel: string;
   @Input() filterPlaceholder: string;
+  @Input() filterValue: string;
   @Input() noResultLabel: string;
   @Input() noResultForFilterLabel: string;
   @Input() disabledFilter: boolean;
@@ -52,11 +53,14 @@ export class SmpTableComponent implements AfterViewInit {
     if (!this.isLoadableTable) {
       this.dataSource.paginator = this.paginator;
     }
+    if (this.filterValue === undefined) {
+      this.filterValue = '';
+    }
   }
 
   onFilterChangedEvent(event: Event) {
-    let filterValue: string = (event.target as HTMLInputElement).value;
-    this.onFilterChanged.emit(filterValue);
+    let value: string = (event.target as HTMLInputElement).value;
+    this.onFilterChanged.emit(value);
   }
 
   onRowClickedEvent(row: any) {

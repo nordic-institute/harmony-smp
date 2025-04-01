@@ -1,7 +1,7 @@
 <div class="smp-table-container">
   <mat-form-field id="smp-table-filter_id" class="smp-table-filter">
     <mat-label *ngIf="filterLabel">{{ filterLabel | translate }}</mat-label>
-    <input matInput #tableFilter
+    <input matInput #tableFilter [value]="filterValue"
            (keyup)="onFilterChangedEvent($event)"
            placeholder="{{ filterPlaceholder | translate }}"
            [disabled]="disabledFilter"

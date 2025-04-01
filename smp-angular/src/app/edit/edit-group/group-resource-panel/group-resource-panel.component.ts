@@ -37,6 +37,7 @@ import {
 import {
   EditResourceController
 } from "../../edit-resources/edit-resource.controller";
+import {NavigationService} from "../../../window/sidenav/navigation-model.service";
 
 @Component({
   selector: 'group-resource-panel',
@@ -64,7 +65,8 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
               private editResourceController: EditResourceController,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private navigationService: NavigationService) {
 
     this.columns = [
       {
@@ -219,6 +221,26 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     });
   }
 
+  public async onEditSubresourcesButtonClicked() {
+    if (!this._group || !this._group.groupId) {
+      this.alertService.error(await lastValueFrom(this.translateService.get("group.resource.panel.error.edit.group")));
+      return;
+    }
+
+    if (!this.selected || !this.selected.resourceId) {
+      this.alertService.error(await lastValueFrom(this.translateService.get("group.resource.panel.error.edit.resource")));
+      return;
+    }
+
+    this.editResourceController.selectedComponent = 'subresources';
+    this.editResourceController.applyResourceFilter(this.selected.identifierValue);
+    this.editResourceController.dataChanged = true;
+    this.editResourceController.selectedDomain = this.domain;
+    this.editResourceController.selectedGroup = this._group;
+    this.editResourceController.selectedResource = this.selected;
+    this.navigationService.navigateToEditResourceSubresources();
+  }
+
   deleteResource(group: GroupRo, resource: ResourceRo) {
     this.isLoadingResults = true;
     this.editGroupService.deleteResourceFromGroup(resource, this._group, this.domain)
@@ -242,7 +264,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
         }
       );
   }
-
 
   public onResourceSelected(resource: ResourceRo) {
     this.selected = resource;

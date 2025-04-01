@@ -36,14 +36,13 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   _selectedGroup: GroupRo;
   _selectedResource: ResourceRo;
   _selectedDomainResourceDefs: ResourceDefinitionRo[];
+  _selectedComponent = '';
 
   resourcesFilter: any = {};
 
   dataLength:number = 0;
   pageIndex:number = 0;
   pageSize:number = 10;
-
-
 
   constructor(
     private domainService: EditDomainService,
@@ -76,7 +75,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   @Input() set isLoadingResults(value: boolean) {
     if (!value) {
       // data was loaded, and we can reset the flag for data changed
-      this._dataChanged = value
+      this._dataChanged = value;
     }
     this._isLoadingResults = value;
   }
@@ -92,6 +91,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedGroup = null;
     this._selectedResource = null;
     this._selectedDomainResourceDefs = [];
+    this._selectedComponent = '';
     this.resourcesFilter = {};
     this.isLoadingResults = false;
     this.updateResourceList([], 0, -1, -1);
@@ -131,6 +131,14 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     return this._selectedResource;
   };
 
+  set selectedComponent(component: string) {
+    this._selectedComponent = component;
+  }
+
+  get selectedComponent(): string {
+    return this._selectedComponent;
+  }
+
   selectedResourceUpdated(resource: ResourceRo) {
     // find current resource from list by resource id
     if (resource.resourceId == this._selectedResource.resourceId) {
@@ -157,7 +165,6 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
       this.refreshDomains();
     }
   }
-
 
   refreshDomains() {
     this.isLoadingResults = true;
