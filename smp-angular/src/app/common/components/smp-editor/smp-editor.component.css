@@ -7,3 +7,7 @@
   flex-direction: column;
   border: ridge 3px #b0bec5
 }
+
+.smp-disabled, .cm-content {
+  background: lightgray;
+}
