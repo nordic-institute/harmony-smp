@@ -221,7 +221,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     });
   }
 
-  public async onEditSubresourcesButtonClicked() {
+  public async onSelectResourceClicked() {
     if (!this._group || !this._group.groupId) {
       this.alertService.error(await lastValueFrom(this.translateService.get("group.resource.panel.error.edit.group")));
       return;

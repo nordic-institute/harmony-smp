@@ -27,11 +27,11 @@
         <mat-icon>delete</mat-icon>
         <span>{{ "group.resource.panel.button.delete" | translate }}</span>
       </button>
-      <button id="editSubresourcesButton" mat-raised-button (click)="onEditSubresourcesButtonClicked()" color="primary"
-              matTooltip="{{ 'group.resource.panel.tooltip.edit.subresources' | translate }}"
+      <button id="editSubresourcesButton" mat-raised-button (click)="onSelectResourceClicked()" color="primary"
+              matTooltip="{{ 'group.resource.panel.tooltip.open.resource' | translate }}"
               [disabled]="!selected">
         <mat-icon>edit</mat-icon>
-        <span>{{ "group.resource.panel.button.edit.subresources" | translate }}</span>
+        <span>{{ "group.resource.panel.button.open.resource" | translate }}</span>
       </button>
 
     </mat-toolbar-row>
