@@ -18,9 +18,11 @@ import pages.administration.reviewTasksPage.ReviewTasksPage;
 import pages.search.ResourcesPage;
 import pages.systemSettings.TruststorePage;
 import pages.systemSettings.UsersPage;
+import pages.systemSettings.alertsPage.AlertsPage;
 import pages.systemSettings.domainsPage.DomainsPage;
 import pages.systemSettings.keyStorePage.KeystorePage;
 import pages.systemSettings.propertiesPage.PropertiesPage;
+import pages.userSettings.MyAlertsPage;
 import pages.userSettings.ProfilePage;
 import pages.userSettings.accessTokensPage.AccessTokensPage;
 import pages.userSettings.certificatesPage.accessTokensPage.CertificatesPage;
@@ -235,7 +237,7 @@ public class SideNavigationComponent extends DomiSMPPage {
         }
         if (page == Pages.SYSTEM_SETTINGS_ALERS) {
             openSubmenu(getNavigationLinks(page));
-            return (T) new PropertiesPage(driver);
+            return (T) new AlertsPage(driver);
         }
 
         if (page == Pages.USER_SETTINGS_PROFILE) {
@@ -253,7 +255,7 @@ public class SideNavigationComponent extends DomiSMPPage {
         }
         if (page == Pages.USER_SETTINGS_MY_ALERTS) {
             openSubmenu(getNavigationLinks(page));
-            return (T) new CertificatesPage(driver);
+            return (T) new MyAlertsPage(driver);
         }
 
         throw new NoSuchElementException("Menu for page " + page + " does not exist!");
