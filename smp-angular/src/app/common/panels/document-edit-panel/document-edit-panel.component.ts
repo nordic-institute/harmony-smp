@@ -132,6 +132,8 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   @ViewChild("smpDocumentEditor") documentEditor: SmpEditorComponent;
   // ----
   // defined observers
+  // ----
+  // load event observer
   loadDocumentObserver: Partial<Observer<DocumentRo>> = {
     next: async (doc: DocumentRo) => {
       if (!doc) {
@@ -145,6 +147,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     }
   };
 
+  // review event observer
   reviewActionDocumentObserver: Partial<Observer<DocumentRo>> = {
     next: async (doc: DocumentRo) => {
       if (!doc) {
@@ -173,7 +176,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     }
   };
 
-  // save event observer
+  // validate event observer
   validateDocumentObserver: Partial<Observer<DocumentRo>> = {
     next: async (doc: DocumentRo) => {
       this.alertService.success(await lastValueFrom(this.translateService.get("document.edit.panel.success.valid")))
@@ -183,7 +186,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     }
   };
 
-  // save event observer
+  // generate event observer
   generateDocumentObserver: Partial<Observer<DocumentRo>> = {
     next: async (doc: DocumentRo) => {
       if (!doc) {
@@ -191,7 +194,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       } else {
         this.alertService.success(await lastValueFrom(this.translateService.get("document.edit.panel.success.generate")))
         this.documentForm.controls['payload'].setValue(doc.payload);
-        this.updateTextToEditor()
+        this.updateTextToEditor();
         this.documentForm.controls['payload'].markAsDirty();
         this.documentForm.controls['editorText'].markAsDirty();
       }
@@ -326,7 +329,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       if (!this.documentEditable && !this.isNewDocumentVersion) {
         this.documentForm.controls['selectDocumentSource'].enable();
       }
-      this.updateTextToEditor()
+      this.updateTextToEditor();
       this.documentForm.markAsPristine();
     } else {
       this.documentForm.controls['selectDocumentSource'].setValue(SmpShowDocumentType.TARGET_DOCUMENT);
@@ -386,7 +389,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
    * is showing then, reference payload is shown in the editor, otherwise the payload is shown.
    */
   updateTextToEditor() {
-
     // set data
     if (this.showReference) {
       if (this.isEditorReferencePayload) {
@@ -452,7 +454,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     if (!currentVersion) {
       this.documentForm.controls['payload'].setValue("");
       this.documentForm.markAsPristine();
-      this.updateTextToEditor()
+      this.updateTextToEditor();
     } else {
       this.loadDocumentForVersion(currentVersion);
     }
