@@ -135,31 +135,22 @@
       </smp-warning-panel>
     </div>
     <expandable-panel>
-      <!-- The document version panels -->
-      <expandable-item icon="event"
-                       [showItem]="true"
-                       showButtonSpacer="true"
-                       title="{{'document.events.panel.tab.title' | translate }}"
-                       buttonLabel="{{'document.events.panel.tab.button.events' | translate }}">
-        <document-events-panel formControlName="documentVersionEvents"
-                               ngDefaultControl></document-events-panel>
-      </expandable-item>
       <!-- The document panels -->
-      <expandable-item icon="settings"
+      <expandable-item icon="description"
                        showButtonSpacer="true"
+                       title="{{'document.properties.panel.tab.title' | translate }}"
+                       buttonLabel="{{'document.properties.panel.tab.button.properties' | translate }}">
+        <document-properties-panel formControlName="properties"
+                                   [showEditToolbarButton]="isNotReviewMode"
+                                   ngDefaultControl></document-properties-panel>
+      </expandable-item>
+      <expandable-item icon="settings"
                        title="{{'document.configuration.panel.tab.title' | translate }}"
                        buttonLabel="{{'document.configuration.panel.tab.button.properties' | translate }}">
         <document-configuration-panel formControlName="documentConfiguration"
                                  [resource]="resource"
                                  [subresource]="subresource"
                                  ngDefaultControl></document-configuration-panel>
-      </expandable-item>
-      <expandable-item icon="description"
-                       title="{{'document.properties.panel.tab.title' | translate }}"
-                       buttonLabel="{{'document.properties.panel.tab.button.properties' | translate }}">
-        <document-properties-panel formControlName="properties"
-                                   [showEditToolbarButton]="isNotReviewMode"
-                                   ngDefaultControl></document-properties-panel>
       </expandable-item>
       <expandable-item icon="list"
                        *ngIf="isNotReviewMode"
@@ -170,6 +161,15 @@
           [selectedVersion]="currentDocumentVersion"
           (selectedVersionChange)="loadDocumentForVersion($event)"
           ngDefaultControl></document-versions-panel>
+      </expandable-item>
+      <!-- The document version panels -->
+      <expandable-item icon="event"
+                       [showItem]="true"
+                       showButtonSpacer="true"
+                       title="{{'document.events.panel.tab.title' | translate }}"
+                       buttonLabel="{{'document.events.panel.tab.button.events' | translate }}">
+        <document-events-panel formControlName="documentVersionEvents"
+                               ngDefaultControl></document-events-panel>
       </expandable-item>
 
     </expandable-panel>
