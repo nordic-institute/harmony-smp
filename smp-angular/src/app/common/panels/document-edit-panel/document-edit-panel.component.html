@@ -120,7 +120,7 @@
       </ng-template>
 
 
-      <div class="document-editor-container"
+      <div [className]="documentEditable ? 'document-editor-container': 'document-editor-container smp-disabled'"
         (click)="onEditPanelClick()">
         <smp-editor #smpDocumentEditor
                     formControlName="editorText"
