@@ -56,7 +56,7 @@ See the Licence for the specific language governing permissions and limitations 
         <!-- plugin versions -->
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
-        <plugin.jacoco-maven-plugin.version>0.8.12</plugin.jacoco-maven-plugin.version>
+        <plugin.jacoco-maven-plugin.version>0.8.13</plugin.jacoco-maven-plugin.version>
         <plugin.sonar-maven-plugin.version>3.11.0.3922</plugin.sonar-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
@@ -64,13 +64,14 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.maven-clean-plugin.version>3.4.1</plugin.maven-clean-plugin.version>
         <plugin.maven-compiler-plugin.version>3.13.0</plugin.maven-compiler-plugin.version>
         <plugin.maven-dependency-plugin.version>3.8.1</plugin.maven-dependency-plugin.version>
-        <plugin.maven-failsafe-plugin.version>3.5.2</plugin.maven-failsafe-plugin.version>
+        <plugin.maven-failsafe-plugin.version>3.5.3</plugin.maven-failsafe-plugin.version>
         <plugin.maven-jar-plugin.version>3.3.0</plugin.maven-jar-plugin.version>
         <plugin.maven-release-plugin.version>3.1.1</plugin.maven-release-plugin.version>
         <plugin.maven-resources-plugin.version>3.3.1</plugin.maven-resources-plugin.version>
         <plugin.maven-surefire-plugin.version>3.2.5</plugin.maven-surefire-plugin.version>
         <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
         <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
+        <plugin.versions-maven-plugin.version>2.18.0</plugin.versions-maven-plugin.version>
 
         <aspectj.version>1.9.23</aspectj.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -93,7 +94,7 @@ See the Licence for the specific language governing permissions and limitations 
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
-        <jaxb2-basics.version>1.11.1-PUBLISHED-BY-MISTAKE</jaxb2-basics.version>
+        <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
         <org.glassfish.jaxb.jaxb-runtime.version>2.3.9</org.glassfish.jaxb.jaxb-runtime.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
@@ -109,7 +110,7 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.102</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.104</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.0</xmlunit.version>
@@ -680,6 +681,11 @@ See the Licence for the specific language governing permissions and limitations 
                     <artifactId>frontend-maven-plugin</artifactId>
                     <version>${plugin.frontend-maven-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${plugin.versions-maven-plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -793,8 +799,17 @@ See the Licence for the specific language governing permissions and limitations 
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <!--To update only bugfix versions mvn versions:update-properties -DallowSnapshots=false -DallowMajorUpdates=false -DallowMinorUpdates=false -->
+                <!--To update minor versions  mvn versions:update-properties -DallowSnapshots=false -DallowMajorUpdates=false  -->
+                <configuration>
+                    <!-- ignore non numeric versions!-->
+                    <ignoredVersions>(?i).*-(alpha|beta|m|rc|published-by-mistake)([-.]?\d+)?</ignoredVersions>
+                </configuration>
+            </plugin>
         </plugins>
-
     </build>
     <profiles>
         <profile>
