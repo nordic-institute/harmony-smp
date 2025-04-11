@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
 
 import static eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService.*;
@@ -116,8 +117,12 @@ class SMPLanguageResourceServiceTest {
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
         assertEquals(2, files.length);
-        assertEquals(LANGUAGE_FILENAME_UI_PREFIX + "en.json", files[0].getName());
-        assertEquals(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json", files[1].getName());
+        // check if bot files are created regardless the order
+        String[] expectedNames = new String[]{LANGUAGE_FILENAME_UI_PREFIX + "en.json", LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"};
+        String[] fileNames = new String[] {files[0].getName(), files[1].getName()};
+        Arrays.sort(expectedNames);
+        Arrays.sort(fileNames);
+        assertArrayEquals(expectedNames, fileNames);
     }
 
     @Test
@@ -138,13 +143,22 @@ class SMPLanguageResourceServiceTest {
 
         // when
         testInstance.updateLocalesOnDisk();
+
         // then
         assertTrue(localeFolder.exists());
+        // Compare the sorted arrays
+
+
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
         assertEquals(2, files.length);
-        assertEquals(LANGUAGE_FILENAME_UI_PREFIX + "en.json", files[0].getName());
-        assertEquals(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json", files[1].getName());
+
+        // check if bot files are created regardless the order
+        String[] expectedNames = new String[]{LANGUAGE_FILENAME_UI_PREFIX + "en.json", LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"};
+        String[] fileNames = new String[] {files[0].getName(), files[1].getName()};
+        Arrays.sort(expectedNames);
+        Arrays.sort(fileNames);
+        assertArrayEquals(expectedNames, fileNames);
 
         JsonNode result = objectMapper.readTree(pathToFile.toFile());
         assertEquals(testText, result.get(testKey).asText());
