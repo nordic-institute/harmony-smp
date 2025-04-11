@@ -11,6 +11,7 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
+        <vulnerabilityName>CVE-2025-22228</vulnerabilityName>
         <cve>CVE-2018-1258</cve>
     </suppress>
     <suppress>
