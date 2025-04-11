@@ -7,11 +7,21 @@
         <notes><![CDATA[
    file name: spring-security-crypto-5.8.*.jar
    The data serialized by the application is trusted
-   NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
+   CVE-2020-5408 - the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
+   CVE-2025-22228 - BCryptPasswordEncoder.matches(CharSequence,String) will incorrectly return true for passwords larger
+                    than 72 characters as long as the first 72 characters are the same. No substitition at the moment. Upgrade to newer version when possible and remove this suppression.
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
+        <vulnerabilityName>CVE-2025-22228</vulnerabilityName>
         <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-crypto-5.8.16.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-crypto@.*$</packageUrl>
+        <vulnerabilityName>CVE-2025-22228</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -97,9 +107,11 @@
    file name: tomcat-embed-websocket-9.0.x.jar
    The vulnerability is not impacting smp.war,
    because is part of spring boot - intended only for demo and testing.
+
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
         <cve>CVE-2023-41080</cve>
+        <cve>CVE-2025-24813</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
