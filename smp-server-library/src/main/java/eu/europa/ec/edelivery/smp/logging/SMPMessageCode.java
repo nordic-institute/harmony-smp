@@ -35,6 +35,8 @@ public enum SMPMessageCode implements MessageCode {
     BUS_HTTP_GET_SERVICE_GROUP("BUS-005", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
     BUS_HTTP_GET_END_SERVICE_GROUP("BUS-006", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
     BUS_HTTP_GET_END_STATIC_CONTENT("BUS-007", "End Http GET static content from host: {}, Path: {}."),
+    BUS_HTTP_GET_END_STATIC_CONTENT_NOT_FOUND("BUS-024", "End Http GET static content from host: {}, Path: {}."),
+
 
 
     BUS_HTTP_PUT_SERVICE_METADATA("BUS-008", "Http PUT ServiceGroupMetadata from user {} from host: {}. ServiceGroup with domain: {}, ServiceGroup id: {} , metadata id {}."),
