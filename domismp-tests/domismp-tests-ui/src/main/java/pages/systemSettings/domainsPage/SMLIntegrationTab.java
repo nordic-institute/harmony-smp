@@ -2,6 +2,7 @@ package pages.systemSettings.domainsPage;
 
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
+import ddsl.dobjects.DButton;
 import ddsl.dobjects.DInput;
 import ddsl.dobjects.DSelect;
 import ddsl.enums.ResponseCertificates;
@@ -132,6 +133,14 @@ public class SMLIntegrationTab extends DComponent {
 
     public DInput getSMLDomainInput() {
         return weToDInput(smlDomainInput);
+    }
+
+    public DButton getSaveButton() {
+        return weToDButton(saveBtn);
+    }
+
+    public DButton getUnregisterButton() {
+        return weToDButton(unregisterBtn);
     }
 
 

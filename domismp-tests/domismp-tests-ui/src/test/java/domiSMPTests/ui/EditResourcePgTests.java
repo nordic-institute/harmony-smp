@@ -107,8 +107,9 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModel);
         editResourcePage.goToTab("Members");
         //Add user
-        editResourcePage.getResourceMembersTab().getInviteMemberBtn().click();
-        editResourcePage.getResourceMembersTab().getInviteMembersPopup().selectMember(domainMember.getUsername(), "VIEWER");
+        editResourcePage.getResourceMembersTab()
+                .clickOnInviteMemberBtn()
+                .selectMember(domainMember.getUsername(), "VIEWER");
         soft.assertTrue(editResourcePage.getResourceMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
 
         //Change role of user
@@ -132,8 +133,9 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage.selectDomain(domainModel, groupModel, resourceModel);
         editResourcePage.goToTab("Members");
         //Add user
-        editResourcePage.getResourceMembersTab().getInviteMemberBtn().click();
-        editResourcePage.getResourceMembersTab().getInviteMembersPopup().selectMember(domainMember.getUsername(), "VIEWER");
+        editResourcePage.getResourceMembersTab()
+                .clickOnInviteMemberBtn()
+                .selectMember(domainMember.getUsername(), "VIEWER");
         soft.assertTrue(editResourcePage.getResourceMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
     }
 
