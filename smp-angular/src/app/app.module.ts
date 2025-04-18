@@ -355,6 +355,10 @@ import {
   SmpTableComponent
 } from "./common/components/smp-table/smp-table.component";
 import {LocalStorageService} from "./common/services/local-storage.service";
+import {
+  PrepareCertificateDialogComponent
+} from "./common/dialogs/prepare-certificate-dialog/prepare-certificate-dialog.component";
+import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
 
 @NgModule({ declarations: [
         AccessTokenPanelComponent,
@@ -418,6 +422,7 @@ import {LocalStorageService} from "./common/services/local-storage.service";
         NavTreeMenu,
         ObjectPropertiesDialogComponent,
         PasswordChangeDialogComponent,
+        PrepareCertificateDialogComponent,
         PropertyComponent,
         PropertyDetailsDialogComponent,
         ResetCredentialComponent,
@@ -426,13 +431,13 @@ import {LocalStorageService} from "./common/services/local-storage.service";
         ResourceDialogComponent,
         ResourceDocumentPanelComponent,
         RowLimiterComponent,
-        SaveDialogComponent,
-        SearchTableComponent,
         ReferenceDocumentDialogComponent,
         ReviewDocumentPanelComponent,
         ReviewTasksComponent,
         ReviewTasksPanelComponent,
         ResourceSearchComponent,
+        SaveDialogComponent,
+        SearchTableComponent,
         SidenavComponent,
         SmpFieldErrorComponent,
         SmpLabelComponent,
@@ -461,6 +466,7 @@ import {LocalStorageService} from "./common/services/local-storage.service";
         MatCardModule,
         MatCheckboxModule,
         MatDatepickerModule,
+        NgxMatTimepickerModule,
         MatDialogModule,
         MatExpansionModule,
         MatIconModule,

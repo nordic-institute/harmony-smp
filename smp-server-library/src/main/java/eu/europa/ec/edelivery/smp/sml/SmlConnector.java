@@ -19,9 +19,7 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponseType;
-import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
-import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
+import ec.services.wsdl.bdmsl.data._1.*;
 import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
@@ -357,8 +355,27 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
-    private IManageParticipantIdentifierWS getParticipantWSClient(DBDomain domain) {
+    public void prepareCertificateChange(DBDomain domain, String encoded, Calendar migrationDate) {
+        if (!configurationService.isSMLIntegrationEnabled()) {
+            return;
+        }
 
+        PrepareChangeCertificateType prepareChangeCertificateType = new ObjectFactory().createPrepareChangeCertificateType();
+        prepareChangeCertificateType.setNewCertificatePublicKey(encoded);
+        prepareChangeCertificateType.setMigrationDate(migrationDate);
+
+        LOG.info("Preparing the change for certificate [{}] scheduled on [{}] in SML for domain [{}]", encoded, migrationDate, domain.getDomainCode());
+        try {
+            getBDMSLWSClient(domain).prepareChangeCertificate(prepareChangeCertificateType);
+        } catch (BadRequestFault | NotFoundFault e) {
+            processSMLErrorMessage(e, domain);
+        } catch (Exception e) {
+            LOG.error(e.getClass().getName() + e.getMessage(), e);
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    private IManageParticipantIdentifierWS getParticipantWSClient(DBDomain domain) {
         IManageParticipantIdentifierWS iManageServiceMetadataWS = ctx.getBean(IManageParticipantIdentifierWS.class);
         // configure connection
         configureClient(IDENTIFIER_VALUE_CONTEXT, iManageServiceMetadataWS, domain);
@@ -367,7 +384,6 @@ public class SmlConnector implements ApplicationContextAware {
     }
 
     private IBDMSLServiceWS getBDMSLWSClient(DBDomain domain) {
-
         IBDMSLServiceWS bdmslServiceWS = ctx.getBean(IBDMSLServiceWS.class);
         // configure connection
         configureClient(BDMSL_CUSTOM_SERVICES_CONTEXT, bdmslServiceWS, domain);

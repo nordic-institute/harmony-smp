@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+      <mat-form-field style="width:100%"
+                      matTooltip="{{ 'domain.sml.integration.panel.tooltip.smp.client.certificate.change.alias' | translate }}">
+        <mat-label>{{ "domain.sml.integration.panel.label.smp.client.certificate.change.alias" | translate }}</mat-label>
+        <select matNativeControl formControlName="smlChangeCertificateAlias">
+          <option [value]="''">{{ "domain.sml.integration.panel.tooltip.smp.change.client.certificate.alias.default.option" | translate }}</option>
+          <option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
+            {{cert.alias}} ({{cert.certificateId}})
+          </option>
+        </select>
+      </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <input matInput [matDatepicker]="smlChangeCertificateDate" formControlName="smlChangeCertificateDate">
+      <mat-datepicker-toggle matSuffix [for]="smlChangeCertificateDate"></mat-datepicker-toggle>
+      <mat-datepicker #smlChangeCertificateDate></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <input matInput [ngxMatTimepicker]="smlChangeCertificateTime"  ngx-mat-timepicker-field [format]="24" placeholder="HH:MM" formControlName="smlChangeCertificateTime">
+
+      <ngx-mat-timepicker #smlChangeCertificateTime></ngx-mat-timepicker>
+
+      <ngx-mat-timepicker-toggle [for]="smlChangeCertificateTime">
+        <mat-icon ngxMatTimepickerToggleIcon>schedule</mat-icon>
+      </ngx-mat-timepicker-toggle>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+
+<mat-dialog-actions>
+  <button id="applyDialogButton" mat-raised-button color="primary" (click)="onApplyButtonClicked()">
+    <mat-icon>close</mat-icon>
+    <span>{{ "domain.sml.integration.panel.button.apply" | translate }}</span>
+  </button>
+  <button id="cancelDialogButton" mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>close</mat-icon>
+    <span>{{ "domain.sml.integration.panel.button.cancel" | translate }}</span>
+  </button>
+</mat-dialog-actions>
+

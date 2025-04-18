@@ -110,7 +110,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
             certPolicyIdentifiers = X509CertificateUtils.getCertificatePolicyIdentifiers(cert);
         } catch (CertificateException cex) {
             throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
-                    "Error occurred while retrieving certPolicyIdentifiers " + subject, cex.getMessage(), cex);
+                    "Error occurred while retrieving certPolicyIdentifiers " + subject, cex.getMessage());
         }
 
 
@@ -137,7 +137,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
             cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
         } catch (CertificateEncodingException cex) {
             throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
-                    "Error occurred while decoding certificate " + subject, cex.getMessage(), cex);
+                    "Error occurred while decoding certificate " + subject, cex.getMessage());
 
         }
         // generate clientCertHeader header

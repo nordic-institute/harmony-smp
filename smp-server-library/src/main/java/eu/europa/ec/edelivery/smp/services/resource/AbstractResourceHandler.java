@@ -184,7 +184,7 @@ public class AbstractResourceHandler {
             responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
 
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the subresource!", e);
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e, "Error occurred while reading the subresource!");
         }
     }
 }

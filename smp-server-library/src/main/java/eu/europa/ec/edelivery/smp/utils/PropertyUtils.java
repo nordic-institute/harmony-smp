@@ -118,15 +118,15 @@ public class PropertyUtils {
                 try {
                     return Pattern.compile(value);
                 } catch (PatternSyntaxException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid regular expression: ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex), ex);
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "Invalid regular expression: ["
+                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
                 }
             case INTEGER:
                 try {
                     return Integer.parseInt(value);
                 } catch (NumberFormatException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid integer: ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex), ex);
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "Invalid integer: ["
+                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
                 }
             case LIST_STRING: {
                 return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR));
@@ -168,8 +168,8 @@ public class PropertyUtils {
                 try {
                     return new URL(value.trim());
                 } catch (MalformedURLException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid URL address:  ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex), ex);
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "Invalid URL address:  ["
+                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
                 }
             case STRING:
                 return value;
@@ -177,8 +177,8 @@ public class PropertyUtils {
                 try {
                     return CronExpression.parse(value);
                 } catch (IllegalArgumentException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "cron expression:  ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex), ex);
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "cron expression:  ["
+                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
                 }
         }
         return null;

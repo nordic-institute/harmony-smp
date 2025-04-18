@@ -27,6 +27,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,6 +123,13 @@ public class DBDomain extends BaseEntity {
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Client key alias used for SML integration")
     String smlClientKeyAlias;
+    @Column(name = "SML_CLIENT_KEY_CHANGE_ALIAS")
+    @ColumnDescription(comment = "Client key alias used to update the certificate for SML integration")
+    String smlClientKeyChangeAlias;
+    @Column(name = "SML_CLIENT_KEY_CHANGE_DATE")
+    @ColumnDescription(comment = "Future date when to update the certificate for SML integration")
+    OffsetDateTime smlClientKeyChangeDate;
+
     @Column(name = "SIGNATURE_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Signature key alias used for SML integration")
     String signatureKeyAlias;
@@ -214,6 +222,22 @@ public class DBDomain extends BaseEntity {
 
     public void setSmlClientKeyAlias(String smlClientKeyAlias) {
         this.smlClientKeyAlias = smlClientKeyAlias;
+    }
+
+    public String getSmlClientKeyChangeAlias() {
+        return smlClientKeyChangeAlias;
+    }
+
+    public void setSmlClientKeyChangeAlias(String smlClientKeyChangeAlias) {
+        this.smlClientKeyChangeAlias = smlClientKeyChangeAlias;
+    }
+
+    public OffsetDateTime getSmlClientKeyChangeDate() {
+        return smlClientKeyChangeDate;
+    }
+
+    public void setSmlClientKeyChangeDate(OffsetDateTime smlClientKeyChangeDate) {
+        this.smlClientKeyChangeDate = smlClientKeyChangeDate;
     }
 
     public String getSignatureKeyAlias() {
@@ -310,6 +334,8 @@ public class DBDomain extends BaseEntity {
                 .append(smlSubdomain, dbDomain.smlSubdomain)
                 .append(smlSmpId, dbDomain.smlSmpId)
                 .append(smlClientKeyAlias, dbDomain.smlClientKeyAlias)
+                .append(smlClientKeyChangeAlias, dbDomain.smlClientKeyChangeAlias)
+                .append(smlClientKeyChangeDate, dbDomain.smlClientKeyChangeDate)
                 .append(signatureKeyAlias, dbDomain.signatureKeyAlias)
                 .append(signatureAlgorithm, dbDomain.signatureAlgorithm)
                 .append(signatureDigestMethod, dbDomain.signatureDigestMethod)

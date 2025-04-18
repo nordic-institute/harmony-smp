@@ -108,6 +108,17 @@
         <mat-icon>link_off</mat-icon>
         <span>{{ "domain.sml.integration.panel.button.unregister" | translate }}</span>
       </button>
+      <tool-button-spacer></tool-button-spacer>
+      <button  id="prepareCertificateButton" mat-raised-button (click)="onPrepareCertificateClicked()"
+               [disabled]="changeCertificateAliasSet" color="primary">
+        <mat-icon>link</mat-icon>
+        <span>{{ "domain.sml.integration.panel.button.prepare" | translate }}</span>
+      </button>
+      <button  id="changeCertificateButton" mat-raised-button (click)="onChangeCertificateClicked()"
+               [disabled]="!changeCertificateAliasSet" color="primary">
+        <mat-icon>link</mat-icon>
+        <span>{{ "domain.sml.integration.panel.button.change" | translate }}</span>
+      </button>
     </mat-toolbar-row>
   </mat-toolbar>
 </form>

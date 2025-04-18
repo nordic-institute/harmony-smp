@@ -157,14 +157,14 @@ public class CRLVerifierService implements ICRLVerifierService {
                 crl = (X509CRL) cf.generateCRL(crlStream);
             }
         } catch (IOException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e), e);
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, e, "Can not download CRL '" + crlURL + "'"
+                    , ExceptionUtils.getRootCauseMessage(e));
         } catch (CertificateException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e), e);
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, e, "CRL list is not supported '" + crlURL + "'"
+                    , ExceptionUtils.getRootCauseMessage(e));
         } catch (CRLException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e), e);
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, e, "CRL can not be read: '" + crlURL + "'"
+                    , ExceptionUtils.getRootCauseMessage(e));
         } catch (SMPRuntimeException exc) {
             exception = exc;
         }
