@@ -82,8 +82,7 @@ public class EditGroupsPgTests extends SeleniumTest {
 
         editGroupPage.selectDomain(domainModel, groupModel);
         //Add user
-        editGroupPage.getGroupMembersTab().getInviteMemberBtn().click();
-        editGroupPage.getGroupMembersTab().getInviteMembersPopup().selectMember(domainMember.getUsername(), "VIEWER");
+        editGroupPage.getGroupMembersTab().clickOnInviteMemberBtn().selectMember(domainMember.getUsername(), "VIEWER");
         soft.assertTrue(editGroupPage.getGroupMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
 
         //Change role of user

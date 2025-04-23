@@ -3,6 +3,7 @@ package domiSMPTests.ui;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.commonComponents.domanPropertyEditDialog.DomainPropertyEditDialog;
+import ddsl.dcomponents.commonComponents.members.InviteMembersPopup;
 import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
 import ddsl.enums.ResponseCertificates;
@@ -67,7 +68,7 @@ public class DomainsPgTests extends SeleniumTest {
     }
 
 
-    @Test(description = "DOM-02 System admin can integrates domain with SMP")
+    @Test(description = "DOM-02 System admin can integrates domain with SML")
     public void systemAdminCanIntegrateDomainWithSMP() throws Exception {
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
 
@@ -109,8 +110,8 @@ public class DomainsPgTests extends SeleniumTest {
 
         //Invite user as VIEW and check if he has admin rights for domain
         domainsPage.goToTab("Members");
-        domainsPage.getMembersTab().getInviteMemberBtn().click();
-        domainsPage.getMembersTab().getInviteMembersPopup().selectMember(normalUser.getUsername(), "VIEWER");
+        InviteMembersPopup inviteMembersPopup = domainsPage.getMembersTab().clickOnInviteMemberBtn();
+        inviteMembersPopup.selectMember(normalUser.getUsername(), "VIEWER");
         WebElement userMemberElement = domainsPage.getMembersTab().getMembersGrid().searchAndGetElementInColumn("Username", normalUser.getUsername());
         soft.assertNotNull(userMemberElement, "Invited user not found");
 
@@ -490,6 +491,37 @@ public class DomainsPgTests extends SeleniumTest {
 
         soft.assertAll();
     }
+
+    @Test(description = "DOM-12 - User is able to change SML domain for registered domains")
+    public void userIsAbleToChangeSMLDomainForRegisteredDomains() throws Exception {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
+
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        domainsPage.getDomainTab().saveChanges();
+        String alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
+
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.goToTab("SML integration");
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModel);
+        domainsPage.getSMLIntegrationTab().saveChanges();
+        domainsPage.getSMLIntegrationTab().registerToSML();
+
+        alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain [" + domainModel.getDomainCode() + "] registered to SML!");
+        String newDomainSMLValue = domainModel.getSmlSubdomain() + "2";
+        domainsPage.getSMLIntegrationTab().getSMLDomainInput().fill(newDomainSMLValue);
+        soft.assertTrue(domainsPage.getSMLIntegrationTab().getSaveButton().isEnabled(), "Save button is not enabled after modifying SML domain value");
+        domainsPage.getSMLIntegrationTab().saveChanges();
+
+        soft.assertFalse(domainsPage.getSMLIntegrationTab().getSaveButton().isEnabled(), "Saving SML domain value failed");
+        soft.assertEquals(domainsPage.getSMLIntegrationTab().getSMLDomainInput().getText(), newDomainSMLValue, "SML Domain value is not changed");
+
+        soft.assertAll();
+
+    }
+
     @Test(description = "DOM-15 - User tries to add invalid SML SMP identifier and receives error")
     public void systemAdminTriesToAddInvalidSMLSMPIdentifierAndReceivesError() throws Exception {
         DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
@@ -635,6 +667,41 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertTrue(domainsPage.getConfigurationTab().getCurrentPropertyValue(stringProperty).equalsIgnoreCase(defaultPropertyValue), "Configuration table is not showing system value");
 
         soft.assertAll();
+    }
+
+    @Test(description = "DOM-31 - Unregister button is active if SMP ID is registered (and BDSML integration is enabled)")
+    public void unregisteredButtonIsActiveIfSMPIDIsRegistered() throws Exception {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
+
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        domainsPage.getDomainTab().saveChanges();
+        String alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
+
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.goToTab("SML integration");
+        domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModel);
+        domainsPage.getSMLIntegrationTab().saveChanges();
+        domainsPage.getSMLIntegrationTab().registerToSML();
+
+        alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain [" + domainModel.getDomainCode() + "] registered to SML!");
+
+        soft.assertTrue(domainsPage.getSMLIntegrationTab().getUnregisterButton().isEnabled());
+        domainsPage.getSMLIntegrationTab().unregisterToSML();
+        alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain [" + domainModel.getDomainCode() + "] unregistered from SML!");
+
+        //Go to SML
+        driver.get(data.getSMLUrl());
+        SmlPage smlPage = new SmlPage(driver);
+        soft.assertFalse(smlPage.isDomainRegistered(domainModel), "Unregistered Domain is present in SML");
+        soft.assertAll();
+
+
+        soft.assertAll();
+
     }
 
 }

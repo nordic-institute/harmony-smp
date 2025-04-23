@@ -37,7 +37,7 @@ public class CertificatesPgTests extends SeleniumTest {
 
     }
 
-    @Test(description = "CERT-01 Users are able to import valid certificate")
+    @Test(description = "CERT-01 Users are able to import valid certificate, CERT-07 User is able to show Certificate details")
     public void usersAreAbleToImportValidCertificate() throws Exception {
         String description = Generator.randomAlphaNumericValue(10);
         String path = FileUtils.getAbsoluteTruststorePath("validCertificate.cer");
@@ -127,6 +127,39 @@ public class CertificatesPgTests extends SeleniumTest {
         String deleteAlert = certificatePage.deleteCertificate(certificateId);
         soft.assertEquals(deleteAlert, "Certificate \"" + certificateId + "\" has been deleted!", "Certificate has not been deleted");
         soft.assertFalse(certificatePage.isCertificatePresent(certificateId));
+
+        soft.assertAll();
+    }
+
+    @Test(description = "CERT-05 User is to modify existing Certificate")
+    public void userIsModifyExistingCertificate() throws Exception {
+
+        String description = Generator.randomAlphaNumericValue(10);
+        String path = FileUtils.getAbsoluteTruststorePath("validCertificate.cer");
+        String certificateId = "CN=red_gw,O=eDelivery,C=BE:00000000110fa0d8";
+        //Delete certificate if exists
+        try {
+            certificatePage.deleteCertificate(certificateId);
+            certificatePage.getAlertArea().closeAlert();
+        } catch (Exception ignored) {
+
+        }
+        //Import new certificate
+        ImportNewCertificatesDialog importNewCertificatesDialog = certificatePage.clickOnImportNewCertificate();
+        importNewCertificatesDialog.getDescriptionInput().fill(description);
+
+        importNewCertificatesDialog.importCertificate(path);
+        importNewCertificatesDialog.getSaveCertificateBtn().click();
+        certificatePage.getAlertArea().closeAlert();
+        certificatePage.getDescriptionInput(certificateId).fill("test value");
+        certificatePage.getActiveCheckbox(certificateId).uncheck();
+        soft.assertTrue(certificatePage.getSaveBtn(certificateId).isEnabled(), "Save button is not enabled");
+        String alertmessage = certificatePage.saveChanges(certificateId);
+        soft.assertEquals(alertmessage, "Certificate \"CN=red_gw,O=eDelivery,C=BE:00000000110fa0d8\" has been updated!", "Alert message is wrong!");
+        soft.assertEquals(certificatePage.getCertificateInfo(certificateId).get("Description"), "test value");
+        soft.assertFalse(certificatePage.getActiveCheckbox(certificateId).isChecked());
+
+
 
         soft.assertAll();
     }
