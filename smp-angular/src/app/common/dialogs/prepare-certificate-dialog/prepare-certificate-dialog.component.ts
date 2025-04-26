@@ -5,6 +5,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import * as moment from 'moment';
 import {Moment} from "moment";
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS} from "@angular/material-moment-adapter";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
 
 @Component({
   templateUrl: './prepare-certificate-dialog.component.html',
@@ -21,7 +22,8 @@ export class PrepareCertificateDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               public dialogRef: MatDialogRef<PrepareCertificateDialogComponent>,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private alertService: AlertMessageService) {
     this.formTitle = data.title;
     this.keystoreCertificates = data.certificates;
 
@@ -33,17 +35,23 @@ export class PrepareCertificateDialogComponent {
   }
 
   onApplyButtonClicked() {
+    if(!this.form.valid) {
+      this.alertService.errorForTranslation('domain.sml.integration.panel.prepare.certificate.dialog.error.invalid.form');
+      return;
+    }
+
+    const changeDate: Moment = moment(this.form.get('smlChangeCertificateDate').value);
+    if (changeDate.isBefore(new Date())) {
+      this.alertService.errorForTranslation('domain.sml.integration.panel.prepare.certificate.dialog.error.migration.date.in.past');
+      return;
+    }
     const certificateAlias = this.form.get('smlChangeCertificateAlias').value;
-    const changeDate:Moment = moment(this.form.get('smlChangeCertificateDate').value);
     const changeTime = moment(this.form.get('smlChangeCertificateTime').value, 'HH:MM');
+
     const changeDateTime = changeDate.set({
       hours: changeTime.hours(),
       minutes: changeTime.minutes()
     });
-    console.log(changeDateTime.toString());
-
-    if(this.form.valid) {
-      this.dialogRef.close({ certificateAlias,  changeDateTime });
-    }
+    this.dialogRef.close({certificateAlias, changeDateTime});
   }
 }

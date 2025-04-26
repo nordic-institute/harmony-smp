@@ -695,6 +695,8 @@
   "domain.sml.integration.panel.unregister.confirmation.dialog.title": "Unregister domain to SML",
   "domain.sml.integration.panel.prepare.certificate.dialog.description": "Prepare a change of the SML client certificate at a future date",
   "domain.sml.integration.panel.prepare.certificate.dialog.title": "Prepare client certificate",
+  "domain.sml.integration.panel.prepare.certificate.dialog.error.migration.date.in.past": "The migration date must be in the future!",
+  "domain.sml.integration.panel.prepare.certificate.dialog.error.invalid.form": "Please select the certificate for signing soap response!",
 
   "admin.domain.button.create": "Create domain",
   "admin.domain.button.delete": "Delete selected",
