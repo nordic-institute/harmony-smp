@@ -277,17 +277,21 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         certificates: this.keystoreCertificates,
         domain: this.domain
       }
-    }).afterClosed().subscribe(changeCertificateAlias => {
-      if (changeCertificateAlias) {
-        this.smlIntegrationService.prepareChangeCertificateDetails$(this.domain, changeCertificateAlias).subscribe(result => {
-          this.changeCertificate = changeCertificateAlias;
-        });
+    }).afterClosed().subscribe(changeCertificate => {
+      if (changeCertificate) {
+        this.smlIntegrationService.prepareChangeCertificateDetails$(this.domain, changeCertificate).subscribe({ error: (error: any) => {
+            error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
+        }});
       }
     });
   }
 
   onChangeCertificateClicked() {
-    this.smlIntegrationService.changeCertificateDetails$(this.domain);
+    this.smlIntegrationService.changeCertificateDetails$(this.domain).subscribe({ next: () => {
+        this.smlIntegrationService.getChangeCertificateDetails$(this._domain).subscribe(result => this.changeCertificate = result);
+      }, error: (error: any) => {
+        error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
+      }});
   }
 
   get changeCertificateAliasSet(): boolean {
@@ -295,6 +299,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   }
 
   get changeCertificateDateInPast(): boolean {
-    return this.changeCertificate && this.changeCertificate.changeDateTime < new Date();
+    return this.changeCertificate && this.changeCertificate.changeDateTime && this.changeCertificate.changeDateTime < new Date();
   }
 }

@@ -41,17 +41,18 @@ export class PrepareCertificateDialogComponent {
     }
 
     const changeDate: Moment = moment(this.form.get('smlChangeCertificateDate').value);
-    if (changeDate.isBefore(new Date())) {
-      this.alertService.errorForTranslation('domain.sml.integration.panel.prepare.certificate.dialog.error.migration.date.in.past');
-      return;
-    }
     const certificateAlias = this.form.get('smlChangeCertificateAlias').value;
-    const changeTime = moment(this.form.get('smlChangeCertificateTime').value, 'HH:MM');
-
+    const changeTime = moment(this.form.get('smlChangeCertificateTime').value, 'HH:mm');
     const changeDateTime = changeDate.set({
       hours: changeTime.hours(),
       minutes: changeTime.minutes()
     });
+
+    // the migration date cannot be set to today's end of day
+    if (changeDateTime.isBefore(moment().utc().endOf('day'))) {
+      this.alertService.errorForTranslation('domain.sml.integration.panel.prepare.certificate.dialog.error.migration.date.in.past');
+      return;
+    }
     this.dialogRef.close({certificateAlias, changeDateTime});
   }
 }

@@ -4,6 +4,7 @@
 
     <h3>{{ "domain.sml.integration.panel.title" | translate }}</h3>
     <div class="panel" *ngIf="isDomainRegistered"><p style="font-weight: bold">{{ "domain.sml.integration.panel.text" | translate }}</div>
+    <div class="panel" *ngIf="changeCertificateDateInPast"><p style="font-weight: bold">{{ "domain.sml.integration.panel.text.certificate.change.in.past" | translate }}</div>
     <mat-form-field style="width:100%">
       <mat-label>{{ "domain.sml.integration.panel.label.sml.domain" | translate }}</mat-label>
       <input matInput

@@ -52,7 +52,7 @@
                                  (onSavePropertiesDataEvent)="onSavePropertiesDataEvent($event)"
         ></domain-properties-panel>
       </mat-tab>
-      <mat-tab >
+      <mat-tab *ngIf="selected?.domainId;">
         <ng-template mat-tab-label>
           <smp-label icon="dns" label="{{ 'admin.domain.label.sml.integration' | translate }}"></smp-label>
         </ng-template>

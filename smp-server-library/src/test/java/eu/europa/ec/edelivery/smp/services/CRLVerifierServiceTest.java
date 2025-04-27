@@ -92,7 +92,7 @@ class CRLVerifierServiceTest {
                 testInstance.verifyCertificateCRLs(certificate));
         // then
         assertThat(result.getMessage(),
-                startsWith("Certificate error [Error occurred while downloading CRL:'https://localhost/clr']. Error: ConnectException: Connection refused (Connection refused)!"));
+                startsWith("Certificate error [Error occurred while downloading CRL:'https://localhost/clr']. Error: ConnectException: Connection refused!"));
     }
 
     @Test

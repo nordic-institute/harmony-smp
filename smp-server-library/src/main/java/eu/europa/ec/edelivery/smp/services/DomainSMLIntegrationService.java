@@ -165,11 +165,11 @@ public class DomainSMLIntegrationService {
         DBDomain dbDomain = domainDao.find(domainId);
 
         if (dbDomain.getSmlClientKeyChangeAlias() != null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "There is already a certificate alias prepared to change [{}] for domain [{}]!", dbDomain.getSmlClientKeyChangeAlias(), dbDomain.getDomainCode());
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("There is already a certificate alias prepared to change [%s] for domain [%s]!", dbDomain.getSmlClientKeyChangeAlias(), dbDomain.getDomainCode()));
         }
 
         if (migrationDateTime.isBefore(OffsetDateTime.now())) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "The migration date for the SML certificate change is in the past [{}]!", migrationDateTime);
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The migration date for the SML certificate change is in the past [%s]!", migrationDateTime));
         }
 
         dbDomain.setSmlClientKeyChangeAlias(certificateAlias);
@@ -185,11 +185,11 @@ public class DomainSMLIntegrationService {
         DBDomain dbDomain = domainDao.find(domainId);
 
         if (dbDomain.getSmlClientKeyChangeAlias() == null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "The certificate change has not yet been prepared for domain [{}]!", dbDomain.getDomainCode());
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The certificate change has not yet been prepared for domain [%s]!", dbDomain.getDomainCode()));
         }
 
         if (dbDomain.getSmlClientKeyChangeDate() == null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "The migration date is not defined for domain [{}]!", dbDomain.getDomainCode());
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The migration date is not defined for domain [%s]!", dbDomain.getDomainCode()));
         }
 
         String preparedCertificateAlias = dbDomain.getSmlClientKeyChangeAlias();
