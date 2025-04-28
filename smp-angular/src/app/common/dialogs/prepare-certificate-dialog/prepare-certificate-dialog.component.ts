@@ -27,10 +27,12 @@ export class PrepareCertificateDialogComponent {
     this.formTitle = data.title;
     this.keystoreCertificates = data.certificates;
 
+    // take the following day at midnight in UTC to ensure the migration date is really in the future according to DomiSML
+    const tomorrow = moment().utc().add(1, 'day').startOf('day');
     this.form = formBuilder.group({
       'smlChangeCertificateAlias': new FormControl('', Validators.required),
-      'smlChangeCertificateDate': new FormControl(new Date(), Validators.required),
-      'smlChangeCertificateTime': new FormControl('', Validators.required),
+      'smlChangeCertificateDate': new FormControl(tomorrow, Validators.required),
+      'smlChangeCertificateTime': new FormControl(tomorrow.local().format('HH:mm'), Validators.required),
     });
   }
 
@@ -49,7 +51,8 @@ export class PrepareCertificateDialogComponent {
     });
 
     // the migration date cannot be set to today's end of day
-    if (changeDateTime.isBefore(moment().utc().endOf('day'))) {
+    const tomorrow = moment().utc().add(1, 'day').startOf('day');
+    if (changeDateTime.isBefore(tomorrow)) {
       this.alertService.errorForTranslation('domain.sml.integration.panel.prepare.certificate.dialog.error.migration.date.in.past');
       return;
     }

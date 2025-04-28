@@ -58,7 +58,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
 
   /**
    * Show warning if domain code exceed the maxlength.
-   * @param value
    */
   onFieldKeyPressed(controlName: string, showTheWarningReference: string) {
     let value = this.domainForm.get(controlName).value
@@ -279,7 +278,9 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       }
     }).afterClosed().subscribe(changeCertificate => {
       if (changeCertificate) {
-        this.smlIntegrationService.prepareChangeCertificateDetails$(this.domain, changeCertificate).subscribe({ error: (error: any) => {
+        this.smlIntegrationService.prepareChangeCertificateDetails$(this.domain, changeCertificate).subscribe({ next: () => {
+          this.changeCertificate = changeCertificate;
+        }, error: (error: any) => {
             error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
         }});
       }
@@ -288,7 +289,8 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
 
   onChangeCertificateClicked() {
     this.smlIntegrationService.changeCertificateDetails$(this.domain).subscribe({ next: () => {
-        this.smlIntegrationService.getChangeCertificateDetails$(this._domain).subscribe(result => this.changeCertificate = result);
+        this.domainForm.controls['smlClientKeyAlias'].setValue(this.changeCertificate.certificateAlias);
+        this.changeCertificate = null;
       }, error: (error: any) => {
         error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
       }});
