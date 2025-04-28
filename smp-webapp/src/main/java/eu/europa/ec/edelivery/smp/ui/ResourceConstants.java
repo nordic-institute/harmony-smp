@@ -89,6 +89,8 @@ public class ResourceConstants {
 
     public static final String PATH_ACTION_SML_REGISTER = "sml-register";
     public static final String PATH_ACTION_SML_UNREGISTER = "sml-unregister";
+    public static final String PATH_ACTION_SML_PREPARE_CERTIFICATE = "sml-prepare-certificate";
+    public static final String PATH_ACTION_SML_CHANGE_CERTIFICATE = "sml-change-certificate";
 
     // --------------------------------------
     // context paths
@@ -193,6 +195,8 @@ public class ResourceConstants {
     public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_DATA=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_UPDATE_SML_DATA;
     public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_REGISTER=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_SML_REGISTER;
     public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_UNREGISTER=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_SML_UNREGISTER;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_PREPARE_CERTIFICATE =  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_SML_PREPARE_CERTIFICATE;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_CHANGE_CERTIFICATE =  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_SML_CHANGE_CERTIFICATE;
 
     // --------------------------------------
     // parameters

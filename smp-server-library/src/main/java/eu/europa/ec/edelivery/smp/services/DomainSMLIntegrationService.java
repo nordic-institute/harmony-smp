@@ -24,17 +24,25 @@ import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SML_MANAGE_MAX_COUNT;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SML_INTEGRATION_EXCEPTION;
 
 
 /**
@@ -55,15 +63,18 @@ public class DomainSMLIntegrationService {
     private final ResourceDao resourceDao;
     private final DomainDao domainDao;
     private final ConfigurationService configurationService;
+    private final UIKeystoreService uiKeystoreService;
 
     public DomainSMLIntegrationService(SMLIntegrationService smlIntegrationService,
                                        ResourceDao resourceDao,
                                        DomainDao domainDao,
-                                       ConfigurationService configurationService) {
+                                       ConfigurationService configurationService,
+                                       UIKeystoreService uiKeystoreService) {
         this.smlIntegrationService = smlIntegrationService;
         this.resourceDao = resourceDao;
         this.domainDao = domainDao;
         this.configurationService = configurationService;
+        this.uiKeystoreService = uiKeystoreService;
     }
 
     /**
@@ -81,7 +92,6 @@ public class DomainSMLIntegrationService {
      */
     @Transactional
     public void registerDomainAndParticipants(Long domainId) {
-
         DBDomain dbDomain = domainDao.find(domainId);
         LOG.info("Start registerDomainAndParticipants for domain: [{}]", dbDomain);
         DBResourceFilter filter = DBResourceFilter.createBuilder().domain(dbDomain).build();
@@ -150,4 +160,47 @@ public class DomainSMLIntegrationService {
         smlIntegrationService.unRegisterDomain(dbDomain);
     }
 
+    @Transactional
+    public void prepareDomainChangeCertificate(Long domainId, String certificateAlias, OffsetDateTime migrationDateTime) {
+        DBDomain dbDomain = domainDao.find(domainId);
+
+        if (dbDomain.getSmlClientKeyChangeAlias() != null) {
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("There is already a certificate alias prepared to change [%s] for domain [%s]!", dbDomain.getSmlClientKeyChangeAlias(), dbDomain.getDomainCode()));
+        }
+
+        if (migrationDateTime.isBefore(OffsetDateTime.now())) {
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The migration date for the SML certificate change is in the past [%s]!", migrationDateTime));
+        }
+
+        dbDomain.setSmlClientKeyChangeAlias(certificateAlias);
+        dbDomain.setSmlClientKeyChangeDate(migrationDateTime);
+        domainDao.persist(dbDomain);
+
+        X509Certificate certificate = uiKeystoreService.getCert(certificateAlias);
+        smlIntegrationService.prepareCertificateChange(dbDomain, certificate, migrationDateTime);
+    }
+
+    @Transactional
+    public void changeDomainCertificate(Long domainId) {
+        DBDomain dbDomain = domainDao.find(domainId);
+
+        if (dbDomain.getSmlClientKeyChangeAlias() == null) {
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The certificate change has not yet been prepared for domain [%s]!", dbDomain.getDomainCode()));
+        }
+
+        if (dbDomain.getSmlClientKeyChangeDate() == null) {
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The migration date is not defined for domain [%s]!", dbDomain.getDomainCode()));
+        }
+
+        String preparedCertificateAlias = dbDomain.getSmlClientKeyChangeAlias();
+        dbDomain.setSmlClientKeyAlias(preparedCertificateAlias);
+        dbDomain.setSmlClientKeyChangeAlias(null);
+        dbDomain.setSmlClientKeyChangeDate(null);
+        domainDao.persist(dbDomain);
+    }
+
+    @Transactional
+    public DBDomain getDomain(Long domainId) {
+        return domainDao.find(domainId);
+    }
 }

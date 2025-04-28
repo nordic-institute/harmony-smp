@@ -153,7 +153,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                             resource.getIdentifierScheme(),
                             e.getMessage());
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the resource!", e);
+                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e, "Error occurred while reading the resource!");
             }
         }
         // set headers to response
@@ -223,7 +223,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                     throw new SMPRuntimeException(ErrorCode.INVALID_SMD_XML,
                             ExceptionUtils.getRootCauseMessage(e));
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the subresource!", e);
+                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e, "Error occurred while reading the subresource!");
             }
         }
         // set headers to response

@@ -60,6 +60,9 @@ public enum SMPMessageCode implements MessageCode {
     BUS_SML_UNREGISTER_SERVICE_GROUP_ALREADY_REGISTERED("BUS-022", "Participant:  part. Id: {} part. scheme {} to domain {} marked as already unregistered to SML"),
     BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED("BUS-023", "Participant unregistration:  part. Id: {} part. scheme {} to domain {} failed due to error: {}"),
 
+    BUS_SML_PREPARE_CERTIFICATE_CHANGE("BUS-025", "Start preparing domain certificate change:  certificate: {} migration date: {} to domain: {}"),
+    BUS_SML_PREPARE_CERTIFICATE_CHANGE_FAILED("BUS-026", "Prepare domain certificate change:  certificate: {} migration date: {} to domain: {} failed due to error: {}"),
+
     BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),
 
     SEC_UNSECURED_LOGIN_ALLOWED("SEC-001", "Unsecure login is allowed, no authentication will be performed"),

@@ -428,6 +428,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         SIGNATURE_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_CERT_AUTH number(1,0) not null,
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
+        SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
+        SML_CLIENT_KEY_CHANGE_DATE timestamp,
         SML_REGISTERED number(1,0) not null,
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
@@ -462,6 +464,12 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_DOMAIN.SML_CLIENT_KEY_ALIAS is
         'Client key alias used for SML integration';
 
+    comment on column SMP_DOMAIN.SML_CLIENT_KEY_CHANGE_ALIAS is
+        'Client key alias used to update the certificate for SML integration';
+
+    comment on column SMP_DOMAIN.SML_CLIENT_KEY_CHANGE_DATE is
+        'Future date when to update the certificate for SML integration';
+
     comment on column SMP_DOMAIN.SML_REGISTERED is
         'Flag for: Is domain registered in SML';
 
@@ -487,6 +495,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         SIGNATURE_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_CERT_AUTH number(1,0),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
+        SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
+        SML_CLIENT_KEY_CHANGE_DATE timestamp,
         SML_REGISTERED number(1,0),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),

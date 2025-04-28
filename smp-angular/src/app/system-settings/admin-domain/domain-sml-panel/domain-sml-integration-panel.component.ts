@@ -13,6 +13,10 @@ import {SmlIntegrationService} from "../../../common/services/sml-integration.se
 import {SMLResult} from "../../../common/model/sml-result.model";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import {
+  PrepareCertificateDialogComponent
+} from "../../../common/dialogs/prepare-certificate-dialog/prepare-certificate-dialog.component";
+import {SMLChangeCertificate} from "../../../common/model/sml-change-certificate.model";
 
 
 @Component({
@@ -36,7 +40,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     smlsmpidTimeout: null,
   };
   editMode: boolean;
-
+  changeCertificate: SMLChangeCertificate;
 
   notInList(list: string[], exception: string) {
     if (!list || !exception) {
@@ -54,7 +58,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
 
   /**
    * Show warning if domain code exceed the maxlength.
-   * @param value
    */
   onFieldKeyPressed(controlName: string, showTheWarningReference: string) {
     let value = this.domainForm.get(controlName).value
@@ -74,7 +77,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
               private dialog: MatDialog,
               private formBuilder: FormBuilder,
               private translateService: TranslateService) {
-
     this.domainForm = formBuilder.group({
       'smlSubdomain': new FormControl({
         value: '',
@@ -90,12 +92,10 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       'smlClientCertAuth': new FormControl({value: '', readonly: true}),
       'smlClientKeyCertificate': new FormControl({value: '', readonly: true}),
       'smlRegistered': new FormControl({value: '', readonly: true}),
-
     });
   }
 
   get domain(): DomainRo {
-
     let newDomain = {...this._domain};
     newDomain.smlSubdomain = this.domainForm.get('smlSubdomain').value;
     newDomain.smlSmpId = this.domainForm.get('smlSmpId').value;
@@ -124,6 +124,8 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['smlClientCertAuth'].setValue("");
       this.domainForm.disable();
     }
+
+    this.smlIntegrationService.getChangeCertificateDetails$(this._domain).subscribe(result => this.changeCertificate = result);
 
     this.domainForm.markAsPristine();
   }
@@ -184,7 +186,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     return !!this._domain?.smlRegistered;
   }
 
-
   async smlUnregisterSelectedDomain() {
     if (!this._domain) {
       return false;
@@ -244,7 +245,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   }
 
   smlUnregisterDomain(domain: DomainRo) {
-
     this.smlIntegrationService.unregisterDomainToSML$(domain).toPromise().then(async (res: SMLResult) => {
         if (res) {
           if (res.success) {
@@ -267,5 +267,40 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})), err);
       }
     )
+  }
+
+  async onPrepareCertificateClicked() {
+    this.dialog.open(PrepareCertificateDialogComponent, {
+      data: {
+        title: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.prepare.certificate.dialog.title")),
+        certificates: this.keystoreCertificates,
+        domain: this.domain
+      }
+    }).afterClosed().subscribe(changeCertificate => {
+      if (changeCertificate) {
+        this.smlIntegrationService.prepareChangeCertificateDetails$(this.domain, changeCertificate).subscribe({ next: () => {
+          this.changeCertificate = changeCertificate;
+        }, error: (error: any) => {
+            error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
+        }});
+      }
+    });
+  }
+
+  onChangeCertificateClicked() {
+    this.smlIntegrationService.changeCertificateDetails$(this.domain).subscribe({ next: () => {
+        this.domainForm.controls['smlClientKeyAlias'].setValue(this.changeCertificate.certificateAlias);
+        this.changeCertificate = null;
+      }, error: (error: any) => {
+        error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
+      }});
+  }
+
+  get changeCertificateAliasSet(): boolean {
+    return this.changeCertificate && !!this.changeCertificate.certificateAlias;
+  }
+
+  get changeCertificateDateInPast(): boolean {
+    return this.changeCertificate && this.changeCertificate.changeDateTime && this.changeCertificate.changeDateTime < new Date();
   }
 }

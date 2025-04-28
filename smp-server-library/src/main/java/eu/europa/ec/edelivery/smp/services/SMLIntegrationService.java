@@ -19,20 +19,30 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
+import eu.europa.ec.edelivery.smp.conversion.DBCertificateToCertificateROConverter;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.time.OffsetDateTime;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CERTIFICATE_ERROR;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.*;
 
@@ -208,7 +218,6 @@ public class SMLIntegrationService {
      * @param resource - Participant
      * @param domain   - unregister to domain
      */
-
     public boolean unregisterParticipantFromSML(DBResource resource, DBDomain domain) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
 
@@ -216,6 +225,31 @@ public class SMLIntegrationService {
         return smlConnector.unregisterFromDns(resource.getIdentifierScheme(), resource.getIdentifierValue(), domain);
 
     }
+
+    public void prepareCertificateChange(DBDomain domain, X509Certificate certificate, OffsetDateTime migrationDateTime) {
+        LOG.businessDebug(BUS_SML_PREPARE_CERTIFICATE_CHANGE, certificate, migrationDateTime, domain.getDomainCode());
+
+        if (!isSMLIntegrationEnabled()) {
+            LOG.businessWarn(BUS_SML_PREPARE_CERTIFICATE_CHANGE_FAILED, certificate, migrationDateTime, domain.getDomainCode(), ERROR_MESSAGE_DNS_NOT_ENABLED);
+            return;
+        }
+
+        String encoded = getEncodedCertificate(certificate);
+        Calendar migrationDate = Calendar.getInstance();
+        migrationDate.setTime(Date.from(migrationDateTime.toInstant()));
+        smlConnector.prepareCertificateChange(domain, encoded, migrationDate);
+    }
+
+    private String getEncodedCertificate(X509Certificate certificate) {
+        String encoded = "";
+        try {
+            encoded = Base64.getEncoder().encodeToString(certificate.getEncoded());
+        } catch (CertificateEncodingException e) {
+            throw new SMPRuntimeException(CERTIFICATE_ERROR, e, "Can not encode certificate '" + certificate + "'", ExceptionUtils.getRootCauseMessage(e));
+        }
+        return encoded;
+    }
+
     public boolean isSMLIntegrationEnabled() {
         return configurationService.isSMLIntegrationEnabled();
     }
