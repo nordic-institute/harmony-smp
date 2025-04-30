@@ -130,7 +130,7 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
         dbUser.setActive(!configurationService.isCasAutomaticRegistrationConfirmation());
         dbUser.setEmailAddress(getValueFromCasPrincipal(MappingData.EMAIL, attributes, attributesMap));
         dbUser.setFullName(getValueFromCasPrincipal(MappingData.FULL_NAME, attributes, attributesMap));
-        uiUserService.createDBUser(dbUser);
+        uiUserService.createCasDBUser(dbUser);
         return dbUser;
     }
 

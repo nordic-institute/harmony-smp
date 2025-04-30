@@ -48,7 +48,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " WHERE upper(c.name) = upper(:credential_name) " +
         " AND c.credentialType = :credential_type " +
         " AND c.credentialTarget = :credential_target")
-
+@NamedQuery(name = QueryNames.QUERY_USER_BY_APPLICATION_ROLES, query = "SELECT u FROM DBUser u WHERE u.applicationRole IN :application_roles")
 
 @NamedQuery(name = QUERY_USER_COUNT, query = "SELECT count(c) FROM DBUser c")
 @NamedQuery(name = QUERY_USERS, query = "SELECT c FROM DBUser c  order by c.username")

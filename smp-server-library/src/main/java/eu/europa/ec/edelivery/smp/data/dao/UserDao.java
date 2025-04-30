@@ -19,6 +19,7 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
@@ -33,8 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY;
@@ -46,8 +50,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_ID
  */
 @Repository
 public class UserDao extends BaseDao<DBUser> {
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserDao.class);
 
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserDao.class);
 
     /**
      * Persists the user to the database. Before that test if user has identifiers. Usernames are saved to database in lower caps
@@ -115,7 +119,6 @@ public class UserDao extends BaseDao<DBUser> {
                 CredentialTargetType.REST_API);
     }
 
-
     /**
      * Method finds user by certificateId. If user does not exist
      * Optional  with isPresent - false is returned.
@@ -148,7 +151,6 @@ public class UserDao extends BaseDao<DBUser> {
                 CredentialType.CERTIFICATE,
                 CredentialTargetType.REST_API);
     }
-
 
     /**
      * Method finds user by user credentials for credential name, type and target. If user identity token not exist
@@ -202,6 +204,23 @@ public class UserDao extends BaseDao<DBUser> {
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, username);
         }
+    }
+
+    /**
+     * Returns all users that match the provided set of application roles.
+     *
+     * @param roles the set of application roles that users need to belong to
+     * @return the list of users matching the provided application roles or an empty list when no matches found or when
+     * the initial set of provided application roles is empty.
+     */
+    public List<DBUser> findUsersByApplicationRoles(Set<ApplicationRoleType> roles) {
+        if(roles == null || roles.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_APPLICATION_ROLES, DBUser.class);
+        query.setParameter(PARAM_USER_APPLICATION_ROLES, roles);
+        return query.getResultList();
     }
 
     /**

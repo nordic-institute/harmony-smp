@@ -299,7 +299,6 @@ public class CredentialsAlertService {
      * @param user created
      */
     public void alertUserCreated(DBUser user) {
-
         boolean userCreatedAlertEnabled = configurationService.getAlertUserCreatedEnabled();
         if (!userCreatedAlertEnabled) {
             LOG.debug("Suppress alert: Alert user created is disabled!");
@@ -321,6 +320,31 @@ public class CredentialsAlertService {
         // submit alerts
         submitAlertMail(alert, user);
     }
+
+    public void alertCasUserCreated(DBUser systemAdmin, DBUser user) {
+        boolean userCreatedAlertEnabled = configurationService.getAlertUserCreatedEnabled();
+        if (!userCreatedAlertEnabled) {
+            LOG.debug("Suppress alert: Alert EU Login user created is disabled!");
+            return;
+        }
+        String mailTo = systemAdmin.getEmailAddress();
+
+        AlertLevelEnum alertLevel = configurationService.getAlertUserCreatedLevel();
+        AlertTypeEnum alertType = AlertTypeEnum.USER_CREATED_EU_LOGIN;
+        String mailSubject = alertType.name();
+        DBAlert alert = createAlert(systemAdmin.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+
+        alert.addProperty(UserCreatedProperties.USERNAME.name(), user.getUsername());
+        alert.addProperty(UserCreatedProperties.EMAIL.name(), user.getEmailAddress());
+        alert.addProperty(UserCreatedProperties.FULL_NAME.name(), user.getFullName());
+        alert.addProperty(UserCreatedProperties.ACTIVATED.name(), Boolean.toString(user.isActive()));
+
+        alertDao.persistFlushDetach(alert);
+
+        // submit alerts
+        submitAlertMail(alert, systemAdmin);
+    }
+
 
     /**
      * Method generates request reset alert for credentials and submit mail to the user
@@ -477,6 +501,7 @@ public class CredentialsAlertService {
         }
 
         String mailFrom = configurationService.getAlertEmailFrom();
+
         MailDataModel props = new MailDataModel(user.getSmpLocale(), alert);
 
         // add additional common properties to the model
@@ -486,9 +511,9 @@ public class CredentialsAlertService {
                 formatOffsetDateTimeWithLocal(OffsetDateTime.now(), user.getSmpLocale()));
 
         try {
-            String mailSubject = mailService.sendMail(props, mailFrom, alert.getMailTo());
+            String mailSubject = mailService.sendMail(props, mailFrom, mailTo);
             // update alert subject
-            if (mailSubject != null){
+            if (mailSubject != null) {
                 alert.setMailSubject(StringUtils.left(mailSubject, 1023));
             }
             updateAlertStatus(alert, AlertStatusEnum.SUCCESS, null);
@@ -498,7 +523,6 @@ public class CredentialsAlertService {
             LOG.error("Error sending mail", exc);
             updateAlertStatus(alert, AlertStatusEnum.FAILED, ExceptionUtils.getRootCauseMessage(exc));
         }
-
     }
 
     public void updateAlertStatus(DBAlert alert, AlertStatusEnum status, String statusDesc) {

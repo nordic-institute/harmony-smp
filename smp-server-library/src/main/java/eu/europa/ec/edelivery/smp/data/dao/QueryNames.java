@@ -154,6 +154,7 @@ public class QueryNames {
     public static final String QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT = "DBGroupMember.getByUserAndDomainGroupsAndRoleCount";
 
     public static final String QUERY_USER_BY_CI_USERNAME = "DBUser.getUserByUsernameInsensitive";
+    public static final String QUERY_USER_BY_APPLICATION_ROLES = "DBUser.getUserByApplicationRoles";
 
     public static final String QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCredentialNameTypeTarget";
     public static final String QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCaseInsensitiveCredentialNameTypeTarget";
@@ -220,6 +221,7 @@ public class QueryNames {
 
     public static final String PARAM_MEMBERSHIP_ROLES = "membership_roles";
     public static final String PARAM_USER_USERNAME = "username";
+    public static final String PARAM_USER_APPLICATION_ROLES = "application_roles";
 
     public static final String IDENTIFIER_VALUE = "identifier_value";
     public static final String IDENTIFIER_SCHEME = "identifier_scheme";

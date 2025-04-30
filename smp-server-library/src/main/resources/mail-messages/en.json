@@ -17,6 +17,8 @@
   "mail.test_mail.title" : "Test mail: ${CREDENTIAL_TYPE} on: ${SMP_INSTANCE_NAME}",
   "mail.user_created.content" : "You're receiving this e-mail because new user was created with :<br/><b>Username:</b>${USERNAME}<br /> <b>Name:</b>${FULL_NAME}<br /> <b>Email Address:</b>${EMAIL}<br /><b>Activated:</b>${ACTIVATED}<br /> Note: If user account is not yet activated please wait for activation mail, before first login. <br/>If you did not request this account, please inform DomiSMP administrator immediately.",
   "mail.user_created.title" : "New user created on: ${SMP_INSTANCE_NAME}",
+  "mail.user_created_eu_login.content" : "You're receiving this e-mail because new EU Login user was created with :<br/><b>Username:</b>${USERNAME}<br /> <b>Name:</b>${FULL_NAME}<br /> <b>Email Address:</b>${EMAIL}<br /><b>Activated:</b>${ACTIVATED}",
+  "mail.user_created_eu_login.title" : "New EU Login user created on: ${SMP_INSTANCE_NAME}",
   "mail.user_updated.content" : "You're receiving this e-mail because user was updated with :<br/><b>Username:</b>${USERNAME}<br /> <b>Name:</b>${FULL_NAME}<br /> <b>Email Address:</b>${EMAIL}<br /><b>Activated:</b>${ACTIVATED}<br /><br/>If you did not request update account, please inform DomiSMP administrator immediately.",
   "mail.user_updated.title" : "User update on: ${SMP_INSTANCE_NAME}"
 }
