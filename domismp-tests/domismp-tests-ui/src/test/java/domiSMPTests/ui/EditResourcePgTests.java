@@ -373,6 +373,50 @@ public class EditResourcePgTests extends SeleniumTest {
 
     }
 
+    @Test(description = "EDTRES-09 Resource admin is able to validate subresources document", priority = 1)
+    public void resourceAdminIsAbleToValidateSubresourcesDocument() throws Exception {
+
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceWithReview(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModel = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
+
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModel);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModel);
+        //validate document metadata
+
+        editSubresourceDocumentPage.getNewVersionBtn().click();
+        //Add extension tag to highlight the reference
+        ResourceDocumentEditor editor = editSubresourceDocumentPage.getEditor();
+        editor.setAttributeValueForNode("DocumentIdentifier", "scheme", "");
+        editSubresourceDocumentPage.setDocumentValue(editor.printDoc());
+        editSubresourceDocumentPage.getValidateBtn().click();
+        String nodocumentSchemaError = editSubresourceDocumentPage.getAlertArea().getAlertMessage();
+        soft.assertEquals(nodocumentSchemaError,
+                "Invalid request [ResourceValidation]. Error: ResourceException: Document identifiers don't match between URL parameter [ResourceIdentifier {value='" + subresourceModel.getIdentifierValue() + "', scheme='" + subresourceModel.getIdentifierScheme() + "'}] and XML body: [ResourceIdentifier {value='" + subresourceModel.getIdentifierValue() + "', scheme='null'}]!");
+
+        editSubresourceDocumentPage.getGenerateBtn().click();
+        editor = editSubresourceDocumentPage.getEditor();
+        editor.setContextValueForNode("DocumentIdentifier", "");
+        editSubresourceDocumentPage.setDocumentValue(editor.printDoc());
+        editSubresourceDocumentPage.getValidateBtn().click();
+        String nodocumentIdentifierError = editSubresourceDocumentPage.getAlertArea().getAlertMessage();
+        soft.assertEquals(nodocumentIdentifierError,
+                "Identifier must not be 'null' or empty");
+
+        soft.assertAll();
+
+    }
+
 
     @Test(description = "EDTRES-11 Resource admin is able to delete subresource", priority = 1)
     public void resourceAdminsIsAbleToDeleteSubResource() throws Exception {
@@ -454,7 +498,8 @@ public class EditResourcePgTests extends SeleniumTest {
 
     }
 
-    @Test(description = "EDTRES-16 - Resource Administrator can publish SubResource documents with approve status", priority = 1)
+    @Test(description = "EDTRES-16 - Resource Administrator can publish SubResource documents with approve status. " +
+            "EDTRES-05 Resource admins are able to choose their document version", priority = 1)
 
     public void resourceAdministratorsCanPublishSUBResourceDocumentsWithApproveStatus() throws Exception {
 
@@ -974,6 +1019,59 @@ public class EditResourcePgTests extends SeleniumTest {
 
         soft.assertAll();
     }
+
+
+    @Test(description = "EDTRES-23- Resource Administrator is NOT able to share a document which uses a refence", priority = 1)
+    public void resourceAdministratorsIsNotAbleToShareADocumentWhichUsesAReference() throws Exception {
+
+        ResourceModel resourceModelOasis1ToBeShared = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModelToBeShared = SubresourceModel.generatePublicSubResource();
+
+        ResourceModel resourceModelOasis1UsesReference = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+        SubresourceModel subresourceModelToBeUsesReference = SubresourceModel.generatePublicSubResource();
+
+        //add resource to group
+        resourceModelOasis1ToBeShared = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        resourceModelOasis1UsesReference = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1UsesReference);
+
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1ToBeShared, adminMember);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1UsesReference, adminMember);
+
+        //Create and Select subresource and document to be shared
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1ToBeShared);
+        editResourcePage.goToTab("Subresources");
+        CreateSubresourceDetailsDialog createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModelToBeShared);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        EditSubresourceDocumentPage editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModelToBeShared);
+        editSubresourceDocumentPage.getDocumentConfigurationSection().enableSharing();
+        editSubresourceDocumentPage.getSaveBtn().click();
+        editSubresourceDocumentPage.getBackBtn().click();
+
+
+        //Create and Select subresource and document which will use as a reference the shared document
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1UsesReference);
+        editResourcePage.goToTab("Subresources");
+        createSubresourceDetailsDialog = editResourcePage.getSubresourceTab().createSubresource();
+        createSubresourceDetailsDialog.fillResourceDetails(subresourceModelToBeUsesReference);
+        createSubresourceDetailsDialog.tryClickOnSave();
+
+        editSubresourceDocumentPage = editResourcePage.getSubresourceTab().editSubresouceDocument(subresourceModelToBeUsesReference);
+        soft.assertTrue(editSubresourceDocumentPage.getDocumentConfigurationSection().getEnableSharingCheckBox().isEnabled(), "Sharing is disabled!");
+
+        SelectSubResourceDocumentDialog selectResourceDocumentDialog = editSubresourceDocumentPage.getDocumentConfigurationSection().clickOnSelectReferenceBtn();
+        selectResourceDocumentDialog.selectSubResourceReferenceBySubResourceIdentifier(subresourceModelToBeShared.getIdentifierValue());
+        editSubresourceDocumentPage.getSaveBtn().click();
+        soft.assertTrue(editSubresourceDocumentPage.getDocumentConfigurationSection().getEnableSharingCheckBox().isDisabled(), "Sharing is enabled even if uses a reference!");
+
+
+        soft.assertAll();
+    }
+
+
+
 
     @Test(description = "EDTRES-27- Resource administrators not able to see shared documents for private resources", priority = 1)
     public void resourceAdministratorsAreNotAbleToSeeSharedDocumentsForPrivateResources() throws Exception {

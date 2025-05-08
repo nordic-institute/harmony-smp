@@ -2,7 +2,6 @@ package domiSMPTests.ui;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.SetChangePasswordDialog;
-import ddsl.dobjects.DWait;
 import ddsl.enums.ApplicationRoles;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
@@ -11,10 +10,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
-import pages.ResetCredentialsPage;
 import pages.systemSettings.UsersPage;
 import pages.userSettings.ProfilePage;
-import rest.InbucketRestClient;
 import rest.models.UserModel;
 import utils.Utils;
 
@@ -24,7 +21,6 @@ public class UsersPgTests extends SeleniumTest {
     SoftAssert soft;
     DomiSMPPage homePage;
     LoginPage loginPage;
-    InbucketRestClient restClient = new InbucketRestClient();
 
     @BeforeMethod(alwaysRun = true)
     public void beforeTest(){
@@ -32,6 +28,7 @@ public class UsersPgTests extends SeleniumTest {
         homePage = new DomiSMPPage(driver);
         loginPage = homePage.goToLoginPage();
     }
+
     @Test(description = "USR-01 System admin is able to create new users")
     public void systemAdminIsAbleToCreateNewUsers() throws Exception {
 
@@ -110,7 +107,7 @@ public class UsersPgTests extends SeleniumTest {
 
         SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"), newPassword);
-        setChangePasswordDialog.TryClickOnChangePassword();
+        setChangePasswordDialog.tryClickOnChangePassword();
 
         loginPage.logout();
         loginPage.login(newNormalUser.getUsername(), newPassword);
@@ -135,7 +132,7 @@ public class UsersPgTests extends SeleniumTest {
         String newFullname = "AUT_NewFullName";
         String newTheme = "Blue theme";
         String newLocale = "Romanian";
-        usersPage.userData.fillUserProfileData(newEmail, newFullname, newTheme, newLocale);
+        usersPage.userData.fillUserProfileDataAndSave(newEmail, newFullname, newTheme, newLocale);
 
         homePage.logout();
         loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
@@ -228,7 +225,7 @@ public class UsersPgTests extends SeleniumTest {
         SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"),
                 newPass);
-        setChangePasswordDialog.TryClickOnChangePassword();
+        setChangePasswordDialog.tryClickOnChangePassword();
 
         //Login with new password
         loginPage.logout();
@@ -243,184 +240,120 @@ public class UsersPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "USR-12 - Admin creates user with invalid email - In create user dialog the OK button remains disabled until valid data is provided")
+    public void adminCreatesUserWithInvalidEmail() throws Exception {
 
-    @Test(description = "LGN-32 - User is able to reset password")
-    public void userIsAbleToResetPassword() throws Exception {
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
 
-        UserModel newAdminUser = UserModel.generateUserWithADMINrole();
-        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        usersPage.getCreateUserBtn().click();
+        UserModel adminNewUserData = UserModel.generateUserWithADMINrole();
+        adminNewUserData.setEmailAddress("wrongEmail.com");
+        usersPage.fillNewUserData(adminNewUserData);
+        soft.assertEquals(usersPage.userData.getEmailValidationMessage(), "Email is invalid!");
+        soft.assertTrue(usersPage.getSaveBtn().isDisabled(), "Save button is enabled when email validation appears!");
 
-        String adminUserId = rest.users().createUser(newAdminUser).getString("userId");
-        String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
+        adminNewUserData.setEmailAddress("wrong@Email");
+        usersPage.fillNewUserData(adminNewUserData);
+        soft.assertEquals(usersPage.userData.getEmailValidationMessage(), "Email is invalid!");
+        soft.assertTrue(usersPage.getSaveBtn().isDisabled(), "Save button is enabled when email validation appears!");
 
-        rest.users().changePassword(adminUserId, data.getNewPassword());
-        rest.users().changePassword(normalUserId, data.getNewPassword());
 
-        loginPage.login(newAdminUser.getUsername(), data.getNewPassword());
-        try {
-            homePage.logout();
-
-        } catch (Exception e) {
-            soft.assertTrue(false, "User is not logged in!");
-        }
-        //Reset admin password
-        String message = loginPage.resetPassword(newAdminUser.getUsername());
-        soft.assertEquals(message, "A confirmation email has been sent to your registered email address for user [" + newAdminUser.getUsername() + "]. Please follow the instructions in the email to complete the account reset process. If you did not receive mail try later or contact administrator");
-        String emailUsername = newAdminUser.getEmailAddress().substring(0, 14);
-
-        //Retrieve reset URL
-        String resetURL = restClient.getResetPasswordTokenFromLastEmailOfUser(emailUsername);
-        driver.get(resetURL);
-
-        //Reset password for Admin
-        ResetCredentialsPage resetCredentialsPage = new ResetCredentialsPage(driver);
-        String newPasswordAfterReset = "Qwe!@#123412341234";
-        resetCredentialsPage.fillChangePasswordFields(newAdminUser.getUsername(), newPasswordAfterReset, newPasswordAfterReset);
-        resetCredentialsPage.clickSetChangePasswordButton();
-
-        //Login with new password for Admin
-        soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"), "Reset password message didn't appear");
-        loginPage.login(newAdminUser.getUsername(), newPasswordAfterReset);
-        try {
-            homePage.logout();
-
-        } catch (Exception e) {
-            soft.assertTrue(false, "User is not logged in!");
-        }
-
-        //Reset password User Role password
-        message = loginPage.resetPassword(newNormalUser.getUsername());
-        soft.assertEquals(message, "A confirmation email has been sent to your registered email address for user [" + newNormalUser.getUsername() + "]. Please follow the instructions in the email to complete the account reset process. If you did not receive mail try later or contact administrator");
-        String emailUserRoleUsername = newNormalUser.getEmailAddress().substring(0, 14);
-
-        //Retrieve reset URL
-        String resetURLUserRole = restClient.getResetPasswordTokenFromLastEmailOfUser(emailUserRoleUsername);
-        driver.get(resetURLUserRole);
-
-        //Reset password for User
-        resetCredentialsPage = new ResetCredentialsPage(driver);
-        newPasswordAfterReset = "Qwe!@#123412341234";
-        resetCredentialsPage.fillChangePasswordFields(newNormalUser.getUsername(), newPasswordAfterReset, newPasswordAfterReset);
-        resetCredentialsPage.clickSetChangePasswordButton();
-
-        //Login with new password for User
-        soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"), "Reset password message didn't appear");
-        loginPage.login(newNormalUser.getUsername(), newPasswordAfterReset);
-        try {
-            homePage.logout();
-
-        } catch (Exception e) {
-            soft.assertTrue(false, "User is not logged in!");
-        }
         soft.assertAll();
     }
 
-    @Test(description = "LGN-34 - Creating a new reset password token invalids previous tokens")
-    public void creatingANewResetPasswordTokenInvalidatesPreviousTokens() throws Exception {
 
+    @Test(description = "USR-14 - Admin cannot edit a user and provides invalid email")
+    public void adminCannotEditAUserAndProvideInvalidEmail() throws Exception {
         UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+
         String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
         rest.users().changePassword(normalUserId, data.getNewPassword());
 
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        usersPage.getLeftSideGrid().searchAndClickElementInColumn("Username", newNormalUser.getUsername());
 
-        //Reset password User Role password
-        String message = loginPage.resetPassword(newNormalUser.getUsername());
-        soft.assertEquals(message, "A confirmation email has been sent to your registered email address for user [" + newNormalUser.getUsername() + "]. Please follow the instructions in the email to complete the account reset process. If you did not receive mail try later or contact administrator");
-        String emailUserRoleUsername = newNormalUser.getEmailAddress().substring(0, 14);
+        String wrongValue1 = "newemail@email";
 
-        //Retrieve reset URL
-        String firstResetURL = restClient.getResetPasswordTokenFromLastEmailOfUser(emailUserRoleUsername);
+        usersPage.userData.getEmailInput().fill(wrongValue1);
+        soft.assertEquals(usersPage.userData.getEmailValidationMessage(), "Email is invalid!", "Wrong/invalid email field validation");
+        soft.assertTrue(usersPage.userData.getSaveBtn().isDisabled(), "Save button is not disabled");
 
-        //Reset password again
-        loginPage.resetPassword(newNormalUser.getUsername());
-        String secondResetUrl = restClient.getResetPasswordTokenFromLastEmailOfUser(emailUserRoleUsername);
+        usersPage.userData.getEmailInput().clear();
+        String wrongValue2 = "newemailemail.com";
+        usersPage.userData.getEmailInput().fill(wrongValue2);
+        soft.assertEquals(usersPage.userData.getEmailValidationMessage(), "Email is invalid!", "Wrong/invalid email field validation");
+        soft.assertTrue(usersPage.userData.getSaveBtn().isDisabled(), "Save button is not disabled");
 
-        //Check if 1st token is invalid
-        driver.get(firstResetURL);
-        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "The reset token it is invalid or not active any more. Please try to reset your password again.", "Invalid token error message was not found");
-        soft.assertEquals(loginPage.getBreadcrump().getCurrentPage(), "Login");
+        usersPage.userData.getEmailInput().clear();
+        String correctValue = "newemail@email.com";
+        usersPage.userData.getEmailInput().fill(correctValue);
+        soft.assertTrue(usersPage.userData.getSaveBtn().isEnabled(), "Save button is disabled");
 
-        //Check if 2nd token is invalid
-
-        driver.get(secondResetUrl);
-
-        ResetCredentialsPage resetCredentialsPage = new ResetCredentialsPage(driver);
-        String newPasswordAfterReset = "Qwe!@#123412341234";
-        resetCredentialsPage.fillChangePasswordFields(newNormalUser.getUsername(), newPasswordAfterReset, newPasswordAfterReset);
-        resetCredentialsPage.clickSetChangePasswordButton();
-
-        //Login with new password for User
-        new DWait(driver).equals(loginPage.getAlertArea());
-        soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"), "Reset password message didn't appear");
-        loginPage.login(newNormalUser.getUsername(), newPasswordAfterReset);
-        try {
-            homePage.logout();
-
-        } catch (Exception e) {
-            soft.assertTrue(false, "User is not logged in!");
-        }
         soft.assertAll();
     }
 
-    @Test(description = "LGN-35 - Reset password screen applies password complexity")
-    public void resetPasswordScreenAppliesPasswordComplexity() {
+    @Test(description = "USR-15 - Admin wants to edit a users username - username field is disabled when editing a user")
+    public void adminWantsToEditAUsersUsername() throws Exception {
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
 
-        UserModel user = UserModel.generateUserWithUSERrole();
-        String normalUserId = rest.users().createUser(user).getString("userId");
+        String normalUserId = rest.users().createUser(newNormalUser).getString("userId");
         rest.users().changePassword(normalUserId, data.getNewPassword());
 
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        usersPage.getLeftSideGrid().searchAndClickElementInColumn("Username", newNormalUser.getUsername());
 
-        //Reset password User Role password
-        String message = loginPage.resetPassword(user.getUsername());
-        soft.assertEquals(message, "A confirmation email has been sent to your registered email address for user [" + user.getUsername() + "]. Please follow the instructions in the email to complete the account reset process. If you did not receive mail try later or contact administrator");
-        String emailUserRoleUsername = user.getEmailAddress().substring(0, 14);
-
-        //Retrieve reset URL
-        String resetUrl = restClient.getResetPasswordTokenFromLastEmailOfUser(emailUserRoleUsername);
-        driver.get(resetUrl);
-
-        ResetCredentialsPage resetCredentialsPage = new ResetCredentialsPage(driver);
-
-        //User is not able to set the same password again
-        resetCredentialsPage.fillChangePasswordFields(user.getUsername(), data.getNewPassword(), data.getNewPassword());
-        resetCredentialsPage.clickSetChangePasswordButton();
-        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "Password change failed. Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
-
-        //Check minim length of password
-        driver.navigate().refresh();
-        String minLengthPassword = "!234sdfg*&&^";
-        resetCredentialsPage.fillChangePasswordFields(user.getUsername(), minLengthPassword, minLengthPassword);
-        List<String> errors = resetCredentialsPage.getFieldErrorMessage();
-        soft.assertEquals(errors.size(), 1);
-        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
-
-        //Check special character of password
-        driver.navigate().refresh();
-        String specialCharacterPassword = "QWSQWWqw12qw1212";
-        errors.clear();
-        resetCredentialsPage.fillChangePasswordFields(user.getUsername(), specialCharacterPassword, specialCharacterPassword);
-        errors = resetCredentialsPage.getFieldErrorMessage();
-        soft.assertEquals(errors.size(), 1, "Special character validation does not appear");
-        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
-
-        //Check lower character of password
-        driver.navigate().refresh();
-        String lowerCharacterPassword = "QA!@QA!@QW12QW12";
-        errors.clear();
-        resetCredentialsPage.fillChangePasswordFields(user.getUsername(), lowerCharacterPassword, lowerCharacterPassword);
-        errors = resetCredentialsPage.getFieldErrorMessage();
-        soft.assertEquals(errors.size(), 1, "Lower character validation does not appear");
-        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
+        soft.assertTrue(usersPage.getUsernameInput().isDisabled(), "Username input it is not disabled!");
+        soft.assertAll();
+    }
 
 
-        //Check upper character of password
-        driver.navigate().refresh();
-        String upperCharacterPassword = "qw!@qw!@qw12qw12";
-        errors.clear();
-        resetCredentialsPage.fillChangePasswordFields(user.getUsername(), upperCharacterPassword, upperCharacterPassword);
-        errors = resetCredentialsPage.getFieldErrorMessage();
-        soft.assertEquals(errors.size(), 1, "Upper character validation does not appear");
-        soft.assertEquals(errors.get(0), "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
+    @Test(description = "USR-18 - Admin sets password for new user and user uses it to login - user receives warning to change password, in User details dialog the valid until field is still empty")
+    public void adminSetsPasswordForNewUseAndUserUsesItToLoginAndReceivesWarningToChangePassword() throws Exception {
+        String newPassword = "@#$#asdddersPasswordValue12";
+
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        usersPage.getCreateUserBtn().click();
+        UserModel adminNewUserData = UserModel.generateUserWithADMINrole();
+        usersPage.fillNewUserDataAndSave(adminNewUserData);
+        usersPage.getLeftSideGrid().searchAndClickElementInColumn("Username", adminNewUserData.getUsername());
+
+        SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
+        setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"), newPassword);
+        setChangePasswordDialog.tryClickOnChangePassword();
+
+
+        loginPage.logout();
+        loginPage.simpleLogin(adminNewUserData.getUsername(), newPassword);
+        soft.assertTrue(homePage.getExpiredDialoginbutton().isPresent(), "Change password is not appearing.");
+        homePage.getExpiredDialoginbutton().click();
+        ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        soft.assertEquals(profilePage.profileData.getPasswordExpiresOnValue(), "---");
+
+        soft.assertAll();
+    }
+
+
+    @Test(description = "USR-21 - Admin set password for user but new password and confirmation pasword don’t match - validation message shown and Set/change password button is disabled")
+    public void adminSetPasswordForUserButNewPasswordAndConfirmationPasswordDontMatch() throws Exception {
+        String newPassword = "@#$#asdddersPasswordValue12";
+        UserModel newNormalUser = UserModel.generateUserWithUSERrole();
+        rest.users().createUser(newNormalUser).getString("userId");
+
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
+        newUser.click();
+
+        SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
+        setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"), newPassword, "wrongPass");
+        soft.assertTrue(setChangePasswordDialog.getSetPasswordBtn().isDisabled());
+        List<String> errors = setChangePasswordDialog.getFieldErrorMessage();
+        soft.assertEquals(errors.get(0), "Confirm password value does not match new password!", "Confirmation mismatch field validation is not wrong/not present");
 
         soft.assertAll();
     }

@@ -42,7 +42,15 @@ public class SetChangePasswordDialog extends DComponent {
         weToDInput(confirmationPasswordInput).fill(newPassword, true);
     }
 
-    public DomiSMPPage TryClickOnChangePassword(){
+    public void fillChangePassword(String currentPassword, String newPassword, String confirmationNewPassword) {
+
+        LOG.info("Set new password");
+        weToDInput(currentPasswordInput).fill(currentPassword);
+        weToDInput(newPasswordInput).fill(newPassword, true);
+        weToDInput(confirmationPasswordInput).fill(confirmationNewPassword, true);
+    }
+
+    public DomiSMPPage tryClickOnChangePassword() {
         //wait.forElementToBeClickable(setPasswordBtn);
         if (weToDButton(setPasswordBtn).isEnabled()) {
             weToDButton(setPasswordBtn).click();
