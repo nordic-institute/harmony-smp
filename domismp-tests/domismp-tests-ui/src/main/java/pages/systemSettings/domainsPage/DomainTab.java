@@ -2,9 +2,12 @@ package pages.systemSettings.domainsPage;
 
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.mat.MatSelect;
+import ddsl.dobjects.DButton;
+import ddsl.dobjects.DInput;
 import ddsl.dobjects.DSelect;
 import ddsl.enums.ResponseCertificates;
 import org.apache.poi.util.StringUtil;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -72,6 +75,18 @@ public class DomainTab extends DComponent {
 
     public DSelect getDefaultResourceTypeDdl() {
         return weToDSelect(defaultResourceTypeForDomainDdl);
+    }
+
+    public DInput getDomainCodeInput() {
+        return weToDInput(domainIdInput);
+    }
+
+    public DButton getSaveBtn() {
+        return weToDButton(saveBtn);
+    }
+
+    public String getDomainCodeValidationMessage() {
+        return domainIdInput.findElement(By.xpath("following-sibling::*[1]")).getText();
     }
 
     public void saveChanges() {

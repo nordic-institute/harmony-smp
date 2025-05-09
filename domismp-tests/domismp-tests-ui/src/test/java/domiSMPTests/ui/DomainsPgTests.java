@@ -704,4 +704,32 @@ public class DomainsPgTests extends SeleniumTest {
 
     }
 
+    @Test(description = "DOM-32- User tries to create domain with more than 63 characters in domain code field and receives error")
+    public void userTriesToCreateDomainWithMoreThan63CharactersInDomainCodeFieldReceivesWarningAndValueTruncated() {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
+        String domainCodeLong = Generator.randomAlphaNumericValue(64);
+        domainModel.setDomainCode(domainCodeLong);
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        soft.assertEquals(domainsPage.getDomainTab().getDomainCodeValidationMessage(), "Domain code must contain only chars and numbers and must be less than 63 chars long.");
+        soft.assertTrue(domainsPage.getDomainTab().getDomainCodeInput().getText().length() == (63));
+
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-33 - User tries to create domain with non alphanumeric characters in domain code field and receives error")
+    public void userTriesToCreateDomainWithNonAlphanumericCharactersInDomainCodeAndReceivesError() {
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
+        String domainCodeLong = Generator.randomAlphaNumericValue(10) + "( ) ` ~ ! @ # $ % ^ & * - + = | \\ { } [ ] : ; \" ' < > , . ? / _";
+        domainModel.setDomainCode(domainCodeLong);
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        soft.assertEquals(domainsPage.getDomainTab().getDomainCodeValidationMessage(), "Domain code must contain only chars and numbers and must be less than 63 chars long.",
+                "Wrong warning message when DomainCode is longer than 63 characters");
+        soft.assertFalse(domainsPage.getDomainTab().getSaveBtn().isEnabled(),
+                "Save button is not disabled when Domain code contains non alphanumeric values1");
+
+        soft.assertAll();
+    }
+
 }

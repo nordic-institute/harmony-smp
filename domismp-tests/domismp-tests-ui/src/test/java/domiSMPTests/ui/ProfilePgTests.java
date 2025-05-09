@@ -78,7 +78,7 @@ public class ProfilePgTests extends SeleniumTest {
         //Navigate to page
         ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         UserModel userNewProfileData = UserModel.generateUserProfileData();
-        profilePage.profileData.fillUserProfileData(userNewProfileData.getEmailAddress(),
+        profilePage.profileData.fillUserProfileDataAndSave(userNewProfileData.getEmailAddress(),
                 userNewProfileData.getFullName(), userNewProfileData.getSmpTheme(),
                 userNewProfileData.getSmpLocale());
         profilePage.refreshPage();
@@ -100,7 +100,7 @@ public class ProfilePgTests extends SeleniumTest {
         //Navigate to page
         profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         UserModel adminNewProfileData = UserModel.generateUserProfileData();
-        profilePage.profileData.fillUserProfileData(adminNewProfileData.getEmailAddress(), adminNewProfileData.getFullName(), adminNewProfileData.getSmpTheme(), adminNewProfileData.getSmpLocale());
+        profilePage.profileData.fillUserProfileDataAndSave(adminNewProfileData.getEmailAddress(), adminNewProfileData.getFullName(), adminNewProfileData.getSmpTheme(), adminNewProfileData.getSmpLocale());
 
         profilePage.refreshPage();
 
@@ -136,7 +136,7 @@ public class ProfilePgTests extends SeleniumTest {
         SetChangePasswordDialog setChangePasswordDialog = profilePage.profileData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getNewPassword(), new40CharactersPasswordValue);
         List<String> errors = setChangePasswordDialog.getFieldErrorMessage();
-        DomiSMPPage homepage = setChangePasswordDialog.TryClickOnChangePassword();
+        DomiSMPPage homepage = setChangePasswordDialog.tryClickOnChangePassword();
         String sucesfullMessage = homepage.getAlertArea().getAlertMessage();
         soft.assertEquals(sucesfullMessage, Messages.PASSWORD_SUCCESSFULL_PASSWORD_CHANGED);
         soft.assertEquals(errors.size(), 0, "Could not change the password of the user");
@@ -161,7 +161,7 @@ public class ProfilePgTests extends SeleniumTest {
         SetChangePasswordDialog setChangePasswordDialog = profilePage.profileData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(TestRunData.getInstance().getNewPassword(),
                 newPass);
-        homePage = setChangePasswordDialog.TryClickOnChangePassword();
+        homePage = setChangePasswordDialog.tryClickOnChangePassword();
         String sucesfullMessage = homePage.getAlertArea().getAlertMessage();
         soft.assertEquals(sucesfullMessage, Messages.PASSWORD_SUCCESSFULL_PASSWORD_CHANGED);
 

@@ -24,11 +24,11 @@ public class DCheckbox extends DObject {
 
     public boolean isChecked() throws Exception {
         if (isPresent()) {
-            if (null != input.getAttribute("checked")) {
+            if (null != input.getDomAttribute("checked")) {
                 return true;
             }
             List<WebElement> input = element.findElements(By.cssSelector("input[type='checkbox']"));
-            return !input.isEmpty() && null != input.get(0).getAttribute("checked");
+            return !input.isEmpty() && null != input.get(0).getDomAttribute("checked");
         }
         throw new DObjectNotPresentException();
     }
@@ -62,4 +62,26 @@ public class DCheckbox extends DObject {
                 this.labelElement.click();
         }
     }
+
+    public boolean isEnabled() throws ElementNotInteractableException {
+        try {
+            if (isPresent()) {
+                wait.forElementToBeEnabled(element);
+                return !element.getDomAttribute("class").endsWith("disabled");
+            }
+        } catch (ElementNotInteractableException e) {
+            throw new ElementNotInteractableException("Element not enabled: " + e);
+        }
+
+        return false;
+    }
+
+    public boolean isDisabled() throws Exception {
+        if (isPresent()) {
+            wait.forElementToBeDisabled(element);
+            return element.getDomAttribute("class").endsWith("disabled");
+        }
+        throw new Exception();
+    }
+
 }

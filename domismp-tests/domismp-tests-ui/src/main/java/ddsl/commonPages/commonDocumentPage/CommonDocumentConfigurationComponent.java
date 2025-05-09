@@ -1,6 +1,7 @@
 package ddsl.commonPages.commonDocumentPage;
 
 import ddsl.dcomponents.DComponent;
+import ddsl.dobjects.DCheckbox;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -46,6 +47,10 @@ public class CommonDocumentConfigurationComponent extends DComponent {
         weToDChecked(sharingEnableCheckBox).uncheck();
         LOG.debug("Sharing document was disabled");
 
+    }
+
+    public DCheckbox getEnableSharingCheckBox() {
+        return weToDChecked(sharingEnableCheckBox);
     }
 
 

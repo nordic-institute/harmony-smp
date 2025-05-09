@@ -5,6 +5,7 @@ import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
+import ddsl.dobjects.DInput;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -57,9 +58,26 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
         }
         weToDSelect(applicationRoleDdl).selectValue(newUserData.getRole());
 
-        String alertMessage = userData.fillUserProfileData(newUserData.getEmailAddress(), newUserData.getFullName(), newUserData.getSmpTheme(), newUserData.getSmpLocale());
+        String alertMessage = userData.fillUserProfileDataAndSave(newUserData.getEmailAddress(), newUserData.getFullName(), newUserData.getSmpTheme(), newUserData.getSmpLocale());
         LOG.debug("User {} was created", newUserData.getUsername());
         return alertMessage;
+    }
+
+    public void fillNewUserData(UserModel newUserData) {
+        LOG.debug("Filling user data...");
+        try {
+            weToDInput(usernameInput).fill(newUserData.getUsername());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        weToDSelect(applicationRoleDdl).selectValue(newUserData.getRole());
+
+        userData.fillUserProfileData(newUserData.getEmailAddress(), newUserData.getFullName(), newUserData.getSmpTheme(), newUserData.getSmpLocale());
+
+    }
+
+    public DInput getUsernameInput() {
+        return weToDInput(usernameInput);
     }
 
     public String getApplicationRoleValue() {
@@ -98,6 +116,10 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public DButton getSaveBtn() {
+        return weToDButton(saveBtn);
     }
 
     public String modifyIsActiveForUser(Boolean isActive) throws Exception {

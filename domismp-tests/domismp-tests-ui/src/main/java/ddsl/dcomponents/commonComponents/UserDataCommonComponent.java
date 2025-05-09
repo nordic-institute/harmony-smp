@@ -2,6 +2,9 @@ package ddsl.dcomponents.commonComponents;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.SetChangePasswordDialog;
+import ddsl.dobjects.DButton;
+import ddsl.dobjects.DInput;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -62,30 +65,46 @@ public class UserDataCommonComponent extends DomiSMPPage {
     }
 
     public String getLastSetValue() {
-        return lastSetLbl.getAttribute("value");
+        return lastSetLbl.getDomAttribute("value");
     }
 
     public String getPasswordExpiresOnValue() {
-        return passwordExpiresOnLbl.getAttribute("value");
+        return passwordExpiresOnLbl.getDomAttribute("value");
     }
 
     public String getSequenceFailedAttempts() {
-        return seqFailedAttempts.getAttribute("value");
+        return seqFailedAttempts.getDomAttribute("value");
     }
 
     public String getlastFailedAttempt() {
-        return lastFailedAttempt.getAttribute("value");
+        return lastFailedAttempt.getDomAttribute("value");
     }
 
     public String getsuspendedUntil() {
-        return suspendedUntil.getAttribute("value");
+        return suspendedUntil.getDomAttribute("value");
     }
 
     public SetChangePasswordDialog clickOnChangePassword(){
         setChangePasswordBtn.click();
         return new SetChangePasswordDialog(driver);
     }
-    public String fillUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
+
+    public String fillUserProfileDataAndSave(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
+        fillUserProfileData(emailValue, fullNameValue, selectThemeValue, localeValue);
+        if (saveBtn.isEnabled()) {
+            saveBtn.click();
+        } else {
+            LOG.debug("Save button is " + saveBtn.isEnabled());
+        }
+
+        try {
+            return getAlertArea().getAlertMessage();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void fillUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
         try {
             if (!emailValue.isEmpty()) {
                 weToDInput(emailAddressInput).fill(emailValue);
@@ -102,16 +121,20 @@ public class UserDataCommonComponent extends DomiSMPPage {
             LOG.error("Cannot change User Profile Data ", e);
         }
 
-        if (saveBtn.isEnabled()) {
-            saveBtn.click();
-        } else {
-            LOG.debug("Save button is " + saveBtn.isEnabled());
-        }
-
-        try {
-            return getAlertArea().getAlertMessage();
-        } catch (Exception e) {
-            return null;
-        }
     }
+
+
+    public DInput getEmailInput() {
+        return weToDInput(emailAddressInput);
+    }
+
+    public String getEmailValidationMessage() {
+        return emailAddressInput.findElement(By.xpath("following-sibling::*[1]")).getText();
+    }
+
+    public DButton getSaveBtn() {
+        return weToDButton(saveBtn);
+    }
+
+
 }
