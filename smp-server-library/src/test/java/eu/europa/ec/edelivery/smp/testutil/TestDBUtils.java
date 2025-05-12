@@ -331,12 +331,16 @@ public class TestDBUtils {
     }
 
     public static DBUser createDBUserByUsername(String userName) {
+        return createDBUserByUsername(userName, ApplicationRoleType.USER);
+    }
+
+    public static DBUser createDBUserByUsername(String userName, ApplicationRoleType applicationRole) {
         DBUser dbuser = new DBUser();
         dbuser.setUsername(userName);
         dbuser.setSmpLocale("en");
         dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setActive(true);
-        dbuser.setApplicationRole(ApplicationRoleType.USER);
+        dbuser.setApplicationRole(applicationRole);
         return dbuser;
     }
 
