@@ -53,11 +53,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType.SYSTEM_ADMIN;
 
 /**
  * Service for user management in UI. It provides methods for user CRUD operations and user credential management.
@@ -228,7 +231,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 && !Objects.equals(authorizedUserId, userToUpdateId);
 
         // check if authorized user has the permission to change other user credentials
-        if (adminUpdate && authorizedUser.getApplicationRole() != ApplicationRoleType.SYSTEM_ADMIN) {
+        if (adminUpdate && authorizedUser.getApplicationRole() != SYSTEM_ADMIN) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because user changing the credentials does not have required permissions: [{}]", authorizedUser.getUsername());
             throw new BadCredentialsException("Password change failed; Insufficient permissions!");
         }
@@ -355,6 +358,18 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     @Transactional
     public UserRO createDBUser(DBUser dbUser) {
+        return createDBUserAlerting(dbUser);
+    }
+
+    @Transactional
+    public UserRO createCasDBUser(DBUser dbUser) {
+        UserRO user = createDBUserAlerting(dbUser);
+        userDao.findUsersByApplicationRoles(EnumSet.of(SYSTEM_ADMIN))
+                .forEach(systemAdmin -> alertService.alertCasUserCreated(systemAdmin, dbUser));
+        return user;
+    }
+
+    private UserRO createDBUserAlerting(DBUser dbUser) {
         userDao.persistFlushDetach(dbUser);
         UserRO userRO =  conversionService.convert(dbUser, UserRO.class);
         // create alert for user creation

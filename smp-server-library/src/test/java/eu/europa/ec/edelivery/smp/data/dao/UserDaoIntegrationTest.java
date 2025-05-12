@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -29,6 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_IDENTIFIERS;
@@ -243,5 +246,22 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
         assertTrue(ou.isPresent());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
+    }
+
+    @Test
+    void findUserByApplicationRoles() {
+        DBUser user = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1.toLowerCase());
+        DBUser systemAdmin = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_2.toLowerCase(), ApplicationRoleType.SYSTEM_ADMIN);
+        DBUser anotherSystemAdmin = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_3.toLowerCase(), ApplicationRoleType.SYSTEM_ADMIN);
+        testInstance.persistFlushDetach(user);
+        testInstance.persistFlushDetach(systemAdmin);
+        testInstance.persistFlushDetach(anotherSystemAdmin);
+
+        List<DBUser> systemAdministrators = testInstance.findUsersByApplicationRoles(EnumSet.of(ApplicationRoleType.SYSTEM_ADMIN));
+
+        assertEquals(2, systemAdministrators.size());
+        assertTrue(systemAdministrators.contains(systemAdmin));
+        assertTrue(systemAdministrators.contains(anotherSystemAdmin));
+        assertFalse(systemAdministrators.contains(user));
     }
 }

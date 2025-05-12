@@ -35,6 +35,7 @@ public enum AlertTypeEnum {
     USER_CREATED_CONFIRMATION("user_created_confirmation"),
     USER_CREATED("user_created"),
     USER_UPDATED("user_updated"),
+    USER_CREATED_EU_LOGIN("user_created_eu_login"),
     ;
 
     private final String template;
