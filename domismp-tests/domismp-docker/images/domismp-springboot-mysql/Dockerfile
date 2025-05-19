@@ -19,12 +19,12 @@ ENV SMP_HOME=/opt/smp  \
     JPDA_ADDRESS="5005" \
     JPDA_TRANSPORT="dt_socket" \
     SMP_PORT=8084 \
-    JAVA_8_VERSION="jdk8u402-b06" \
-    JAVA_8_URL_FILENAME="OpenJDK8U-jdk_x64_linux_hotspot_8u402b06.tar.gz" \
-    JAVA_8_SHA256=fcfd08abe39f18e719e391f2fc37b8ac1053075426d10efac4cbf8969e7aa55e \
-    JAVA_11_VERSION="jdk-11.0.22+7" \
-    JAVA_11_URL_FILENAME="OpenJDK11U-jdk_x64_linux_hotspot_11.0.22_7.tar.gz" \
-    JAVA_11_SHA256=25cf602cac350ef36067560a4e8042919f3be973d419eac4d839e2e0000b2cc8  \
+    JAVA_8_VERSION="jdk8u452-b09" \
+    JAVA_8_URL_FILENAME="OpenJDK8U-jdk_x64_linux_hotspot_8u452b09.tar.gz " \
+    JAVA_8_SHA256=9448308a21841960a591b47927cf2d44fdc4c0533a5f8111a4b243a6bafb5d27 \
+    JAVA_11_VERSION="jdk-11.0.27+6" \
+    JAVA_11_URL_FILENAME="OpenJDK11U-jdk_x64_linux_hotspot_11.0.27_6.tar.gz" \
+    JAVA_11_SHA256=dc6136eaa8c1898cbf8973bb1e203e1f653f4c9166be0f5bebe0b02c5f3b5ae3  \
     JDK_VERSION=11
 
 # set default java home environment variable
