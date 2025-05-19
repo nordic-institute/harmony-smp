@@ -112,7 +112,7 @@ See the Licence for the specific language governing permissions and limitations 
         <spring-boot.tomcat.version>9.0.105</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
-        <xmlunit.version>2.10.0</xmlunit.version>
+        <xmlunit.version>2.10.1</xmlunit.version>
 
         <!-- plugins -->
         <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
@@ -824,7 +824,7 @@ See the Licence for the specific language governing permissions and limitations 
                 <!--To update minor versions  mvn versions:update-properties -DallowSnapshots=false -DallowMajorUpdates=false  -->
                 <configuration>
                     <!-- ignore non numeric versions!-->
-                    <ignoredVersions>(?i).*-(alpha|beta|m|rc|published-by-mistake)([-.]?\d+)?</ignoredVersions>
+                    <ignoredVersions>(?i).*-(alpha|beta|m|rc|published-by-mistake|atlassian-hosted|atlassian)([-.]?\d+)?</ignoredVersions>
                 </configuration>
             </plugin>
         </plugins>
