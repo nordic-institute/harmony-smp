@@ -112,7 +112,7 @@ validateAndPrepareArtefacts() {
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
-  buildOracleDatabaseImage
+  #buildOracleDatabaseImage
   buildUtils
   buildImage "${IMAGE_SMP_WEBLOGIC122}"
   buildImage "${IMAGE_SMP_WEBLOGIC141}"
@@ -199,7 +199,7 @@ cleanArtefacts() {
   fi
 }
 
-validateAndPrepareArtefacts
+#validateAndPrepareArtefacts
 buildImages
 pushImageToDockerhub
 cleanArtefacts
