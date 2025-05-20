@@ -112,6 +112,7 @@ insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, 
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'Group001', 'PUBLIC', sysdate,  sysdate);
+insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (2, 1, 'Group002', 'PUBLIC', sysdate,  sysdate);
 
 
