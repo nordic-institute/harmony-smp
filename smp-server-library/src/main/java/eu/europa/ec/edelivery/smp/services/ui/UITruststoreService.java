@@ -50,14 +50,16 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.security.auth.x500.X500Principal;
 import java.io.*;
 import java.security.*;
-import java.security.cert.Certificate;
 import java.security.cert.*;
+import java.security.cert.Certificate;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_TRUSTSTORE_CERT_INVALID;
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_USER_CERT_INVALID;
 import static java.util.Collections.list;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * @author Joze Rihtarsic
@@ -568,6 +570,21 @@ public class UITruststoreService extends BasicKeystoreService {
         }
 
         return certificateROList;
+    }
+
+    public Map<String, OffsetDateTime> getExpiredCertificateAliases() {
+        return getCertificateROEntriesList()
+                .stream()
+                .filter(CertificateRO::isExpired)
+                .collect(toMap(CertificateRO::getAlias, CertificateRO::getValidTo));
+    }
+
+
+    public Map<String, OffsetDateTime> getAboutToExpireCertificateAliases(int days) {
+        return getCertificateROEntriesList()
+                .stream()
+                .filter(certificateRO -> certificateRO.expiringInDays(days))
+                .collect(toMap(CertificateRO::getAlias, CertificateRO::getValidTo));
     }
 
     public CertificateRO convertToRo(X509Certificate d) {

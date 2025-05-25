@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -175,5 +176,17 @@ public class CertificateRO extends BaseRO {
 
     public List<String> getCertificatePolicies() {
         return certificatePolicies;
+    }
+
+    public boolean isExpired() {
+        return expiringInDays(0);
+    }
+
+    public boolean expiringInDays(int days) {
+        return isExpired(OffsetDateTime.now(ZoneOffset.UTC).plusDays(days));
+    }
+
+    public boolean isExpired(OffsetDateTime expirationDate) {
+        return validTo.isBefore(expirationDate);
     }
 }

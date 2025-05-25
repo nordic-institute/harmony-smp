@@ -99,7 +99,16 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
         "   ) " )
-        @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
+@NamedQuery(name = QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES, query = "SELECT new eu.europa.ec.edelivery.smp.data.model.DBDomain.DBDomainExpiringCertificateMapping(" +
+        "   d.domainCode, " +
+        "   d.signatureKeyAlias, " +
+        "   d.smlClientKeyChangeAlias, " +
+        "   CASE WHEN d.signatureKeyAlias IN :expired_certificate_aliases THEN true ELSE false END, " +
+        "   CASE WHEN d.smlClientKeyChangeAlias IN :expired_certificate_aliases THEN true ELSE false END) " +
+        "   FROM DBDomain d " +
+                "   WHERE d.smlClientKeyChangeAlias IN :expired_certificate_aliases " +
+                "       OR d.signatureKeyAlias IN :expired_certificate_aliases")
+@org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
     private static final long serialVersionUID = 1008583888835630004L;
@@ -346,5 +355,50 @@ public class DBDomain extends BaseEntity {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37).appendSuper(super.hashCode()).append(id).append(domainCode).toHashCode();
+    }
+
+    /**
+     * @author Sebastian-Ion TINCU
+     * @since 5.2
+     */
+    public static class DBDomainExpiringCertificateMapping {
+
+        private final String domainCode;
+
+        private final String signatureKeyAlias;
+
+        private final String smlClientKeyChangeAlias;
+
+        private final boolean matchedSigningCertificate;
+
+        private final boolean matchedSmlCertificate;
+
+        public DBDomainExpiringCertificateMapping(String domainCode, String signatureKeyAlias, String smlClientKeyChangeAlias, boolean matchedSigningCertificate, boolean matchedSmlCertificate) {
+            this.domainCode = domainCode;
+            this.signatureKeyAlias = signatureKeyAlias;
+            this.smlClientKeyChangeAlias = smlClientKeyChangeAlias;
+            this.matchedSigningCertificate = matchedSigningCertificate;
+            this.matchedSmlCertificate = matchedSmlCertificate;
+        }
+
+        public String getDomainCode() {
+            return domainCode;
+        }
+
+        public String getSignatureKeyAlias() {
+            return signatureKeyAlias;
+        }
+
+        public String getSmlClientKeyChangeAlias() {
+            return smlClientKeyChangeAlias;
+        }
+
+        public boolean isMatchedSigningCertificate() {
+            return matchedSigningCertificate;
+        }
+
+        public boolean isMatchedSmlCertificate() {
+            return matchedSmlCertificate;
+        }
     }
 }

@@ -42,10 +42,12 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.list;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -209,6 +211,20 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         return certificateROList;
+    }
+
+    public Map<String, OffsetDateTime> getExpiredCertificateAliases() {
+        return getKeystoreEntriesList()
+                .stream()
+                .filter(CertificateRO::isExpired)
+                .collect(toMap(CertificateRO::getAlias, CertificateRO::getValidTo));
+    }
+
+    public Map<String, OffsetDateTime> getAboutToExpireCertificateAliases(int days) {
+        return getKeystoreEntriesList()
+                .stream()
+                .filter(certificateRO -> certificateRO.expiringInDays(days))
+                .collect(toMap(CertificateRO::getAlias, CertificateRO::getValidTo));
     }
 
     public CertificateRO convertToRo(X509Certificate d) {
