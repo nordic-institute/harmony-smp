@@ -99,7 +99,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
         "   ) " )
-@NamedQuery(name = QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES, query = "SELECT new eu.europa.ec.edelivery.smp.data.model.DBDomain.DBDomainExpiringCertificateMapping(" +
+@NamedQuery(name = QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES, query = "SELECT new eu.europa.ec.edelivery.smp.data.model.DBDomain$DBDomainExpiringCertificateMapping(" +
         "   d.domainCode, " +
         "   d.signatureKeyAlias, " +
         "   d.smlClientKeyChangeAlias, " +

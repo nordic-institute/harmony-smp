@@ -34,6 +34,7 @@ import eu.europa.ec.edelivery.smp.services.mail.prop.SystemCertificateExpiration
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 
@@ -44,6 +45,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
  * @author Sebastian-Ion TINCU
  * @since 5.2
  */
+@Service
 public class SystemCertificateAlertService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SystemCertificateValidatorService.class);

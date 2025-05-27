@@ -28,6 +28,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -42,6 +43,7 @@ import java.util.Map;
  * @author Sebastian-Ion TINCU
  * @since 5.2
  */
+@Service
 public class SystemCertificateValidatorService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SystemCertificateValidatorService.class);
