@@ -80,7 +80,7 @@ public class SystemCertificateValidatorService {
     }
 
     private void validateBeforeExpireCertificate() {
-        Boolean alertExpired = configurationService.getAlertExpiredCertificateEnabled();
+        Boolean alertExpired = configurationService.getAlertBeforeExpireCertificateEnabled();
         if (alertExpired == null || !alertExpired) {
             LOG.debug("Future expiration of system certificate validation is disabled");
             return;
@@ -112,13 +112,13 @@ public class SystemCertificateValidatorService {
 
     private void alertExpiringCertificate(List<DBUser> systemAdministrators, DBDomain.DBDomainExpiringCertificateMapping domain, Map<String, OffsetDateTime> expirationDates) {
         if (domain.isMatchedSmlCertificate()) {
-            String smlClientKeyChangeAlias = domain.getSmlClientKeyChangeAlias();
-            OffsetDateTime expirationDate = expirationDates.get(smlClientKeyChangeAlias);
+            String smlClientKeyAlias = domain.getSmlClientKeyAlias();
+            OffsetDateTime expirationDate = expirationDates.get(smlClientKeyAlias);
             systemAdministrators.forEach(systemAdministrator -> {
                     if (isCertificateAlreadyExpired(expirationDate)) {
-                        alertService.alertSmlIntegrationCertificateExpired(systemAdministrator, domain.getDomainCode(), smlClientKeyChangeAlias, expirationDate);
+                        alertService.alertSmlIntegrationCertificateExpired(systemAdministrator, domain.getDomainCode(), smlClientKeyAlias, expirationDate);
                     } else {
-                        alertService.alertBeforeSmlIntegrationCertificateExpire(systemAdministrator, domain.getDomainCode(), smlClientKeyChangeAlias, expirationDate);
+                        alertService.alertBeforeSmlIntegrationCertificateExpire(systemAdministrator, domain.getDomainCode(), smlClientKeyAlias, expirationDate);
                     }
                 }
             );

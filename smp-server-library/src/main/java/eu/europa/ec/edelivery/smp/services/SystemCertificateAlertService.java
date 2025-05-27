@@ -141,7 +141,7 @@ public class SystemCertificateAlertService {
 
     private void alertSystemCertificateExpiration(DBUser user, DBAlert alert, String domain, String certificateAlias, String certificateType, OffsetDateTime expirationDate) {
         alert.addProperty(SystemCertificateExpirationProperties.CERTIFICATE_ALIAS.name(), certificateAlias);
-        alert.addProperty(SystemCertificateExpirationProperties.CERTIFICATE_TYPE.name(), certificateAlias);
+        alert.addProperty(SystemCertificateExpirationProperties.CERTIFICATE_TYPE.name(), certificateType);
         alert.addProperty(SystemCertificateExpirationProperties.DOMAIN_CODE.name(), domain);
         alert.addProperty(SystemCertificateExpirationProperties.EXPIRATION_DATETIME.name(), formatOffsetDateTimeWithLocal(expirationDate, user.getSmpLocale()));
         alert.addProperty(SystemCertificateExpirationProperties.ALERT_LEVEL.name(), alert.getAlertLevel().name());

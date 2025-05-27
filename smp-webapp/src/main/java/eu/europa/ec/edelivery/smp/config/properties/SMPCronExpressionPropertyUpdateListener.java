@@ -30,8 +30,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
-import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 
 /**
  * Property change listener for cron expression. Component updates crone version for the trigger with matching
@@ -100,6 +99,7 @@ public class SMPCronExpressionPropertyUpdateListener implements PropertyUpdateLi
     @Override
     public List<SMPPropertyEnum> handledProperties() {
         return Arrays.asList(SMP_PROPERTY_REFRESH_CRON,
-                SMP_ALERT_CREDENTIALS_CRON);
+                SMP_ALERT_CREDENTIALS_CRON,
+                SMP_ALERT_SYSTEM_CERTIFICATES_CRON);
     }
 }

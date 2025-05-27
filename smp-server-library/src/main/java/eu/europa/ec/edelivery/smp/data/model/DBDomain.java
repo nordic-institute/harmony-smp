@@ -102,11 +102,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES, query = "SELECT new eu.europa.ec.edelivery.smp.data.model.DBDomain$DBDomainExpiringCertificateMapping(" +
         "   d.domainCode, " +
         "   d.signatureKeyAlias, " +
-        "   d.smlClientKeyChangeAlias, " +
+        "   d.smlClientKeyAlias, " +
         "   CASE WHEN d.signatureKeyAlias IN :expired_certificate_aliases THEN true ELSE false END, " +
-        "   CASE WHEN d.smlClientKeyChangeAlias IN :expired_certificate_aliases THEN true ELSE false END) " +
+        "   CASE WHEN d.smlClientKeyAlias IN :expired_certificate_aliases THEN true ELSE false END) " +
         "   FROM DBDomain d " +
-                "   WHERE d.smlClientKeyChangeAlias IN :expired_certificate_aliases " +
+                "   WHERE d.smlClientKeyAlias IN :expired_certificate_aliases " +
                 "       OR d.signatureKeyAlias IN :expired_certificate_aliases")
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
@@ -367,16 +367,16 @@ public class DBDomain extends BaseEntity {
 
         private final String signatureKeyAlias;
 
-        private final String smlClientKeyChangeAlias;
+        private final String smlClientKeyAlias;
 
         private final boolean matchedSigningCertificate;
 
         private final boolean matchedSmlCertificate;
 
-        public DBDomainExpiringCertificateMapping(String domainCode, String signatureKeyAlias, String smlClientKeyChangeAlias, boolean matchedSigningCertificate, boolean matchedSmlCertificate) {
+        public DBDomainExpiringCertificateMapping(String domainCode, String signatureKeyAlias, String smlClientKeyAlias, boolean matchedSigningCertificate, boolean matchedSmlCertificate) {
             this.domainCode = domainCode;
             this.signatureKeyAlias = signatureKeyAlias;
-            this.smlClientKeyChangeAlias = smlClientKeyChangeAlias;
+            this.smlClientKeyAlias = smlClientKeyAlias;
             this.matchedSigningCertificate = matchedSigningCertificate;
             this.matchedSmlCertificate = matchedSmlCertificate;
         }
@@ -389,8 +389,8 @@ public class DBDomain extends BaseEntity {
             return signatureKeyAlias;
         }
 
-        public String getSmlClientKeyChangeAlias() {
-            return smlClientKeyChangeAlias;
+        public String getSmlClientKeyAlias() {
+            return smlClientKeyAlias;
         }
 
         public boolean isMatchedSigningCertificate() {
