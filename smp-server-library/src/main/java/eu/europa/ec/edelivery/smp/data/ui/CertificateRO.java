@@ -18,6 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -178,6 +180,7 @@ public class CertificateRO extends BaseRO {
         return certificatePolicies;
     }
 
+    @JsonIgnore
     public boolean isExpired() {
         return expiringInDays(0);
     }
