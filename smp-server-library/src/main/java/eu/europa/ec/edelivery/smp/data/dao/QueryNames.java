@@ -41,6 +41,7 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAndRoles";
     public static final String QUERY_DOMAIN_FOR_USER = "DBDomain.getAllDomainsForUser";
     public static final String QUERY_DOMAIN_FOR_USER_COUNT = "DBDomain.getAllDomainsForUserCount";
+    public static final String QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES = "DBDomain.getByExpiringCertificates";
 
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT = "DBDomain.getByUserAndGroupRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES = "DBDomain.getByUserAndGroupRoles";
@@ -207,6 +208,7 @@ public class QueryNames {
     public static final String PARAM_DOMAIN_SML_SMP_ID = "sml_smp_id";
 
     public static final String PARAM_DOMAIN_IDS = "domain_ids";
+    public static final String PARAM_DOMAIN_EXPIRED_CERTIFICATE_ALIASES = "expired_certificate_aliases";
 
     public static final String PARAM_DOCUMENT_ID = "document_id";
     public static final String PARAM_DOCUMENT_TYPE = "document_type";

@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.conversion.X509CertificateToCertificateROConverter;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
@@ -35,6 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.core.convert.ConversionService;
 
 import javax.security.auth.x500.X500Principal;
@@ -44,10 +47,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.*;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -443,5 +445,60 @@ class UITruststoreServiceTest {
     protected void resetKeystore() throws IOException {
         FileUtils.deleteDirectory(targetDirectory.toFile());
         FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
+    }
+
+    @Test
+    void testAboutToExpireCertificateAliases() throws Exception {
+        String subject = "CN=AboutToExpire,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(null,
+                subject,
+                subject,
+                OffsetDateTime.now(ZoneOffset.UTC).minusDays(10),
+                OffsetDateTime.now(ZoneOffset.UTC).plusDays(5),
+                Collections.emptyList());
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        when(conversionService.convert(any(X509Certificate.class), eq(CertificateRO.class))).thenAnswer(new Answer<>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return convertToRo((X509Certificate) invocation.getArguments()[0]);
+            }
+        });
+        testInstance.addCertificate("alias", certificate);
+
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(3);
+        assertFalse(expiredCertificateAliases.containsKey("alias"));
+
+        expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(10);
+        assertTrue(expiredCertificateAliases.containsKey("alias"));
+    }
+
+    @Test
+    void testExpiredCertificateAliases() throws Exception {
+        String subject = "CN=Expired,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(null,
+                subject,
+                subject,
+                OffsetDateTime.now(ZoneOffset.UTC).minusDays(10),
+                OffsetDateTime.now(ZoneOffset.UTC).minusDays(5),
+                Collections.emptyList());
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        when(conversionService.convert(any(X509Certificate.class), eq(CertificateRO.class))).thenAnswer(new Answer<>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return convertToRo((X509Certificate) invocation.getArguments()[0]);
+            }
+        });
+        testInstance.addCertificate("alias", certificate);
+
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getExpiredCertificateAliases();
+        assertTrue(expiredCertificateAliases.containsKey("alias"));
+    }
+
+    private CertificateRO convertToRo(X509Certificate certificate) {
+        return new X509CertificateToCertificateROConverter().convert(certificate);
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_ALERT_SYSTEM_CERTIFICATES_CRON;
 
 /**
  * Class initialize the cron trigger beans
@@ -35,6 +36,7 @@ public class CronTriggerConfig {
 
     public static final String TRIGGER_BEAN_PROPERTY_REFRESH = "SMPCronTriggerPropertyRefresh";
     public static final String TRIGGER_BEAN_CREDENTIAL_ALERTS = "SMPCronTriggerCredentialsAlerts";
+    public static final String TRIGGER_BEAN_SYSTEM_CERTIFICATES_ALERTS = "SMPCronTriggerSystemCertificatesAlerts";
 
 
     @Bean(TRIGGER_BEAN_PROPERTY_REFRESH)
@@ -45,5 +47,10 @@ public class CronTriggerConfig {
     @Bean(TRIGGER_BEAN_CREDENTIAL_ALERTS)
     public SMPDynamicCronTrigger getCredentialAlertsCronTrigger() {
         return new SMPDynamicCronTrigger(SMP_ALERT_CREDENTIALS_CRON.getDefValue(), SMP_ALERT_CREDENTIALS_CRON);
+    }
+
+    @Bean(TRIGGER_BEAN_SYSTEM_CERTIFICATES_ALERTS)
+    public SMPDynamicCronTrigger getSystemCertificatesAlertsCronTrigger() {
+        return new SMPDynamicCronTrigger(SMP_ALERT_SYSTEM_CERTIFICATES_CRON.getDefValue(), SMP_ALERT_SYSTEM_CERTIFICATES_CRON);
     }
 }

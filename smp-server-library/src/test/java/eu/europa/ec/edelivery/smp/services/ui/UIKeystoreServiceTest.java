@@ -42,10 +42,10 @@ import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -268,5 +268,30 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
         // then
         assertEquals(new HashSet<>(Arrays.asList("testcertificatea", "testcertificateb")), duplicateCertificates);
+    }
+
+    @Test
+    void testAboutToExpireCertificateAliases() {
+        OffsetDateTime expirationDate = testInstance.getCert(S_ALIAS).getNotAfter().toInstant().atOffset(ZoneOffset.UTC);
+        int daysOfValidityLeft = (int) ChronoUnit.DAYS.between(OffsetDateTime.now(ZoneOffset.UTC), expirationDate);
+
+        assertTrue(daysOfValidityLeft > 0);
+
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(daysOfValidityLeft);
+        assertFalse(expiredCertificateAliases.containsKey(S_ALIAS));
+
+        expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(daysOfValidityLeft + 1);
+        assertTrue(expiredCertificateAliases.containsKey(S_ALIAS));
+    }
+
+    @Test
+    void testExpiredCertificateAliases() {
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getExpiredCertificateAliases();
+
+        expiredCertificateAliases.forEach((certificateAlias, expirationDate) -> {
+            OffsetDateTime expected = testInstance.getCert(certificateAlias).getNotAfter().toInstant().atOffset(ZoneOffset.UTC);
+            assertTrue(expected.isAfter(OffsetDateTime.now(ZoneOffset.UTC)));
+            assertEquals(expected, expirationDate);
+        });
     }
 }
