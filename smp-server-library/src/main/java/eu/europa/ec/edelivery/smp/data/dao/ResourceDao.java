@@ -31,10 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -193,8 +193,7 @@ public class ResourceDao extends BaseDao<DBResource> {
         if (StringUtils.isBlank(value)){
             return null;
         }
-        String escapedValue = value.replace("\\", "\\\\");
-        return StringUtils.wrapIfMissing(escapedValue, "%");
+        return StringUtils.wrapIfMissing(value, "%");
     }
 
     public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier, String domainCode, String documentType) {

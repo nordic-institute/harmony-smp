@@ -24,7 +24,7 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 /**
@@ -35,14 +35,13 @@ import java.util.Objects;
  */
 @Entity
 @Audited
-@Table(name = "SMP_DOMAIN_CONFIGURATION",
+@Table(name = "SMP_DOMAIN_CONFIGURATION", comment = "SMP domain configuration",
         indexes = {
 
                 @Index(name = "SMP_DOMAIN_CONF_IDX", columnList = "ID, PROPERTY_NAME, FK_DOMAIN_ID", unique = true),
         })
 @NamedQuery(name = QueryNames.QUERY_DOMAIN_CONFIGURATION_ALL,
         query = "SELECT d FROM DBDomainConfiguration d where d.domain.id = :domain_id")
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN_CONFIGURATION", comment = "SMP domain configuration")
 public class DBDomainConfiguration extends BaseEntity {
 
     @Id

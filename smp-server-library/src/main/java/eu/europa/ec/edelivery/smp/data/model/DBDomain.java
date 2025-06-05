@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Entity
 @Audited
-@Table(name = "SMP_DOMAIN",
+@Table(name = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data",
         indexes = {@Index(name = "SMP_DOM_UNIQ_CODE_IDX", columnList = "DOMAIN_CODE", unique = true)
         })
 @NamedQuery(name = QUERY_DOMAIN_ALL, query = "SELECT d FROM DBDomain d order by d.id asc")
@@ -99,7 +99,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
         "   ) " )
-        @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
     private static final long serialVersionUID = 1008583888835630004L;

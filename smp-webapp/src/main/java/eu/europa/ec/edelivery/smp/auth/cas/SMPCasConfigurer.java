@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
@@ -82,9 +83,9 @@ public class SMPCasConfigurer {
      * The entry point of Spring Security authentication process (based on CAS).
      * The user's browser will be redirected to the CAS login page.
      *
-     * @return
+     * @return CasAuthenticationEntryPoint - Bean which is used to redirect the user to the CAS login page.
      */
-    @Bean
+    @Bean(SMP_CAS_AUTHENTICATION_ENTRY_POINT)
     public CasAuthenticationEntryPoint casAuthenticationEntryPoint(@Nullable @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties serviceProperties) {
 
         if (!configurationService.isSSOEnabledForUserAuthentication()) {
@@ -175,7 +176,7 @@ public class SMPCasConfigurer {
      */
     @Bean(SMP_CAS_FILTER_BEAN)
     public CasAuthenticationFilter casAuthenticationFilter(
-            @Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager,
+            @Lazy @Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager,
             @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties casServiceProperties) {
 
         CasAuthenticationFilter filter = new CasAuthenticationFilter();

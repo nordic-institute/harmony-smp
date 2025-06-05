@@ -34,8 +34,8 @@ import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.persistence.TypedQuery;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;

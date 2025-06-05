@@ -75,7 +75,7 @@ class DomainDaoIntegrationTest extends AbstractBaseDao {
 
         // execute
         Exception exception = assertThrows(Exception.class, () -> testInstance.persistFlushDetach(d2));
-        assertThat(exception.getMessage(), CoreMatchers.containsString("ConstraintViolationException"));
+        assertThat(exception.getMessage(), CoreMatchers.containsString("Unique index or primary key violation"));
     }
 
     @Test

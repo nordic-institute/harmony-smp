@@ -26,7 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -34,12 +34,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_SUBRESOURCE",
+@Table(name = "SMP_SUBRESOURCE", comment = "Service metadata",
         indexes = {@Index(name = "SMP_SRS_UNIQ_ID_RES_SRT_IDX", columnList = "FK_RESOURCE_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME", unique = true),
                 @Index(name = "SMP_SMD_DOC_ID_IDX", columnList = "IDENTIFIER_VALUE", unique = false),
                 @Index(name = "SMP_SMD_DOC_SCH_IDX", columnList = "IDENTIFIER_SCHEME", unique = false)
         })
-@org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE", comment = "Service metadata")
 @NamedQuery(name = QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF, query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
         " AND d.subresourceDef.urlSegment=:url_segment" +
         " AND lower(d.identifierValue) = lower(:identifier_value) " +

@@ -19,8 +19,8 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
-import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
+import ec.services.wsdl.bdmsl.data._1.ExistsParticipant;
+import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantService;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
@@ -43,24 +43,24 @@ public class SmlIdentifierConverter {
         return busdoxIdentifier;
     }
 
-    public static ParticipantsType toParticipantsType(Identifier participantId, String smpId) {
+    public static ExistsParticipant toExistsParticipant(Identifier participantId, String smpId) {
         validate(participantId, smpId);
 
         ParticipantIdentifierType parId = toParticipantIdentifierType(participantId);
 
-        ParticipantsType participantsType = new ParticipantsType();
-        participantsType.setParticipantIdentifier(parId);
-        participantsType.setServiceMetadataPublisherID(smpId);
-        return participantsType;
+        ExistsParticipant ExistsParticipant = new ExistsParticipant();
+        ExistsParticipant.setParticipantIdentifier(parId);
+        ExistsParticipant.setServiceMetadataPublisherID(smpId);
+        return ExistsParticipant;
     }
 
 
-    public static SMPAdvancedServiceForParticipantType toBDMSLAdvancedParticipantId(Identifier participantId, String smpId, String serviceMetadata) {
+    public static SMPAdvancedServiceForParticipantService toBDMSLAdvancedParticipantId(Identifier participantId, String smpId, String serviceMetadata) {
         validate(participantId, smpId);
 
         ServiceMetadataPublisherServiceForParticipantType busdoxIdentifier = toBusdoxParticipantId(participantId, smpId);
 
-        SMPAdvancedServiceForParticipantType bdmslRequest = new SMPAdvancedServiceForParticipantType();
+        SMPAdvancedServiceForParticipantService bdmslRequest = new SMPAdvancedServiceForParticipantService();
         bdmslRequest.setServiceName(serviceMetadata);
         bdmslRequest.setCreateParticipantIdentifier(busdoxIdentifier);
 

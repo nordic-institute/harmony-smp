@@ -39,8 +39,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -158,7 +158,8 @@ public class MockMvcUtils {
     public static UserRO getLoggedUserData(MockMvc mvc, MockHttpSession session) throws Exception {
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY + "/user")
                         .session(session)
-                        .with(csrf()))
+                       .with(csrf())
+                )
                 .andExpect(status().isOk()).andReturn();
         byte[] asByteArray = result.getResponse().getContentAsByteArray();
         LOG.info("User session validated with logged data: []", new String(asByteArray));

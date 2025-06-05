@@ -112,10 +112,10 @@ validateAndPrepareArtefacts() {
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
-  buildOracleDatabaseImage
+ # buildOracleDatabaseImage
   buildUtils
-  buildImage "${IMAGE_SMP_WEBLOGIC122}"
-  buildImage "${IMAGE_SMP_WEBLOGIC141}"
+#  buildImage "${IMAGE_SMP_WEBLOGIC122}"
+#  buildImage "${IMAGE_SMP_WEBLOGIC141}"
   buildImage "${IMAGE_SMP_TOMCAT_MYSQL}"
   buildImage "${IMAGE_SMP_SPRINGBOOT_MYSQL}"
   buildImage "${IMAGE_SMP_TESTS}"

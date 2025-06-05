@@ -116,13 +116,13 @@ public class CredentialService {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider", username);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, "Username does not exits", username);
                 delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
-                throw BAD_CREDENTIALS_EXCEPTION;
+                throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
             }
             credential = dbCredential.get();
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
             delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
-            throw BAD_CREDENTIALS_EXCEPTION;
+            throw  new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
 
         }
         validateIfCredentialIsSuspended(credential, startTime);
@@ -167,7 +167,7 @@ public class CredentialService {
         try {
             Optional<DBCredential> dbCredential = credentialDao.findAccessTokenCredentialForAPI(authenticationTokenId);
 
-            if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
+            if (dbCredential.isEmpty() || isNotValidCredential(dbCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, authenticationTokenId);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException

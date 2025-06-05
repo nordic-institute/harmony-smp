@@ -111,7 +111,7 @@ class X509CertificateToCertificateROConverterTest {
                         "2710",
                         "sno=2710&subject=C%3DEU%2CO%3DDIGIT%2COU%3DEDELIVERY%2CCN%3DTest-Ed25519&validfrom=Nov+14+13%3A14%3A05+2022+GMT&validto=Nov+12+13%3A14%3A05+2032+GMT&issuer=C%3DEU%2CO%3DDIGIT%2COU%3DEDELIVERY%2CCN%3DTest-Ed25519",
                         "CN=Test-Ed25519,O=DIGIT,C=EU:0000000000002710",
-                        "Ed25519"
+                        "EdDSA"
                 },
                 {
                         "ed448.cert",
@@ -120,7 +120,7 @@ class X509CertificateToCertificateROConverterTest {
                         "6430e8fc",
                         "sno=6430e8fc&subject=CN%3DTest-Ed448%2COU%3DEDELIVERY%2CO%3DDIGIT%2CC%3DEU&validfrom=Apr+08+04%3A09%3A32+2023+GMT&validto=Apr+08+04%3A09%3A32+2033+GMT&issuer=CN%3DTest-Ed448%2COU%3DEDELIVERY%2CO%3DDIGIT%2CC%3DEU",
                         "CN=Test-Ed448,O=DIGIT,C=EU:000000006430e8fc",
-                        "Ed448"
+                        "EdDSA"
                 },
 
         };

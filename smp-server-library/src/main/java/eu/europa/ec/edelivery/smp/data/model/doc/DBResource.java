@@ -29,7 +29,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,12 +39,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_RESOURCE",
+@Table(name = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme",
         indexes = {@Index(name = "SMP_RS_UNIQ_IDENT_DOREDEF_IDX", columnList = "IDENTIFIER_SCHEME, IDENTIFIER_VALUE, FK_DOREDEF_ID", unique = true),
                 @Index(name = "SMP_RS_ID_IDX", columnList = "IDENTIFIER_VALUE"),
                 @Index(name = "SMP_RS_SCH_IDX", columnList = "IDENTIFIER_SCHEME")
         })
-@org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme")
 @NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
         " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
         " AND lower(d.identifierValue) = lower(:identifier_value) " +

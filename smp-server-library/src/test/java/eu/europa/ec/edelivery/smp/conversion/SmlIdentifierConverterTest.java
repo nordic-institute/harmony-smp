@@ -19,8 +19,8 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
-import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
+import ec.services.wsdl.bdmsl.data._1.ExistsParticipant;
+import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantService;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.junit.jupiter.api.Test;
@@ -70,7 +70,7 @@ class SmlIdentifierConverterTest {
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
         //when
-        SMPAdvancedServiceForParticipantType result = SmlIdentifierConverter.toBDMSLAdvancedParticipantId(participantId, SMP_ID, SERVICE_NAME);
+        SMPAdvancedServiceForParticipantService result = SmlIdentifierConverter.toBDMSLAdvancedParticipantId(participantId, SMP_ID, SERVICE_NAME);
 
         //then
         assertEquals(SERVICE_NAME, result.getServiceName());
@@ -84,7 +84,7 @@ class SmlIdentifierConverterTest {
         Identifier participantId = new Identifier(ID_VALUE, null);
 
         //when
-        SMPAdvancedServiceForParticipantType result = SmlIdentifierConverter.toBDMSLAdvancedParticipantId(participantId, SMP_ID, SERVICE_NAME);
+        SMPAdvancedServiceForParticipantService result = SmlIdentifierConverter.toBDMSLAdvancedParticipantId(participantId, SMP_ID, SERVICE_NAME);
         //then
         assertEquals(SERVICE_NAME, result.getServiceName());
         assertNull(result.getCreateParticipantIdentifier().getParticipantIdentifier().getScheme());
@@ -92,12 +92,12 @@ class SmlIdentifierConverterTest {
     }
 
     @Test
-    void toParticipantsType() {
+    void toExistsParticipant() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
         //when
-        ParticipantsType result = SmlIdentifierConverter.toParticipantsType(participantId, SMP_ID);
+        ExistsParticipant result = SmlIdentifierConverter.toExistsParticipant(participantId, SMP_ID);
 
         //then
         assertEquals(SMP_ID, result.getServiceMetadataPublisherID());
@@ -106,12 +106,12 @@ class SmlIdentifierConverterTest {
     }
 
     @Test
-    void toParticipantsType_NullScheme() {
+    void toExistsParticipant_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
         //when
-        ParticipantsType result = SmlIdentifierConverter.toParticipantsType(participantId, SMP_ID);
+        ExistsParticipant result = SmlIdentifierConverter.toExistsParticipant(participantId, SMP_ID);
         //then
         assertEquals(SMP_ID, result.getServiceMetadataPublisherID());
         assertNull(result.getParticipantIdentifier().getScheme());

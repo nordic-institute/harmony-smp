@@ -20,8 +20,8 @@ package eu.europa.ec.edelivery.smp.auth.cas;
 
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jasig.cas.client.validation.Assertion;
-import org.jasig.cas.client.validation.TicketValidationException;
+import org.apereo.cas.client.validation.Assertion;
+import org.apereo.cas.client.validation.TicketValidationException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 

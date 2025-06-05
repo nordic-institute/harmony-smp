@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.config.properties;
 
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
-import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
+import eu.europa.ec.edelivery.smp.config.WSSecurityConfig;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -44,12 +44,12 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 public class SMPSecurityPropertyUpdateListener implements PropertyUpdateListener {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPSecurityPropertyUpdateListener.class);
 
-    final WSSecurityConfigurerAdapter wsSecurityConfigurerAdapter;
+    final WSSecurityConfig wsSecurityConfig;
     final ForwardedHeaderTransformer forwardedHeaderTransformer;
 
-    public SMPSecurityPropertyUpdateListener(@Lazy WSSecurityConfigurerAdapter wsSecurityConfigurerAdapter,
+    public SMPSecurityPropertyUpdateListener(@Lazy WSSecurityConfig wsSecurityConfig,
                                              @Lazy ForwardedHeaderTransformer forwardedHeaderTransformer) {
-        this.wsSecurityConfigurerAdapter = wsSecurityConfigurerAdapter;
+        this.wsSecurityConfig = wsSecurityConfig;
         this.forwardedHeaderTransformer = forwardedHeaderTransformer;
     }
 
@@ -77,7 +77,7 @@ public class SMPSecurityPropertyUpdateListener implements PropertyUpdateListener
         if (clientCertEnabled) {
             LOG.warn("Set Client-Cert HTTP header enabled: [true]. Do not enable this option when using SMP without reverse-proxy and HTTP header protection!");
         }
-        wsSecurityConfigurerAdapter.setExternalTlsAuthenticationWithClientCertHeaderEnabled(clientCertEnabled);
+        wsSecurityConfig.setExternalTlsAuthenticationWithClientCertHeaderEnabled(clientCertEnabled);
     }
 
     public void setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(Boolean clientCertEnabled) {
@@ -89,7 +89,7 @@ public class SMPSecurityPropertyUpdateListener implements PropertyUpdateListener
         if (clientCertEnabled) {
             LOG.warn("Set SSLClientCert HTTP header enabled: [true]. Do not enable this option when using SMP without reverse-proxy and HTTP header protection!");
         }
-        wsSecurityConfigurerAdapter.setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(clientCertEnabled);
+        wsSecurityConfig.setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(clientCertEnabled);
     }
 
     public void setForwardHeadersEnabled(Boolean forwardHeadersEnabled) {

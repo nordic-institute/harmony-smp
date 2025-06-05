@@ -32,20 +32,22 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_USER;
@@ -75,13 +77,15 @@ public class AuthenticationController {
 
     SMPCookieWriter smpCookieWriter;
 
+    private final SecurityContextRepository securityContextRepository =
+            new HttpSessionSecurityContextRepository();
+
     @Autowired
     public AuthenticationController(SMPAuthenticationService authenticationService
             , SMPAuthorizationService authorizationService
             , ConfigurationService configurationService
             , SMPCookieWriter smpCookieWriter
-            , CsrfTokenRepository csrfTokenRepository
-            , UIUserService uiUserService) {
+            , CsrfTokenRepository csrfTokenRepository) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.configurationService = configurationService;
@@ -101,6 +105,11 @@ public class AuthenticationController {
         UILoginAuthenticationToken authentication = (UILoginAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(),
                 loginRO.getPassword());
         SMPUserDetails user = authentication.getUserDetails();
+
+        SecurityContext securityContext = SecurityContextHolder.getContextHolderStrategy().createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        this.securityContextRepository.saveContext(securityContext, request, response);
 
         return authorizationService.getUserData(user.getUser(), authentication.getAuthorities());
     }

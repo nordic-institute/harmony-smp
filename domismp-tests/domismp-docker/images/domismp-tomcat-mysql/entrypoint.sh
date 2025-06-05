@@ -22,12 +22,6 @@ if [ ! -d ${DATA_DIR} ]; then
   mkdir -p ${DATA_DIR}
 fi
 
-# set java home
-if [ "${JDK_VERSION}" == "8" ]; then
-  export JAVA_HOME=/opt/java/${JAVA_8_VERSION}
-fi
-
-
 init_tomcat() {
   # add java code coverage agent to image
   if [ -e /opt/jacoco/jacoco-agent.jar ]; then

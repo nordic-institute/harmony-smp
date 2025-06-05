@@ -44,7 +44,7 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
  * @since 5.0
  */
 @RestController
-@RequestMapping(value = CONTEXT_PATH_EDIT_DOMAIN)
+@RequestMapping(path = CONTEXT_PATH_EDIT_DOMAIN)
 public class DomainEditController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainEditController.class);
@@ -99,9 +99,11 @@ public class DomainEditController {
         return uiDomainEditService.getDomainMembers(domainId, page, pageSize, filter);
     }
 
-    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
+    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT,
+            produces = MimeTypeUtils.APPLICATION_JSON_VALUE,
+            consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) "
+            + " and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public MemberRO putDomainMember(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.cas.web.CasAuthenticationFilter;
+import org.springframework.security.cas.authentication.CasServiceTicketAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -72,13 +72,12 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             } else {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: [{}]", principal);
             }
+        } else if (authenticationToken instanceof CasServiceTicketAuthenticationToken
+                || authenticationToken.getClass().getSimpleName().equals("CasAuthenticationToken")) {
+            LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
+            return null;
         } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
             LOG.info("try to authentication Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
-            if (CasAuthenticationFilter.CAS_STATEFUL_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())
-                    || CasAuthenticationFilter.CAS_STATELESS_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())) {
-                LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
-                return null;
-            }
             authentication = authenticateByAuthenticationToken((UsernamePasswordAuthenticationToken) authenticationToken);
         }
 
@@ -88,8 +87,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                     Collections.singleton(SMPAuthority.S_AUTHORITY_ANONYMOUS));
             authentication.setAuthenticated(false);
         }
-
-
         return authentication;
     }
 

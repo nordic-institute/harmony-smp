@@ -25,9 +25,9 @@ import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

@@ -26,7 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -39,11 +39,10 @@ import java.util.Objects;
  * @since 5.1
  */
 @Entity
-@Table(name = "SMP_DOCUMENT_VERSION_EVENT",
+@Table(name = "SMP_DOCUMENT_VERSION_EVENT", comment = "Document version Events.",
         indexes = {
                 @Index(name = "SMP_DOCVEREVNT_DOCVER_IDX", columnList = "FK_DOCUMENT_VERSION_ID"),
         })
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT_VERSION_EVENT", comment = "Document version Events.")
 public class DBDocumentVersionEvent extends BaseEntity {
 
     @Id

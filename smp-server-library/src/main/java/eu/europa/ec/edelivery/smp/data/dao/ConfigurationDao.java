@@ -42,7 +42,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 import java.io.File;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;

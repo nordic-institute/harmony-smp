@@ -55,8 +55,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.handler.MessageContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -171,8 +171,8 @@ public class SmlConnector implements ApplicationContextAware {
 
         LOG.debug("Checking if Participant: {} exists in domain: {}.", normalizedParticipantString, domain.getDomainCode());
         try {
-            ParticipantsType smlRequest = toParticipantsType(normalizedParticipantId, domain.getSmlSmpId());
-            ExistsParticipantResponseType existsParticipantResponseType = getBDMSLWSClient(domain).existsParticipantIdentifier(smlRequest);
+            ExistsParticipant smlRequest = toExistsParticipant(normalizedParticipantId, domain.getSmlSmpId());
+            ExistsParticipantResponse existsParticipantResponseType = getBDMSLWSClient(domain).existsParticipantIdentifier(smlRequest);
             return existsParticipantResponseType.isExist();
         } catch (BadRequestFault | NotFoundFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
@@ -190,7 +190,7 @@ public class SmlConnector implements ApplicationContextAware {
 
     protected void createCustomServiceNaptrDNSRecord(Identifier normalizedParticipantId, DBDomain domain, String customNaptrService) throws UnauthorizedFault, BadRequestFault, NotFoundFault, InternalErrorFault {
         LOG.debug("Set custom naptr service [{}] DNS record for Participant: [{}] and domain: [{}].", customNaptrService, normalizedParticipantId, domain.getDomainCode());
-        SMPAdvancedServiceForParticipantType smlRequest = toBDMSLAdvancedParticipantId(normalizedParticipantId, domain.getSmlSmpId(), customNaptrService);
+        SMPAdvancedServiceForParticipantService smlRequest = toBDMSLAdvancedParticipantId(normalizedParticipantId, domain.getSmlSmpId(), customNaptrService);
         getBDMSLWSClient(domain).createParticipantIdentifier(smlRequest);
     }
 
@@ -360,7 +360,7 @@ public class SmlConnector implements ApplicationContextAware {
             return;
         }
 
-        PrepareChangeCertificateType prepareChangeCertificateType = new ObjectFactory().createPrepareChangeCertificateType();
+        PrepareChangeCertificate prepareChangeCertificateType = new ObjectFactory().createPrepareChangeCertificate();
         prepareChangeCertificateType.setNewCertificatePublicKey(encoded);
         prepareChangeCertificateType.setMigrationDate(migrationDate);
 

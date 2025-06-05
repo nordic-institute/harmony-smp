@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +41,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_EXTENSION_BY_
  */
 @Entity
 @Audited
-@Table(name = "SMP_EXTENSION",
+@Table(name = "SMP_EXTENSION",comment = "SMP extension definitions",
         indexes = {@Index(name = "SMP_EXT_UNIQ_NAME_IDX", columnList = "IMPLEMENTATION_NAME", unique = true)
 })
 @NamedQuery(name = QUERY_EXTENSION_ALL, query = "SELECT d FROM DBExtension d")
 @NamedQuery(name = QUERY_EXTENSION_BY_IDENTIFIER, query = "SELECT d FROM DBExtension d WHERE d.identifier = :identifier")
-@org.hibernate.annotations.Table(appliesTo = "SMP_EXTENSION", comment = "SMP extension definitions")
 public class DBExtension extends BaseEntity {
 
     @Id

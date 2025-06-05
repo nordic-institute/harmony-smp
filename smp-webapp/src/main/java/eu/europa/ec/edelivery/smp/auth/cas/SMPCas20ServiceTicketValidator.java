@@ -19,9 +19,9 @@
 package eu.europa.ec.edelivery.smp.auth.cas;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jasig.cas.client.validation.Assertion;
-import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
-import org.jasig.cas.client.validation.TicketValidationException;
+import org.apereo.cas.client.validation.Assertion;
+import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
+import org.apereo.cas.client.validation.TicketValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;

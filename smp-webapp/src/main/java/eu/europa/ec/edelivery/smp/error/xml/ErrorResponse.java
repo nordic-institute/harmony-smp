@@ -27,7 +27,7 @@
 package eu.europa.ec.edelivery.smp.error.xml;
 
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 
 /**

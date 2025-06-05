@@ -35,6 +35,7 @@ public class SMPSecurityConstants {
     // CAS BEANS
     public static final String SMP_CAS_PROPERTIES_BEAN = "smpCasServiceProperties";
     public static final String SMP_CAS_FILTER_BEAN = "smpCasAuthenticationFilter";
+    public static final String SMP_CAS_AUTHENTICATION_ENTRY_POINT = "smpCasAuthenticationEntryPoint";
     public static final String SMP_CAS_KEY = "SMP_CAS_KEY_";
 
 

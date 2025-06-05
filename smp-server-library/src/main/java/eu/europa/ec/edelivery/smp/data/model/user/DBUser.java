@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,8 +37,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_USER")
-@org.hibernate.annotations.Table(appliesTo = "SMP_USER", comment = "SMP can handle multiple domains. This table contains domain specific data")
+@Table(name = "SMP_USER", comment = "SMP can handle multiple domains. This table contains domain specific data")
 @NamedQuery(name = QueryNames.QUERY_USER_BY_CI_USERNAME, query = "SELECT u FROM DBUser u WHERE upper(u.username) = upper(:username)")
 @NamedQuery(name = QueryNames.QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT u FROM DBCredential c JOIN c.user u " +
         " WHERE c.name = :credential_name" +

@@ -25,8 +25,8 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +39,7 @@ import java.util.Map;
  */
 @Entity
 @Audited
-@Table(name = "SMP_ALERT")
-@org.hibernate.annotations.Table(appliesTo = "SMP_ALERT", comment = "SMP alerts")
+@Table(name = "SMP_ALERT", comment = "SMP alerts")
 public class DBAlert extends BaseEntity {
 
     @Id
