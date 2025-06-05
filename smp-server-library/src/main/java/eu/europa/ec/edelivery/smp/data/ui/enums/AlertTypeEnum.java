@@ -32,6 +32,8 @@ public enum AlertTypeEnum {
     CREDENTIAL_VERIFICATION_FAILED("credential_verification_failed"),
     CREDENTIAL_REQUEST_RESET("credential_request_reset"),
     CREDENTIAL_CHANGED("credential_changed"),
+    SYSTEM_CERTIFICATE_IMMINENT_EXPIRATION("system_certificate_imminent_expiration"),
+    SYSTEM_CERTIFICATE_EXPIRED("system_certificate_expired"),
     USER_CREATED_CONFIRMATION("user_created_confirmation"),
     USER_CREATED("user_created"),
     USER_UPDATED("user_updated"),

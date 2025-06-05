@@ -35,6 +35,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType.toList;
@@ -251,5 +252,11 @@ public class DomainDao extends BaseDao<DBDomain> {
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
         query.setParameter(PARAM_DOMAIN_VISIBILITY, VisibilityType.PUBLIC);
         return query;
+    }
+
+    public List<DBDomain.DBDomainExpiringCertificateMapping> getDomainsWithExpiringCertificates(Set<String> expiredCertificateAliases) {
+        TypedQuery<DBDomain.DBDomainExpiringCertificateMapping> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES, DBDomain.DBDomainExpiringCertificateMapping.class);
+        query.setParameter(PARAM_DOMAIN_EXPIRED_CERTIFICATE_ALIASES, expiredCertificateAliases);
+        return query.getResultList();
     }
 }

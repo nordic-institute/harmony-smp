@@ -600,6 +600,43 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
+    //-----------------------
+    // before system certificate expire
+    public Boolean getAlertBeforeExpireSystemCertificateEnabled() {
+        return configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_ENABLED);
+    }
+
+    public Integer getAlertBeforeExpireSystemCertificatePeriod() {
+        return configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_PERIOD);
+    }
+
+    public Integer getAlertBeforeExpireSystemCertificateInterval() {
+        return configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_INTERVAL);
+    }
+
+    public AlertLevelEnum getAlertBeforeExpireSystemCertificateLevel() {
+        String level = configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
+    // expired access token alerts
+    public Boolean getAlertExpiredSystemCertificateEnabled() {
+        return configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_EXPIRED_ENABLED);
+    }
+
+    public Integer getAlertExpiredSystemCertificatePeriod() {
+        return configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_EXPIRED_PERIOD);
+    }
+
+    public Integer getAlertExpiredSystemCertificateInterval() {
+        return configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_EXPIRED_INTERVAL);
+    }
+
+    public AlertLevelEnum getAlertExpiredSystemCertificateLevel() {
+        String level = configurationDAO.getCachedPropertyValue(ALERT_SYSTEM_CERTIFICATE_EXPIRED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
     public String getSMPInstanceName() {
         return configurationDAO.getCachedPropertyValue(SMP_INSTANCE_NAME);
     }

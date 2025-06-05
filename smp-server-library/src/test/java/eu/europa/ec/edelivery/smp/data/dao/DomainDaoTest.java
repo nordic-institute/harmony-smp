@@ -25,8 +25,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -48,7 +51,6 @@ class DomainDaoTest extends AbstractBaseDao {
         testUtilsDao.creatDomainMemberships();
         testUtilsDao.createGroupMemberships();
         testUtilsDao.createResourceMemberships();
-
     }
 
     @Test
@@ -172,5 +174,48 @@ class DomainDaoTest extends AbstractBaseDao {
 
         result = testInstance.getDomainsByUserIdAndResourceRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER, MembershipRoleType.ADMIN);
         assertEquals(2, result.size());
+    }
+
+    @Test
+    void getDomainsWithExpiringCertificates() {
+        String expiredCertificateAlias1 = "expiredCertificate1";
+        String expiredCertificateAlias2 = "expiredCertificate2";
+
+        DBDomain d1 = testUtilsDao.getD1();
+        d1.setSignatureKeyAlias(expiredCertificateAlias1);
+        testInstance.update(d1);
+        DBDomain d3 = testUtilsDao.getD3();
+        d3.setSignatureKeyAlias(expiredCertificateAlias2);
+        d3.setSmlClientKeyAlias(expiredCertificateAlias1);
+        testInstance.update(d3);
+
+        List<DBDomain.DBDomainExpiringCertificateMapping> domainsWithExpiringCertificates = testInstance.getDomainsWithExpiringCertificates(
+                Set.of(expiredCertificateAlias1, expiredCertificateAlias2));
+
+
+        assertEquals(2, domainsWithExpiringCertificates.size());
+
+        Set<String> domainCodes = domainsWithExpiringCertificates.stream()
+                .map(DBDomain.DBDomainExpiringCertificateMapping::getDomainCode)
+                .collect(Collectors.toSet());
+        assertEquals(Set.of(d1.getDomainCode(), d3.getDomainCode()), domainCodes);
+
+        // first expired domain
+        Set<DBDomain.DBDomainExpiringCertificateMapping> expiredDomains = domainsWithExpiringCertificates.stream()
+                .filter(domain -> domain.getDomainCode().equals(d1.getDomainCode()))
+                .collect(Collectors.toSet());
+        assertEquals(1, expiredDomains.size());
+        assertEquals(expiredCertificateAlias1, expiredDomains.iterator().next().getSignatureKeyAlias());
+        assertTrue(expiredDomains.iterator().next().isMatchedSigningCertificate());
+
+        // second expired domain
+        expiredDomains = domainsWithExpiringCertificates.stream()
+                .filter(domain -> domain.getDomainCode().equals(d3.getDomainCode()))
+                .collect(Collectors.toSet());
+        assertEquals(1, expiredDomains.size());
+        assertEquals(expiredCertificateAlias2, expiredDomains.iterator().next().getSignatureKeyAlias());
+        assertTrue(expiredDomains.iterator().next().isMatchedSigningCertificate());
+        assertEquals(expiredCertificateAlias1, expiredDomains.iterator().next().getSmlClientKeyAlias());
+        assertTrue(expiredDomains.iterator().next().isMatchedSmlCertificate());
     }
 }
