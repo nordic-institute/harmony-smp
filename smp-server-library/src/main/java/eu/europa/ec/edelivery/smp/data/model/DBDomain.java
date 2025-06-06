@@ -113,7 +113,9 @@ public class DBDomain extends BaseEntity {
     private static final long serialVersionUID = 1008583888835630004L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_SEQ")
-    @GenericGenerator(name = "SMP_DOMAIN_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOMAIN_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique domain id")
     Long id;

@@ -56,6 +56,7 @@ public class SMPMySQL5InnoDBDialect extends MySQLDialect {
         ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.LONGVARCHAR, "longtext", this));
         // this is the default ddl generation for timestamp
         ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.TIMESTAMP, "datetime", this));
+        ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.TIMESTAMP_WITH_TIMEZONE, "datetime", this));
 
         // this is added for audit table with clob otherwise it will be varchar(255)
         final CapacityDependentDdlType.Builder varcharBuilder =

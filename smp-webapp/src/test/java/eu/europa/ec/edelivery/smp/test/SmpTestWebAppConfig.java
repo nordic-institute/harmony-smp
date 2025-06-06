@@ -18,7 +18,6 @@
  */
 package eu.europa.ec.edelivery.smp.test;
 
-import eu.europa.ec.edelivery.smp.auth.cas.SMPCasConfigurer;
 import eu.europa.ec.edelivery.smp.config.SMPDatabaseConfig;
 import eu.europa.ec.edelivery.smp.config.SMPWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.UISecurityConfig;
@@ -40,7 +39,6 @@ import org.springframework.context.annotation.Import;
         SMPDatabaseConfig.class,
         WSSecurityConfig.class,
         UISecurityConfig.class,
-        SMPCasConfigurer.class,
         SMPSecurityPropertyUpdateListener.class,
         CronTriggerConfig.class,
         ConfigurationDao.class})

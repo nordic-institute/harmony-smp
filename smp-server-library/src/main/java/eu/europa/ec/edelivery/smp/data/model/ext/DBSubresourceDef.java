@@ -51,7 +51,9 @@ public class DBSubresourceDef extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SUBRESOURCE_DEF_SEQ")
-    @GenericGenerator(name = "SMP_SUBRESOURCE_DEF_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_SUBRESOURCE_DEF_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique id")
     Long id;

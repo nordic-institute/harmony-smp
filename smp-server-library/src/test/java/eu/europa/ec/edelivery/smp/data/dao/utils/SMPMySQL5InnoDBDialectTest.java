@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -83,19 +84,21 @@ class SMPMySQL5InnoDBDialectTest {
         // audit had different type pem_encoding varchar(255)
         MatcherAssert.assertThat(generatedDDL, not(containsString("pem_encoding varchar")));
 
+        MatcherAssert.assertThat(generatedDDL, containsString("created_on datetime "));
+
     }
 
     @Entity
     @Audited
-    @Table(name = "bdmsl_test")
-    public class TestEntity {
+    @Table(name = "DB_test")
+    public static class TestEntity {
 
         // for 4.3 to 5.0 migration set increment_size to 1
         @Id
-        @GenericGenerator(name = "bdmsl_certificate_seq", strategy = "native", parameters = {
+        @GenericGenerator(name = "db_certificate_seq", strategy = "native", parameters = {
                 @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
         })
-        @GeneratedValue(strategy = GenerationType.AUTO, generator = "bdmsl_certificate_seq")
+        @GeneratedValue(strategy = GenerationType.AUTO, generator = "db_certificate_seq")
         @Column(name = "id")
         private Long id;
 
@@ -113,6 +116,9 @@ class SMPMySQL5InnoDBDialectTest {
         @NaturalId
         private String certificateId;
 
+        @Column(name = "created_on", nullable = false)
+        OffsetDateTime createdOn;
+
         public Long getId() {
             return id;
         }
@@ -121,6 +127,12 @@ class SMPMySQL5InnoDBDialectTest {
             this.id = id;
         }
 
+        public OffsetDateTime getCreatedOn() {
+            return createdOn;
+        }
 
+        public void setCreatedOn(OffsetDateTime createdOn) {
+            this.createdOn = createdOn;
+        }
     }
 }

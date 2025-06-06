@@ -163,12 +163,12 @@ public class SMPSchemaGenerator {
         EnumSet<TargetType> enumSet = EnumSet.of(TargetType.SCRIPT);
         export.execute(enumSet, SchemaExport.Action.CREATE, metadataImplementor);
         // prepend comment to file with wersion
-        prependComment(file, String.format(FILE_COMMENT, "CREATE", version, hibernateDialect,  hibernateVersion));
+        prependComment(file, String.format(FILE_COMMENT, "CREATE", version, hibernateVersion, hibernateDialect));
 
         // create drop script
         export.setOutputFile(fileDrop.getAbsolutePath());
         export.execute(enumSet, SchemaExport.Action.DROP, metadataImplementor);
-        prependComment(fileDrop, String.format(FILE_COMMENT, "DROP", version, hibernateDialect,  hibernateVersion));
+        prependComment(fileDrop, String.format(FILE_COMMENT, "DROP", version, hibernateVersion, hibernateDialect));
     }
 
 

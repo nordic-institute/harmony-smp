@@ -50,7 +50,9 @@ public class DBExtension extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_EXTENSION_SEQ")
-    @GenericGenerator(name = "SMP_EXTENSION_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_EXTENSION_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique extension id")
     Long id;

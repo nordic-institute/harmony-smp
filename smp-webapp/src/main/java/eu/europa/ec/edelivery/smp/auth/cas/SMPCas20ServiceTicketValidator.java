@@ -41,7 +41,7 @@ import java.util.*;
  * @since 4.2
  */
 public class SMPCas20ServiceTicketValidator extends Cas20ServiceTicketValidator {
-    private static final Logger LOG = LoggerFactory.getLogger(Cas20ServiceTicketValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SMPCas20ServiceTicketValidator.class);
     private final String urlSuffix;
 
     public SMPCas20ServiceTicketValidator(String casServerUrl, String urlSuffix) {

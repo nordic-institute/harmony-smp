@@ -135,6 +135,7 @@ public class WSSecurityConfig {
         PathPatternRequestMatcher.Builder pathPatternRequestMatcherBuilder = PathPatternRequestMatcher.withDefaults();
 
         httpSecurity
+                .securityMatcher(RegexRequestMatcher.regexMatcher("^/(?!ui/)([^/]+)(/[^/]+){0,4}$"))
                 .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class)
                 .addFilter(getClientCertAuthenticationFilter())
                 .addFilter(getEDeliveryX509AuthenticationFilter())
@@ -148,7 +149,6 @@ public class WSSecurityConfig {
                         .requestMatchers(pathPatternRequestMatcherBuilder.matcher(HttpMethod.GET, "/")).permitAll()
                         .requestMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
                         .requestMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
-                        .requestMatchers(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE).authenticated()
                         .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.DELETE, "^/(?!ui/)([^/]+)(/[^/]+){0,4}$")).hasAnyRole(
                                 ApplicationRoleType.USER.getAPIRole(),
                                 ApplicationRoleType.SYSTEM_ADMIN.getAPIRole())
@@ -237,7 +237,7 @@ public class WSSecurityConfig {
     private AuthenticationManager getAPIAuthenticationManager() {
         if (authenticationManager == null) {
             // create authentication managerAuthenticationManagerBuilder
-            return new  ProviderManager(smpAuthenticationProvider);
+            authenticationManager = new  ProviderManager(smpAuthenticationProvider);
         }
         return authenticationManager;
     }

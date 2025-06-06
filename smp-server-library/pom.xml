@@ -267,9 +267,10 @@
                                     2. script version
                                     3. export scripts.-->
                                 <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator" fork="true" failonerror="true">
-                                    <arg value="org.hibernate.dialect.MySQL5InnoDBDialect,org.hibernate.dialect.OracleDialect" />
+                                    <arg value="org.hibernate.dialect.MySQL5InnoDBDialect:mysql5innodb, org.hibernate.dialect.OracleDialect:oracle10g" />
                                     <arg value="${project.version}" />
                                     <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts" />
+                                    <arg value="${hibernate.version}" />
                                     <!-- reference to the passed-in classpath reference -->
                                     <classpath refid="maven.compile.classpath" />
                                 </java>

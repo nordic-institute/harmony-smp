@@ -68,7 +68,9 @@ public class DBSubresource extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SUBRESOURCE_SEQ")
-    @GenericGenerator(name = "SMP_SUBRESOURCE_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_SUBRESOURCE_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Shared primary key with master table SMP_SUBRESOURCE")
     Long id;

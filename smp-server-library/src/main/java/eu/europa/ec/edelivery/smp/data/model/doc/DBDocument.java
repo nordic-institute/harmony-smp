@@ -144,7 +144,9 @@ public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOCUMENT_SEQ")
-    @GenericGenerator(name = "SMP_DOCUMENT_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOCUMENT_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique document id")
     Long id;

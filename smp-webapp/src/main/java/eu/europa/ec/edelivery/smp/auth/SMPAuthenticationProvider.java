@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.cas.authentication.CasServiceTicketAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -72,11 +71,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             } else {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: [{}]", principal);
             }
-        } else if (authenticationToken instanceof CasServiceTicketAuthenticationToken
-                || authenticationToken.getClass().getSimpleName().equals("CasAuthenticationToken")) {
-            LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
-            return null;
-        } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
+        }  else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
             LOG.info("try to authentication Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
             authentication = authenticateByAuthenticationToken((UsernamePasswordAuthenticationToken) authenticationToken);
         }
@@ -112,7 +107,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> auth) {
         LOG.info("Support authentication: [{}].", auth);
-        boolean supportAuthentication = auth.equals(UsernamePasswordAuthenticationToken.class) || auth.equals(PreAuthenticatedAuthenticationToken.class);
+        boolean supportAuthentication = auth.equals(UsernamePasswordAuthenticationToken.class)
+                || auth.equals(PreAuthenticatedAuthenticationToken.class);
+
         if (!supportAuthentication) {
             LOG.warn("SMP does not support authentication type: [{}].", auth);
         }

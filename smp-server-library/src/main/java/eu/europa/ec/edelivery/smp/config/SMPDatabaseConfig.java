@@ -31,7 +31,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.persistence.EntityManagerFactory;
-import javax.sql.DataSource;;
+import javax.sql.DataSource;
 
 /**
  * The configuration class instantiates the database spring beans.
