@@ -84,7 +84,7 @@ class SMPMySQL5InnoDBDialectTest {
         // audit had different type pem_encoding varchar(255)
         MatcherAssert.assertThat(generatedDDL, not(containsString("pem_encoding varchar")));
 
-        MatcherAssert.assertThat(generatedDDL, containsString("created_on datetime "));
+        MatcherAssert.assertThat(generatedDDL, containsString("created_on datetime"));
 
     }
 

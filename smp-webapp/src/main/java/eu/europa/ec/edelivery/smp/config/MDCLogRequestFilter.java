@@ -47,8 +47,7 @@ public class MDCLogRequestFilter extends GenericFilterBean {
         String username = SessionSecurityUtils.getAuthenticationName();
         String requestId = UUID.randomUUID().toString();
         String sessionId = null;
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if (request instanceof HttpServletRequest httpRequest) {
             sessionId = httpRequest.getSession() != null ? httpRequest.getSession().getId() : null;
         }
         MDC.put(SMPLogger.MDC_USER, username);

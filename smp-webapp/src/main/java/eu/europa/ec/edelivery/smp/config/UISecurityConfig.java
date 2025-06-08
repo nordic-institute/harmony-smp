@@ -38,6 +38,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
@@ -55,9 +56,11 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +91,6 @@ public class UISecurityConfig {
     // cas authentication
     CasAuthenticationProvider casAuthenticationProvider;
     CasAuthenticationFilter casAuthenticationFilter;
-    CasAuthenticationEntryPoint casAuthenticationEntryPoint;
 
     public UISecurityConfig(SMPAuthenticationProviderForUI smpAuthenticationProviderForUI,
                             ConfigurationService configurationService,
@@ -97,15 +99,14 @@ public class UISecurityConfig {
                             @Lazy RequestMatcher csrfURLMatcher,
                             // optional cas authentication configuration
                             @Lazy CasAuthenticationProvider casAuthenticationProvider,
-                            @Lazy @Qualifier(SMP_CAS_FILTER_BEAN) CasAuthenticationFilter casAuthenticationFilter,
-                            @Lazy @Qualifier(SMP_CAS_AUTHENTICATION_ENTRY_POINT) CasAuthenticationEntryPoint casAuthenticationEntryPoint) {
+                            @Lazy @Qualifier(SMP_CAS_FILTER_BEAN) CasAuthenticationFilter casAuthenticationFilter
+                            ) {
 
         this.configurationService = configurationService;
         this.smpAuthenticationProviderForUI = smpAuthenticationProviderForUI;
         this.mdcLogRequestFilter = mdcLogRequestFilter;
         this.csrfTokenRepository = csrfTokenRepository;
         this.csrfURLMatcher = csrfURLMatcher;
-        this.casAuthenticationEntryPoint = casAuthenticationEntryPoint;
         this.casAuthenticationProvider = casAuthenticationProvider;
         this.casAuthenticationFilter = casAuthenticationFilter;
     }
@@ -120,6 +121,7 @@ public class UISecurityConfig {
     @Order(1)
     public SecurityFilterChain filterChainUI(HttpSecurity httpSecurity) throws Exception {
 
+        PathPatternRequestMatcher.Builder matcherBuilder = PathPatternRequestMatcher.withDefaults();
         AuthenticationManager manager = authenticationManagerBean();
         SMPSecurityExceptionHandler smpSecurityExceptionHandler = new SMPSecurityExceptionHandler();
         if (configurationService.isSSOEnabledForUserAuthentication()) {
@@ -127,8 +129,8 @@ public class UISecurityConfig {
             LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint for endpoint [{}]!", casEndpointAntPattern);
             httpSecurity
                     .exceptionHandling(exceptionHandling -> exceptionHandling
-                            .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint,
-                                    new org.springframework.security.web.util.matcher.AntPathRequestMatcher(casEndpointAntPattern))
+                            .defaultAuthenticationEntryPointFor(createCasAuthenticationEntryPoint(),
+                                    matcherBuilder.matcher(casEndpointAntPattern))
                             .accessDeniedHandler(smpSecurityExceptionHandler)
                     ).addFilter(casAuthenticationFilter);
         } else {
@@ -141,9 +143,14 @@ public class UISecurityConfig {
                 );
         }
 
-        PathPatternRequestMatcher.Builder matcherBuilder = PathPatternRequestMatcher.withDefaults();
+
+        List<RequestMatcher> matchers = new ArrayList<>();
+        // add the default matcher for the UI
+        matchers.add(matcherBuilder.matcher("/ui/**"));
+        matchers.add(matcherBuilder.matcher("/smp/ui/**"));
+
         httpSecurity
-                .securityMatcher(matcherBuilder.matcher("/ui/**"))
+                .securityMatcher(new OrRequestMatcher(matchers))
                 .addFilterAfter(mdcLogRequestFilter, BasicAuthenticationFilter.class)
 //                  .addFilterBefore(filter, BasicAuthenticationFilter.class)
                 .httpBasic(http -> http.authenticationEntryPoint(smpSecurityExceptionHandler))
@@ -156,6 +163,7 @@ public class UISecurityConfig {
                         // allow anonymous access to the public resource search
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/public/rest/search/**")).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, "/ui/public/rest/security/authentication")).permitAll()
+                        .requestMatchers(matcherBuilder.matcher(HttpMethod.DELETE, "/ui/public/rest/security/authentication")).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE)).authenticated()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.PUT, "/ui/public/rest/**")).hasAnyAuthority(
                                 SMPAuthority.S_AUTHORITY_USER.getAuthority(),
@@ -184,12 +192,39 @@ public class UISecurityConfig {
                                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/internal/rest/**")).hasAnyAuthority(
                                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        .requestMatchers(matcherBuilder.matcher(HttpMethod.PUT, "/ui/internal/rest/**")).hasAnyAuthority(
+                                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        .requestMatchers(matcherBuilder.matcher(HttpMethod.DELETE, "/ui/internal/rest/**")).hasAnyAuthority(
+                                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/**")).permitAll()
                 );
 
         httpSecurity.authenticationManager(manager);
         configureSecurityHeaders(httpSecurity);
         return httpSecurity.build();
+    }
+
+    protected CasAuthenticationEntryPoint createCasAuthenticationEntryPoint() {
+        if (!configurationService.isSSOEnabledForUserAuthentication()) {
+            LOG.warn("Bean [{}] is not configured because SSO CAS authentication is not enabled!", CasAuthenticationEntryPoint.class);
+            return null;
+        }
+        String casUrl = configurationService.getCasURL().toString();
+        String casLoginPath = configurationService.getCasURLPathLogin();
+        String casUrlLogin = StringUtils.removeEnd(casUrl, "/") + StringUtils.prependIfMissing(casLoginPath, "/");
+        URL path = configurationService.getCasCallbackUrl();
+
+        // create service properties
+        ServiceProperties serviceProperties = new ServiceProperties();
+        serviceProperties.setArtifactParameter(ServiceProperties.DEFAULT_CAS_ARTIFACT_PARAMETER);
+        serviceProperties.setService(path != null ? path.toExternalForm() : "null");
+        serviceProperties.setAuthenticateAllArtifacts(true);
+        // create entry point
+        CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
+        entryPoint.setLoginUrl(casUrlLogin);
+        entryPoint.setServiceProperties(serviceProperties);
+        LOG.info("Configured CAS CasAuthenticationEntryPoint Url: [{}]", entryPoint.getLoginUrl());
+        return entryPoint;
     }
 
     protected void configureSecurityHeaders(HttpSecurity httpSecurity) throws Exception {

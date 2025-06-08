@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
-import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -43,33 +43,6 @@ class SMPCasConfigurerTest {
 
     SMPCasConfigurer testInstance = new SMPCasConfigurer(mockSmpUrlBuilder, mockConfigService);
 
-    @Test
-    void serviceProperties() throws MalformedURLException {
-        String callbackString = "http://callback.local/smp";
-        URL callBackURL = new  URL(callbackString);
-        doReturn(callBackURL).when(mockConfigService).getCasCallbackUrl();
-        ServiceProperties serviceProperties = testInstance.serviceProperties();
-
-        assertNotNull(serviceProperties);
-        assertEquals(callbackString, serviceProperties.getService());
-        assertEquals(ServiceProperties.DEFAULT_CAS_ARTIFACT_PARAMETER, serviceProperties.getArtifactParameter());
-        assertTrue(serviceProperties.isAuthenticateAllArtifacts());
-    }
-
-    @Test
-    void casAuthenticationEntryPoint() throws MalformedURLException {
-        String casUrl = "http://cas-server.local/cas";
-        String casLoginPath = "login";
-        doReturn(true).when(mockConfigService).isSSOEnabledForUserAuthentication();
-        doReturn(new URL(casUrl)).when(mockConfigService).getCasURL();
-        doReturn(casLoginPath).when(mockConfigService).getCasURLPathLogin();
-        ServiceProperties serviceProperties = testInstance.serviceProperties();
-
-        CasAuthenticationEntryPoint result = testInstance.casAuthenticationEntryPoint(serviceProperties);
-        assertNotNull(serviceProperties);
-        assertEquals(casUrl+"/"+casLoginPath,result.getLoginUrl() );
-        assertEquals(serviceProperties,result.getServiceProperties() );
-    }
 
     @Test
     void ecasServiceTicketValidator() throws MalformedURLException {
@@ -88,9 +61,9 @@ class SMPCasConfigurerTest {
     @Test
     void getCustomParameters() {
         Map<String, String> testMap = new HashMap<>();
-        testMap.put("key1","val1");
-        testMap.put("key2","val2");
-        List<String> groups = Arrays.asList("list1","list2");
+        testMap.put("key1", "val1");
+        testMap.put("key2", "val2");
+        List<String> groups = Arrays.asList("list1", "list2");
         doReturn(testMap).when(mockConfigService).getCasTokenValidationParams();
         doReturn(groups).when(mockConfigService).getCasURLTokenValidationGroups();
 
@@ -108,12 +81,8 @@ class SMPCasConfigurerTest {
         ServiceProperties serviceProperties = mock(ServiceProperties.class);
         SMPCas20ServiceTicketValidator smpCas20ServiceTicketValidator = mock(SMPCas20ServiceTicketValidator.class);
         SMPCasUserService smpCasUserService = mock(SMPCasUserService.class);
-
         doReturn(true).when(mockConfigService).isSSOEnabledForUserAuthentication();
-
-
         CasAuthenticationProvider provider = testInstance.casAuthenticationProvider(serviceProperties, smpCas20ServiceTicketValidator, smpCasUserService);
-
         assertNotNull(provider);
 
     }

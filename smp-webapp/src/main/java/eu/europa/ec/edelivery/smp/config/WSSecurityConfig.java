@@ -32,23 +32,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.cas.authentication.CasAuthenticationProvider;
-import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
-import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -59,10 +54,8 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.*;
+import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN;
+import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_SECURITY_PATH_AUTHENTICATE;
 
 
 /**
@@ -103,6 +96,7 @@ public class WSSecurityConfig {
         this.csrfTokenRepository = csrfTokenRepository;
         this.csrfURLMatcher = csrfURLMatcher;
     }
+
     /**
      * The main security filter chain for the SMP API.
      * <p>
@@ -113,7 +107,6 @@ public class WSSecurityConfig {
      * @throws Exception if an error occurs during configuration
      */
     @Bean
-    @Order(2)
     public SecurityFilterChain filterChainAPI(HttpSecurity httpSecurity) throws Exception {
         configureSecurityHeaders(httpSecurity);
         SMPSecurityExceptionHandler smpSecurityExceptionHandler = new SMPSecurityExceptionHandler();
@@ -135,7 +128,6 @@ public class WSSecurityConfig {
         PathPatternRequestMatcher.Builder pathPatternRequestMatcherBuilder = PathPatternRequestMatcher.withDefaults();
 
         httpSecurity
-                .securityMatcher(RegexRequestMatcher.regexMatcher("^/(?!ui/)([^/]+)(/[^/]+){0,4}$"))
                 .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class)
                 .addFilter(getClientCertAuthenticationFilter())
                 .addFilter(getEDeliveryX509AuthenticationFilter())
@@ -169,7 +161,6 @@ public class WSSecurityConfig {
      * This bean is used to authenticate users and is set as the primary authentication manager.
      *
      * @return the authentication manager
-     * @throws Exception if an error occurs while creating the authentication manager
      */
     @Primary
     @Bean(name = {BeanIds.AUTHENTICATION_MANAGER, SMP_AUTHENTICATION_MANAGER_BEAN})
@@ -186,7 +177,7 @@ public class WSSecurityConfig {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .sessionFixation(sessionFixation -> sessionFixation.migrateSession())
+                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::migrateSession)
                         .maximumSessions(1)
                 );
 
@@ -204,7 +195,7 @@ public class WSSecurityConfig {
         } else if (maxAge == 0) {
             LOG.warn("The httpStrictTransportSecurity (HSTS) policy is disabled!");
             httpSecurity.headers(headers -> headers
-                    .httpStrictTransportSecurity(hsts -> hsts.disable())
+                    .httpStrictTransportSecurity(HeadersConfigurer.HstsConfig::disable)
             );
         } else {
             LOG.info("The httpStrictTransportSecurity (HSTS) policy is set to [{}] for http and https!", maxAge);
@@ -237,13 +228,13 @@ public class WSSecurityConfig {
     private AuthenticationManager getAPIAuthenticationManager() {
         if (authenticationManager == null) {
             // create authentication managerAuthenticationManagerBuilder
-            authenticationManager = new  ProviderManager(smpAuthenticationProvider);
+            authenticationManager = new ProviderManager(smpAuthenticationProvider);
         }
         return authenticationManager;
     }
 
 
-    public ClientCertAuthenticationFilter getClientCertAuthenticationFilter() throws Exception {
+    public ClientCertAuthenticationFilter getClientCertAuthenticationFilter() {
         if (clientCertAuthenticationFilter == null) {
             clientCertAuthenticationFilter = new ClientCertAuthenticationFilter();
             clientCertAuthenticationFilter.setAuthenticationManager(getAPIAuthenticationManager());
@@ -252,7 +243,7 @@ public class WSSecurityConfig {
         return clientCertAuthenticationFilter;
     }
 
-    public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter() throws Exception {
+    public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter() {
         if (x509AuthenticationFilter == null) {
             x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
             x509AuthenticationFilter.setAuthenticationManager(getAPIAuthenticationManager());
