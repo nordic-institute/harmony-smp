@@ -13,11 +13,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- the soap ui specific dependencies -->
-        <plugin.soapui-maven-plugin.version>5.7.2</plugin.soapui-maven-plugin.version>
+        <plugin.soapui-maven-plugin.version>5.8.0</plugin.soapui-maven-plugin.version>
         <plugin.maven-compiler-plugin.version>3.13.0</plugin.maven-compiler-plugin.version>
-        <plugin.dependency-check-maven.version>9.2.0</plugin.dependency-check-maven.version>
+        <plugin.dependency-check-maven.version>12.1.1</plugin.dependency-check-maven.version>
 
-        <org.codehaus.groovy.version>2.9.2-01</org.codehaus.groovy.version>
+        <org.codehaus.groovy.version>3.9.0</org.codehaus.groovy.version>
         <org.codehaus.groovy.eclipse-batch.version>2.5.22-01</org.codehaus.groovy.eclipse-batch.version>
 
         <com.jgoodies.version>1.0.7</com.jgoodies.version>

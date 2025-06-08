@@ -37,8 +37,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,34 +87,34 @@ public class ResourceController {
     }
 
     @RequestMapping(produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1) {
         LOG.info("Resolver path segment [{}]", parameter1);
 
         handleRequest(httpReq, httpRes, Collections.singletonList(parameter1));
     }
 
     @RequestMapping(path = "{parameter2}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2) {
 
         LOG.info("Resolver paths [{}],[{}]", parameter1, parameter2);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2));
     }
 
     @RequestMapping(path = "{parameter2}/{parameter3}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2, @PathVariable String parameter3) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2, @PathVariable("parameter3") String parameter3) {
         LOG.info("Resolver paths [{}],[{}],[{}]", parameter1, parameter2, parameter3);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2, parameter3));
     }
 
     @RequestMapping(path = "{parameter2}/{parameter3}/{parameter4}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2, @PathVariable String parameter3, @PathVariable String parameter4) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2, @PathVariable("parameter3") String parameter3, @PathVariable("parameter4") String parameter4) {
         LOG.info("Resolver paths [{}],[{}],[{}],[{}]", parameter1, parameter2, parameter3, parameter4);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2, parameter3, parameter4));
 
     }
 
     @RequestMapping(path = "{parameter2}/{parameter3}/{parameter4}/{parameter5}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2, @PathVariable String parameter3, @PathVariable String parameter4, @PathVariable String parameter5) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2, @PathVariable("parameter3") String parameter3, @PathVariable("parameter4") String parameter4, @PathVariable("parameter5") String parameter5) {
         LOG.info("Resolver paths [{}],[{}],[{}],[{}],[{}]", parameter1, parameter2, parameter3, parameter4, parameter5);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2, parameter3, parameter4, parameter5));
     }

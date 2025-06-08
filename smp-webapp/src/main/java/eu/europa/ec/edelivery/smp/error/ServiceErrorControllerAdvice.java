@@ -73,7 +73,7 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
                 .build();
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
-        String logMsg = errorUniqueId == null ? "Null Error ID" : format("UI Error unique ID: %s", errorUniqueId);
+        String logMsg = errorUniqueId == null ? "Null Error ID" : format("WS Error unique ID: %s", errorUniqueId);
         LOG.warn(logMsg, exception);
         return response;
     }

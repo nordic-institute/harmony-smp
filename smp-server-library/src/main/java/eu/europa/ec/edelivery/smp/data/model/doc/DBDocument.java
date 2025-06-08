@@ -27,7 +27,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,8 +44,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_DOCUMENT")
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
+@Table(name = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
 
 @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id")
 @NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES, query =
@@ -145,7 +144,9 @@ public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOCUMENT_SEQ")
-    @GenericGenerator(name = "SMP_DOCUMENT_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOCUMENT_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique document id")
     Long id;

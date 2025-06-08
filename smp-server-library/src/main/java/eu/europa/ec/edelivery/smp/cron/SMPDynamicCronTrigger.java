@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -26,7 +26,8 @@ import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 /**
@@ -38,7 +39,7 @@ import java.util.Date;
 public class SMPDynamicCronTrigger implements Trigger {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPDynamicCronTrigger.class);
     final SMPPropertyEnum cronExpressionProperty;
-    Date nextExecutionDate;
+    Instant nextExecutionInstant;
     CronTrigger cronTrigger;
 
 
@@ -49,12 +50,23 @@ public class SMPDynamicCronTrigger implements Trigger {
 
     @Override
     public Date nextExecutionTime(TriggerContext triggerContext) {
+        Instant nextExecutionInstant = nextExecution(triggerContext);
+        if (nextExecutionInstant == null) {
+            LOG.debug("Cron is disabled.");
+            return null;
+        }
+        return Date.from(nextExecutionInstant);
+
+    }
+
+    @Override
+    public Instant nextExecution(TriggerContext triggerContext) {
         if (cronTrigger == null) {
             LOG.debug("Cron is disabled.");
             return null;
         }
-        nextExecutionDate = cronTrigger.nextExecutionTime(triggerContext);
-        return nextExecutionDate;
+        nextExecutionInstant = cronTrigger.nextExecution(triggerContext);
+        return nextExecutionInstant;
     }
 
     public String getExpression() {
@@ -65,14 +77,14 @@ public class SMPDynamicCronTrigger implements Trigger {
         if (expression == null) {
             LOG.debug("Disable cron trigger for property: [{}]. ", cronExpressionProperty.getProperty());
             cronTrigger = null;
-            nextExecutionDate = null;
+            nextExecutionInstant = null;
             return;
         }
         cronTrigger = new CronTrigger(expression.toString());
         LOG.debug("Set new cron expression: [{}] for property: [{}]. ", expression,
                 cronExpressionProperty.getProperty());
 
-        nextExecutionDate = Calendar.getInstance().getTime();
+        nextExecutionInstant = OffsetDateTime.now().toInstant();
     }
 
     /**
@@ -81,7 +93,7 @@ public class SMPDynamicCronTrigger implements Trigger {
      * @return next scheduled execution date;
      */
     public Date getNextExecutionDate() {
-        return nextExecutionDate;
+        return nextExecutionInstant != null ? Date.from(nextExecutionInstant) : null;
     }
 
     /**

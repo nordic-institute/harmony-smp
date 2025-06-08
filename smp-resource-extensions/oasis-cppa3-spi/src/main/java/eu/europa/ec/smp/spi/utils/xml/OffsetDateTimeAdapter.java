@@ -20,7 +20,7 @@ package eu.europa.ec.smp.spi.utils.xml;
 
 import eu.europa.ec.smp.spi.utils.DatatypeConverter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.OffsetDateTime;
 
 /**

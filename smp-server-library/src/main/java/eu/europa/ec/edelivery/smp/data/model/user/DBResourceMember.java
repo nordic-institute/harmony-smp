@@ -26,9 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
-
-import java.util.Objects;
+import jakarta.persistence.*;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -71,7 +69,9 @@ public class DBResourceMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_RESOURCE_MEMBER_SEQ")
-    @GenericGenerator(name = "SMP_RESOURCE_MEMBER_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_RESOURCE_MEMBER_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     Long id;
 

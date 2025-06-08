@@ -27,14 +27,13 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -79,7 +78,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * @return document for the resource or empty if not found
      */
     public Optional<DBDocument> getDocumentForSubresource(DBSubresource dbSubresource) {
-        if (dbSubresource == null|| dbSubresource.getId() == null) {
+        if (dbSubresource == null || dbSubresource.getId() == null) {
             LOG.debug("Can not get document for subresource, because resource is not persisted to the database");
             return Optional.empty();
         }
@@ -209,19 +208,19 @@ public class DocumentDao extends BaseDao<DBDocument> {
      *
      * @param document the target document
      */
-    public void unlinkDocument(DBDocument document){
+    public void unlinkDocument(DBDocument document) {
         if (document == null || document.getId() == null) {
             LOG.debug("Can not unlink document, because document is not persisted to the database");
             return;
         }
-        TypedQuery<DBDocument> query =  memEManager.createNamedQuery(QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, DBDocument.class);
+        TypedQuery<DBDocument> query = memEManager.createNamedQuery(QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, DBDocument.class);
         query.setParameter(PARAM_DOCUMENT_ID, document.getId());
         // user stream ulink to capture audit record
         List<DBDocument> lstDocuments = query.getResultList();
         lstDocuments.forEach(linkedDoc -> {
             linkedDoc.setReferenceDocument(null);
         });
-   }
+    }
 
     /**
      * Method creates query for searching reference document resources

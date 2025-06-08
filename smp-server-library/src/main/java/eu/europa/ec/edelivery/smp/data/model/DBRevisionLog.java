@@ -25,7 +25,7 @@ import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 
 /**
@@ -41,7 +41,9 @@ public class DBRevisionLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_REVISION_SEQ")
-    @GenericGenerator(name = "SMP_REVISION_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_REVISION_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @RevisionNumber
     private long id;
 

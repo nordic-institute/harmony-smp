@@ -23,8 +23,8 @@
     <properties>
         <sonar.skip>true</sonar.skip>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <org.glassfish.jaxb.jaxb-runtime.version>2.3.9</org.glassfish.jaxb.jaxb-runtime.version>
-        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
+        <org.glassfish.jaxb.jaxb-runtime.version>4.0.5</org.glassfish.jaxb.jaxb-runtime.version>
+        <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
     </properties>
     <artifactId>oasis-cppa3-spi</artifactId>
     <name>oasis-cppa3-spi</name>
@@ -110,25 +110,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.5.0</version>
-                <!--add for building it with jdk9+ -->
-                <dependencies>
-                    <dependency>
-                        <groupId>jakarta.xml.bind</groupId>
-                        <artifactId>jakarta.xml.bind-api</artifactId>
-                        <version>2.3.3</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.glassfish.jaxb</groupId>
-                        <artifactId>jaxb-xjc</artifactId>
-                        <version>${org.glassfish.jaxb.jaxb-runtime.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.glassfish.jaxb</groupId>
-                        <artifactId>jaxb-runtime</artifactId>
-                        <version>${org.glassfish.jaxb.jaxb-runtime.version}</version>
-                    </dependency>
-                </dependencies>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>OasisCppa3</id>

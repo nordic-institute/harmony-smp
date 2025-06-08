@@ -22,7 +22,7 @@
         <prefer-application-packages>
             <package-name>org.bouncycastle.*</package-name>
             <!-- used by Hibernate and JPA -->
-            <package-name>javax.persistence.*</package-name>
+            <package-name>jakarta.persistence.*</package-name>
             <package-name>javassist.*</package-name>
             <package-name>org.hibernate.*</package-name>
             <package-name>org.springframework.*</package-name>
@@ -32,7 +32,7 @@
             <package-name>org.apache.commons.*</package-name>
 
             <!-- used to switch off bean validation which resulted in failing Spring context to load -->
-            <package-name>javax.validation.*</package-name>
+            <package-name>jakarta.validation.*</package-name>
             <!-- use smp fasterxml because weblogic version is too old -->
             <package-name>com.fasterxml.*</package-name>
 

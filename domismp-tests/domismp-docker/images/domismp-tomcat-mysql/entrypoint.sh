@@ -22,12 +22,6 @@ if [ ! -d ${DATA_DIR} ]; then
   mkdir -p ${DATA_DIR}
 fi
 
-# set java home
-if [ "${JDK_VERSION}" == "8" ]; then
-  export JAVA_HOME=/opt/java/${JAVA_8_VERSION}
-fi
-
-
 init_tomcat() {
   # add java code coverage agent to image
   if [ -e /opt/jacoco/jacoco-agent.jar ]; then
@@ -112,6 +106,9 @@ function configureServerHttps() {
   	truststorePass=\"test123\"  \
   	/> \
 	</Service>#g" "${TOMCAT_HOME}/conf/server.xml"
+	# Aet encodedSolidusHandling to passthrough request paths containing a %2f
+	# sequence will be processed with the %2f sequence unchanged.
+	sed -i.bak -e 's#<Connector #<Connector encodedSolidusHandling="passthrough" #g' "${TOMCAT_HOME}/conf/server.xml"
 }
 init_mysql() {
   echo "[INFO] init database:"
@@ -177,7 +174,7 @@ init_mysql() {
       mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/custom-data/sml-mysql5innodb.ddl"
     else
       echo "Use default database ddl script!"
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/sml-setup/database-scripts/mysql5innodb.ddl"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/sml-setup/database-scripts/mysql.ddl"
     fi
 
     if [ -f "/tmp/custom-data/sml-mysql5innodb-data.sql" ]; then

@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -38,11 +38,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Entity
 @Audited
-@Table(name = "SMP_SUBRESOURCE_DEF",
+@Table(name = "SMP_SUBRESOURCE_DEF", comment = "SMP extension subresource definitions",
         indexes = {@Index(name = "SMP_RD_UNIQ_RDID_UCTX_IDX", columnList = "FK_RESOURCE_DEF_ID,URL_SEGMENT", unique = true),
                 @Index(name = "SMP_RESDEF_UNIQ_IDENTIFIER", columnList = "IDENTIFIER", unique = true)
 })
-@org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE_DEF", comment = "SMP extension subresource definitions")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_ALL, query = "SELECT d FROM DBSubresourceDef d order by d.id asc")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBSubresourceDef d WHERE d.identifier = :identifier")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBSubresourceDef d WHERE d.urlSegment = :url_segment")
@@ -52,7 +51,9 @@ public class DBSubresourceDef extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SUBRESOURCE_DEF_SEQ")
-    @GenericGenerator(name = "SMP_SUBRESOURCE_DEF_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_SUBRESOURCE_DEF_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique id")
     Long id;

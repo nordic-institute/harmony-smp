@@ -25,7 +25,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +43,12 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_DOCUMENT_VERSION",
+@Table(name = "SMP_DOCUMENT_VERSION", comment = "Document content for the document version.",
         indexes = {
                 @Index(name = "SMP_DOCVER_DOCUMENT_IDX", columnList = "FK_DOCUMENT_ID"),
                 @Index(name = "SMP_DOCVER_UNIQ_VERSION_IDX", columnList = "FK_DOCUMENT_ID, VERSION", unique = true),
 
         })
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT_VERSION", comment = "Document content for the document version.")
 @NamedQuery(name = QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT, query = "SELECT dv FROM DBDocument d " +
         "  join d.documentVersions dv " +
         " WHERE dv.version = d.currentVersion " +
@@ -143,7 +142,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 public class DBDocumentVersion extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOCUMENT_VERSION_SEQ")
-    @GenericGenerator(name = "SMP_DOCUMENT_VERSION_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOCUMENT_VERSION_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique version document id")
     Long id;
@@ -167,7 +168,7 @@ public class DBDocumentVersion extends BaseEntity {
     // lob fetch it only when needed!
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "DOCUMENT_CONTENT")
+    @Column(name = "DOCUMENT_CONTENT", length = Integer.MAX_VALUE)
     @ColumnDescription(comment = "Document content")
     byte[] content;
 

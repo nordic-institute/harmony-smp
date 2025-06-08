@@ -82,7 +82,7 @@ class SMPAuthenticationProviderTest {
         credential.setCredentialType(CredentialType.ACCESS_TOKEN);
         credential.setCredentialTarget(CredentialTargetType.REST_API);
 
-        doReturn(1000).when(mockConfigurationService).getAccessTokenLoginFailDelayInMilliSeconds();
+        doReturn(2000).when(mockConfigurationService).getAccessTokenLoginFailDelayInMilliSeconds();
         doReturn(count + 5).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
 
         doReturn(Optional.of(credential)).when(mockCredentialDao).findAccessTokenCredentialForAPI(any());

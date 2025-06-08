@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.servlet;
 
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 

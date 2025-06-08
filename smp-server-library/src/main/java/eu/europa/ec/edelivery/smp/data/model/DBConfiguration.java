@@ -22,7 +22,7 @@ package eu.europa.ec.edelivery.smp.data.model;
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 /**
@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 @Entity
 @Audited
-@Table(name = "SMP_CONFIGURATION")
+@Table(name = "SMP_CONFIGURATION", comment = "SMP user certificates")
 @NamedQuery(name = "DBConfiguration.getAll", query = "SELECT d FROM DBConfiguration d")
 @NamedQuery(name = "DBConfiguration.maxUpdateDate",
         query = "SELECT max(config.lastUpdatedOn) from DBConfiguration config"
@@ -44,7 +44,6 @@ import java.util.Objects;
 @NamedQuery(name = "DBConfiguration.getPendingRestartProperties",
         query = "SELECT config from DBConfiguration config where config.property in (:restartPropertyList) and config.lastUpdatedOn > :serverStartedDate"
 )
-@org.hibernate.annotations.Table(appliesTo = "SMP_CONFIGURATION", comment = "SMP user certificates")
 public class DBConfiguration extends BaseEntity {
 
     @Id

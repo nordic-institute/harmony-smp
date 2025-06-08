@@ -25,7 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
+import org.springframework.web.WebApplicationInitializer;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +42,7 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.SMP_MOD
  * @author Joze Rihtarsic
  * @since 4.2
  */
-public class SMPWebApplicationInitializer implements org.springframework.web.WebApplicationInitializer {
+public class SMPWebApplicationInitializer implements WebApplicationInitializer {
 
     private static final String FILE_APPLICATION_PROPERTIES = "/application.properties";
 
@@ -53,6 +55,7 @@ public class SMPWebApplicationInitializer implements org.springframework.web.Web
 
     @Override
     public void onStartup(ServletContext servletContext) {
+        System.setProperty("spring.security.strategy", "MODE_INHERITABLETHREADLOCAL");
         SMPEnvironmentProperties smpEnvironmentProperties = SMPEnvironmentProperties.getInstance();
         // print out the  application data
         logBuildProperties(LOG, FILE_APPLICATION_PROPERTIES);

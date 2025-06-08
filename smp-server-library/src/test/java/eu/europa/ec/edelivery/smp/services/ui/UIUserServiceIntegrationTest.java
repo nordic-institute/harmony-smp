@@ -47,12 +47,13 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.math.BigInteger;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static eu.europa.ec.edelivery.smp.testutil.SMPAssert.assertEqualDates;
+import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertDateEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -330,8 +331,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         assertNotNull(accessToken.getGeneratedOn());
         assertEquals(credentialRO.getDescription(), accessToken.getCredential().getDescription());
         assertEquals(accessToken.getIdentifier(), accessToken.getCredential().getName());
-        assertEqualDates(accessToken.getExpireOn(), accessToken.getCredential().getExpireOn());
-        assertEqualDates(accessToken.getGeneratedOn(), accessToken.getCredential().getActiveFrom());
+        assertDateEquals(accessToken.getExpireOn(), accessToken.getCredential().getExpireOn());
+        assertDateEquals(accessToken.getGeneratedOn(), accessToken.getCredential().getActiveFrom());
     }
 
     @Test
@@ -362,8 +363,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         assertNotNull(result);
         assertNotNull(result.getCertificate());
         assertEquals(certificateRO.getCertificateId(), result.getName());
-        assertEqualDates(certificateRO.getValidTo(), result.getExpireOn());
-        assertEqualDates(certificateRO.getValidFrom(), result.getActiveFrom());
+        assertDateEquals(certificateRO.getValidTo(), result.getExpireOn(), ChronoUnit.SECONDS);
+        assertDateEquals(certificateRO.getValidFrom(), result.getActiveFrom(), ChronoUnit.SECONDS);
         assertEquals(credentialRO.getDescription(), result.getDescription());
     }
 

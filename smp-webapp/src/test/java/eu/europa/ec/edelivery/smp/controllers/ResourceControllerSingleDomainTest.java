@@ -29,6 +29,7 @@ import org.junit.platform.commons.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,11 +66,15 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
 
     @Test
     void adminCanCreateResourceNoDomain() throws Exception {
-        mvc.perform(put(URL_PATH)
-                        .with(ADMIN_CREDENTIALS)
-                        .contentType(APPLICATION_XML_VALUE)
-                        .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect(status().isCreated());
+        // when
+        ResultActions result = mvc.perform(put(URL_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+                .content(SERVICE_GROUP_INPUT_BODY));
+
+        // then
+        System.out.println(result.andReturn().getResponse().getContentAsString());
+        result.andExpect(status().isCreated());
     }
 
     /**
@@ -86,8 +91,8 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
             "'Set owner user, but admin updates: Fail', 401, test_pat_hashed_pass, 123456,'pat_smp_admin'",
     })
     void groupAdminCanUpdateResourceNoDomain(String desc, int expectedStatus,
-                                                 String resourceAdminATId, String groupResourceATSecret,
-                                                 String resourceOwnerId) throws Exception {
+                                             String resourceAdminATId, String groupResourceATSecret,
+                                             String resourceOwnerId) throws Exception {
         LOG.info(desc);
         // create service group by group admin
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -215,7 +220,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
                         .contentType(APPLICATION_XML_VALUE)
                         .headers(httpHeaders)
                         .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect( status().is(httpCode) );
+                .andExpect(status().is(httpCode));
     }
 
     @ParameterizedTest
@@ -225,7 +230,7 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
             "Private Visibility:,'PRIVATE',201",
             "Case insensitive Visibility:,'PRiVaTE',201",
             "Invalid Visibility:,'NotOKValue',400",
-            })
+    })
     void createResourceWithVisibility(String testDesc, String visibility, int httpCode) throws Exception {
 
         LOG.info(testDesc);
@@ -242,6 +247,6 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
                         .contentType(APPLICATION_XML_VALUE)
                         .headers(httpHeaders)
                         .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect( status().is(httpCode) );
+                .andExpect(status().is(httpCode));
     }
 }

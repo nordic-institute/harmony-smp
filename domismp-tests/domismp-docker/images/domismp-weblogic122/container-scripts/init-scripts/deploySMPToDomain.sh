@@ -21,7 +21,7 @@ elif [ -f "${INIT_SCRIPTS}/../properties/smp.config.properties" ]; then
   cat "${INIT_SCRIPTS}/../properties/smp.config.properties" > "${SMP_CONFIG_DIR}/config/smp.config.properties"
 else
   cat <<EOT >"${SMP_CONFIG_DIR}/config/smp.config.properties"
-smp.jdbc.hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+smp.jdbc.hibernate.dialect=org.hibernate.dialect.OracleDialect
 smp.datasource.jndi=jdbc/eDeliverySmpDs
 smp.automation.authentication.external.tls.clientCert.enabled=true
 smp.log.folder=./logs/

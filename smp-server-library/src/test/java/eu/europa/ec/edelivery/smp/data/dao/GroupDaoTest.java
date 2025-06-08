@@ -23,11 +23,13 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +52,6 @@ class GroupDaoTest extends AbstractBaseDao {
         testUtilsDao.createResourceMemberships();
         testInstance.clearPersistenceContext();
     }
-
 
     @Test
     void persistTest() {
@@ -77,7 +78,10 @@ class GroupDaoTest extends AbstractBaseDao {
 
         // execute
         PersistenceException result = assertThrows(PersistenceException.class, () -> testInstance.persistFlushDetach(group2));
-        assertEquals("org.hibernate.exception.ConstraintViolationException: could not execute statement", result.getMessage());
+        MatcherAssert.assertThat(
+                result.getCause().getMessage(),
+                CoreMatchers.containsString("Unique index or primary key violation")
+        );
     }
 
     @Test

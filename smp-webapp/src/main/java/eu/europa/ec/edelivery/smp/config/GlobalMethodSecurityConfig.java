@@ -22,6 +22,7 @@ package eu.europa.ec.edelivery.smp.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
@@ -34,12 +35,13 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class GlobalMethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
-    @Autowired
-    @Qualifier(SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN)
-    private AuthenticationManager am;
+    private AuthenticationManager authenticationManager;
+    public GlobalMethodSecurityConfig(@Lazy @Qualifier(SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager am) {
+        this.authenticationManager = am;
+    }
 
     @Override
     protected AuthenticationManager authenticationManager() {
-        return am;
+        return authenticationManager;
     }
 }

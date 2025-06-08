@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,9 +66,9 @@ public class RootController {
      * @param model Spring MVC model
      * @return ModelAndView the redirect to index.html
      */
-    @GetMapping(value = {"/", "web/index.html"})
+    @GetMapping(value = { "index.html"})
     public ModelAndView redirectOldIndexPath(ModelMap model) {
-        return new ModelAndView("redirect:/index.html", model);
+        return new ModelAndView("redirect:/", model);
     }
 
     @GetMapping(produces = {MediaType.TEXT_HTML_VALUE,
@@ -77,7 +77,7 @@ public class RootController {
             "image/ico",
             "image/x-ico",
             "image/svg+xml"
-    }, value = {"/index.html",
+    }, value = {"/",
             "/images/DomiSMP_logo.svg",
             "/images/EC+Logo2.png",
             "/images/oasis-smp-1.png",
@@ -87,8 +87,8 @@ public class RootController {
     @ResponseBody
     public ResponseEntity<InputStreamResource> getStaticResources(HttpServletRequest httpReq) {
         String host = getRemoteHost(httpReq);
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT, host, httpReq.getPathInfo());
-        String path = httpReq.getPathInfo();
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT, host, httpReq.getServletPath());
+        String path = httpReq.getRequestURI();
         String[] resourcePath = STATIC_RESOURCES.entrySet().stream()
                 .filter(entry -> endsWithIgnoreCase(path, entry.getKey()))
                 .map(Map.Entry::getValue)
@@ -117,7 +117,7 @@ public class RootController {
     //@GetMapping(value={"/ui","/ui/edit","/ui/search","/ui/search","/ui/domain","/ui/user"})
     @GetMapping(value = {"/ui"})
     public ModelAndView redirectWithUsingRedirectPrefix(ModelMap model) {
-        return new ModelAndView("redirect:/ui/index.html", model);
+        return new ModelAndView("redirect:/ui/", model);
     }
 
     public String getRemoteHost(HttpServletRequest httpReq) {

@@ -19,14 +19,15 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponseType;
-import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
+import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponse;
+import ec.services.wsdl.bdmsl.data._1.ExistsParticipant;
 import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
@@ -35,8 +36,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
@@ -56,13 +56,13 @@ import static org.mockito.Mockito.*;
 class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
 
     // Beans
-    @SpyBean
+    @MockitoSpyBean
     private ConfigurationService configurationService;
-    @MockBean
+    @MockitoSpyBean
     private IBDMSLServiceWS ibdmslServiceWS;
-    @MockBean
+    @MockitoSpyBean
     private IManageParticipantIdentifierWS iManageParticipantIdentifierWS;
-    @SpyBean
+    @MockitoSpyBean
     private SmlConnector testInstance;
 
     // Mocks
@@ -120,11 +120,10 @@ class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
         String message = "something unexpected";
         Mockito.doThrow(new InternalErrorFault(message)).when(iManageParticipantIdentifierWS).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
-        //when
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.registerInDns(PARTICIPANT_ID.getScheme(), PARTICIPANT_ID.getValue(), defaultDomain, null));
-
-        //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsStringIgnoringCase(message));
+        //when-then
+        DomiSMPAssertions.assertThrowsContainingMessages(SMPRuntimeException.class,
+                () -> testInstance.registerInDns(PARTICIPANT_ID.getScheme(), PARTICIPANT_ID.getValue(), defaultDomain, null),
+                message);
     }
 
     @Test
@@ -267,12 +266,12 @@ class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
     @Test
     void participantExists() throws Exception {
         // given
-        ExistsParticipantResponseType existingParticipant = new ExistsParticipantResponseType();
+        ExistsParticipantResponse existingParticipant = new ExistsParticipantResponse();
         existingParticipant.setExist(true);
 
         Mockito.when(identifier.getValue()).thenReturn("identifierValue");
         Mockito.when(identifier.getScheme()).thenReturn("test-test-test");
-        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenReturn(existingParticipant);
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ExistsParticipant.class))).thenReturn(existingParticipant);
 
         Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
 
@@ -289,7 +288,7 @@ class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
         String errorMessage = UUID.randomUUID().toString();
         Mockito.when(identifier.getValue()).thenReturn("identifierValue");
         Mockito.when(identifier.getScheme()).thenReturn("identifierScheme");
-        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenThrow(new BadRequestFault(errorMessage));
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ExistsParticipant.class))).thenThrow(new BadRequestFault(errorMessage));
 
         Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
 
@@ -308,7 +307,7 @@ class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
         String errorMessage = UUID.randomUUID().toString();
         Mockito.when(identifier.getValue()).thenReturn("identifierValue");
         Mockito.when(identifier.getScheme()).thenReturn("identifierScheme");
-        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenThrow(new NotFoundFault(errorMessage));
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ExistsParticipant.class))).thenThrow(new NotFoundFault(errorMessage));
 
         Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
 
@@ -329,7 +328,7 @@ class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
         Mockito.when(identifier.getValue()).thenReturn("identifierValue");
         Mockito.when(identifier.getScheme()).thenReturn("identifierScheme");
         // We need to match one of the checked exceptions present in the method signature, so we throw InternalErrorFault which will be handled aside
-        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenThrow(new InternalErrorFault(errorMessage));
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ExistsParticipant.class))).thenThrow(new InternalErrorFault(errorMessage));
 
         Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
 

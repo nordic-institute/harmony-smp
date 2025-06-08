@@ -25,8 +25,8 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,13 +39,14 @@ import java.util.Map;
  */
 @Entity
 @Audited
-@Table(name = "SMP_ALERT")
-@org.hibernate.annotations.Table(appliesTo = "SMP_ALERT", comment = "SMP alerts")
+@Table(name = "SMP_ALERT", comment = "SMP alerts")
 public class DBAlert extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_ALERT_SEQ")
-    @GenericGenerator(name = "SMP_ALERT_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_ALERT_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique alert id")
     Long id;

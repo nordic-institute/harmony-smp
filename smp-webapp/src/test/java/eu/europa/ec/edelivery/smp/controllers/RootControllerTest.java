@@ -28,8 +28,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,11 +40,12 @@ class RootControllerTest {
 
     @Test
     void testRedirectOldIndexPath() {
+
         ModelMap mockModel = Mockito.mock(ModelMap.class);
         ModelAndView result = testInstance.redirectOldIndexPath(mockModel);
 
         assertNotNull(result);
-        assertEquals("redirect:/index.html", result.getViewName());
+        assertEquals("redirect:/", result.getViewName());
     }
 
     @ParameterizedTest
@@ -63,7 +64,7 @@ class RootControllerTest {
         //given
         HttpServletRequest mockHttpServletRequest = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse mockHttpServletResponse = Mockito.mock(HttpServletResponse.class);
-        Mockito.when(mockHttpServletRequest.getPathInfo()).thenReturn(pathInfo);
+        Mockito.when(mockHttpServletRequest.getRequestURI()).thenReturn(pathInfo);
         //when
         ResponseEntity<InputStreamResource> result = testInstance.getStaticResources(mockHttpServletRequest);
         //then
@@ -79,7 +80,7 @@ class RootControllerTest {
         ModelAndView result = testInstance.redirectWithUsingRedirectPrefix(mockModel);
 
         assertNotNull(result);
-        assertEquals("redirect:/ui/index.html", result.getViewName());
+        assertEquals("redirect:/ui/", result.getViewName());
     }
 
 }

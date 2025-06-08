@@ -173,6 +173,10 @@ public class SMPAuthorizationService {
     }
 
     public boolean isCurrentlyLoggedIn(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            LOG.warn("User ID is null or empty, cannot validate logged in user.");
+            return false;
+        }
         SMPUserDetails userDetails = getAndValidateUserDetails();
         Long entityId = getIdFromEncryptedString(userId, true);
         return entityId.equals(userDetails.getUser().getId());
