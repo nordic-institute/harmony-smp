@@ -19,7 +19,6 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -53,17 +52,15 @@ public class SystemCertificateAlertService {
     private final AlertDao alertDao;
     private final MailService mailService;
     private final ConfigurationService configurationService;
-    private final UserDao userDao;
 
     private static final String CERTIFICATE_TYPE_SML_INTEGRATION = "DomiSML Integration Certificate";
 
     private static final String CERTIFICATE_TYPE_SIGNING = "Signing Certificate";
 
-    public SystemCertificateAlertService(AlertDao alertDao, MailService mailService, ConfigurationService configurationService, UserDao userDao) {
+    public SystemCertificateAlertService(AlertDao alertDao, MailService mailService, ConfigurationService configurationService) {
         this.alertDao = alertDao;
         this.mailService = mailService;
         this.configurationService = configurationService;
-        this.userDao = userDao;
     }
 
     public void alertBeforeSigningCertificateExpire(DBUser user, String domain, String certificateAlias, OffsetDateTime expirationDate) {
