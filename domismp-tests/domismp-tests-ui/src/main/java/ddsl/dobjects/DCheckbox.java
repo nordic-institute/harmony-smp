@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DCheckbox extends DObject {
     WebElement labelElement;
@@ -24,11 +25,11 @@ public class DCheckbox extends DObject {
 
     public boolean isChecked() throws Exception {
         if (isPresent()) {
-            if (null != input.getDomAttribute("checked")) {
+            if (Objects.requireNonNull(input.getDomAttribute("class")).contains("-checked")) {
                 return true;
             }
             List<WebElement> input = element.findElements(By.cssSelector("input[type='checkbox']"));
-            return !input.isEmpty() && null != input.get(0).getDomAttribute("checked");
+            return Objects.requireNonNull(input.get(0).getDomAttribute("class")).contains("-selected");
         }
         throw new DObjectNotPresentException();
     }
@@ -67,7 +68,7 @@ public class DCheckbox extends DObject {
         try {
             if (isPresent()) {
                 wait.forElementToBeEnabled(element);
-                return !element.getDomAttribute("class").endsWith("disabled");
+                return !Objects.requireNonNull(element.getDomAttribute("class")).endsWith("disabled");
             }
         } catch (ElementNotInteractableException e) {
             throw new ElementNotInteractableException("Element not enabled: " + e);
@@ -79,7 +80,7 @@ public class DCheckbox extends DObject {
     public boolean isDisabled() throws Exception {
         if (isPresent()) {
             wait.forElementToBeDisabled(element);
-            return element.getDomAttribute("class").endsWith("disabled");
+            return Objects.requireNonNull(element.getDomAttribute("class")).endsWith("disabled");
         }
         throw new Exception();
     }

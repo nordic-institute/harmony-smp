@@ -54,6 +54,7 @@ public class CertificatesPgTests extends SeleniumTest {
 
         importNewCertificatesDialog.importCertificate(path);
         importNewCertificatesDialog.getSaveCertificateBtn().click();
+        certificatePage.getAlertArea().closeAlert();
         soft.assertTrue(certificatePage.isCertificatePresent(certificateId));
 
         HashMap<String, String> certificateInfo = certificatePage.getCertificateInfo(certificateId);
@@ -123,6 +124,7 @@ public class CertificatesPgTests extends SeleniumTest {
 
         importNewCertificatesDialog.importCertificate(path);
         importNewCertificatesDialog.getSaveCertificateBtn().click();
+        certificatePage.getAlertArea().closeAlert();
         soft.assertTrue(certificatePage.isCertificatePresent(certificateId));
         String deleteAlert = certificatePage.deleteCertificate(certificateId);
         soft.assertEquals(deleteAlert, "Certificate \"" + certificateId + "\" has been deleted!", "Certificate has not been deleted");

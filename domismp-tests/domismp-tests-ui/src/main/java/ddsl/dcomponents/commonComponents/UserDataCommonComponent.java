@@ -65,23 +65,23 @@ public class UserDataCommonComponent extends DomiSMPPage {
     }
 
     public String getLastSetValue() {
-        return lastSetLbl.getDomAttribute("value");
+        return weToDInput(lastSetLbl).getText();
     }
 
     public String getPasswordExpiresOnValue() {
-        return passwordExpiresOnLbl.getDomAttribute("value");
+        return weToDInput(passwordExpiresOnLbl).getText();
     }
 
     public String getSequenceFailedAttempts() {
-        return seqFailedAttempts.getDomAttribute("value");
+        return weToDInput(seqFailedAttempts).getText();
     }
 
     public String getlastFailedAttempt() {
-        return lastFailedAttempt.getDomAttribute("value");
+        return weToDInput(lastFailedAttempt).getText();
     }
 
     public String getsuspendedUntil() {
-        return suspendedUntil.getDomAttribute("value");
+        return weToDInput(suspendedUntil).getText();
     }
 
     public SetChangePasswordDialog clickOnChangePassword(){
