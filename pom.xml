@@ -469,12 +469,6 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
-             <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-inline</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
             <!-- Jackson-->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
