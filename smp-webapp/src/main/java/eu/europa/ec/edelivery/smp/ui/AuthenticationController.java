@@ -120,6 +120,7 @@ public class AuthenticationController {
      * @param requestResetRO - the request object containing the credential name and type
      */
     @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL_REQUEST)
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     public void requestResetCredentials(@RequestBody CredentialRequestResetRO requestResetRO) {
         LOG.debug("credentialRequestResetRO  [{}]", requestResetRO.getCredentialName());
         if (requestResetRO.getCredentialType() == CredentialType.USERNAME_PASSWORD) {
@@ -203,10 +204,10 @@ public class AuthenticationController {
 
 
     /**
-     * set cookie parameters https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+     * set cookie parameters <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie">...</a>
      *
-     * @param request
-     * @param response
+     * @param request - the HTTP request containing the session
+     * @param response - the HTTP response to which the session cookie will be written
      */
     public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
         // recreate session id  (first make sure it exists)

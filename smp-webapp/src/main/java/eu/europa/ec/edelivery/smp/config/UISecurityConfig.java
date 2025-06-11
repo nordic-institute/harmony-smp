@@ -135,11 +135,9 @@ public class UISecurityConfig {
                     ).addFilter(casAuthenticationFilter);
         } else {
                 httpSecurity.exceptionHandling(
-                        exceptionHandling -> {
-                            exceptionHandling
-                                    .authenticationEntryPoint(smpSecurityExceptionHandler)
-                                    .accessDeniedHandler(smpSecurityExceptionHandler);
-                        }
+                        exceptionHandling -> exceptionHandling
+                                .authenticationEntryPoint(smpSecurityExceptionHandler)
+                                .accessDeniedHandler(smpSecurityExceptionHandler)
                 );
         }
 
@@ -163,6 +161,7 @@ public class UISecurityConfig {
                         // allow anonymous access to the public resource search
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/public/rest/search/**")).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, "/ui/public/rest/security/authentication")).permitAll()
+                        .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER_RESET)).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.DELETE, "/ui/public/rest/security/authentication")).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE)).authenticated()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.PUT, "/ui/public/rest/**")).hasAnyAuthority(
@@ -287,7 +286,7 @@ public class UISecurityConfig {
     }
 
     @Bean(name = {SMP_UI_AUTHENTICATION_MANAGER_BEAN})
-    public AuthenticationManager authenticationManagerBean() throws Exception {
+    public AuthenticationManager authenticationManagerBean() {
         if (authenticationManager == null) {
             List<AuthenticationProvider> authenticationProviderList = new ArrayList<>();
             if (configurationService.isSSOEnabledForUserAuthentication()) {
@@ -302,8 +301,7 @@ public class UISecurityConfig {
 
     @Bean
     public MDCLogRequestFilter getMDCLogRequestFilter() {
-        MDCLogRequestFilter filter = new MDCLogRequestFilter();
-        return filter;
+        return new MDCLogRequestFilter();
     }
 
     @Bean
@@ -322,6 +320,7 @@ public class UISecurityConfig {
         // ignore for login and logout
         requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication", HttpMethod.DELETE, HttpMethod.POST);
         requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);
+        requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER_RESET, HttpMethod.POST);
         // allow all gets except for rest services
         requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
         // monitor
@@ -337,7 +336,7 @@ public class UISecurityConfig {
     /**
      * This is needed to enable the concurrent session-control support is to add the following listener
      *
-     * @return
+     * @return HttpSessionEventPublisher
      */
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {

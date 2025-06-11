@@ -112,7 +112,7 @@ public class CredentialService {
         DBCredential credential;
         try {
             Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
-            if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
+            if (dbCredential.isEmpty() || isNotValidCredential(dbCredential.get())) {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider", username);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, "Username does not exits", username);
                 delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
@@ -253,7 +253,7 @@ public class CredentialService {
         DBCredential credential;
         try {
             Optional<DBCredential> optCredential = credentialDao.findUserByCertificateId(certificateIdentifier, true);
-            if (!optCredential.isPresent() || isNotValidCredential(optCredential.get())) {
+            if (optCredential.isEmpty() || isNotValidCredential(optCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, certificateIdentifier);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
@@ -336,14 +336,14 @@ public class CredentialService {
      * Method retrieves user credentials by username. First it validates if credentials have already active reset token
      * and if not it creates new one.
      *
-     * @param username
+     * @param username of the user for which the reset token is requested
      */
     @Transactional
     public void requestResetUsername(String username) {
         LOG.debug("requestResetUsername [{}]", username);
         // retrieve user Optional credentials by username
         Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, true);
-        if (!optCredential.isPresent()) {
+        if (optCredential.isEmpty()) {
             LOG.info("Skip generating reset token for username [{}]. User is not active!", username);
             return;
         }
@@ -365,7 +365,7 @@ public class CredentialService {
         LOG.debug("resetUsernamePassword [{}]", username);
         // retrieve user Optional credentials by username
         Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, false);
-        if (!optCredential.isPresent()) {
+        if (optCredential.isEmpty()) {
             LOG.warn("User [{}] does not have active reset token!", username);
             throw UNAUTHORIZED_INVALID_RESET_TOKEN;
         }
@@ -414,11 +414,13 @@ public class CredentialService {
 
         Optional<DBCredential> optCredential = credentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
         DBCredential dbCredential;
-        if (!optCredential.isPresent()) {
-            DBUser user = userDao.findUserByUsername(username).orElseThrow(() -> {
-                LOG.warn("There is no user with username [{}]!", username);
-                return new SMPRuntimeException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD, "User not found!");
-            });
+        if (optCredential.isEmpty()) {
+            Optional<DBUser> optUser = userDao.findUserByUsername(username);
+            if (optUser.isEmpty()) {
+                LOG.info("User [{}] does not exist. Skip reset password request!", username);
+                return Optional.empty();
+            }
+            DBUser user = optUser.get();
             LOG.info("User [{}] does not have username/password credentials. Create new credentials!", username);
             dbCredential = createCredentialsForUser(user.getId(),
                     CredentialType.USERNAME_PASSWORD,
@@ -476,7 +478,7 @@ public class CredentialService {
 
     public void validatePasswordResetToken(String resetToken){
         Optional<DBCredential> optCredential = credentialDao.findUCredentialForUsernamePasswordTypeAndResetToken(resetToken);
-        if (!optCredential.isPresent()) {
+        if (optCredential.isEmpty()) {
             LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_NOT_EXISTS, resetToken, CredentialType.USERNAME_PASSWORD);
             throw UNAUTHORIZED_INVALID_RESET_TOKEN;
         }
@@ -490,7 +492,7 @@ public class CredentialService {
     /**
      * Method validates if the user has valid reset token. The token is valid if it is not empty
      * and the expiry date is after the current date.
-     * @param dbCredential
+     * @param dbCredential the credential for which the reset token is validated
      * @return true if the reset token is valid, else false
      */
     private boolean hasValidResetToken(DBCredential dbCredential) {
@@ -510,7 +512,7 @@ public class CredentialService {
         dbCredential.setResetToken(SecurityUtils.generateAuthenticationTokenIdentifier(isDevMode, RESET_TOKEN_LENGTH));
         dbCredential.setResetExpireOn(OffsetDateTime.now().plusMinutes(configurationService.getCredentialsResetPolicyValidMinutes()));
         // submit mail with reset token
-        dbCredential.getUser().getEmailAddress();
+        LOG.debug("Generate reset token for user [{}] with email [{}]", dbCredential.getName(), dbCredential.getUser().getEmailAddress());
         alertService.alertCredentialRequestReset(dbCredential);
     }
 
@@ -520,7 +522,7 @@ public class CredentialService {
      *
      * @param certificateId certificate id to be validated
      * @param certPolicyList certificate policy list
-     * @throws AuthenticationServiceException
+     * @throws AuthenticationServiceException if the certificate does not contain any of the allowed certificate policies
      */
     protected void validateCertificatePolicyMatchLegacy(String certificateId, List<String> certPolicyList) throws AuthenticationServiceException {
 
@@ -595,8 +597,8 @@ public class CredentialService {
     /**
      * Method tests if user account Suspended
      *
-     * @param credential
-     * @param startTime
+     * @param credential the credential to be validated
+     * @param startTime the start time of the authentication attempt, used for delay response
      */
     protected void validateIfCredentialIsSuspended(DBCredential credential, long startTime) {
 
@@ -639,29 +641,25 @@ public class CredentialService {
     }
 
     protected Integer getLoginMaxAttempts(CredentialType credentialType) {
-        switch (credentialType) {
-            case USERNAME_PASSWORD:
-                return configurationService.getLoginMaxAttempts();
-            case ACCESS_TOKEN:
-            case CERTIFICATE:
-                return configurationService.getAccessTokenLoginMaxAttempts();
-            default:
+        return switch (credentialType) {
+            case USERNAME_PASSWORD -> configurationService.getLoginMaxAttempts();
+            case ACCESS_TOKEN, CERTIFICATE -> configurationService.getAccessTokenLoginMaxAttempts();
+            default -> {
                 LOG.debug("Unknown credential type [{}] - return max attempts for username password!", credentialType);
-                return configurationService.getLoginMaxAttempts();
-        }
+                yield configurationService.getLoginMaxAttempts();
+            }
+        };
     }
 
     protected Integer getLoginSuspensionTimeInSeconds(CredentialType credentialType) {
-        switch (credentialType) {
-            case USERNAME_PASSWORD:
-                return configurationService.getLoginSuspensionTimeInSeconds();
-            case ACCESS_TOKEN:
-            case CERTIFICATE:
-                return configurationService.getAccessTokenLoginSuspensionTimeInSeconds();
-            default:
+        return switch (credentialType) {
+            case USERNAME_PASSWORD -> configurationService.getLoginSuspensionTimeInSeconds();
+            case ACCESS_TOKEN, CERTIFICATE -> configurationService.getAccessTokenLoginSuspensionTimeInSeconds();
+            default -> {
                 LOG.debug("Unknown credential type [{}] - return LoginSuspensionTimeInSeconds for username password!", credentialType);
-                return configurationService.getLoginSuspensionTimeInSeconds();
-        }
+                yield configurationService.getLoginSuspensionTimeInSeconds();
+            }
+        };
     }
 
     protected AlertSuspensionMomentEnum getAlertBeforeUserSuspendedAlertMoment() {
@@ -671,15 +669,13 @@ public class CredentialService {
 
     protected Integer getLoginFailDelayInMilliSeconds(CredentialType credentialType) {
         // the same for all credential types
-        switch (credentialType) {
-            case USERNAME_PASSWORD:
-                return configurationService.getLoginFailDelayInMilliSeconds();
-            case ACCESS_TOKEN:
-            case CERTIFICATE:
-                return configurationService.getAccessTokenLoginFailDelayInMilliSeconds();
-            default:
+        return switch (credentialType) {
+            case USERNAME_PASSWORD -> configurationService.getLoginFailDelayInMilliSeconds();
+            case ACCESS_TOKEN, CERTIFICATE -> configurationService.getAccessTokenLoginFailDelayInMilliSeconds();
+            default -> {
                 LOG.debug("Unknown credential type [{}] - return LoginFailDelayInMilliSeconds for username password!", credentialType);
-                return configurationService.getLoginFailDelayInMilliSeconds();
-        }
+                yield configurationService.getLoginFailDelayInMilliSeconds();
+            }
+        };
     }
 }

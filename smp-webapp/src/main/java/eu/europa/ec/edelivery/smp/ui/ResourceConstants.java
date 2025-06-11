@@ -176,6 +176,7 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_SECURITY = CONTEXT_PATH_PUBLIC + "security";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION = CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER = CONTEXT_PATH_PUBLIC_SECURITY + "/user";
+    public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER_RESET = CONTEXT_PATH_PUBLIC_SECURITY + "/" + PATH_ACTION_RESET_CREDENTIAL_REQUEST;
     // --------------------------------------
     //internal
     public static final String CONTEXT_PATH_INTERNAL_DOMAIN = CONTEXT_PATH_INTERNAL_USERID + PATH_RESOURCE_TYPE_DOMAIN;
