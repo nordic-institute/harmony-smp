@@ -58,7 +58,7 @@ public class DomainsPgTests extends SeleniumTest {
         String alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         soft.assertEquals(ResponseCertificates.getTextForAlias(domainModel.getSignatureKeyAlias()), domainsPage.getDomainTab().getResponseSignatureCertificateSelectedValue());
         soft.assertEquals(domainModel.getVisibility(), domainsPage.getDomainTab().getVisibilityOfDomainSelectedValue());
         soft.assertEquals(domainsPage.getDomainWarningMessage(), "To complete domain configuration, please:\n" +
@@ -78,7 +78,7 @@ public class DomainsPgTests extends SeleniumTest {
         String alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("SML integration");
         domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModel);
         domainsPage.getSMLIntegrationTab().saveChanges();
@@ -127,7 +127,7 @@ public class DomainsPgTests extends SeleniumTest {
         loginPage = homePage.goToLoginPage();
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         domainsPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("Members");
         domainsPage.getMembersTab().changeRoleOfUser(normalUser.getUsername(), "ADMIN");
 
@@ -145,7 +145,7 @@ public class DomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         domainsPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("Members");
         domainsPage.getMembersTab().removeUser(normalUser.getUsername());
         userMemberElement = domainsPage.getMembersTab().getMembersGrid().searchAndGetElementInColumn("Username", normalUser.getUsername());
@@ -197,13 +197,11 @@ public class DomainsPgTests extends SeleniumTest {
         //add users to domain
         rest.domains().addMembersToDomain(domainModel, superMember);
         domainsPage.refreshPage();
-        domainsPage
-                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.deleteandConfirm();
         soft.assertEquals(domainsPage.getAlertArea().getAlertMessage(), "Domain: [" + domainModel.getDomainCode() + "] is removed!", "Alert message is wrong");
 
-        soft.assertFalse(domainsPage
-                .getLeftSideGrid().isValuePresentInColumn("Domain code", domainModel.getDomainCode()));
+        soft.assertFalse(domainsPage.IsDomainInGrid(domainModel.getDomainCode()));
         soft.assertAll();
     }
 
@@ -234,8 +232,7 @@ public class DomainsPgTests extends SeleniumTest {
         rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
 
         domainsPage.refreshPage();
-        domainsPage
-                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.deleteandConfirm();
         soft.assertEquals(domainsPage.getAlertArea().getAlertMessage(), "Can not delete domain because it has resources [1]! Delete resources first!", "Alert message is wrong");
         soft.assertTrue(domainsPage
@@ -262,7 +259,7 @@ public class DomainsPgTests extends SeleniumTest {
 
         domainsPage.refreshPage();
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("SML integration");
         domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModelGenerated);
         domainsPage.getSMLIntegrationTab().saveChanges();
@@ -372,7 +369,7 @@ public class DomainsPgTests extends SeleniumTest {
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         domainsPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.getDomainTab().changeVisibility("PUBLIC");
         domainsPage.getDomainTab().saveChanges();
 
@@ -412,7 +409,7 @@ public class DomainsPgTests extends SeleniumTest {
 
         domainsPage.refreshPage();
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.getDomainTab().getResponseSigunatureCertificateDdl().selectByVisibleText("smp_domain_02 (CN=smp_domain_02,O=digit,C=eu:000000006443d987)");
         domainsPage.getDomainTab().getDefaultResourceTypeDdl().selectValue(ResourceTypes.OASIS2.getName());
 
@@ -479,7 +476,7 @@ public class DomainsPgTests extends SeleniumTest {
         rest.resources().createResourceForGroup(domainModel, groupModel, resourceModel);
         domainsPage.refreshPage();
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("Resource Types");
         domainsPage.getResourceTypesTab().checkResource("edelivery-oasis-smp-1.0-servicegroup (smp-1)", false);
         domainsPage.getResourceTypesTab().saveChanges();
@@ -502,7 +499,7 @@ public class DomainsPgTests extends SeleniumTest {
         String alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("SML integration");
         domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModel);
         domainsPage.getSMLIntegrationTab().saveChanges();
@@ -541,7 +538,7 @@ public class DomainsPgTests extends SeleniumTest {
 
         domainsPage.refreshPage();
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("SML integration");
         domainModelGenerated.setSmlSmpId("43ASDASDASD");
         String smlsmpIdentifierError = "SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit nor a hyphen and should not end with a hyphen.";
@@ -582,8 +579,7 @@ public class DomainsPgTests extends SeleniumTest {
         domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
 
         domainsPage.refreshPage();
-
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("SML integration");
         ArrayList<String> listOfCertificates = domainsPage.getSMLIntegrationTab().getSMLClientCertificateAliasDdl().getAllOptionValues();
         ArrayList<String> listOfKeystore = new ArrayList<>();
@@ -614,8 +610,7 @@ public class DomainsPgTests extends SeleniumTest {
         domainModel = rest.domains().addResourcesToDomain(domainModel, resourcesToBeAdded);
 
         domainsPage.refreshPage();
-        domainsPage
-                .getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("Configuration");
 
         //Check is modifying boolean values
@@ -679,7 +674,8 @@ public class DomainsPgTests extends SeleniumTest {
         String alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
 
-        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("SML integration");
         domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModel);
         domainsPage.getSMLIntegrationTab().saveChanges();

@@ -5,7 +5,6 @@ import ddsl.dcomponents.SetChangePasswordDialog;
 import ddsl.enums.ApplicationRoles;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -40,10 +39,7 @@ public class UsersPgTests extends SeleniumTest {
         usersPage.fillNewUserDataAndSave(adminNewUserData);
 
         usersPage.refreshPage();
-        // usersPage.filter(adminNewUserData.getUsername());
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", adminNewUserData.getUsername());
-        soft.assertNotNull(newUser);
-        newUser.click();
+        usersPage.filterAndSelectUsername(adminNewUserData.getUsername());
 
         soft.assertEquals(usersPage.getApplicationRoleValue(), adminNewUserData.getRole());
         soft.assertEquals(usersPage.getFullNameValue(), adminNewUserData.getFullName());
@@ -83,11 +79,10 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
         String deleteAlert = usersPage.deleteAndConfirm();
         soft.assertEquals(deleteAlert, "User [" + newNormalUser.getUsername() + "] has been deleted!", "Delete user alert message is wrong");
-        soft.assertFalse(usersPage.getLeftSideGrid().isValuePresentInColumn("Username", newNormalUser.getUsername()));
+        soft.assertFalse(usersPage.IsUsernamePresentInGrid(newNormalUser.getUsername()));
         loginPage.logout();
         loginPage.login(newNormalUser.getUsername(), data.getNewPassword());
         soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "Login failed; Invalid userID or password!", "Login failed alert message is not correct");
@@ -102,8 +97,7 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
 
         SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"), newPassword);
@@ -125,9 +119,7 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
-
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
         String newEmail = "newemail@email.com";
         String newFullname = "AUT_NewFullName";
         String newTheme = "Blue theme";
@@ -153,8 +145,7 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
         usersPage.changeApplicationRole(ApplicationRoles.SYSTEM_ADMIN);
 
         loginPage.logout();
@@ -173,8 +164,7 @@ public class UsersPgTests extends SeleniumTest {
         //Deactivate user
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
         usersPage.modifyIsActiveForUser(false);
 
         loginPage.logout();
@@ -184,8 +174,7 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
         usersPage.modifyIsActiveForUser(true);
 
         loginPage.logout();
@@ -214,8 +203,7 @@ public class UsersPgTests extends SeleniumTest {
         //Validate if suspended info is correct
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
 
         soft.assertEquals(usersPage.userData.getSequenceFailedAttempts(), "5", "Number of attempts is wrong");
         soft.assertTrue(usersPage.userData.getlastFailedAttempt().startsWith(currentDate), "Last failed attempt date is wrong Actual date: " + usersPage.userData.getlastFailedAttempt());
@@ -226,7 +214,7 @@ public class UsersPgTests extends SeleniumTest {
         setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"),
                 newPass);
         setChangePasswordDialog.tryClickOnChangePassword();
-
+        usersPage.getAlertArea().closeAlert();
         //Login with new password
         loginPage.logout();
         loginPage.login(newNormalUser.getUsername(), newPass);
@@ -272,7 +260,7 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        usersPage.getLeftSideGrid().searchAndClickElementInColumn("Username", newNormalUser.getUsername());
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
 
         String wrongValue1 = "newemail@email";
 
@@ -303,8 +291,7 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        usersPage.getLeftSideGrid().searchAndClickElementInColumn("Username", newNormalUser.getUsername());
-
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
         soft.assertTrue(usersPage.getUsernameInput().isDisabled(), "Username input it is not disabled!");
         soft.assertAll();
     }
@@ -320,7 +307,7 @@ public class UsersPgTests extends SeleniumTest {
         usersPage.getCreateUserBtn().click();
         UserModel adminNewUserData = UserModel.generateUserWithADMINrole();
         usersPage.fillNewUserDataAndSave(adminNewUserData);
-        usersPage.getLeftSideGrid().searchAndClickElementInColumn("Username", adminNewUserData.getUsername());
+        usersPage.filterAndSelectUsername(adminNewUserData.getUsername());
 
         SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"), newPassword);
@@ -346,8 +333,7 @@ public class UsersPgTests extends SeleniumTest {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
-        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", newNormalUser.getUsername());
-        newUser.click();
+        usersPage.filterAndSelectUsername(newNormalUser.getUsername());
 
         SetChangePasswordDialog setChangePasswordDialog = usersPage.userData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getAdminUser().get("password"), newPassword, "wrongPass");

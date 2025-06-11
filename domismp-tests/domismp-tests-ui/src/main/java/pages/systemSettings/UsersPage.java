@@ -139,4 +139,14 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
         }
     }
 
+    public void filterAndSelectUsername(String username) {
+        weToDInput(filterInput).fill(username);
+        getLeftSideGrid().searchAndClickElementInColumn("Username", username);
+    }
+
+    public boolean IsUsernamePresentInGrid(String username) {
+        weToDInput(filterInput).fill(username);
+        return getLeftSideGrid().isValuePresentInColumn("Username", username);
+    }
+
 }

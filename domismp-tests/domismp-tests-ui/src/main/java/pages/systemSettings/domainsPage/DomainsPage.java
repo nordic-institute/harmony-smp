@@ -72,4 +72,14 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
     public DButton getDeleteBtn() {
         return weToDButton(deleteBtn);
     }
+
+    public void filterAndSelectDomain(String domainCode) {
+        weToDInput(filterInput).fill(domainCode);
+        getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainCode);
+    }
+
+    public boolean IsDomainInGrid(String domainCode) {
+        weToDInput(filterInput).fill(domainCode);
+        return getLeftSideGrid().isValuePresentInColumn("Domain code", domainCode);
+    }
 }

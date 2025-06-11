@@ -42,21 +42,19 @@ public class ResourceTypesTab extends DComponent {
         }
     }
 
-    public void checkResource(String resourceName, boolean isChecked) throws Exception {
+    public void checkResource(String resourceName, boolean isChecked) {
         wait.forElementToBeClickable(resourceOptions.get(0));
         for (WebElement element : resourceOptions) {
             if (element.getText().contains(resourceName)) {
                 if (isChecked) {
-                    if (!weToDChecked(element).isChecked()) {
+                    if (!Boolean.parseBoolean(element.getDomAttribute("aria-selected"))) {
                         element.click();
                         LOG.debug("Selecting resource {} is opened", resourceName);
                     }
                 } else {
-                    if (weToDChecked(element).isChecked()) {
+                    if (Boolean.parseBoolean(element.getDomAttribute("aria-selected"))) {
                         element.click();
                     }
-
-
                 }
             }
         }
