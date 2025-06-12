@@ -39,11 +39,11 @@ public class CommonBaseDocumentPage extends DomiSMPPage {
     @FindBy(css = "div.cm-line")
     private List<WebElement> codeEditorReadValueElement;
     // Right Menu buttons
-    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(2)")
+    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(5)")
     private WebElement currentDocumentVersionsMenuBtn;
     @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(3)")
     public WebElement documentConfigurationMenuBtn;
-    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(4)")
+    @FindBy(css = ".panel > expandable-panel:nth-child(2) > div:nth-child(1) > div:nth-child(2) button:nth-of-type(2)")
     public WebElement documentPropertiesnMenuBtn;
 
 

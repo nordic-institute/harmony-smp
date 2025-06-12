@@ -140,7 +140,9 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
     }
 
     public void filterAndSelectUsername(String username) {
-        weToDInput(filterInput).fill(username);
+        // bug in filter -does not handle char _ O so search only by the last random part of username
+        String searchKey = username.contains("_") ? username.substring(username.lastIndexOf("_") + 1) : username;
+        weToDInput(filterInput).fill(searchKey);
         getLeftSideGrid().searchAndClickElementInColumn("Username", username);
     }
 
