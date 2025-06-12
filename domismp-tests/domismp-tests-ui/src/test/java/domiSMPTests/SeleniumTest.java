@@ -1,5 +1,6 @@
 package domiSMPTests;
 
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +41,13 @@ public class SeleniumTest {
     public void beforeClass() {
         LOG.info("--------Initialize test class-------");
         driver = DriverManager.getDriver();
+        // TODO: the minimal size is  1200x800, because search grid is wider than 1200px
+        // TODO: this is a workaround to locate "Resource URL" column in the search grid. see EditResourcePgTests.documentUsingASharedReferenceSeesOnlyThePublishedVersionOfTheReference
+        // TODO: fix the search grid to be responsive and remove this workaround
+        // set minimum window size for the tests
+        driver.manage().window().setSize(new Dimension(2000, 800));
         java.util.logging.Logger.getLogger("io.netty.util.NetUtil").setLevel(Level.OFF);
         java.util.logging.Logger.getLogger("org.asynchttpclient.netty.handler").setLevel(Level.OFF);
-
-
     }
 
     @BeforeMethod(alwaysRun = true)

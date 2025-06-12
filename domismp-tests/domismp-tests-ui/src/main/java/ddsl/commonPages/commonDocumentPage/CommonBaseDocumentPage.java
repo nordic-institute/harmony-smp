@@ -3,6 +3,8 @@ package ddsl.commonPages.commonDocumentPage;
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dobjects.DButton;
+import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -71,8 +73,16 @@ public class CommonBaseDocumentPage extends DomiSMPPage {
 
     public void setDocumentValue(String documentValue) throws Exception {
         weToDInput(codeEditorSendValueElement).click();
-        weToDInput(codeEditorSendValueElement).clear();
-        weToDInput(codeEditorSendValueElement).fill(documentValue);
+        // Using JavaScriptExecutor to set the value in the CodeMirror editor
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) this.driver;
+                javascriptExecutor.executeScript(
+                        "const cm = arguments[0].cmView.rootView.view; " +
+                                "cm.dispatch({ changes: {from: 0, to: cm.state.doc.length, insert: '"
+                                + StringUtils.replace(documentValue, "\n","\\n") +
+                        "'}});",
+                        codeEditorSendValueElement
+        );
+
     }
 
     public DButton getBackBtn() {

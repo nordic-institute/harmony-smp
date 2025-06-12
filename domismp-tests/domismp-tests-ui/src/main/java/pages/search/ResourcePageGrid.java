@@ -2,6 +2,7 @@ package pages.search;
 
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.GridPagination;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -55,7 +56,9 @@ public class ResourcePageGrid extends DComponent {
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
         for (int i = 0; i < rowHeaders.size(); i++) {
-            if (rowHeaders.get(i).getText().equals(columnName)) {
+            String headerText = rowHeaders.get(i).getText();
+            LOG.debug("Row header [{}] with text [{}]", i, headerText);
+            if (StringUtils.endsWithIgnoreCase(headerText, columnName)) {
                 columnIndex = i;
                 break;
             }
