@@ -15,10 +15,7 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
 public class XMLUtils {
 
@@ -32,8 +29,8 @@ public class XMLUtils {
         dbFactory.setNamespaceAware(true);
         dbFactory.setValidating(true);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        try {
-            doc = dBuilder.parse(new InputSource(new StringReader(xmlStr)));
+        try (InputStream inputStream = new ByteArrayInputStream(xmlStr.getBytes())) {
+            doc = dBuilder.parse(inputStream);
         } catch (Exception e) {
             log.error("Error while parsing xml", e);
         }

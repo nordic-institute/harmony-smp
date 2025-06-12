@@ -162,9 +162,10 @@ function pushImageToDockerhub() {
     docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
     pushImageIfExisting "${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_SMP_SPRINGBOOT_MYSQL}:${SMP_VERSION}"
+    #pushImageIfExisting "${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}"
+    #pushImageIfExisting "${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}"
+    #pushImageIfExisting "${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}"
     pushImageIfExisting "${IMAGE_SMP_TESTS}:${SMP_VERSION}"
   fi
 }

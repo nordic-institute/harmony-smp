@@ -82,7 +82,6 @@ public class EditDomainsPgTests extends SeleniumTest {
         rest.users().createUser(domainMember);
 
         //Add user
-
         editDomainPage.getDomainMembersTab()
                 .clickOnInviteMemberBtn()
                 .selectMember(domainMember.getUsername(), "VIEWER");
