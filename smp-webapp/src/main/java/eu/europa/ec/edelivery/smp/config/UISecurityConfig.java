@@ -125,13 +125,12 @@ public class UISecurityConfig {
         AuthenticationManager manager = authenticationManagerBean();
         SMPSecurityExceptionHandler smpSecurityExceptionHandler = new SMPSecurityExceptionHandler();
         if (configurationService.isSSOEnabledForUserAuthentication()) {
-            String casEndpointAntPattern = SMP_SECURITY_PATH_CAS_AUTHENTICATE;
-            LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint for endpoint [{}]!", casEndpointAntPattern);
+            String casEndpointPath= SMP_SECURITY_PATH_CAS_AUTHENTICATE;
+            LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint for endpoint [{}]!", casEndpointPath);
             httpSecurity
                     .exceptionHandling(exceptionHandling -> exceptionHandling
-                            .defaultAuthenticationEntryPointFor(createCasAuthenticationEntryPoint(),
-                                    matcherBuilder.matcher(casEndpointAntPattern))
-                            .accessDeniedHandler(smpSecurityExceptionHandler)
+                            .defaultAuthenticationEntryPointFor(createCasAuthenticationEntryPoint(),matcherBuilder.matcher(HttpMethod.GET, casEndpointPath))
+                            .defaultAuthenticationEntryPointFor(smpSecurityExceptionHandler, matcherBuilder.matcher("/ui/**"))
                     ).addFilter(casAuthenticationFilter);
         } else {
                 httpSecurity.exceptionHandling(
@@ -150,7 +149,6 @@ public class UISecurityConfig {
         httpSecurity
                 .securityMatcher(new OrRequestMatcher(matchers))
                 .addFilterAfter(mdcLogRequestFilter, BasicAuthenticationFilter.class)
-//                  .addFilterBefore(filter, BasicAuthenticationFilter.class)
                 .httpBasic(http -> http.authenticationEntryPoint(smpSecurityExceptionHandler))
                 .anonymous(anon -> anon.authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()))
                 .authorizeHttpRequests(authz -> authz

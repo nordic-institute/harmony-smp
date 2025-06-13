@@ -66,34 +66,36 @@ class UISecurityConfigTest {
     }
 
     @Test
-    void configureSecurityHeaders() {
+    void authenticationManagerBeanNotNull() {
+        assertNotNull(testInstance.authenticationManagerBean());
     }
 
     @Test
-    void authenticationManagerBean() {
+    void getMDCLogRequestFilterNotNull() {
+        assertNotNull(testInstance.getMDCLogRequestFilter());
     }
 
     @Test
-    void getMDCLogRequestFilter() {
+    void tokenRepositoryNotNull() {
+        assertNotNull(testInstance.tokenRepository());
     }
 
     @Test
-    void tokenRepository() {
+    void csrfURLMatcherNotNull() {
+        assertNotNull(testInstance.csrfURLMatcher());
     }
 
     @Test
-    void csrfURLMatcher() {
+    void smpCookieWriterNotNull() {
+        assertNotNull(testInstance.smpCookieWriter());}
+
+    @Test
+    void httpSessionEventPublisherNotNull() {
+        assertNotNull(testInstance.httpSessionEventPublisher());
     }
 
     @Test
-    void smpCookieWriter() {
-    }
-
-    @Test
-    void httpSessionEventPublisher() {
-    }
-
-    @Test
-    void smpForwardedHeaderTransformer() {
+    void smpForwardedHeaderTransformerNotNull() {
+        assertNotNull(testInstance.smpForwardedHeaderTransformer());
     }
 }
