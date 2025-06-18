@@ -380,6 +380,13 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-cas</artifactId>
                 <version>${spring.security.version}</version>
+                <exclusions>
+                    <!-- Exclude vulnerable bcpkix-jdk15on and use bcpkix-jdk18on instead -->
+                    <exclusion>
+                        <groupId> org.bouncycastle</groupId>
+                        <artifactId>bcpkix-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
