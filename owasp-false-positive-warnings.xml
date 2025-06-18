@@ -26,11 +26,13 @@
         <notes><![CDATA[
    file name: spring-web-5.3.*.jar
    CVE-2016-1000027 - The data serialized by the application are from authenticated users and trusted
+   CVE-2025-41234 - The application does not set a “Content-Disposition” response header and filenames are not derived from user-supplied input.
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2024-38828</cve>
+        <vulnerabilityName>CVE-2025-41234</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -101,6 +103,7 @@
         <cve>CVE-2023-41080</cve>
         <cve>CVE-2024-38286</cve>
         <cve>CVE-2025-24813</cve>
+        <vulnerabilityName>CVE-2025-48988</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
