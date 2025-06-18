@@ -61,7 +61,7 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
         <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
-        <plugin.maven-clean-plugin.version>3.4.1</plugin.maven-clean-plugin.version>
+        <plugin.maven-clean-plugin.version>3.5.0</plugin.maven-clean-plugin.version>
         <plugin.maven-compiler-plugin.version>3.14.0</plugin.maven-compiler-plugin.version>
         <plugin.maven-dependency-plugin.version>3.8.1</plugin.maven-dependency-plugin.version>
         <plugin.maven-failsafe-plugin.version>3.5.3</plugin.maven-failsafe-plugin.version>
@@ -76,9 +76,9 @@ See the Licence for the specific language governing permissions and limitations 
 
         <!-- Use logback 1.2.x because is the one used by springboot 5.7. Changing to 1.3+ will break springboot logging. -->
         <aspectj.version>1.9.24</aspectj.version>
-        <commons-beanutils.version>1.10.1</commons-beanutils.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>20040616</commons-collections.version>
-        <commons-fileupload.version>1.5</commons-fileupload.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-io.version>2.19.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <commons-net.version>3.11.1</commons-net.version>
@@ -89,11 +89,11 @@ See the Licence for the specific language governing permissions and limitations 
         <fasterxml.classmate.version>1.7.0</fasterxml.classmate.version>
         <h2.version>2.3.232</h2.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <hibernate-tools-orm.version>6.6.13.Final</hibernate-tools-orm.version>
+        <hibernate-tools-orm.version>6.6.17.Final</hibernate-tools-orm.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
-        <hibernate.version>6.6.15.Final</hibernate.version>
+        <hibernate.version>6.6.18.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <jackson.version>2.19.0</jackson.version>
+        <jackson.version>2.19.1</jackson.version>
         <jakarta.activation-api.version>2.1.3</jakarta.activation-api.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
@@ -105,20 +105,20 @@ See the Licence for the specific language governing permissions and limitations 
         <javax.cache-api.version>1.1.1</javax.cache-api.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
-        <junit-jupiter.version>5.12.2</junit-jupiter.version>
+        <junit-jupiter.version>5.13.1</junit-jupiter.version>
         <junit-platform-surefire-provider.version>1.3.2</junit-platform-surefire-provider.version>
         <junitparams.version>1.1.1</junitparams.version>
-        <logback.version>1.2.13</logback.version>
+        <logback.version>1.5.18</logback.version>
         <metro.version>2.2.1-1</metro.version>
         <mockito.version>5.18.0</mockito.version>
         <mysql.jdbc.version>9.3.0</mysql.jdbc.version>
         <org.glassfish.jaxb.jaxb-runtime.version>4.0.5</org.glassfish.jaxb.jaxb-runtime.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <spring-boot.tomcat.version>10.1.41</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>10.1.42</spring-boot.tomcat.version>
         <spring-boot.version>3.5.0</spring-boot.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring.security.version>6.5.0</spring.security.version>
-        <spring.version>6.2.7</spring.version>
+        <spring.security.version>6.5.1</spring.security.version>
+        <spring.version>6.2.8</spring.version>
         <xmlunit.version>2.10.2</xmlunit.version>
 
         <!-- plugins -->

@@ -1,5 +1,5 @@
 -- This is [DROP] database script for DomiSML version: [5.2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.15.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
+-- This file was generated using hibernate version [6.6.18.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     alter table SMP_ALERT_AUD 
