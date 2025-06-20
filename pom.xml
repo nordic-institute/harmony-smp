@@ -77,7 +77,7 @@ See the Licence for the specific language governing permissions and limitations 
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.19.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
-        <commons-fileupload.version>1.5</commons-fileupload.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-net.version>3.11.1</commons-net.version>
         <commons-validator.version>1.9.0</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.4</cxf-xjc-runtime.version>
@@ -111,7 +111,7 @@ See the Licence for the specific language governing permissions and limitations 
         <spring-boot.tomcat.version>9.0.106</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
-        <xmlunit.version>2.10.2</xmlunit.version>
+        <xmlunit.version>2.10.3</xmlunit.version>
 
         <!-- plugins -->
         <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
