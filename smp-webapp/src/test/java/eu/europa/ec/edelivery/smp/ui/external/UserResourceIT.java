@@ -43,8 +43,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -81,7 +80,7 @@ class UserResourceIT {
     }
 
     @Test
-    void testUpdateCurrentUserOK() throws Exception {
+    void testUpdateCurrentUserProfileOK() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
@@ -139,6 +138,7 @@ class UserResourceIT {
 
         UserRO updateUserData = mapper.readValue(resultUser.getResponse().getContentAsString(), UserRO.class);
         AccessTokenRO resAccessToken = mapper.readValue(result.getResponse().getContentAsString(), AccessTokenRO.class);
+        assertNotNull(updateUserData);
         assertNotNull(resAccessToken);
 
     }
