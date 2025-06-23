@@ -165,7 +165,13 @@ public class UISecurityConfig {
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.PUT, "/ui/public/rest/**")).hasAnyAuthority(
                                 SMPAuthority.S_AUTHORITY_USER.getAuthority(),
                                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/public/rest/**")).hasAnyAuthority(
+                                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, "/ui/public/rest/**")).hasAnyAuthority(
+                                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        .requestMatchers(matcherBuilder.matcher(HttpMethod.DELETE, "/ui/public/rest/**")).hasAnyAuthority(
                                 SMPAuthority.S_AUTHORITY_USER.getAuthority(),
                                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, "/ui/internal/rest/**")).hasAnyAuthority(
@@ -180,14 +186,6 @@ public class UISecurityConfig {
                                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.DELETE, "/ui/edit/rest/**")).hasAnyAuthority(
                                 SMPAuthority.S_AUTHORITY_USER.getAuthority(),
-                                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                        .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/public/rest/**")).hasAnyAuthority(
-                                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
-                                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                        .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/edit/rest/**")).hasAnyAuthority(
-                                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
-                                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                        .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/internal/rest/**")).hasAnyAuthority(
                                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.PUT, "/ui/internal/rest/**")).hasAnyAuthority(
                                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
