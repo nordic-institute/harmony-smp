@@ -54,12 +54,12 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
         " WHERE c.domain.id = :domain_id " +
         "  AND c.role in (:membership_roles)" +
-        "  AND (lower(c.user.fullName) like lower(:user_filter) " +
-        "    OR  lower(c.user.username) like lower(:user_filter))")
+        "  AND (lower(c.user.fullName) like lower(:user_filter) ESCAPE '\\'" +
+        "    OR  lower(c.user.username) like lower(:user_filter) ESCAPE '\\')")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER, query = "SELECT c FROM DBDomainMember c " +
         " WHERE c.domain.id = :domain_id  " +
-        " AND (lower(c.user.fullName) like lower(:user_filter) " +
-        "   OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
+        " AND (lower(c.user.fullName) like lower(:user_filter) ESCAPE '\\' " +
+        "   OR lower(c.user.username) like lower(:user_filter) ESCAPE '\\')  order by c.user.username")
 public class DBDomainMember extends BaseEntity {
 
     @Id

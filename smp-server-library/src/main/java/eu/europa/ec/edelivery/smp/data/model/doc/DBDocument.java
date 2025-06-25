@@ -68,8 +68,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND r.visibility =:resource_visibility " +
         "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
         "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))")
+        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\') " +
+        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')")
 @NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT, query = "SELECT count(d.id) " +
         " FROM DBResource r " +
         " INNER JOIN r.document d " +
@@ -83,8 +83,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND r.visibility =:resource_visibility " +
         "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
         "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))")
+        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\')" +
+        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')")
 @NamedQuery(name = QUERY_DOCUMENT_FOR_SUBRESOURCE, query = "SELECT d FROM DBSubresource  sr JOIN sr.document d WHERE sr.id =:subresource_id")
 @NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES, query =
         "SELECT new eu.europa.ec.edelivery.smp.data.model.doc.DBSearchReferenceDocumentMapping(" +
@@ -114,10 +114,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 "   AND r.visibility =:resource_visibility " +
                 "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
                 "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-                "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-                "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))" +
-                "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier))" +
-                "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme))")
+                "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\')" +
+                "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')" +
+                "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier) ESCAPE '\\')" +
+                "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme) ESCAPE '\\')")
 @NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT, query = "SELECT count(d.id) " +
         " FROM DBSubresource sr " +
         " INNER JOIN sr.subresourceDef srdef " +
@@ -134,10 +134,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND r.visibility =:resource_visibility " +
         "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
         "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))" +
-        "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier))" +
-        "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme))")
+        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\')" +
+        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')" +
+        "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier) ESCAPE '\\')" +
+        "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme) ESCAPE '\\')")
 
 @NamedQuery(name = QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, query = "SELECT d FROM DBDocument d WHERE d.referenceDocument.id =:document_id")
 public class DBDocument extends BaseEntity {
