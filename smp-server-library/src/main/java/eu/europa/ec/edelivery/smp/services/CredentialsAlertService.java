@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
-import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
@@ -66,7 +66,7 @@ public class CredentialsAlertService {
     final MailService mailService;
     final ConfigurationService configurationService;
     final UserDao userDao;
-    final CredentialDao credentialDao;
+    final PeriodicalAlertDao periodicalAlertDao;
     final SMPDynamicCronTrigger alertCronTrigger;
     final SmpUrlBuilder smpUrlBuilder;
 
@@ -74,14 +74,14 @@ public class CredentialsAlertService {
                                    MailService mailService,
                                    ConfigurationService configurationService,
                                    UserDao userDao,
-                                   CredentialDao credentialDao,
+                                   PeriodicalAlertDao periodicalAlertDao,
                                    SmpUrlBuilder smpUrlBuilder,
                                    @Qualifier(TRIGGER_BEAN_CREDENTIAL_ALERTS) SMPDynamicCronTrigger alertCronTrigger) {
         this.alertDao = alertDao;
         this.mailService = mailService;
         this.configurationService = configurationService;
         this.userDao = userDao;
-        this.credentialDao = credentialDao;
+        this.periodicalAlertDao = periodicalAlertDao;
         this.alertCronTrigger = alertCronTrigger;
         this.smpUrlBuilder = smpUrlBuilder;
     }
@@ -99,22 +99,23 @@ public class CredentialsAlertService {
         String credentialId = userCredential.getName();
         OffsetDateTime expiredOn = userCredential.getExpireOn();
 
+        if (!credentialType.isExpiring() && !credentialType.isCredential()) {
+            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
+            return;
+        }
+
         // alert specific properties
-        String mailSubject;
-        AlertLevelEnum alertLevel;
+        AlertLevelEnum alertLevel = AlertLevelEnum.LOW;
         if (credentialType == CredentialType.ACCESS_TOKEN) {
             alertLevel = configurationService.getAlertBeforeExpireAccessTokenLevel();
         } else if (credentialType == CredentialType.USERNAME_PASSWORD) {
             alertLevel = configurationService.getAlertBeforeExpirePasswordLevel();
         } else if (credentialType == CredentialType.CERTIFICATE) {
             alertLevel = configurationService.getAlertBeforeExpireCertificateLevel();
-        } else {
-            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
-            return;
         }
 
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
-        mailSubject = alertType.name() + " " +credentialType.name();
+        String mailSubject = alertType.name() + " " +credentialType.name();
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(userCredential, alert, credentialType, credentialId, expiredOn);
     }
@@ -138,24 +139,24 @@ public class CredentialsAlertService {
         String credentialId = userCredential.getName();
         OffsetDateTime expiredOn = userCredential.getExpireOn();
 
-        // alert specific properties
-        String mailSubject;
-        AlertLevelEnum alertLevel;
 
+        if (!credentialType.isExpiring() && !credentialType.isCredential()) {
+            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
+            return;
+        }
+
+        // alert specific properties
+        AlertLevelEnum alertLevel = AlertLevelEnum.LOW;
         if (credentialType == CredentialType.ACCESS_TOKEN) {
             alertLevel = configurationService.getAlertExpiredAccessTokenLevel();
         } else if (credentialType == CredentialType.USERNAME_PASSWORD) {
             alertLevel = configurationService.getAlertExpiredPasswordLevel();
         } else if (credentialType == CredentialType.CERTIFICATE) {
             alertLevel = configurationService.getAlertExpiredCertificateLevel();
-        } else {
-            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
-            return;
         }
 
-
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
-        mailSubject = alertType.name() + " " +credentialType.name();
+        String mailSubject = alertType.name() + " " +credentialType.name();
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(userCredential, alert, credentialType, credentialId, expiredOn);
     }
@@ -243,9 +244,10 @@ public class CredentialsAlertService {
         alertDao.persistFlushDetach(alert);
         // submit alerts
         submitAlertMail(alert, user);
+
         // when alert about to expire - check if the next cron execution is expired
         // and set date sent tp null to ensure alert submission in next cron execution
-        credentialDao.updateAlertSentForUserCredentials(credential,
+        periodicalAlertDao.updateAlertSentForUserCredentials(credential,
                 alert.getAlertType() == AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION
                         && isNextExecutionExpired(expirationDate) ?
                         null : OffsetDateTime.now());

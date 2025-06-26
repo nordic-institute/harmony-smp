@@ -18,7 +18,10 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
+import eu.europa.ec.edelivery.smp.data.enums.AlertScope;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -33,10 +36,13 @@ import eu.europa.ec.edelivery.smp.services.mail.prop.SystemCertificateExpiration
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Date;
 
+import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_SYSTEM_CERTIFICATES_ALERTS;
 import static eu.europa.ec.edelivery.smp.utils.DateTimeUtils.formatOffsetDateTimeWithLocal;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -50,17 +56,25 @@ public class SystemCertificateAlertService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SystemCertificateValidatorService.class);
 
     private final AlertDao alertDao;
+    private final PeriodicalAlertDao periodicalAlertDao;
     private final MailService mailService;
     private final ConfigurationService configurationService;
+    private final SMPDynamicCronTrigger alertCronTrigger;
 
     private static final String CERTIFICATE_TYPE_SML_INTEGRATION = "DomiSML Integration Certificate";
 
     private static final String CERTIFICATE_TYPE_SIGNING = "Signing Certificate";
 
-    public SystemCertificateAlertService(AlertDao alertDao, MailService mailService, ConfigurationService configurationService) {
+    public SystemCertificateAlertService(AlertDao alertDao,
+                                         PeriodicalAlertDao periodicalAlertDao,
+                                         MailService mailService,
+                                         ConfigurationService configurationService,
+                                         @Qualifier(TRIGGER_BEAN_SYSTEM_CERTIFICATES_ALERTS) SMPDynamicCronTrigger alertCronTrigger) {
         this.alertDao = alertDao;
+        this.periodicalAlertDao = periodicalAlertDao;
         this.mailService = mailService;
         this.configurationService = configurationService;
+        this.alertCronTrigger = alertCronTrigger;
     }
 
     public void alertBeforeSigningCertificateExpire(DBUser user, String domain, String certificateAlias, OffsetDateTime expirationDate) {
@@ -145,6 +159,14 @@ public class SystemCertificateAlertService {
         alertDao.persistFlushDetach(alert);
         // submit alerts
         submitAlertMail(alert, user);
+
+        // when alert about to expire - check if the next cron execution is expired
+        // and set date sent tp null to ensure alert submission in next cron execution
+        periodicalAlertDao.updateAlertSentForUserSystemCertificate(certificateAlias, AlertScope.SYSTEM_KEYSTORE,
+                alert.getAlertType() == AlertTypeEnum.SYSTEM_CERTIFICATE_IMMINENT_EXPIRATION
+                        && isNextExecutionExpired(expirationDate) ?
+                        null : OffsetDateTime.now());
+
     }
 
     public void submitAlertMail(DBAlert alert, DBUser user) {
@@ -171,5 +193,13 @@ public class SystemCertificateAlertService {
                     mailTo, alert, ExceptionUtils.getRootCauseMessage(exc));
             LOG.error("Error sending mail", exc);
         }
+    }
+
+    public boolean isNextExecutionExpired(OffsetDateTime expireOn) {
+        Date nextExecutionDate = alertCronTrigger.getNextExecutionDate();
+        // get expire offset - presume that expired On was generated
+        // on server in the same zone
+        return nextExecutionDate == null || expireOn == null ||
+                expireOn.isBefore(nextExecutionDate.toInstant().atOffset(expireOn.getOffset()));
     }
 }

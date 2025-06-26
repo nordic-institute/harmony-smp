@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.data.enums.*;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBPeriodicalAlert;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
@@ -237,25 +238,22 @@ public class TestDBUtils {
         return createDBCredential(name, "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
     }
 
-    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from, OffsetDateTime to) {
         DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
-        credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from, OffsetDateTime to) {
         DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
-        credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from, OffsetDateTime to) {
         DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
-        credential.setExpireAlertOn(lastAlertSent);
         if (to != null) {
             credential.setExpireOn(to);
         }
@@ -277,12 +275,10 @@ public class TestDBUtils {
         dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
         dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
-        dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
         dbCredential.setUser(dbUser);
 
         if (CredentialType.CERTIFICATE.equals(credentialType)) {
-
             DBCertificate certificate = new DBCertificate();
             certificate.setCertificateId(name);
             certificate.setValidFrom(dbCredential.getActiveFrom());
@@ -315,9 +311,16 @@ public class TestDBUtils {
         dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
         dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
-        dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
         return dbCredential;
+    }
+
+    public static DBPeriodicalAlert createPeriodicalAlert(CredentialType entityType, String entityId, OffsetDateTime lastAlertSent) {
+        DBPeriodicalAlert alert = new DBPeriodicalAlert();
+        alert.setEntityType(entityType);
+        alert.setEntityIdentifier(entityId);
+        alert.setExpireAlertOn(lastAlertSent);
+        return alert;
     }
 
     public static DBAlert createDBAlert() {

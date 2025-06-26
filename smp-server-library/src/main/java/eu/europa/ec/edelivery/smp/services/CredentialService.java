@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
 import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
@@ -86,6 +87,7 @@ public class CredentialService {
     final UITruststoreService truststoreService;
     final ConfigurationService configurationService;
     final CredentialsAlertService alertService;
+    final PeriodicalAlertDao periodicalAlertDao;
 
     /**
      * thread safe validator
@@ -93,7 +95,7 @@ public class CredentialService {
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US));
 
 
-    public CredentialService(UserDao mUserDao, CredentialDao credentialDao, ConversionService conversionService, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService, CredentialsAlertService alertService) {
+    public CredentialService(UserDao mUserDao, CredentialDao credentialDao, ConversionService conversionService, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService, CredentialsAlertService alertService, PeriodicalAlertDao periodicalAlertDao) {
         this.userDao = mUserDao;
         this.credentialDao = credentialDao;
         this.conversionService = conversionService;
@@ -101,6 +103,7 @@ public class CredentialService {
         this.truststoreService = truststoreService;
         this.configurationService = configurationService;
         this.alertService = alertService;
+        this.periodicalAlertDao = periodicalAlertDao;
     }
 
     @Transactional(noRollbackFor = {AuthenticationException.class, SMPRuntimeException.class, RuntimeException.class})
@@ -389,7 +392,6 @@ public class CredentialService {
         OffsetDateTime now = OffsetDateTime.now();
         dbCredential.setValue(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
 
-        dbCredential.setExpireAlertOn(null);
         dbCredential.setSequentialLoginFailureCount(0);
         dbCredential.setLastFailedLoginAttempt(null);
         dbCredential.setChangedOn(now);
@@ -400,6 +402,7 @@ public class CredentialService {
 
         // submit mail with reset token
         alertService.alertCredentialChanged(dbCredential);
+        periodicalAlertDao.updateAlertSentForUserCredentials(dbCredential, null);
     }
 
 
@@ -477,7 +480,7 @@ public class CredentialService {
 
 
     public void validatePasswordResetToken(String resetToken){
-        Optional<DBCredential> optCredential = credentialDao.findUCredentialForUsernamePasswordTypeAndResetToken(resetToken);
+        Optional<DBCredential> optCredential = credentialDao.findCredentialForUsernamePasswordTypeAndResetToken(resetToken);
         if (optCredential.isEmpty()) {
             LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_NOT_EXISTS, resetToken, CredentialType.USERNAME_PASSWORD);
             throw UNAUTHORIZED_INVALID_RESET_TOKEN;

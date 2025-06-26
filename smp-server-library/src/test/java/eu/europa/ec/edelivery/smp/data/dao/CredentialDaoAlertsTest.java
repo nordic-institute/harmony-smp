@@ -18,6 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.model.DBPeriodicalAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
@@ -67,6 +69,9 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
     CredentialDao testInstance;
 
     @Autowired
+    PeriodicalAlertDao periodicalAlertDao;
+
+    @Autowired
     UserDao userDao;
 
     @BeforeEach
@@ -93,60 +98,64 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
         userDao.persistFlushDetach(certExpiredAlertSend);
         // configure user credentials for various issues
 
+        OffsetDateTime twoDaysAgo = OffsetDateTime.now().minusDays(2);
+        OffsetDateTime tenDaysAgo = OffsetDateTime.now().minusDays(10);
+
         // set user password credentials to database
         // reference OK User
-        DBCredential credOkUser = TestDBUtils.createDBCredentialForUser(okUser, null, OffsetDateTime.now().plusDays(90) , null);
+        DBCredential credOkUser = TestDBUtils.createDBCredentialForUser(okUser, null, OffsetDateTime.now().plusDays(90));
         // test before password expires -  alerts  are send 30 days before they are expired and mail is send every 5 days
         // set users where
         // -- user credBeforePasswordExpireNoAlertSend  - password will expire in 20 days - alert must be sent.
         // -- user credBeforePasswordExpireRecentAlertSend - password will expire in 20 days - but alert was sent 2 days ago
         // -- user credBeforePasswordExpireAlertSend -  password will expire in 20 days and alert was sent 10 days ago -  alert must be sent again
         DBCredential credBeforePasswordExpireNoAlertSend = TestDBUtils.createDBCredentialForUser(beforePasswordExpireNoAlertSend, null,
-                OffsetDateTime.now().plusDays(20), null);
+                OffsetDateTime.now().plusDays(20));
         DBCredential credBeforePasswordExpireRecentAlertSend = TestDBUtils.createDBCredentialForUser(beforePasswordExpireRecentAlertSend, null,
-                OffsetDateTime.now().plusDays(20), OffsetDateTime.now().minusDays(2));
+                OffsetDateTime.now().plusDays(20));
         DBCredential credBeforePasswordExpireAlertSend = TestDBUtils.createDBCredentialForUser(beforePasswordExpireAlertSend, null,
-                OffsetDateTime.now().plusDays(20),OffsetDateTime.now().minusDays(10));
-        // -- user 1  - password expired 20 days aga alert must be sent.
-        // -- user 2 - password  expired 20 ago  - but alert was sent 2 days ago - no need to send it yet.
+                OffsetDateTime.now().plusDays(20));
+
+        // -- user 1  - password expired 20 days ago alert must be sent.
+        // -- user 2 - password  expired 20 ago - but alert was sent 2 days ago - no need to send it yet.
         // -- user 3 -  password  expired 20 ago and alert was sent 10 days ago -  alert must be sent again
         DBCredential credPasswordExpiredNoAlertSend = TestDBUtils.createDBCredentialForUser(passwordExpiredNoAlertSend, null,
-                OffsetDateTime.now().minusDays(20), null);
+                OffsetDateTime.now().minusDays(20));
         DBCredential credPasswordExpiredRecentAlertSend = TestDBUtils.createDBCredentialForUser(passwordExpiredRecentAlertSend, null,
-                OffsetDateTime.now().minusDays(20), OffsetDateTime.now().minusDays(2));
+                OffsetDateTime.now().minusDays(20));
         DBCredential credPasswordExpiredAlertSend = TestDBUtils.createDBCredentialForUser(passwordExpiredAlertSend, null,
-                OffsetDateTime.now().minusDays(20), OffsetDateTime.now().minusDays(10));
+                OffsetDateTime.now().minusDays(20));
 
       //-----------------------------------------
         // set before expired access-token testcases
         DBCredential credBeforeATExpireNoAlertSend = TestDBUtils.createDBCredentialForUserAccessToken(beforeATExpireNoAlertSend, null,
-                OffsetDateTime.now().plusDays(20), null);
+                OffsetDateTime.now().plusDays(20));
         DBCredential credBeforeATExpireRecentAlertSend = TestDBUtils.createDBCredentialForUserAccessToken(beforeATExpireRecentAlertSend, null,
-                OffsetDateTime.now().plusDays(20), OffsetDateTime.now().minusDays(2));
+                OffsetDateTime.now().plusDays(20));
         DBCredential credBeforeATExpireAlertSend = TestDBUtils.createDBCredentialForUserAccessToken(beforeATExpireAlertSend, null,
-                OffsetDateTime.now().plusDays(20),OffsetDateTime.now().minusDays(10));
+                OffsetDateTime.now().plusDays(20));
         DBCredential credATExpiredNoAlertSend = TestDBUtils.createDBCredentialForUserAccessToken(aTExpiredNoAlertSend, null,
-                OffsetDateTime.now().minusDays(20), null);
+                OffsetDateTime.now().minusDays(20));
         DBCredential credATExpiredRecentAlertSend = TestDBUtils.createDBCredentialForUserAccessToken(aTExpiredRecentAlertSend, null,
-                OffsetDateTime.now().minusDays(20), OffsetDateTime.now().minusDays(2));
+                OffsetDateTime.now().minusDays(20));
         DBCredential credATExpiredAlertSend = TestDBUtils.createDBCredentialForUserAccessToken(aTExpiredAlertSend, null,
-                OffsetDateTime.now().minusDays(20), OffsetDateTime.now().minusDays(10));
+                OffsetDateTime.now().minusDays(20));
 
         //-----------------------------------------
         // set before expired certificates testcases
         DBCredential credBeforeCertExpireNoAlertSend = TestDBUtils.createDBCredentialForUserCertificate(beforeCertExpireNoAlertSend, null,
-                OffsetDateTime.now().plusDays(20), null);
+                OffsetDateTime.now().plusDays(20));
         DBCredential credBeforeCertExpireRecentAlertSend = TestDBUtils.createDBCredentialForUserCertificate(beforeCertExpireRecentAlertSend, null,
-                OffsetDateTime.now().plusDays(20), OffsetDateTime.now().minusDays(2));
+                OffsetDateTime.now().plusDays(20));
         DBCredential credBeforeCertExpireAlertSend = TestDBUtils.createDBCredentialForUserCertificate(beforeCertExpireAlertSend, null,
-                OffsetDateTime.now().plusDays(20),OffsetDateTime.now().minusDays(10));
+                OffsetDateTime.now().plusDays(20));
         // set expired certificates testcases
         DBCredential credCertExpiredNoAlertSend = TestDBUtils.createDBCredentialForUserCertificate(certExpiredNoAlertSend, null,
-                OffsetDateTime.now().minusDays(20), null);
+                OffsetDateTime.now().minusDays(20));
         DBCredential credCertExpiredRecentAlertSend = TestDBUtils.createDBCredentialForUserCertificate(certExpiredRecentAlertSend, null,
-                OffsetDateTime.now().minusDays(20), OffsetDateTime.now().minusDays(2));
+                OffsetDateTime.now().minusDays(20));
         DBCredential credCertExpiredAlertSend = TestDBUtils.createDBCredentialForUserCertificate(certExpiredAlertSend, null,
-                OffsetDateTime.now().minusDays(20), OffsetDateTime.now().minusDays(10));
+                OffsetDateTime.now().minusDays(20));
 
         // persists
         testInstance.persistFlushDetach(credOkUser);
@@ -156,6 +165,17 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
         testInstance.persistFlushDetach(credPasswordExpiredNoAlertSend);
         testInstance.persistFlushDetach(credPasswordExpiredRecentAlertSend);
         testInstance.persistFlushDetach(credPasswordExpiredAlertSend);
+
+        DBPeriodicalAlert credBeforePasswordExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credBeforePasswordExpireRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credBeforePasswordExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credBeforePasswordExpireAlertSend.getId().toString() ,tenDaysAgo);
+        DBPeriodicalAlert credPasswordExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credPasswordExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credPasswordExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credPasswordExpiredAlertSend.getId().toString() ,tenDaysAgo);
+        periodicalAlertDao.persistFlushDetach(credBeforePasswordExpireRecentAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credBeforePasswordExpireAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credPasswordExpiredRecentAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credPasswordExpiredAlertSendAlert);
+
+
         // access token examples
         testInstance.persistFlushDetach(credBeforeATExpireNoAlertSend);
         testInstance.persistFlushDetach(credBeforeATExpireRecentAlertSend);
@@ -163,6 +183,16 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
         testInstance.persistFlushDetach(credATExpiredNoAlertSend);
         testInstance.persistFlushDetach(credATExpiredRecentAlertSend);
         testInstance.persistFlushDetach(credATExpiredAlertSend);
+
+        DBPeriodicalAlert credBeforeATExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credBeforeATExpireRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credBeforeATExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credBeforeATExpireAlertSend.getId().toString(), tenDaysAgo);
+        DBPeriodicalAlert credATExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credATExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credATExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credATExpiredAlertSend.getId().toString(), tenDaysAgo);
+        periodicalAlertDao.persistFlushDetach(credBeforeATExpireRecentAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credBeforeATExpireAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credATExpiredRecentAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credATExpiredAlertSendAlert);
+
         // certificate examples
         testInstance.persistFlushDetach(credBeforeCertExpireNoAlertSend);
         testInstance.persistFlushDetach(credBeforeCertExpireRecentAlertSend);
@@ -170,12 +200,21 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
         testInstance.persistFlushDetach(credCertExpiredNoAlertSend);
         testInstance.persistFlushDetach(credCertExpiredRecentAlertSend);
         testInstance.persistFlushDetach(credCertExpiredAlertSend);
+
+        DBPeriodicalAlert credBeforeCertExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credBeforeCertExpireRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credBeforeCertExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credBeforeCertExpireAlertSend.getId().toString(), tenDaysAgo);
+        DBPeriodicalAlert credCertExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credCertExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credCertExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credCertExpiredAlertSend.getId().toString(), tenDaysAgo);
+        periodicalAlertDao.persistFlushDetach(credBeforeCertExpireRecentAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credBeforeCertExpireAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credCertExpiredRecentAlertSendAlert);
+        periodicalAlertDao.persistFlushDetach(credCertExpiredAlertSendAlert);
     }
 
     @Test
     void getPasswordImminentExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getBeforePasswordExpireUsersForAlerts(30, 5, 200);
-        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
+        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).toList();
         assertTrue(usernames.contains(beforePasswordExpireNoAlertSend.getUsername()));
         assertTrue(usernames.contains(beforePasswordExpireAlertSend.getUsername()));
     }
@@ -184,7 +223,7 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
     void getPasswordExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getPasswordExpiredUsersForAlerts(30, 5, 200);
         assertEquals(2, dbUserList.size());
-        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
+        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).toList();
         assertTrue(usernames.contains(passwordExpiredNoAlertSend.getUsername()));
         assertTrue(usernames.contains(passwordExpiredAlertSend.getUsername()));
     }
@@ -192,7 +231,7 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
     @Test
     void getAccessTokenImminentExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getBeforeAccessTokenExpireUsersForAlerts(30, 5, 200);
-        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
+        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).toList();
         System.out.println(usernames);
         assertEquals(2, dbUserList.size());
         assertTrue(usernames.contains(beforeATExpireNoAlertSend.getUsername()));
@@ -202,7 +241,7 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
     @Test
     void getAccessTokenExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getAccessTokenExpiredUsersForAlerts(30, 5, 200);
-        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
+        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).toList();
         System.out.println(usernames);
         assertEquals(2, dbUserList.size());
         assertTrue(usernames.contains(aTExpiredNoAlertSend.getUsername()));
@@ -212,7 +251,7 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
     @Test
     void getCertificateImminentExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getBeforeCertificateExpireUsersForAlerts(30, 5, 200);
-        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
+        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).toList();
         System.out.println(usernames);
         assertEquals(2, dbUserList.size());
         assertTrue(usernames.contains(beforeCertExpireNoAlertSend.getUsername()));
@@ -222,7 +261,7 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
     @Test
     void getCertificateExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getCertificateExpiredUsersForAlerts(30, 5, 200);
-        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
+        List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).toList();
         System.out.println(usernames);
         assertEquals(2, dbUserList.size());
         assertTrue(usernames.contains(certExpiredNoAlertSend.getUsername()));

@@ -118,9 +118,8 @@
         ACTIVE_FROM datetime(6) comment 'Date when credential starts to be active',
         CHANGED_ON datetime(6) comment 'Last date when credential was changed',
         CREDENTIAL_TARGET enum ('REST_API','UI') not null comment 'Credential target UI, API',
-        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD') not null comment 'Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS',
+        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD') not null comment 'Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS',
         CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Credential description',
-        LAST_ALERT_ON datetime(6) comment 'Generated last password expire alert',
         EXPIRE_ON datetime(6) comment 'Date when password will expire',
         LAST_FAILED_LOGIN_ON datetime(6) comment 'Last failed login attempt',
         CREDENTIAL_NAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
@@ -142,9 +141,8 @@
         ACTIVE_FROM datetime(6),
         CHANGED_ON datetime(6),
         CREDENTIAL_TARGET enum ('REST_API','UI'),
-        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD'),
+        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
         CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        LAST_ALERT_ON datetime(6),
         EXPIRE_ON datetime(6),
         LAST_FAILED_LOGIN_ON datetime(6),
         CREDENTIAL_NAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -427,6 +425,30 @@
         MEMBERSHIP_ROLE enum ('ADMIN','VIEWER'),
         FK_GROUP_ID bigint,
         FK_USER_ID bigint,
+        primary key (REV, ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_PERIODICAL_ALERT (
+        ID bigint not null auto_increment comment 'Unique periodical alert id',
+        CREATED_ON datetime(6) not null,
+        LAST_UPDATED_ON datetime(6) not null,
+        ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE'),
+        ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ENTITY_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
+        LAST_ALERT_ON datetime(6) comment 'Generated last password expire alert',
+        primary key (ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_PERIODICAL_ALERT_AUD (
+        ID bigint not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime(6),
+        LAST_UPDATED_ON datetime(6),
+        ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE'),
+        ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ENTITY_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
+        LAST_ALERT_ON datetime(6),
         primary key (REV, ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -838,6 +860,11 @@
 
     alter table SMP_GROUP_MEMBER_AUD 
        add constraint FK5pmorcyhwkaysh0a8xm99x6a8 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
+    alter table SMP_PERIODICAL_ALERT_AUD 
+       add constraint FK7qyb720heygkwc5mmpaer2iou 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

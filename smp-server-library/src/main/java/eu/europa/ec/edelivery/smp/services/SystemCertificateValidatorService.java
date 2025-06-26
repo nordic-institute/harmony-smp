@@ -20,7 +20,9 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.enums.AlertScope;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -35,6 +37,8 @@ import java.time.ZoneOffset;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+
+import static eu.europa.ec.edelivery.smp.data.enums.AlertScope.SYSTEM_KEYSTORE;
 
 /**
  * Service for validating and alerting expiration of system certificates (i.e. SML integration certificates and
@@ -60,18 +64,21 @@ public class SystemCertificateValidatorService {
 
     private final SystemCertificateAlertService alertService;
 
+    private final PeriodicalAlertDao periodicalAlertDao;
+
     public SystemCertificateValidatorService(ConfigurationService configurationService,
                                              UIKeystoreService uiKeystoreService,
                                              UITruststoreService uiTruststoreService,
                                              DomainDao domainDao,
                                              UserDao userDao,
-                                             SystemCertificateAlertService alertService) {
+                                             SystemCertificateAlertService alertService, PeriodicalAlertDao periodicalAlertDao) {
         this.configurationService = configurationService;
         this.uiKeystoreService = uiKeystoreService;
         this.uiTruststoreService = uiTruststoreService;
         this.domainDao = domainDao;
         this.userDao = userDao;
         this.alertService = alertService;
+        this.periodicalAlertDao = periodicalAlertDao;
     }
 
     public void validateSystemCertificates() {
@@ -88,7 +95,7 @@ public class SystemCertificateValidatorService {
 
         Integer days = configurationService.getAlertBeforeExpireSystemCertificatePeriod();
         Map<String, OffsetDateTime> aboutToExpireCertificates = uiKeystoreService.getAboutToExpireCertificateAliases(days);
-        aboutToExpireCertificates.putAll(uiTruststoreService.getAboutToExpireCertificateAliases(days));
+//        aboutToExpireCertificates.putAll(uiTruststoreService.getAboutToExpireCertificateAliases(days));
 
         List<DBUser> systemAdministrators = userDao.findUsersByApplicationRoles(EnumSet.of(ApplicationRoleType.SYSTEM_ADMIN));
         domainDao.getDomainsWithExpiringCertificates(aboutToExpireCertificates.keySet())
@@ -111,29 +118,38 @@ public class SystemCertificateValidatorService {
     }
 
     private void alertExpiringCertificate(List<DBUser> systemAdministrators, DBDomain.DBDomainExpiringCertificateMapping domain, Map<String, OffsetDateTime> expirationDates) {
+        OffsetDateTime expireTestDate = OffsetDateTime.now();
         if (domain.isMatchedSmlCertificate()) {
             String smlClientKeyAlias = domain.getSmlClientKeyAlias();
-            OffsetDateTime expirationDate = expirationDates.get(smlClientKeyAlias);
-            systemAdministrators.forEach(systemAdministrator -> {
-                    if (isCertificateAlreadyExpired(expirationDate)) {
-                        alertService.alertSmlIntegrationCertificateExpired(systemAdministrator, domain.getDomainCode(), smlClientKeyAlias, expirationDate);
-                    } else {
-                        alertService.alertBeforeSmlIntegrationCertificateExpire(systemAdministrator, domain.getDomainCode(), smlClientKeyAlias, expirationDate);
-                    }
-                }
-            );
+            Integer alertInterval = configurationService.getAlertBeforeExpireSystemCertificateInterval();
+            OffsetDateTime lastSendAlertDate = expireTestDate.minusDays(alertInterval);
+            if (periodicalAlertDao.isSystemCertificateReadyForBeforeExpireAlerts(smlClientKeyAlias, SYSTEM_KEYSTORE, lastSendAlertDate)) {
+                OffsetDateTime expirationDate = expirationDates.get(smlClientKeyAlias);
+                systemAdministrators.forEach(systemAdministrator -> {
+                            if (isCertificateAlreadyExpired(expirationDate)) {
+                                alertService.alertSmlIntegrationCertificateExpired(systemAdministrator, domain.getDomainCode(), smlClientKeyAlias, expirationDate);
+                            } else {
+                                alertService.alertBeforeSmlIntegrationCertificateExpire(systemAdministrator, domain.getDomainCode(), smlClientKeyAlias, expirationDate);
+                            }
+                        }
+                );
+            }
         }
         if (domain.isMatchedSigningCertificate()) {
             String signatureKeyAlias = domain.getSignatureKeyAlias();
             OffsetDateTime expirationDate = expirationDates.get(signatureKeyAlias);
-            systemAdministrators.forEach(systemAdministrator -> {
-                    if (isCertificateAlreadyExpired(expirationDate)) {
-                        alertService.alertSigningCertificateExpired(systemAdministrator, domain.getDomainCode(), signatureKeyAlias, expirationDate);
-                    } else {
-                        alertService.alertBeforeSigningCertificateExpire(systemAdministrator, domain.getDomainCode(), signatureKeyAlias, expirationDate);
+            Integer alertInterval = configurationService.getAlertExpiredSystemCertificateInterval();
+            OffsetDateTime lastSendAlertDate = expireTestDate.minusDays(alertInterval);
+            if (periodicalAlertDao.isSystemCertificateReadyForExpiredAlerts(signatureKeyAlias, SYSTEM_KEYSTORE, expirationDate, lastSendAlertDate)) {
+                systemAdministrators.forEach(systemAdministrator -> {
+                        if (isCertificateAlreadyExpired(expirationDate)) {
+                            alertService.alertSigningCertificateExpired(systemAdministrator, domain.getDomainCode(), signatureKeyAlias, expirationDate);
+                        } else {
+                            alertService.alertBeforeSigningCertificateExpire(systemAdministrator, domain.getDomainCode(), signatureKeyAlias, expirationDate);
+                        }
                     }
-                }
-            );
+                );
+            }
         }
     }
 

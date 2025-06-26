@@ -219,7 +219,7 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
 
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null);
         credential.setValue(BCrypt.hashpw("userPassword", BCrypt.gensalt()));
         userDao.persistFlushDetach(user);
         credentialDao.persistFlushDetach(credential);
@@ -238,7 +238,7 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     @Test
     void testUpdateUserPasswordOK() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null);
         credential.setValue(BCrypt.hashpw("userPassword", BCrypt.gensalt()));
         userDao.persistFlushDetach(user);
         credentialDao.persistFlushDetach(credential);
@@ -254,7 +254,7 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     @Test
     void testUpdateUserPasswordFaileSame() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null);
         credential.setValue(BCrypt.hashpw("TTTTtttt1111$$$$$", BCrypt.gensalt()));
         userDao.persistFlushDetach(user);
         credentialDao.persistFlushDetach(credential);
@@ -274,7 +274,7 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         // system admin
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         user.setApplicationRole(ApplicationRoleType.SYSTEM_ADMIN);
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null);
         credential.setValue(BCrypt.hashpw("userPassword", BCrypt.gensalt()));
         userDao.persistFlushDetach(user);
         credentialDao.persistFlushDetach(credential);

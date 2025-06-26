@@ -30,6 +30,8 @@
 
     create sequence SMP_GROUP_SEQ start with 1 increment by 1;
 
+    create sequence SMP_PERIODICAL_ALERT_SEQ start with 1 increment by 1;
+
     create sequence SMP_RESOURCE_DEF_SEQ start with 1 increment by 1;
 
     create sequence SMP_RESOURCE_MEMBER_SEQ start with 1 increment by 1;
@@ -202,9 +204,8 @@
         ACTIVE_FROM timestamp(6) with time zone,
         CHANGED_ON timestamp(6) with time zone,
         CREDENTIAL_TARGET varchar2(255 char) not null check (CREDENTIAL_TARGET in ('UI','REST_API')),
-        CREDENTIAL_TYPE varchar2(255 char) not null check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS')),
+        CREDENTIAL_TYPE varchar2(255 char) not null check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
         CREDENTIAL_DESC varchar2(256 char),
-        LAST_ALERT_ON timestamp(6) with time zone,
         EXPIRE_ON timestamp(6) with time zone,
         LAST_FAILED_LOGIN_ON timestamp(6) with time zone,
         CREDENTIAL_NAME varchar2(256 char) not null,
@@ -238,9 +239,6 @@
     comment on column SMP_CREDENTIAL.CREDENTIAL_DESC is
         'Credential description';
 
-    comment on column SMP_CREDENTIAL.LAST_ALERT_ON is
-        'Generated last password expire alert';
-
     comment on column SMP_CREDENTIAL.EXPIRE_ON is
         'Date when password will expire';
 
@@ -272,9 +270,8 @@
         ACTIVE_FROM timestamp(6) with time zone,
         CHANGED_ON timestamp(6) with time zone,
         CREDENTIAL_TARGET varchar2(255 char) check (CREDENTIAL_TARGET in ('UI','REST_API')),
-        CREDENTIAL_TYPE varchar2(255 char) check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS')),
+        CREDENTIAL_TYPE varchar2(255 char) check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
         CREDENTIAL_DESC varchar2(256 char),
-        LAST_ALERT_ON timestamp(6) with time zone,
         EXPIRE_ON timestamp(6) with time zone,
         LAST_FAILED_LOGIN_ON timestamp(6) with time zone,
         CREDENTIAL_NAME varchar2(256 char),
@@ -676,6 +673,36 @@
         primary key (REV, ID)
     );
 
+    create table SMP_PERIODICAL_ALERT (
+        ID number(19,0) not null,
+        CREATED_ON timestamp(6) with time zone not null,
+        LAST_UPDATED_ON timestamp(6) with time zone not null,
+        ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
+        ENTITY_IDENTIFIER varchar2(255 char),
+        ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
+        LAST_ALERT_ON timestamp(6) with time zone,
+        primary key (ID)
+    );
+
+    comment on column SMP_PERIODICAL_ALERT.ID is
+        'Unique periodical alert id';
+
+    comment on column SMP_PERIODICAL_ALERT.LAST_ALERT_ON is
+        'Generated last password expire alert';
+
+    create table SMP_PERIODICAL_ALERT_AUD (
+        ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp(6) with time zone,
+        LAST_UPDATED_ON timestamp(6) with time zone,
+        ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
+        ENTITY_IDENTIFIER varchar2(255 char),
+        ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
+        LAST_ALERT_ON timestamp(6) with time zone,
+        primary key (REV, ID)
+    );
+
     create table SMP_RESOURCE (
         ID number(19,0) not null,
         CREATED_ON timestamp(6) with time zone not null,
@@ -1071,6 +1098,11 @@
 
     alter table SMP_GROUP_MEMBER_AUD 
        add constraint FK5pmorcyhwkaysh0a8xm99x6a8 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_PERIODICAL_ALERT_AUD 
+       add constraint FK7qyb720heygkwc5mmpaer2iou 
        foreign key (REV) 
        references SMP_REV_INFO;
 

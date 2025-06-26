@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
-import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
@@ -53,7 +53,7 @@ class AlertServiceTest {
     MailService mailService = Mockito.mock(MailService.class);
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     UserDao userDao = Mockito.mock(UserDao.class);
-    CredentialDao credentialDao = Mockito.mock(CredentialDao.class);
+    PeriodicalAlertDao periodicalAlertDao = Mockito.mock(PeriodicalAlertDao.class);
     SmpUrlBuilder smpUrlBuilder = Mockito.mock(SmpUrlBuilder.class);
     SMPDynamicCronTrigger alertCronTrigger = Mockito.mock(SMPDynamicCronTrigger.class);
 
@@ -62,7 +62,7 @@ class AlertServiceTest {
             mailService,
             configurationService,
             userDao,
-            credentialDao,
+            periodicalAlertDao,
             smpUrlBuilder,
             alertCronTrigger);
 
@@ -103,7 +103,7 @@ class AlertServiceTest {
     void alertBeforeUsernamePasswordExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertBeforeUsernamePasswordExpire");
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1));
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
@@ -131,7 +131,7 @@ class AlertServiceTest {
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(-1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(-1));
 
         doReturn(alertLevel).when(configurationService).getAlertExpiredPasswordLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
@@ -152,7 +152,7 @@ class AlertServiceTest {
     void alertBeforeAccessTokenExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertBeforeAccessTokenExpire");
-        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1));
 
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
@@ -178,7 +178,7 @@ class AlertServiceTest {
     void alertAccessTokenExpired() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertAccessTokenExpired");
-        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(-1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(-1));
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
@@ -201,7 +201,7 @@ class AlertServiceTest {
     void alertBeforeCertificateExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("user", "alertBeforeCertificateExpire");
-        DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1));
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
@@ -224,7 +224,7 @@ class AlertServiceTest {
     void alertCertificateExpired() {
         // given
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
-        DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1));
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
@@ -280,7 +280,7 @@ class AlertServiceTest {
     @Test
     void alertUsernameCredentialVerificationFailed() {
         DBUser user = TestDBUtils.createDBUser("user");
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1));
         credential.setSequentialLoginFailureCount(5);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
 
@@ -311,7 +311,7 @@ class AlertServiceTest {
     @Test
     void alertTokenCredentialVerificationFailed() {
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
-        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1));
         credential.setSequentialLoginFailureCount(5);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         String mailSubject = "mail subject";
@@ -341,7 +341,7 @@ class AlertServiceTest {
     @Test
     void alertUsernameCredentialsSuspended() {
         DBUser user = TestDBUtils.createDBUser("user", "alertUsernameCredentialsSuspended");
-        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1));
         credential.setSequentialLoginFailureCount(5);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         String mailSubject = "mail subject";
@@ -371,7 +371,7 @@ class AlertServiceTest {
     @Test
     void alertTokenCredentialsSuspended() {
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
-        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1));
         credential.setSequentialLoginFailureCount(5);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
 

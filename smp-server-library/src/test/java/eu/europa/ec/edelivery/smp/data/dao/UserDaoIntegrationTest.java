@@ -174,7 +174,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
     void findUsernameUserByIdentifier() {
         // set
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
-        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(u, null, null, null);
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(u, null, null);
         credential.setName(TestConstants.USERNAME_TOKEN_1);
         u.getUserCredentials().add(credential);
         // execute

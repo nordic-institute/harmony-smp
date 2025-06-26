@@ -122,6 +122,10 @@
        drop 
        foreign key FK5pmorcyhwkaysh0a8xm99x6a8;
 
+    alter table SMP_PERIODICAL_ALERT_AUD 
+       drop 
+       foreign key FK7qyb720heygkwc5mmpaer2iou;
+
     alter table SMP_RESOURCE 
        drop 
        foreign key FKkc5a6okrvq7dv87itfp7i1vmv;
@@ -247,6 +251,10 @@
     drop table if exists SMP_GROUP_MEMBER;
 
     drop table if exists SMP_GROUP_MEMBER_AUD;
+
+    drop table if exists SMP_PERIODICAL_ALERT;
+
+    drop table if exists SMP_PERIODICAL_ALERT_AUD;
 
     drop table if exists SMP_RESOURCE;
 

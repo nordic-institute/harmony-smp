@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -57,6 +58,9 @@ class SystemCertificateValidatorServiceTest {
     @Mock
     SystemCertificateAlertService alertService;
 
+    @Mock
+    PeriodicalAlertDao periodicalAlertDao;
+
     SystemCertificateValidatorService systemCertificateValidatorService;
 
     @Mock
@@ -64,7 +68,7 @@ class SystemCertificateValidatorServiceTest {
 
     @BeforeEach
     public void setup() {
-        systemCertificateValidatorService = new SystemCertificateValidatorService(configurationService, uiKeystoreService, uiTruststoreService, domainDao, userDao, alertService);
+        systemCertificateValidatorService = new SystemCertificateValidatorService(configurationService, uiKeystoreService, uiTruststoreService, domainDao, userDao, alertService, periodicalAlertDao);
     }
 
     @Test
