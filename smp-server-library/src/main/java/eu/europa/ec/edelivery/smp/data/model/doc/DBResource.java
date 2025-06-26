@@ -64,7 +64,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
         " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
         " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
-        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter))) "
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) ESCAPE '\\' " +
+        "         OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter) ESCAPE '\\')" +
+        ") "
 )
 @NamedQuery(name = QUERY_RESOURCE_FILTER, query = "SELECT r FROM  DBResource r " +
         " JOIN DBDomainResourceDef dr ON dr.id = r.domainResourceDef.id  " +
@@ -72,8 +74,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
         " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
         " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
-        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter)) )" +
-        "order by r.id asc")
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter)  ESCAPE '\\'" +
+        "     OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter) ESCAPE '\\')" +
+        " ) order by r.id asc")
 @NamedQuery(name = "DBResource.getServiceGroupByID", query = "SELECT d FROM DBResource d WHERE d.id = :id")
 @NamedQuery(name = "DBResource.getServiceGroupByIdentifier", query = "SELECT d FROM DBResource d WHERE d.identifierValue = :participantIdentifier " +
         " AND (:participantScheme IS NULL AND d.identifierScheme IS NULL " +
@@ -100,14 +103,14 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND ( r.visibility = 'PUBLIC' " +
         "   OR (:user_id IS NOT NULL " +
         "     AND (select count(id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0 )) " +
-        " AND (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier )" +
-        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) order by r.identifierScheme, r.identifierValue"
+        " AND (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier  ESCAPE '\\')" +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme  ESCAPE '\\') order by r.identifierScheme, r.identifierValue"
 )
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r, r.domainResourceDef.domain.domainCode as domainCode, " +
         "   r.domainResourceDef.resourceDef.urlSegment as urlSegment, r.domainResourceDef.resourceDef.name as documentType " +
         "FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
-        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
-        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
+        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier ESCAPE '\\') " +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme ESCAPE '\\') " +
         " AND ( :user_id IS NOT NULL AND rm.user.id = :user_id "  +
         " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
         "   AND (:user_id IS NOT NULL " +
@@ -124,8 +127,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " ORDER BY r.identifierScheme, r.identifierValue"
 )
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER_COUNT, query = "SELECT count(distinct r.id) FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
-        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
-        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
+        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier ESCAPE '\\') " +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme ESCAPE '\\') " +
         " AND (:user_id IS NOT NULL AND rm.user.id = :user_id "  +
         " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
         "   AND (:user_id IS NOT NULL " +

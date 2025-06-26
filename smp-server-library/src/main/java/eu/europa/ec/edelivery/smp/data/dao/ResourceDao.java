@@ -40,6 +40,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.wrapIfMissing;
 
 
 /**
@@ -190,10 +192,11 @@ public class ResourceDao extends BaseDao<DBResource> {
      * @return escaped value
      */
     private  String getNormalizedLikeParameter(String value) {
-        if (StringUtils.isBlank(value)){
+        if (isBlank(value)){
             return null;
         }
-        return StringUtils.wrapIfMissing(value, "%");
+
+        return wrapIfMissing(value, "%");
     }
 
     public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier, String domainCode, String documentType) {
@@ -201,8 +204,8 @@ public class ResourceDao extends BaseDao<DBResource> {
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER_COUNT, Long.class);
 
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
-        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema) ? null : StringUtils.wrapIfMissing(schema, "%"));
-        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier) ? null : StringUtils.wrapIfMissing(identifier, "%"));
+        query.setParameter(PARAM_RESOURCE_SCHEME, isBlank(schema) ? null : wrapIfMissing(schema, "%"));
+        query.setParameter(PARAM_RESOURCE_IDENTIFIER, isBlank(identifier) ? null : wrapIfMissing(identifier, "%"));
         query.setParameter(PARAM_DOMAIN_CODE, StringUtils.defaultIfBlank(domainCode, null));
         query.setParameter(PARAM_DOCUMENT_TYPE, StringUtils.defaultIfBlank(documentType, null));
 
@@ -247,7 +250,7 @@ public class ResourceDao extends BaseDao<DBResource> {
      * Method removes the resource from DB. Related entities (cascade): sub-resources, Document, Document version,
      * group memberships,
      *
-     * @param resource
+     * @param resource resource to be removed
      */
     @Transactional
     public void remove(DBResource resource) {

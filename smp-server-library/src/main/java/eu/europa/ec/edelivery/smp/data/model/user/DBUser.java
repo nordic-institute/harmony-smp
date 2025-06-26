@@ -52,9 +52,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_USER_COUNT, query = "SELECT count(c) FROM DBUser c")
 @NamedQuery(name = QUERY_USERS, query = "SELECT c FROM DBUser c  order by c.username")
 @NamedQuery(name = QUERY_USER_FILTER_COUNT, query = "SELECT count(c) FROM DBUser c " +
-        " WHERE (lower(c.username) like lower(:user_filter) OR  lower(c.fullName) like lower(:user_filter))")
+        " WHERE (lower(c.username) like lower(:user_filter) ESCAPE '\\'  OR  lower(c.fullName) like lower(:user_filter) ESCAPE '\\' )")
 @NamedQuery(name = QUERY_QUERY_USERS_FILTER, query = "SELECT c FROM DBUser c " +
-        " WHERE (lower(c.username) like lower(:user_filter) OR  lower(c.fullName) like lower(:user_filter))  order by c.username")
+        " WHERE (lower(c.username) like lower(:user_filter) ESCAPE '\\' OR  lower(c.fullName) like lower(:user_filter) ESCAPE '\\' ) order by c.username")
 @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
         resultSetMapping = "DBUserDeleteValidationMapping",
         query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
