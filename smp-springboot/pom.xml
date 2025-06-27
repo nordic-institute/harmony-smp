@@ -107,6 +107,10 @@ limitations under the License.
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+        </dependency>
         <!--add latest jackson which is used also by the smp.war -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

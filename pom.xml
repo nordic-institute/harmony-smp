@@ -408,6 +408,11 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${spring-boot.tomcat.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>${spring-boot.tomcat.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-tomcat</artifactId>
                 <version>${spring-boot.version}</version>
