@@ -20,17 +20,17 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.SMLChangeCertificate;
-import eu.europa.ec.edelivery.smp.data.ui.SMLIntegrationResult;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.filter.Filter;
+import eu.europa.ec.edelivery.smp.services.ui.filters.DomainFilter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.DomainSMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIDomainAdminService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -69,9 +69,22 @@ public class DomainAdminController {
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public List<DomainRO> getAllDomainList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId) {
-        logAdminAccess("getAllDomainList");
-        return uiDomainService.getAllDomains();
+    public ServiceResult<DomainRO> getDomainList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                 @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+                                                 @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+                                                 @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
+                                                 @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
+                                                 @RequestParam(value = PARAM_PAGINATION_FILTER, required = false) @Filter String filterValue
+
+            ) {
+        LOG.info("Search for domains with filter [{}] page: [{}], page size: [{}]", filterValue,  page, pageSize);
+        DomainFilter domainFilter = null;
+        if (!StringUtils.isEmpty(filterValue)) {
+            domainFilter  = new DomainFilter();
+            domainFilter.setDomainCodeLike(filterValue);
+        }
+
+        return uiDomainService.getTableList(page, pageSize, orderBy, orderType, domainFilter);
     }
 
     @DeleteMapping(path = SUB_CONTEXT_INTERNAL_DOMAIN_DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)

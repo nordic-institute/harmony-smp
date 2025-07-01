@@ -49,7 +49,7 @@ export class SmpTableComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // do not bind paginator here, it will be done in parent component
-    // because internal paginator has its own paginator which is limmited only to page.
+    // because internal paginator has its own paginator which is limited only to page.
     if (!this.isLoadableTable) {
       this.dataSource.paginator = this.paginator;
     }
@@ -116,6 +116,14 @@ export class SmpTableComponent implements AfterViewInit {
     if (this.paginator) {
       this.paginator.pageIndex = value;
     }
+  }
+
+  firstPage(): void {
+      this.paginator.firstPage();
+  }
+
+  lastPage(): void {
+    this.paginator.lastPage();
   }
 
   getHeaderStyle(col: SmpTableColDef): string {

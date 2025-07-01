@@ -83,9 +83,9 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         if (iCnt > 0) {
             int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             if (iStartIndex >= iCnt && page > 0) {
-                page = page - 1;
+                page = (int) iCnt / pageSize + (iStartIndex == iCnt? 1 : 0); // go back to fist page with results
                 sg.setPage(page); // go back for a page
-                iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+                iStartIndex = page * pageSize;
             }
 
 
@@ -112,8 +112,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
     /**
      * Simple method for converting types. Property name and property type must match
      *
-     * @param d
-     * @return
+     * @param d - DB entity to convert
+     * @return R - RO entity
      */
     public R convertToRo(E d) {
         try {

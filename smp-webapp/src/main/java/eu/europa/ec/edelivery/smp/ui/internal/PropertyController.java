@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -60,10 +61,10 @@ public class PropertyController {
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
             @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = PARAM_QUERY_PROPERTY) String property
+            @RequestParam(value = PARAM_QUERY_PROPERTY) @Filter String filterValue
     ) {
         LOG.info("Search for page: {}, page size: {}", page, pageSize);
-        return uiPropertyService.getTableList(page, pageSize, orderBy, orderType, property);
+        return uiPropertyService.getTableList(page, pageSize, orderBy, orderType, filterValue);
     }
 
     @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
