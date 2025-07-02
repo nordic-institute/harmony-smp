@@ -1804,7 +1804,7 @@ class SMP implements  AutoCloseable
 		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
 		userIdent=USERID
 		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
-		urlExt="/ui/internal/rest/$userIdent/domain"
+		urlExt="/ui/internal/rest/$userIdent/domain?page=0&pageSize=200&filter="
 		
 		commandString=["curl", urlToSMP+urlExt,
                                     "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
@@ -1816,7 +1816,7 @@ class SMP implements  AutoCloseable
 			
         assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:getAllDomainsMetadata: Error while trying to retrieve all domains metadata. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
 		debugLog("  getAllDomainsMetadata  [][]  Domains metadata retrieved successfully.", log)	
-		return commandResult[0]
+		return commandResult[0].serviceEntities
 	}
 
 //-------------------- get single Domain Metadata -------------------------
