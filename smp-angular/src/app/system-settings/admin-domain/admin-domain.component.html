@@ -65,12 +65,8 @@
     </mat-tab-group>
   </data-panel>
 </div>
-
 <ng-template #searchDomainPanel>
-  <mat-form-field id="domain-filter">
-    <mat-label>{{ "admin.domain.label.filter" | translate }}</mat-label>
-    <input matInput (keyup)="applyDomainFilter($event)" #inputDomainFilter>
-  </mat-form-field>
+
 
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
@@ -89,36 +85,26 @@
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <table class="mat-elevation-z2" id="admin-domain-table" mat-table
-         [dataSource]="dataSource" matSort>
-    <ng-container matColumnDef="domainCode">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header class="domain-table-cell-header">{{ "admin.domain.label.domain.code" | translate }}</th>
-      <td mat-cell *matCellDef="let row"
-          [matTooltip]="row.domainCode">{{ row.domainCode }}
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
-        (click)="domainSelected(row)"
-        [ngClass]="{'datatable-row-selected': row===selected,'datatable-row-odd': odd}"
-    ></tr>
 
 
-    <tr class="mat-row" *matNoDataRow>
-      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell"
-          colspan="2"
-      >{{ "admin.domain.label.no.filter.results" | translate: { filterValue: inputDomainFilter.value } }}
-      </td>
-      <ng-template #noDataFound>
-        <td class="mat-cell" colspan="2">{{ "admin.domain.label.no.data.found" | translate }}</td>
-      </ng-template>
-    </tr>
-  </table>
-
-  <mat-paginator class="mat-elevation-z2" id="domain-paginator"
-                 [hidePageSize]="true"
-                 [pageSize]="5"
-                 attr.aria-label="{{ 'admin.domain.label.select.page' | translate }}"></mat-paginator>
+  <smp-table #domainTable
+             filterLabel="admin.domain.label.filter"
+             filterPlaceholder="admin.domain.placeholder"
+             noResultLabel="admin.domain.label.no.data.found"
+             noResultForFilterLabel="admin.domain.label.no.filter.results"
+             [isLoadableTable]="true"
+             [dataSource]="dataSource"
+             [selectedRow]="selected"
+             [columnDefList]="columns"
+             [displayedColumns]="displayedColumns"
+             [isLoading]="isLoadingResults"
+             (onFilterChanged)="applyDomainFilter($event)"
+             (onRowClicked)="domainSelected($event)"
+             (onPageChanged)="onPageChanged($event)"
+             [dataLength]="dataLength"
+             [pageSize]="pageSize"
+             [pageIndex]="pageIndex"
+  >
+  </smp-table>
 
 </ng-template>

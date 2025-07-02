@@ -43,7 +43,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -111,6 +114,11 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
                                                 String sortOrder, Object filter) {
 
         return super.getTableList(page, pageSize, sortField, sortOrder, filter);
+    }
+
+    @Override
+    public DomainRO convertToRo(DBDomain domain) {
+        return conversionService.convert(domain, DomainRO.class);
     }
 
     @Transactional
@@ -193,17 +201,19 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         LOG.info("add resources: [{}]", resourceDefIds);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND,DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
 
         //filter and validate resources to be removed
         List<DBDomainResourceDef> removedDoReDef = domain.getDomainResourceDefs().stream()
                 .filter(doredef -> !resourceDefIds.contains(doredef.getResourceDef().getIdentifier())
                         && validateRemoveDomainResourceDef(domain, doredef.getResourceDef())
-                ).collect(Collectors.toList());
+                ).toList();
 
         removedDoReDef.forEach(domainResourceDef -> domain.getDomainResourceDefs().remove(domainResourceDef));
-        List<String> currentIdentifiers = domain.getDomainResourceDefs().stream().map(domainResourceDef -> domainResourceDef.getResourceDef().getIdentifier()).collect(Collectors.toList());
+        List<String> currentIdentifiers = domain.getDomainResourceDefs().stream()
+                .map(domainResourceDef -> domainResourceDef.getResourceDef().getIdentifier())
+                .toList();
 
         resourceDefIds.stream()
                 .filter(identifier -> !currentIdentifiers.contains(identifier))
@@ -236,7 +246,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public List<DomainPropertyRO> getDomainProperties(Long domainId) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND,DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         return domainConfigurationDao.getDomainPropertiesForRole(domain, SMPRole.SYSTEM_ADMIN).stream()
                 .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
@@ -250,7 +260,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
         }
         return domainConfigurationDao.updateDomainPropertiesForRole(domain, domainProperties, SMPRole.SYSTEM_ADMIN)
-        .stream()
+                .stream()
                 .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
                 .collect(Collectors.toList());
     }

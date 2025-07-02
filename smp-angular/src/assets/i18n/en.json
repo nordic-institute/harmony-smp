@@ -706,6 +706,7 @@
   "admin.domain.label.domain.data": "Domain data",
   "admin.domain.label.domain.code": "Domain code",
   "admin.domain.label.filter": "Filter by domain code",
+  "admin.domain.placeholder": "Filter by value",
   "admin.domain.label.no.filter.results": "No data matching the filter {{filterValue}}",
   "admin.domain.label.no.data.found": "No data",
   "admin.domain.label.members": "Members",
