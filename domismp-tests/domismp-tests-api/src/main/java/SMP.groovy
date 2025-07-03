@@ -1804,7 +1804,7 @@ class SMP implements  AutoCloseable
 		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
 		userIdent=USERID
 		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
-		urlExt="/ui/internal/rest/$userIdent/domain?page=0&pageSize=200&filter="
+		urlExt="/ui/internal/rest/$userIdent/domain?page=0&pageSize=2000&filter="
 		
 		commandString=["curl", urlToSMP+urlExt,
                                     "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
@@ -1816,7 +1816,7 @@ class SMP implements  AutoCloseable
 			
         assert((commandResult[1]==~ /(?s).*HTTP\/\d.\d\s*200.*/) || commandResult[1].contains("successfully")),"Error:getAllDomainsMetadata: Error while trying to retrieve all domains metadata. CommandResult[0]:" +commandResult[0] + "| commandResult[1]:" + commandResult[1]
 		debugLog("  getAllDomainsMetadata  [][]  Domains metadata retrieved successfully.", log)	
-		return commandResult[0].serviceEntities
+		return commandResult[0]
 	}
 
 //-------------------- get single Domain Metadata -------------------------
@@ -1828,7 +1828,7 @@ class SMP implements  AutoCloseable
 		
 		def dataMap=jsonSlurper.parseText(getAllDomainsMetadata(log, context, authenticationUser, authenticationPwd))
 		
-		dataMap.each{ dom ->
+		dataMap.serviceEntities.each{ dom ->
 			if(dom.domainCode.toLowerCase().equals(domainCode.toLowerCase())){
 				debugLog("  getDomainMetadata  [][]  Domain \"$domainCode\" found.", log)
 				domMeta=dom
@@ -1857,7 +1857,7 @@ class SMP implements  AutoCloseable
 		def jsonSlurper = new JsonSlurper()
 		
 		def dataMap=jsonSlurper.parseText(getAllDomainsMetadata(log, context, authenticationUser, authenticationPwd))
-		dataMap.each{ dom ->
+		dataMap.serviceEntities.each{ dom ->
 			domList<<dom.domainCode
 		}		
 		return domList
