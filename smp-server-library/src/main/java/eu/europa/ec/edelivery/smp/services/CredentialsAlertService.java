@@ -99,19 +99,17 @@ public class CredentialsAlertService {
         String credentialId = userCredential.getName();
         OffsetDateTime expiredOn = userCredential.getExpireOn();
 
-        if (!credentialType.isExpiring() && !credentialType.isCredential()) {
-            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
-            return;
-        }
-
         // alert specific properties
-        AlertLevelEnum alertLevel = AlertLevelEnum.LOW;
+        AlertLevelEnum alertLevel;
         if (credentialType == CredentialType.ACCESS_TOKEN) {
             alertLevel = configurationService.getAlertBeforeExpireAccessTokenLevel();
         } else if (credentialType == CredentialType.USERNAME_PASSWORD) {
             alertLevel = configurationService.getAlertBeforeExpirePasswordLevel();
         } else if (credentialType == CredentialType.CERTIFICATE) {
             alertLevel = configurationService.getAlertBeforeExpireCertificateLevel();
+        } else {
+            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
+            return;
         }
 
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
@@ -139,20 +137,16 @@ public class CredentialsAlertService {
         String credentialId = userCredential.getName();
         OffsetDateTime expiredOn = userCredential.getExpireOn();
 
-
-        if (!credentialType.isExpiring() && !credentialType.isCredential()) {
-            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
-            return;
-        }
-
-        // alert specific properties
-        AlertLevelEnum alertLevel = AlertLevelEnum.LOW;
+        AlertLevelEnum alertLevel;
         if (credentialType == CredentialType.ACCESS_TOKEN) {
             alertLevel = configurationService.getAlertExpiredAccessTokenLevel();
         } else if (credentialType == CredentialType.USERNAME_PASSWORD) {
             alertLevel = configurationService.getAlertExpiredPasswordLevel();
         } else if (credentialType == CredentialType.CERTIFICATE) {
             alertLevel = configurationService.getAlertExpiredCertificateLevel();
+        } else {
+            LOG.warn("Alert service for credential type [{}] is not supported! Skip alerts", credentialType);
+            return;
         }
 
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;

@@ -315,7 +315,7 @@ public class TestDBUtils {
         return dbCredential;
     }
 
-    public static DBPeriodicalAlert createPeriodicalAlert(CredentialType entityType, String entityId, OffsetDateTime lastAlertSent) {
+    public static DBPeriodicalAlert createPeriodicalAlert(ExpiringEntity entityType, String entityId, OffsetDateTime lastAlertSent) {
         DBPeriodicalAlert alert = new DBPeriodicalAlert();
         alert.setEntityType(entityType);
         alert.setEntityIdentifier(entityId);

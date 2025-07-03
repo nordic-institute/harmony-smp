@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.enums.ExpiringEntity;
 import eu.europa.ec.edelivery.smp.data.model.DBPeriodicalAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -166,10 +165,10 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
         testInstance.persistFlushDetach(credPasswordExpiredRecentAlertSend);
         testInstance.persistFlushDetach(credPasswordExpiredAlertSend);
 
-        DBPeriodicalAlert credBeforePasswordExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credBeforePasswordExpireRecentAlertSend.getId().toString(), twoDaysAgo);
-        DBPeriodicalAlert credBeforePasswordExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credBeforePasswordExpireAlertSend.getId().toString() ,tenDaysAgo);
-        DBPeriodicalAlert credPasswordExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credPasswordExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
-        DBPeriodicalAlert credPasswordExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.USERNAME_PASSWORD, credPasswordExpiredAlertSend.getId().toString() ,tenDaysAgo);
+        DBPeriodicalAlert credBeforePasswordExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.USERNAME_PASSWORD, credBeforePasswordExpireRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credBeforePasswordExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.USERNAME_PASSWORD, credBeforePasswordExpireAlertSend.getId().toString() ,tenDaysAgo);
+        DBPeriodicalAlert credPasswordExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.USERNAME_PASSWORD, credPasswordExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credPasswordExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.USERNAME_PASSWORD, credPasswordExpiredAlertSend.getId().toString() ,tenDaysAgo);
         periodicalAlertDao.persistFlushDetach(credBeforePasswordExpireRecentAlertSendAlert);
         periodicalAlertDao.persistFlushDetach(credBeforePasswordExpireAlertSendAlert);
         periodicalAlertDao.persistFlushDetach(credPasswordExpiredRecentAlertSendAlert);
@@ -184,10 +183,10 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
         testInstance.persistFlushDetach(credATExpiredRecentAlertSend);
         testInstance.persistFlushDetach(credATExpiredAlertSend);
 
-        DBPeriodicalAlert credBeforeATExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credBeforeATExpireRecentAlertSend.getId().toString(), twoDaysAgo);
-        DBPeriodicalAlert credBeforeATExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credBeforeATExpireAlertSend.getId().toString(), tenDaysAgo);
-        DBPeriodicalAlert credATExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credATExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
-        DBPeriodicalAlert credATExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.ACCESS_TOKEN, credATExpiredAlertSend.getId().toString(), tenDaysAgo);
+        DBPeriodicalAlert credBeforeATExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.ACCESS_TOKEN, credBeforeATExpireRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credBeforeATExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.ACCESS_TOKEN, credBeforeATExpireAlertSend.getId().toString(), tenDaysAgo);
+        DBPeriodicalAlert credATExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.ACCESS_TOKEN, credATExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credATExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.ACCESS_TOKEN, credATExpiredAlertSend.getId().toString(), tenDaysAgo);
         periodicalAlertDao.persistFlushDetach(credBeforeATExpireRecentAlertSendAlert);
         periodicalAlertDao.persistFlushDetach(credBeforeATExpireAlertSendAlert);
         periodicalAlertDao.persistFlushDetach(credATExpiredRecentAlertSendAlert);
@@ -201,10 +200,10 @@ class CredentialDaoAlertsTest extends AbstractBaseDao {
         testInstance.persistFlushDetach(credCertExpiredRecentAlertSend);
         testInstance.persistFlushDetach(credCertExpiredAlertSend);
 
-        DBPeriodicalAlert credBeforeCertExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credBeforeCertExpireRecentAlertSend.getId().toString(), twoDaysAgo);
-        DBPeriodicalAlert credBeforeCertExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credBeforeCertExpireAlertSend.getId().toString(), tenDaysAgo);
-        DBPeriodicalAlert credCertExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credCertExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
-        DBPeriodicalAlert credCertExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(CredentialType.CERTIFICATE, credCertExpiredAlertSend.getId().toString(), tenDaysAgo);
+        DBPeriodicalAlert credBeforeCertExpireRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.CERTIFICATE, credBeforeCertExpireRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credBeforeCertExpireAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.CERTIFICATE, credBeforeCertExpireAlertSend.getId().toString(), tenDaysAgo);
+        DBPeriodicalAlert credCertExpiredRecentAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.CERTIFICATE, credCertExpiredRecentAlertSend.getId().toString(), twoDaysAgo);
+        DBPeriodicalAlert credCertExpiredAlertSendAlert = TestDBUtils.createPeriodicalAlert(ExpiringEntity.CERTIFICATE, credCertExpiredAlertSend.getId().toString(), tenDaysAgo);
         periodicalAlertDao.persistFlushDetach(credBeforeCertExpireRecentAlertSendAlert);
         periodicalAlertDao.persistFlushDetach(credBeforeCertExpireAlertSendAlert);
         periodicalAlertDao.persistFlushDetach(credCertExpiredRecentAlertSendAlert);

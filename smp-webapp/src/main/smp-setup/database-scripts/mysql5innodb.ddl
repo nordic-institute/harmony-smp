@@ -118,7 +118,7 @@
         ACTIVE_FROM datetime(6) comment 'Date when credential starts to be active',
         CHANGED_ON datetime(6) comment 'Last date when credential was changed',
         CREDENTIAL_TARGET enum ('REST_API','UI') not null comment 'Credential target UI, API',
-        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD') not null comment 'Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS',
+        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD') not null comment 'Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS',
         CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Credential description',
         EXPIRE_ON datetime(6) comment 'Date when password will expire',
         LAST_FAILED_LOGIN_ON datetime(6) comment 'Last failed login attempt',
@@ -141,7 +141,7 @@
         ACTIVE_FROM datetime(6),
         CHANGED_ON datetime(6),
         CREDENTIAL_TARGET enum ('REST_API','UI'),
-        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
+        CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD'),
         CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         EXPIRE_ON datetime(6),
         LAST_FAILED_LOGIN_ON datetime(6),
@@ -434,7 +434,7 @@
         LAST_UPDATED_ON datetime(6) not null,
         ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE'),
         ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        ENTITY_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
+        ENTITY_TYPE enum ('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
         LAST_ALERT_ON datetime(6) comment 'Generated last password expire alert',
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -447,7 +447,7 @@
         LAST_UPDATED_ON datetime(6),
         ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE'),
         ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        ENTITY_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
+        ENTITY_TYPE enum ('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
         LAST_ALERT_ON datetime(6),
         primary key (REV, ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

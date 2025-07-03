@@ -21,6 +21,7 @@ package eu.europa.ec.edelivery.smp.data.model;
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.AlertScope;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.enums.ExpiringEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
@@ -68,7 +69,7 @@ public class DBPeriodicalAlert extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ENTITY_TYPE")
-    private CredentialType entityType;
+    private ExpiringEntity entityType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ALERT_SCOPE")
@@ -95,11 +96,11 @@ public class DBPeriodicalAlert extends BaseEntity {
         this.entityIdentifier = entityIdentifier;
     }
 
-    public CredentialType getEntityType() {
+    public ExpiringEntity getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(CredentialType entityType) {
+    public void setEntityType(ExpiringEntity entityType) {
         this.entityType = entityType;
     }
 

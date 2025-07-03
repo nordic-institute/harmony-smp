@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.AlertScope;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.enums.ExpiringEntity;
 import eu.europa.ec.edelivery.smp.data.model.DBPeriodicalAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import jakarta.persistence.TypedQuery;
@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.data.enums.CredentialType.SYSTEM_CERTIFICATE;
+import static eu.europa.ec.edelivery.smp.data.enums.ExpiringEntity.SYSTEM_CERTIFICATE;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -46,15 +46,11 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
 
     private static final Logger LOG = LoggerFactory.getLogger(PeriodicalAlertDao.class);
 
-    public DBPeriodicalAlert findOrCreate(CredentialType entityType, String entityId, String alias, AlertScope alertScope) {
+    public DBPeriodicalAlert findOrCreate(ExpiringEntity entityType, String entityId, String alias, AlertScope alertScope) {
         Optional<DBPeriodicalAlert> result = Optional.empty();
         TypedQuery<DBPeriodicalAlert> query;
         switch (entityType) {
-            case ACCESS_TOKEN:
-                // fall-through
-            case CERTIFICATE:
-                // fall-through
-            case USERNAME_PASSWORD:
+            case ACCESS_TOKEN, CERTIFICATE, USERNAME_PASSWORD:
                 query = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_CREDENTIAL_ENTITY_ID, DBPeriodicalAlert.class);
                 query.setParameter("entityType", entityType);
                 query.setParameter("credentialEntityId", entityId);
@@ -77,8 +73,9 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
     public void updateAlertSentForUserCredentials(DBCredential credential, OffsetDateTime dateTime) {
         // attach to jpa session if not already
         String entityIdentifier = getCredentialEntityId(credential.getId());
-        DBPeriodicalAlert periodicalAlert = findOrCreate(credential.getCredentialType(), entityIdentifier, null, null);
-        periodicalAlert.setEntityType(credential.getCredentialType());
+        ExpiringEntity expiringEntity = ExpiringEntity.getExpiringEntity(credential.getCredentialType());
+        DBPeriodicalAlert periodicalAlert = findOrCreate(expiringEntity, entityIdentifier, null, null);
+        periodicalAlert.setEntityType(expiringEntity);
         periodicalAlert.setEntityIdentifier(entityIdentifier);
         periodicalAlert.setExpireAlertOn(dateTime);
         persistOrUpdate(periodicalAlert);
@@ -97,11 +94,11 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
 
     public List<DBCredential> filterCredentialsBeforeExpireAlerts(List<DBCredential> credentials, OffsetDateTime lastSendAlertDate) {
         TypedQuery<DBPeriodicalAlert> filterAboutToExpire = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_TYPES, DBPeriodicalAlert.class);
-        filterAboutToExpire.setParameter("entityTypes", credentials.stream().map(DBCredential::getCredentialType).collect(Collectors.toSet()));
+        filterAboutToExpire.setParameter("entityTypes", credentials.stream().map(DBCredential::getCredentialType).map(ExpiringEntity::getExpiringEntity).collect(Collectors.toSet()));
         List<DBPeriodicalAlert> periodicalAlerts = filterAboutToExpire.getResultList();
         return credentials.stream()
                 .filter(credential -> periodicalAlerts.stream().anyMatch(periodicalAlert ->
-                            credential.getCredentialType() == periodicalAlert.getEntityType()
+                                ExpiringEntity.getExpiringEntity(credential.getCredentialType()) == periodicalAlert.getEntityType()
                                 && getCredentialEntityId(credential.getId()).equals(periodicalAlert.getEntityIdentifier())
                                 && (periodicalAlert.getExpireAlertOn() == null
                                     || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate))))
@@ -110,12 +107,12 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
 
     public List<DBCredential> filterExpiredCredentialsAlerts(List<DBCredential> credentials, OffsetDateTime lastSendAlertDate) {
         TypedQuery<DBPeriodicalAlert> filterExpired = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_TYPES, DBPeriodicalAlert.class);
-        filterExpired.setParameter("entityTypes", credentials.stream().map(DBCredential::getCredentialType).collect(Collectors.toSet()));
+        filterExpired.setParameter("entityTypes", credentials.stream().map(DBCredential::getCredentialType).map(ExpiringEntity::getExpiringEntity).collect(Collectors.toSet()));
         List<DBPeriodicalAlert> periodicalAlerts = filterExpired.getResultList();
 
         return credentials.stream()
                 .filter(credential -> periodicalAlerts.stream()
-                        .filter(periodicalAlert -> periodicalAlert.getEntityType() == credential.getCredentialType())
+                        .filter(periodicalAlert -> periodicalAlert.getEntityType() == ExpiringEntity.getExpiringEntity(credential.getCredentialType()))
                         .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
                         .anyMatch(periodicalAlert ->
                                 periodicalAlert.getExpireAlertOn() == null

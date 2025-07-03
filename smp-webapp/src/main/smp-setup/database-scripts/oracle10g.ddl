@@ -204,7 +204,7 @@
         ACTIVE_FROM timestamp(6) with time zone,
         CHANGED_ON timestamp(6) with time zone,
         CREDENTIAL_TARGET varchar2(255 char) not null check (CREDENTIAL_TARGET in ('UI','REST_API')),
-        CREDENTIAL_TYPE varchar2(255 char) not null check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
+        CREDENTIAL_TYPE varchar2(255 char) not null check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS')),
         CREDENTIAL_DESC varchar2(256 char),
         EXPIRE_ON timestamp(6) with time zone,
         LAST_FAILED_LOGIN_ON timestamp(6) with time zone,
@@ -270,7 +270,7 @@
         ACTIVE_FROM timestamp(6) with time zone,
         CHANGED_ON timestamp(6) with time zone,
         CREDENTIAL_TARGET varchar2(255 char) check (CREDENTIAL_TARGET in ('UI','REST_API')),
-        CREDENTIAL_TYPE varchar2(255 char) check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
+        CREDENTIAL_TYPE varchar2(255 char) check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS')),
         CREDENTIAL_DESC varchar2(256 char),
         EXPIRE_ON timestamp(6) with time zone,
         LAST_FAILED_LOGIN_ON timestamp(6) with time zone,
@@ -679,7 +679,7 @@
         LAST_UPDATED_ON timestamp(6) with time zone not null,
         ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
         ENTITY_IDENTIFIER varchar2(255 char),
-        ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
+        ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
         LAST_ALERT_ON timestamp(6) with time zone,
         primary key (ID)
     );
@@ -698,7 +698,7 @@
         LAST_UPDATED_ON timestamp(6) with time zone,
         ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
         ENTITY_IDENTIFIER varchar2(255 char),
-        ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS','SYSTEM_CERTIFICATE')),
+        ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
         LAST_ALERT_ON timestamp(6) with time zone,
         primary key (REV, ID)
     );
