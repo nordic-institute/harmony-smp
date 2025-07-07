@@ -96,12 +96,15 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
         TypedQuery<DBPeriodicalAlert> filterAboutToExpire = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_TYPES, DBPeriodicalAlert.class);
         filterAboutToExpire.setParameter("entityTypes", credentials.stream().map(DBCredential::getCredentialType).map(ExpiringEntity::getExpiringEntity).collect(Collectors.toSet()));
         List<DBPeriodicalAlert> periodicalAlerts = filterAboutToExpire.getResultList();
-        return credentials.stream()
-                .filter(credential -> periodicalAlerts.stream().anyMatch(periodicalAlert ->
-                                ExpiringEntity.getExpiringEntity(credential.getCredentialType()) == periodicalAlert.getEntityType()
-                                && getCredentialEntityId(credential.getId()).equals(periodicalAlert.getEntityIdentifier())
-                                && (periodicalAlert.getExpireAlertOn() == null
-                                    || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate))))
+         return credentials.stream()
+                .filter(credential ->  periodicalAlerts.stream()
+                            .noneMatch(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
+                        || periodicalAlerts.stream()
+                            .filter(periodicalAlert -> periodicalAlert.getEntityType() == ExpiringEntity.getExpiringEntity(credential.getCredentialType()))
+                            .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
+                            .anyMatch (periodicalAlert ->
+                                    periodicalAlert.getExpireAlertOn() == null
+                                        || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate)))
                 .collect(Collectors.toList());
     }
 
@@ -112,6 +115,8 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
 
         return credentials.stream()
                 .filter(credential -> periodicalAlerts.stream()
+                        .noneMatch(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
+                    || periodicalAlerts.stream()
                         .filter(periodicalAlert -> periodicalAlert.getEntityType() == ExpiringEntity.getExpiringEntity(credential.getCredentialType()))
                         .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
                         .anyMatch(periodicalAlert ->
