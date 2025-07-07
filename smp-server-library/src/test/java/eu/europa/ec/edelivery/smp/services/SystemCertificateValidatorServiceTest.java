@@ -21,6 +21,7 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.enums.AlertScope;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -36,6 +37,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+
+import static eu.europa.ec.edelivery.smp.data.enums.AlertScope.SYSTEM_KEYSTORE;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class SystemCertificateValidatorServiceTest {
@@ -87,31 +91,32 @@ class SystemCertificateValidatorServiceTest {
         Mockito.when(configurationService.getAlertExpiredCertificateEnabled()).thenReturn(Boolean.FALSE);
         Mockito.when(userDao.findUsersByApplicationRoles(EnumSet.of(ApplicationRoleType.SYSTEM_ADMIN))).thenReturn(List.of(systemAdmin));
         Mockito.when(configurationService.getAlertBeforeExpireSystemCertificatePeriod()).thenReturn(10);
+        Mockito.when(configurationService.getAlertBeforeExpireSystemCertificateInterval()).thenReturn(10);
 
         final OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
 
         Map<String, OffsetDateTime> aboutToExpireCertificates = new HashMap<>();
         aboutToExpireCertificates.put("expiringInNineDays", now.plusDays(9));
         aboutToExpireCertificates.put("expiringInFiveDays", now.plusDays(5));
-        Mockito.when(uiKeystoreService.getAboutToExpireCertificateAliases(10)).thenReturn(aboutToExpireCertificates);
-
-        aboutToExpireCertificates = new HashMap<>();
         aboutToExpireCertificates.put("expiringInTwoDays", now.plusDays(2));
         aboutToExpireCertificates.put("expiringTomorrow", now.plusDays(1));
-        Mockito.when(uiTruststoreService.getAboutToExpireCertificateAliases(10)).thenReturn(aboutToExpireCertificates);
+        Mockito.when(uiKeystoreService.getAboutToExpireCertificateAliases(10)).thenReturn(aboutToExpireCertificates);
 
         List<DBDomain.DBDomainExpiringCertificateMapping> certificateMappings = new ArrayList<>();
         final String unexpiringCertificateAlias = "unexpiring";
         certificateMappings.add(new DBDomain.DBDomainExpiringCertificateMapping("domain1", "expiringInNineDays", unexpiringCertificateAlias, true, false));
         certificateMappings.add(new DBDomain.DBDomainExpiringCertificateMapping("domain1", unexpiringCertificateAlias, "expiringInFiveDays", false, true));
         certificateMappings.add(new DBDomain.DBDomainExpiringCertificateMapping("domain2", "expiringInTwoDays", "expiringTomorrow", true, true));
-
         Mockito.when(domainDao.getDomainsWithExpiringCertificates(Set.of("expiringInNineDays", "expiringInFiveDays", "expiringInTwoDays", "expiringTomorrow"))).thenReturn(certificateMappings);
+
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForBeforeExpireAlerts(eq("expiringInNineDays"), eq(SYSTEM_KEYSTORE), any(OffsetDateTime.class))).thenReturn(true);
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForBeforeExpireAlerts(eq("expiringInFiveDays"), eq(SYSTEM_KEYSTORE), any(OffsetDateTime.class))).thenReturn(false);
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForBeforeExpireAlerts(eq("expiringInTwoDays"), eq(SYSTEM_KEYSTORE), any(OffsetDateTime.class))).thenReturn(true);
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForBeforeExpireAlerts(eq("expiringTomorrow"), eq(SYSTEM_KEYSTORE), any(OffsetDateTime.class))).thenReturn(true);
 
         systemCertificateValidatorService.validateSystemCertificates();
 
         Mockito.verify(alertService).alertBeforeSigningCertificateExpire(systemAdmin, "domain1", "expiringInNineDays", now.plusDays(9));
-        Mockito.verify(alertService).alertBeforeSmlIntegrationCertificateExpire(systemAdmin, "domain1", "expiringInFiveDays", now.plusDays(5));
         Mockito.verify(alertService).alertBeforeSigningCertificateExpire(systemAdmin, "domain2", "expiringInTwoDays", now.plusDays(2));
         Mockito.verify(alertService).alertBeforeSmlIntegrationCertificateExpire(systemAdmin, "domain2", "expiringTomorrow", now.plusDays(1));
     }
@@ -121,18 +126,16 @@ class SystemCertificateValidatorServiceTest {
         Mockito.when(configurationService.getAlertBeforeExpireCertificateEnabled()).thenReturn(Boolean.FALSE);
         Mockito.when(configurationService.getAlertExpiredCertificateEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(userDao.findUsersByApplicationRoles(EnumSet.of(ApplicationRoleType.SYSTEM_ADMIN))).thenReturn(List.of(systemAdmin));
+        Mockito.when(configurationService.getAlertExpiredSystemCertificateInterval()).thenReturn(10);
 
         final OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
 
         Map<String, OffsetDateTime> expiredCertificates = new HashMap<>();
         expiredCertificates.put("expiredForNineDays", now.minusDays(9));
         expiredCertificates.put("expiredForFiveDays", now.minusDays(5));
-        Mockito.when(uiKeystoreService.getExpiredCertificateAliases()).thenReturn(expiredCertificates);
-
-        expiredCertificates = new HashMap<>();
         expiredCertificates.put("expiredForTwoDays", now.minusDays(2));
         expiredCertificates.put("expiredYesterday", now.minusDays(1));
-        Mockito.when(uiTruststoreService.getExpiredCertificateAliases()).thenReturn(expiredCertificates);
+        Mockito.when(uiKeystoreService.getExpiredCertificateAliases()).thenReturn(expiredCertificates);
 
         List<DBDomain.DBDomainExpiringCertificateMapping> certificateMappings = new ArrayList<>();
         final String unexpiredCertificateAlias = "unexpired";
@@ -141,9 +144,13 @@ class SystemCertificateValidatorServiceTest {
         certificateMappings.add(new DBDomain.DBDomainExpiringCertificateMapping("domain2", "expiredForTwoDays", "expiredYesterday", true, true));
         Mockito.when(domainDao.getDomainsWithExpiringCertificates(Set.of("expiredForNineDays", "expiredForFiveDays", "expiredForTwoDays", "expiredYesterday"))).thenReturn(certificateMappings);
 
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForExpiredAlerts(eq("expiredForNineDays"), eq(SYSTEM_KEYSTORE), eq(now.minusDays(9)), any(OffsetDateTime.class))).thenReturn(false);
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForExpiredAlerts(eq("expiredForFiveDays"), eq(SYSTEM_KEYSTORE), eq(now.minusDays(5)), any(OffsetDateTime.class))).thenReturn(true);
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForExpiredAlerts(eq("expiredForTwoDays"), eq(SYSTEM_KEYSTORE), eq(now.minusDays(2)), any(OffsetDateTime.class))).thenReturn(true);
+        Mockito.when(periodicalAlertDao.isSystemCertificateReadyForExpiredAlerts(eq("expiredYesterday"), eq(SYSTEM_KEYSTORE), eq(now.minusDays(1)), any(OffsetDateTime.class))).thenReturn(true);
+
         systemCertificateValidatorService.validateSystemCertificates();
 
-        Mockito.verify(alertService).alertSigningCertificateExpired(systemAdmin, "domain1", "expiredForNineDays", now.minusDays(9));
         Mockito.verify(alertService).alertSmlIntegrationCertificateExpired(systemAdmin, "domain1", "expiredForFiveDays", now.minusDays(5));
         Mockito.verify(alertService).alertSigningCertificateExpired(systemAdmin, "domain2", "expiredForTwoDays", now.minusDays(2));
         Mockito.verify(alertService).alertSmlIntegrationCertificateExpired(systemAdmin, "domain2", "expiredYesterday", now.minusDays(1));
