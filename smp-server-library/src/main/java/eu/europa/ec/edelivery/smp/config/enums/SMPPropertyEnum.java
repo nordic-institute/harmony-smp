@@ -375,7 +375,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
             "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
 
-    SMP_ALERT_CREDENTIALS_CRON("smp.alert.credentials.cronJobExpression", "0 52 4 */1 * *", "Property cron expression for triggering alert messages!",
+    SMP_ALERT_CREDENTIALS_CRON("smp.alert.credentials.cronJobExpression", "0 52 4 */1 * *", "Property cron expression for triggering alert messages about credentials!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, CRON_EXPRESSION),
 
     ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_ENABLED("smp.alert.system.certificate.imminent_expiration.enabled",
@@ -406,7 +406,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
             "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
 
-    SMP_ALERT_SYSTEM_CERTIFICATES_CRON("smp.alert.system.certificates.cronJobExpression", "0 42 4 */1 * *", "Property cron expression for triggering alert messages!",
+    SMP_ALERT_SYSTEM_CERTIFICATES_CRON("smp.alert.system.certificates.cronJobExpression", "0 42 4 */1 * *", "Property cron expression for triggering alert messages about system certificates!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, CRON_EXPRESSION),
 
     SMP_ALERT_CREDENTIALS_SERVER("smp.alert.credentials.serverInstance", "localhost", "If smp.cluster.enabled is set to true then then instance (hostname) to generate report.",
