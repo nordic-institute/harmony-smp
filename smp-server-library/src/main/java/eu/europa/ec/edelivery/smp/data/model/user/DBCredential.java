@@ -56,16 +56,12 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         query = "SELECT distinct c FROM DBCredential c WHERE c.credentialType=:credential_type  " +
                 " AND c.expireOn IS NOT NULL" +
                 " AND c.expireOn <= :start_alert_send_date " +
-                " AND c.expireOn > :expire_test_date" +
-                " AND (c.expireAlertOn IS NULL OR c.expireAlertOn < :lastSendAlertDate )")
+                " AND c.expireOn > :expire_test_date")
 @NamedQuery(name = QUERY_CREDENTIAL_EXPIRED,
         query = "SELECT distinct c FROM DBCredential c WHERE  c.credentialType=:credential_type" +
                 " AND  c.expireOn IS NOT NULL" +
                 " AND c.expireOn > :endAlertDate " +
-                " AND c.expireOn <= :expire_test_date" +
-                " AND (c.expireAlertOn IS NULL " +
-                "   OR c.expireAlertOn <= c.expireOn " +
-                "   OR c.expireAlertOn < :lastSendAlertDate )")
+                " AND c.expireOn <= :expire_test_date")
 // native queries to validate if user is owner of the credential
 @NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",
         resultSetMapping = "DBCredentialDeleteValidationMapping",
@@ -123,9 +119,6 @@ public class DBCredential extends BaseEntity {
     @Column(name = "EXPIRE_ON")
     @ColumnDescription(comment = "Date when password will expire")
     private OffsetDateTime expireOn;
-    @Column(name = "LAST_ALERT_ON")
-    @ColumnDescription(comment = "Generated last password expire alert")
-    private OffsetDateTime expireAlertOn;
     @Column(name = "LOGIN_FAILURE_COUNT")
     @ColumnDescription(comment = "Sequential login failure count")
     private Integer sequentialLoginFailureCount;
@@ -224,14 +217,6 @@ public class DBCredential extends BaseEntity {
 
     public void setExpireOn(OffsetDateTime expireOn) {
         this.expireOn = expireOn;
-    }
-
-    public OffsetDateTime getExpireAlertOn() {
-        return expireAlertOn;
-    }
-
-    public void setExpireAlertOn(OffsetDateTime expireAlertOn) {
-        this.expireAlertOn = expireAlertOn;
     }
 
     public Integer getSequentialLoginFailureCount() {

@@ -51,8 +51,12 @@ public class CredentialDao extends BaseDao<DBCredential> {
     private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE = "start_alert_send_date";
     private static final String QUERY_PARAM_ALERT_CREDENTIAL_END_DATE = "endAlertDate";
     private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE = "expire_test_date";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE = "lastSendAlertDate";
 
+    private final PeriodicalAlertDao periodicalAlertDao;
+
+    public CredentialDao(PeriodicalAlertDao periodicalAlertDao) {
+        this.periodicalAlertDao = periodicalAlertDao;
+    }
 
     /**
      * Persists the user to the database. Before that test if user has identifiers. Usernames are saved to database in lower caps
@@ -112,7 +116,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
      * @return returns Optional DBCredential for reset Token Identifier
      * @throws SMPRuntimeException if more than one credential is found!
      */
-    public Optional<DBCredential> findUCredentialForUsernamePasswordTypeAndResetToken(String resetTokenIdentifier) {
+    public Optional<DBCredential> findCredentialForUsernamePasswordTypeAndResetToken(String resetTokenIdentifier) {
         // check if blank
         if (StringUtils.isBlank(resetTokenIdentifier)) {
             return Optional.empty();
@@ -213,7 +217,6 @@ public class CredentialDao extends BaseDao<DBCredential> {
      * @return
      */
     public List<DBCredential> getCredentialsBeforeExpireForAlerts(CredentialType credentialType, int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-
         OffsetDateTime expireTestDate = OffsetDateTime.now();
         OffsetDateTime startAlertSendDate = expireTestDate.plusDays(beforeStartDays);
         OffsetDateTime lastSendAlertDate = expireTestDate.minusDays(alertInterval);
@@ -223,9 +226,10 @@ public class CredentialDao extends BaseDao<DBCredential> {
         query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType );
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE, startAlertSendDate);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireTestDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
         query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+
+        List<DBCredential> expiring = query.getResultList();
+        return periodicalAlertDao.filterCredentialsBeforeExpireAlerts(expiring, lastSendAlertDate);
     }
     /**
      * Get users with passwords which are about to expire, and they were not yet notified in alertInterval period
@@ -242,12 +246,13 @@ public class CredentialDao extends BaseDao<DBCredential> {
         OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
 
         TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_EXPIRED, DBCredential.class);
-        query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType );
+        query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
         query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+
+        List<DBCredential> expired = query.getResultList();
+        return periodicalAlertDao.filterExpiredCredentialsAlerts(expired, lastSendAlertDate);
     }
 
     public List<DBCredential> getBeforePasswordExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
@@ -319,14 +324,4 @@ public class CredentialDao extends BaseDao<DBCredential> {
         query.setParameter("idList", userIds);
         return query.getResultList();
     }
-
-    @Transactional
-    public void updateAlertSentForUserCredentials(DBCredential credential,  OffsetDateTime dateTime) {
-        // attach to jpa session of not already
-        DBCredential managedCredential = find(credential.getId());
-        managedCredential.setExpireAlertOn(dateTime);
-    }
-
-
-
 }

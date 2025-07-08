@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
@@ -58,11 +59,12 @@ class SMPAuthenticationProviderTest {
     CRLVerifierService mockCrlVerifierService = Mockito.mock(CRLVerifierService.class);
     UITruststoreService mockTruststoreService = Mockito.mock(UITruststoreService.class);
     ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
-    CredentialsAlertService mocAlertService = Mockito.mock(CredentialsAlertService.class);
+    CredentialsAlertService mockAlertService = Mockito.mock(CredentialsAlertService.class);
     UserDao mockUserDao = Mockito.mock(UserDao.class);
+    PeriodicalAlertDao mockPeriodicalAlertDao = Mockito.mock(PeriodicalAlertDao.class);
 
 
-    CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mocAlertService);
+    CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mockAlertService, mockPeriodicalAlertDao);
     SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService);
 
 

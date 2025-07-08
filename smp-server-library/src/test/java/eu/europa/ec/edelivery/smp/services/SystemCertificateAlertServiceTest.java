@@ -18,7 +18,9 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -54,6 +56,9 @@ class SystemCertificateAlertServiceTest {
     AlertDao alertDao;
 
     @Mock
+    PeriodicalAlertDao periodicalAlertDao;
+
+    @Mock
     MailService mailService;
 
     @Mock
@@ -65,11 +70,14 @@ class SystemCertificateAlertServiceTest {
     @Mock
     DBAlert alert;
 
+    @Mock
+    SMPDynamicCronTrigger alertCronTrigger;
+
     SystemCertificateAlertService systemCertificateAlertService;
 
     @BeforeEach
     public void setup() {
-        systemCertificateAlertService = new SystemCertificateAlertService(alertDao, mailService, configurationService);
+        systemCertificateAlertService = new SystemCertificateAlertService(alertDao, periodicalAlertDao, mailService, configurationService, alertCronTrigger);
     }
 
     @Test

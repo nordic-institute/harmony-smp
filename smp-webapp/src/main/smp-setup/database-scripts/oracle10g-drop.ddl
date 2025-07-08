@@ -64,6 +64,10 @@
 
     drop table SMP_GROUP_MEMBER_AUD cascade constraints;
 
+    drop table SMP_PERIODICAL_ALERT cascade constraints;
+
+    drop table SMP_PERIODICAL_ALERT_AUD cascade constraints;
+
     drop table SMP_RESOURCE cascade constraints;
 
     drop table SMP_RESOURCE_AUD cascade constraints;
@@ -117,6 +121,8 @@
     drop sequence SMP_GROUP_MEMBER_SEQ;
 
     drop sequence SMP_GROUP_SEQ;
+
+    drop sequence SMP_PERIODICAL_ALERT_SEQ;
 
     drop sequence SMP_RESOURCE_DEF_SEQ;
 

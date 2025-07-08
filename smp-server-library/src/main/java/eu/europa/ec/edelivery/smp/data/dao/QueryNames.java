@@ -166,8 +166,10 @@ public class QueryNames {
     public static final String QUERY_QUERY_USERS_FILTER = "DBUser.getUsersByFilter";
     // ALERTS
     public static final String QUERY_CREDENTIAL_BEFORE_EXPIRE = "DBCredential.getCredentialBeforeExpireAlerts";
-    public static final String QUERY_CREDENTIAL_EXPIRED =  "DBCredential.getCredentiaExpiredAlerts";
-
+    public static final String QUERY_CREDENTIAL_EXPIRED =  "DBCredential.getCredentialExpiredAlerts";
+    public static final String QUERY_PERIODICAL_ALERTS_BY_TYPES =  "DBPeriodicalAlert.getPeriodicalAlertsByTypes";
+    public static final String QUERY_PERIODICAL_ALERTS_BY_CREDENTIAL_ENTITY_ID =  "DBPeriodicalAlert.getPeriodicalAlertsByCredentiialEntityId";
+    public static final String QUERY_PERIODICAL_ALERTS_BY_SYSTEM_CERTIFICATE_ALIAS_AND_ALERT_TYPE =  "DBPeriodicalAlert.getPeriodicalAlertsBySystemCertificateAlias";
 
     public static final String PARAM_NAME = "name";
     public static final String PARAM_CODE = "code";

@@ -97,7 +97,6 @@ public abstract class BaseDao<E extends BaseEntity> {
 
     public void persist(E entity) {
         memEManager.persist(entity);
-
     }
 
     /**
@@ -110,6 +109,15 @@ public abstract class BaseDao<E extends BaseEntity> {
         memEManager.merge(entity);
         memEManager.flush();
         memEManager.detach(entity);
+    }
+
+    @Transactional
+    public void persistOrUpdate(E entity) {
+        if (entity.getId() != null) {
+            update(entity);
+        } else {
+            persist(entity);
+        }
     }
 
     public E merge(E entity) {
