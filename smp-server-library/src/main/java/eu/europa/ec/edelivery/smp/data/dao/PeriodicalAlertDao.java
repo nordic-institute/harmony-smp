@@ -132,6 +132,12 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
         filterExpired.setParameter("entityTypes", Set.of(SYSTEM_CERTIFICATE));
         List<DBPeriodicalAlert> periodicalAlerts = filterExpired.getResultList();
 
+        if (periodicalAlerts.isEmpty()) {
+            LOG.debug("No periodical alerts found for system certificates");
+            return true;
+        }
+
+        LOG.info("Verify if alerts can be already sent for system certificate about to expire having alias [{}] in scope [{}] since last attempt [{}]", certificateAlias, alertScope, lastSendAlertDate);
         return periodicalAlerts.stream()
                 .filter(periodicalAlert -> periodicalAlert.getEntityType() == SYSTEM_CERTIFICATE)
                 .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(certificateAlias))
@@ -145,14 +151,21 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
         filterExpired.setParameter("entityTypes", Set.of(SYSTEM_CERTIFICATE));
         List<DBPeriodicalAlert> periodicalAlerts = filterExpired.getResultList();
 
+        if (periodicalAlerts.isEmpty()) {
+            LOG.debug("No periodical alerts found for system certificates");
+            return true;
+        }
+
+        LOG.info("Verify if alerts can be already sent for expired system certificate having alias [{}] in scope [{}] and expiration date [{}] since last attempt [{}]", certificateAlias, alertScope, expirationDate, lastSendAlertDate);
+
         return periodicalAlerts.stream()
-                .filter(periodicalAlert -> periodicalAlert.getEntityType() == SYSTEM_CERTIFICATE)
-                .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(certificateAlias))
-                .filter(periodicalAlert -> periodicalAlert.getAlertScope() == alertScope)
-                .anyMatch(periodicalAlert -> periodicalAlert.getExpireAlertOn() == null
-                                            || periodicalAlert.getExpireAlertOn().isBefore(expirationDate)
-                                            || periodicalAlert.getExpireAlertOn().isEqual(expirationDate)
-                                            || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate));
+                    .filter(periodicalAlert -> periodicalAlert.getEntityType() == SYSTEM_CERTIFICATE)
+                    .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(certificateAlias))
+                    .filter(periodicalAlert -> periodicalAlert.getAlertScope() == alertScope)
+                    .anyMatch(periodicalAlert -> periodicalAlert.getExpireAlertOn() == null
+                                                || periodicalAlert.getExpireAlertOn().isBefore(expirationDate)
+                                                || periodicalAlert.getExpireAlertOn().isEqual(expirationDate)
+                                                || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate));
     }
 
     private String getCredentialEntityId(Long credentialId) {
