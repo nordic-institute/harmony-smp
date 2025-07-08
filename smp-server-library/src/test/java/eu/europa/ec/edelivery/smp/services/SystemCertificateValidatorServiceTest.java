@@ -51,9 +51,6 @@ class SystemCertificateValidatorServiceTest {
     UIKeystoreService uiKeystoreService;
 
     @Mock
-    UITruststoreService uiTruststoreService;
-
-    @Mock
     UserDao userDao;
 
     @Mock
@@ -72,7 +69,7 @@ class SystemCertificateValidatorServiceTest {
 
     @BeforeEach
     public void setup() {
-        systemCertificateValidatorService = new SystemCertificateValidatorService(configurationService, uiKeystoreService, uiTruststoreService, domainDao, userDao, alertService, periodicalAlertDao);
+        systemCertificateValidatorService = new SystemCertificateValidatorService(configurationService, uiKeystoreService, domainDao, userDao, alertService, periodicalAlertDao);
     }
 
     @Test

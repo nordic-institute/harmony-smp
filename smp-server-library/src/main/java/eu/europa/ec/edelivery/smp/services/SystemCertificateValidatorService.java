@@ -55,8 +55,6 @@ public class SystemCertificateValidatorService {
 
     private final UIKeystoreService uiKeystoreService;
 
-    private final UITruststoreService uiTruststoreService;
-
     private final UserDao userDao;
 
     private final DomainDao domainDao;
@@ -67,13 +65,12 @@ public class SystemCertificateValidatorService {
 
     public SystemCertificateValidatorService(ConfigurationService configurationService,
                                              UIKeystoreService uiKeystoreService,
-                                             UITruststoreService uiTruststoreService,
                                              DomainDao domainDao,
                                              UserDao userDao,
-                                             SystemCertificateAlertService alertService, PeriodicalAlertDao periodicalAlertDao) {
+                                             SystemCertificateAlertService alertService,
+                                             PeriodicalAlertDao periodicalAlertDao) {
         this.configurationService = configurationService;
         this.uiKeystoreService = uiKeystoreService;
-        this.uiTruststoreService = uiTruststoreService;
         this.domainDao = domainDao;
         this.userDao = userDao;
         this.alertService = alertService;
@@ -94,7 +91,6 @@ public class SystemCertificateValidatorService {
 
         Integer days = configurationService.getAlertBeforeExpireSystemCertificatePeriod();
         Map<String, OffsetDateTime> aboutToExpireCertificates = uiKeystoreService.getAboutToExpireCertificateAliases(days);
-//        aboutToExpireCertificates.putAll(uiTruststoreService.getAboutToExpireCertificateAliases(days));
 
         List<DBUser> systemAdministrators = userDao.findUsersByApplicationRoles(EnumSet.of(ApplicationRoleType.SYSTEM_ADMIN));
         domainDao.getDomainsWithExpiringCertificates(aboutToExpireCertificates.keySet())
@@ -109,7 +105,6 @@ public class SystemCertificateValidatorService {
         }
 
         Map<String, OffsetDateTime> expiredCertificates = uiKeystoreService.getExpiredCertificateAliases();
-//        expiredCertificates.putAll(uiTruststoreService.getExpiredCertificateAliases());
 
         List<DBUser> systemAdministrators = userDao.findUsersByApplicationRoles(EnumSet.of(ApplicationRoleType.SYSTEM_ADMIN));
         domainDao.getDomainsWithExpiringCertificates(expiredCertificates.keySet())
