@@ -359,6 +359,7 @@ import {
   PrepareCertificateDialogComponent
 } from "./common/dialogs/prepare-certificate-dialog/prepare-certificate-dialog.component";
 import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
+import {TimerComponent} from "./common/components/timer/timer.component";
 
 @NgModule({ declarations: [
         AccessTokenPanelComponent,
@@ -449,6 +450,7 @@ import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
         SubresourceDocumentPanelComponent,
         SubresourceDocumentWizardComponent,
         SubresourcePanelComponent,
+        TimerComponent,
         ToolbarComponent,
         UserAlertsComponent,
         UserAccessTokensComponent,
