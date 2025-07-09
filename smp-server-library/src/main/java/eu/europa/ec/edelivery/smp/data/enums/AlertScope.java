@@ -19,10 +19,13 @@
 package eu.europa.ec.edelivery.smp.data.enums;
 
 /**
+ * This is alert scope for entities with validly period such as user credentials, system truststore and system keystore certificates.
+ * It is used to determine the scope/source of an entity that is about to expire or has expired.
  * @author Sebastian-Ion TINCU
  * @since 5.2
  */
 public enum AlertScope {
+    USER_CREDENTIAL,
     SYSTEM_TRUSTSTORE,
     SYSTEM_KEYSTORE
 }

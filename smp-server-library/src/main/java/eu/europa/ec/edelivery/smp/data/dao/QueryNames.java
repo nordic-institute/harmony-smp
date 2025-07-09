@@ -167,14 +167,20 @@ public class QueryNames {
     // ALERTS
     public static final String QUERY_CREDENTIAL_BEFORE_EXPIRE = "DBCredential.getCredentialBeforeExpireAlerts";
     public static final String QUERY_CREDENTIAL_EXPIRED =  "DBCredential.getCredentialExpiredAlerts";
-    public static final String QUERY_PERIODICAL_ALERTS_BY_TYPES =  "DBPeriodicalAlert.getPeriodicalAlertsByTypes";
-    public static final String QUERY_PERIODICAL_ALERTS_BY_CREDENTIAL_ENTITY_ID =  "DBPeriodicalAlert.getPeriodicalAlertsByCredentiialEntityId";
-    public static final String QUERY_PERIODICAL_ALERTS_BY_SYSTEM_CERTIFICATE_ALIAS_AND_ALERT_TYPE =  "DBPeriodicalAlert.getPeriodicalAlertsBySystemCertificateAlias";
+    public static final String QUERY_PERIODICAL_ALERTS_BY_ENTITY_IDENTIFIER_AND_ALERT_TYPE =  "DBPeriodicalAlert.getPeriodicalAlertsBySystemCertificateAlias";
+
 
     public static final String PARAM_NAME = "name";
     public static final String PARAM_CODE = "code";
     public static final String PARAM_IDENTIFIER = "identifier";
     public static final String PARAM_ID = "id";
+    public static final String PARAM_ENTITY_TYPE = "entity_type";
+    public static final String PARAM_ALERT_SCOPE = "alert_scope";
+
+    public static final String PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE = "start_alert_send_date";
+    public static final String PARAM_ALERT_CREDENTIAL_END_DATE = "endAlertDate";
+    public static final String PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE = "expire_test_date";
+    public static final String PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE = "last_send_alert_date";
 
     public static final String PARAM_USER_FILTER = "user_filter";
 

@@ -53,15 +53,24 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_CREDENTIAL_BY_CI_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE upper(u.certificate.certificateId) = upper(:certificate_identifier)")
 
 @NamedQuery(name = QUERY_CREDENTIAL_BEFORE_EXPIRE,
-        query = "SELECT distinct c FROM DBCredential c WHERE c.credentialType=:credential_type  " +
-                " AND c.expireOn IS NOT NULL" +
-                " AND c.expireOn <= :start_alert_send_date " +
-                " AND c.expireOn > :expire_test_date")
+        query = "SELECT distinct c FROM DBCredential c LEFT JOIN DBPeriodicalAlert alert " +
+                "   ON CAST(c.id AS string) = alert.entityIdentifier AND alert.alertScope=:alert_scope AND alert.entityType = :entity_type " +
+                " WHERE c.credentialType=:credential_type " +
+                "  AND c.expireOn IS NOT NULL " +
+                "  AND c.expireOn <= :start_alert_send_date " +
+                "  AND c.expireOn > :expire_test_date" +
+                "  AND (alert.lastAlertOn IS NULL OR alert.lastAlertOn < :last_send_alert_date )"
+)
 @NamedQuery(name = QUERY_CREDENTIAL_EXPIRED,
-        query = "SELECT distinct c FROM DBCredential c WHERE  c.credentialType=:credential_type" +
-                " AND  c.expireOn IS NOT NULL" +
-                " AND c.expireOn > :endAlertDate " +
-                " AND c.expireOn <= :expire_test_date")
+        query = "SELECT distinct c FROM DBCredential c LEFT JOIN DBPeriodicalAlert alert " +
+                "   ON CAST(c.id AS string) = alert.entityIdentifier AND alert.alertScope=:alert_scope AND alert.entityType = :entity_type " +
+                " WHERE  c.credentialType=:credential_type " +
+                "  AND  c.expireOn IS NOT NULL " +
+                "  AND c.expireOn > :endAlertDate " +
+                "  AND c.expireOn <= :expire_test_date"+
+                " AND (alert.lastAlertOn IS NULL " +
+                "   OR alert.lastAlertOn  <= c.expireOn " +
+                "   OR alert.lastAlertOn  < :last_send_alert_date )")
 // native queries to validate if user is owner of the credential
 @NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",
         resultSetMapping = "DBCredentialDeleteValidationMapping",

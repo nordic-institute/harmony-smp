@@ -432,10 +432,10 @@
         ID bigint not null auto_increment comment 'Unique periodical alert id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE'),
-        ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
+        ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Entity identifier for which the alert is sent, credential database id, certificate alias, etc.',
         ENTITY_TYPE enum ('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
-        LAST_ALERT_ON datetime(6) comment 'Generated last password expire alert',
+        LAST_ALERT_ON datetime(6) comment 'Date and time when the last alert was sent for this entity',
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -445,7 +445,7 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE'),
+        ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
         ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         ENTITY_TYPE enum ('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
         LAST_ALERT_ON datetime(6),
@@ -673,6 +673,9 @@
 
     alter table SMP_GROUP_MEMBER 
        add constraint SMP_GRP_MEM_IDX unique (FK_GROUP_ID, FK_USER_ID);
+
+    alter table SMP_PERIODICAL_ALERT 
+       add constraint SMP_ALERT_COMPOSITE_IDX unique (ENTITY_IDENTIFIER, ENTITY_TYPE, ALERT_SCOPE);
 
     create index SMP_RS_ID_IDX 
        on SMP_RESOURCE (IDENTIFIER_VALUE);
