@@ -29,10 +29,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.data.enums.ExpiringEntity.SYSTEM_CERTIFICATE;
@@ -46,126 +43,84 @@ public class PeriodicalAlertDao extends BaseDao<DBPeriodicalAlert> {
 
     private static final Logger LOG = LoggerFactory.getLogger(PeriodicalAlertDao.class);
 
-    public DBPeriodicalAlert findOrCreate(ExpiringEntity entityType, String entityId, String alias, AlertScope alertScope) {
-        Optional<DBPeriodicalAlert> result = Optional.empty();
-        TypedQuery<DBPeriodicalAlert> query;
-        switch (entityType) {
-            case ACCESS_TOKEN, CERTIFICATE, USERNAME_PASSWORD:
-                query = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_CREDENTIAL_ENTITY_ID, DBPeriodicalAlert.class);
-                query.setParameter("entityType", entityType);
-                query.setParameter("credentialEntityId", entityId);
-                result = Optional.ofNullable(query.getSingleResultOrNull());
-                break;
-            case SYSTEM_CERTIFICATE:
-                query = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_SYSTEM_CERTIFICATE_ALIAS_AND_ALERT_TYPE, DBPeriodicalAlert.class);
-                query.setParameter("entityType", entityType);
-                query.setParameter("certificateAlias", alias);
-                query.setParameter("alertScope", alertScope);
-                result = Optional.ofNullable(query.getSingleResultOrNull());
-                break;
-            default:
-                LOG.warn("Unsupported entity type {}", entityType);
-        }
-        return result.orElse(new DBPeriodicalAlert());
+    /**
+     * Find or create a periodical alert for the given entity type, identifier and alert scope.
+     *
+     * @param entityType       the type of the entity (e.g. USERNAME_PASSWORD, ACCESS_TOKEN, CERTIFICATE)
+     * @param entityIdentifier the identifier of the entity (e.g. credential DB ID or certificate alias frm the keystore/truststore)
+     * @param alertScope       the scope of the alert (e.g. USER_CREDENTIAL, SYSTEM_TRUSTSTORE, SYSTEM_KEYSTORE)
+     * @return a DBPeriodicalAlert instance
+     */
+    public DBPeriodicalAlert findOrCreate(ExpiringEntity entityType, String entityIdentifier, AlertScope alertScope) {
+
+        TypedQuery<DBPeriodicalAlert> query = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_ENTITY_IDENTIFIER_AND_ALERT_TYPE, DBPeriodicalAlert.class);
+        query.setParameter(PARAM_ENTITY_TYPE, entityType);
+        query.setParameter(PARAM_IDENTIFIER, entityIdentifier);
+        query.setParameter(PARAM_ALERT_SCOPE, alertScope);
+        Optional<DBPeriodicalAlert> result = Optional.ofNullable(query.getSingleResultOrNull());
+        return result.orElse(new DBPeriodicalAlert(entityType, entityIdentifier, alertScope));
     }
 
+    /**
+     * Finds (or creates if not exist) a periodical alert for user credentials and set the Alert event date.
+     *
+     * @param credential the user credential for which the alert is being set
+     * @param dateTime   the date and time when the alert was sent
+     */
     @Transactional
     public void updateAlertSentForUserCredentials(DBCredential credential, OffsetDateTime dateTime) {
-        // attach to jpa session if not already
+        if (credential == null || credential.getId() == null) {
+            LOG.warn("Credential is null, cannot update alert sent for user credentials which is not persisted in the database");
+            return;
+        }
         String entityIdentifier = getCredentialEntityId(credential.getId());
         ExpiringEntity expiringEntity = ExpiringEntity.getExpiringEntity(credential.getCredentialType());
-        DBPeriodicalAlert periodicalAlert = findOrCreate(expiringEntity, entityIdentifier, null, null);
-        periodicalAlert.setEntityType(expiringEntity);
-        periodicalAlert.setEntityIdentifier(entityIdentifier);
-        periodicalAlert.setExpireAlertOn(dateTime);
+        DBPeriodicalAlert periodicalAlert = findOrCreate(expiringEntity, entityIdentifier, AlertScope.USER_CREDENTIAL);
+        periodicalAlert.setLastAlertOn(dateTime);
         persistOrUpdate(periodicalAlert);
     }
 
+    /**
+     * Finds (or creates if not exist) a periodical alert for system certificate and set the Alert event date.
+     *
+     * @param certificateAlias the alias of the system certificate for which the alert is being set
+     * @param alertScope       the scope of the alert (e.g. USER_CREDENTIAL, SYSTEM_TRUSTSTORE, SYSTEM_KEYSTORE)
+     * @param dateTime         the date and time when the alert was sent
+     */
     @Transactional
     public void updateAlertSentForUserSystemCertificate(String certificateAlias, AlertScope alertScope, OffsetDateTime dateTime) {
-        // attach to jpa session if not already
-        DBPeriodicalAlert periodicalAlert = findOrCreate(SYSTEM_CERTIFICATE, null, certificateAlias, alertScope);
-        periodicalAlert.setEntityType(SYSTEM_CERTIFICATE);
-        periodicalAlert.setEntityIdentifier(certificateAlias);
-        periodicalAlert.setAlertScope(alertScope);
-        periodicalAlert.setExpireAlertOn(dateTime);
+        DBPeriodicalAlert periodicalAlert = findOrCreate(SYSTEM_CERTIFICATE, certificateAlias, alertScope);
+        periodicalAlert.setLastAlertOn(dateTime);
         persistOrUpdate(periodicalAlert);
-    }
-
-    public List<DBCredential> filterCredentialsBeforeExpireAlerts(List<DBCredential> credentials, OffsetDateTime lastSendAlertDate) {
-        TypedQuery<DBPeriodicalAlert> filterAboutToExpire = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_TYPES, DBPeriodicalAlert.class);
-        filterAboutToExpire.setParameter("entityTypes", credentials.stream().map(DBCredential::getCredentialType).map(ExpiringEntity::getExpiringEntity).collect(Collectors.toSet()));
-        List<DBPeriodicalAlert> periodicalAlerts = filterAboutToExpire.getResultList();
-         return credentials.stream()
-                .filter(credential ->  periodicalAlerts.stream()
-                            .noneMatch(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
-                        || periodicalAlerts.stream()
-                            .filter(periodicalAlert -> periodicalAlert.getEntityType() == ExpiringEntity.getExpiringEntity(credential.getCredentialType()))
-                            .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
-                            .anyMatch (periodicalAlert ->
-                                    periodicalAlert.getExpireAlertOn() == null
-                                        || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate)))
-                .collect(Collectors.toList());
-    }
-
-    public List<DBCredential> filterExpiredCredentialsAlerts(List<DBCredential> credentials, OffsetDateTime lastSendAlertDate) {
-        TypedQuery<DBPeriodicalAlert> filterExpired = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_TYPES, DBPeriodicalAlert.class);
-        filterExpired.setParameter("entityTypes", credentials.stream().map(DBCredential::getCredentialType).map(ExpiringEntity::getExpiringEntity).collect(Collectors.toSet()));
-        List<DBPeriodicalAlert> periodicalAlerts = filterExpired.getResultList();
-
-        return credentials.stream()
-                .filter(credential -> periodicalAlerts.stream()
-                        .noneMatch(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
-                    || periodicalAlerts.stream()
-                        .filter(periodicalAlert -> periodicalAlert.getEntityType() == ExpiringEntity.getExpiringEntity(credential.getCredentialType()))
-                        .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(getCredentialEntityId(credential.getId())))
-                        .anyMatch(periodicalAlert ->
-                                periodicalAlert.getExpireAlertOn() == null
-                                    || periodicalAlert.getExpireAlertOn().isBefore(credential.getExpireOn())
-                                    || periodicalAlert.getExpireAlertOn().isEqual(credential.getExpireOn())
-                                    || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate)))
-                .collect(Collectors.toList());
     }
 
     public boolean isSystemCertificateReadyForBeforeExpireAlerts(String certificateAlias, AlertScope alertScope, OffsetDateTime lastSendAlertDate) {
-        TypedQuery<DBPeriodicalAlert> filterExpired = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_TYPES, DBPeriodicalAlert.class);
-        filterExpired.setParameter("entityTypes", Set.of(SYSTEM_CERTIFICATE));
-        List<DBPeriodicalAlert> periodicalAlerts = filterExpired.getResultList();
 
-        if (periodicalAlerts.isEmpty()) {
+        DBPeriodicalAlert periodicalAlert = findOrCreate(SYSTEM_CERTIFICATE, certificateAlias, alertScope);
+        if (periodicalAlert.getId() == null) {
             LOG.debug("No periodical alerts found for system certificates");
             return true;
         }
 
         LOG.info("Verify if alerts can be already sent for system certificate about to expire having alias [{}] in scope [{}] since last attempt [{}]", certificateAlias, alertScope, lastSendAlertDate);
-        return periodicalAlerts.stream()
-                .filter(periodicalAlert -> periodicalAlert.getEntityType() == SYSTEM_CERTIFICATE)
-                .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(certificateAlias))
-                .filter(periodicalAlert -> periodicalAlert.getAlertScope() == alertScope)
-                .anyMatch(periodicalAlert -> periodicalAlert.getExpireAlertOn() == null
-                                            || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate));
+        return periodicalAlert.getLastAlertOn() == null
+                || periodicalAlert.getLastAlertOn().isBefore(lastSendAlertDate);
     }
 
     public boolean isSystemCertificateReadyForExpiredAlerts(String certificateAlias, AlertScope alertScope, OffsetDateTime expirationDate, OffsetDateTime lastSendAlertDate) {
-        TypedQuery<DBPeriodicalAlert> filterExpired = memEManager.createNamedQuery(QUERY_PERIODICAL_ALERTS_BY_TYPES, DBPeriodicalAlert.class);
-        filterExpired.setParameter("entityTypes", Set.of(SYSTEM_CERTIFICATE));
-        List<DBPeriodicalAlert> periodicalAlerts = filterExpired.getResultList();
+        DBPeriodicalAlert periodicalAlert = findOrCreate(SYSTEM_CERTIFICATE, certificateAlias, alertScope);
 
-        if (periodicalAlerts.isEmpty()) {
+        if (periodicalAlert.getId() == null) {
             LOG.debug("No periodical alerts found for system certificates");
             return true;
         }
 
         LOG.info("Verify if alerts can be already sent for expired system certificate having alias [{}] in scope [{}] and expiration date [{}] since last attempt [{}]", certificateAlias, alertScope, expirationDate, lastSendAlertDate);
 
-        return periodicalAlerts.stream()
-                    .filter(periodicalAlert -> periodicalAlert.getEntityType() == SYSTEM_CERTIFICATE)
-                    .filter(periodicalAlert -> periodicalAlert.getEntityIdentifier().equals(certificateAlias))
-                    .filter(periodicalAlert -> periodicalAlert.getAlertScope() == alertScope)
-                    .anyMatch(periodicalAlert -> periodicalAlert.getExpireAlertOn() == null
-                                                || periodicalAlert.getExpireAlertOn().isBefore(expirationDate)
-                                                || periodicalAlert.getExpireAlertOn().isEqual(expirationDate)
-                                                || periodicalAlert.getExpireAlertOn().isBefore(lastSendAlertDate));
+        return periodicalAlert.getLastAlertOn() == null
+                || periodicalAlert.getLastAlertOn().isBefore(expirationDate)
+                || periodicalAlert.getLastAlertOn().isEqual(expirationDate)
+                || periodicalAlert.getLastAlertOn().isBefore(lastSendAlertDate);
     }
 
     private String getCredentialEntityId(Long credentialId) {

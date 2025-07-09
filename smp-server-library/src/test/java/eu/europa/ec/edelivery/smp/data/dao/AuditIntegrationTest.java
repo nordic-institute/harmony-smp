@@ -119,7 +119,6 @@ class AuditIntegrationTest extends AbstractBaseDao {
         alterVal.put("credentialType", CredentialType.CAS);
         alterVal.put("credentialTarget", CredentialTargetType.REST_API);
         alterVal.put("changedOn", OffsetDateTime.now().plusMinutes(30));
-        alterVal.put("expireAlertOn", OffsetDateTime.now().plusMinutes(30));
         alterVal.put("activeFrom", OffsetDateTime.now().plusMinutes(30));
         alterVal.put("sequentialLoginFailureCount", 10);
 

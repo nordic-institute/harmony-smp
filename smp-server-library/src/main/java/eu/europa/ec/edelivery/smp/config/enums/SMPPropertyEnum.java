@@ -411,7 +411,7 @@ public enum SMPPropertyEnum {
 
     SMP_ALERT_CREDENTIALS_SERVER("smp.alert.credentials.serverInstance", "localhost", "If smp.cluster.enabled is set to true then then instance (hostname) to generate report.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
-    SMP_ALERT_BATCH_SIZE("smp.alert.credentials.batch.size", "200", "Max alertes generated in a batch for the type",
+    SMP_ALERT_BATCH_SIZE("smp.alert.credentials.batch.size", "200", "Max count of alerts generated in a batch",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SMP_ALERT_MAIL_FROM("smp.alert.mail.from", "test@alert-send-mail.eu", "Alert send mail",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, EMAIL),

@@ -123,20 +123,12 @@ public class TestDBUtils {
         return alert;
     }
 
-    public static DBGroup createDBGroup() {
-        return createDBGroup(TestConstants.TEST_GROUP_A);
-    }
-
     public static DBDomain createDBDomain() {
         return createDBDomain(TestConstants.TEST_DOMAIN_CODE_1);
     }
 
     public static DBResource createDBResource() {
         return createDBResource(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
-    }
-
-    public static DBSubresource createDBSubresource(String partcId, String partcSch) {
-        return createDBSubresource(partcId, partcSch, anyString(), anyString(), anyString());
     }
 
     public static DBSubresource createDBSubresource(String partcId, String partcSch, String docId, String docSch) {
@@ -315,11 +307,12 @@ public class TestDBUtils {
         return dbCredential;
     }
 
-    public static DBPeriodicalAlert createPeriodicalAlert(ExpiringEntity entityType, String entityId, OffsetDateTime lastAlertSent) {
+    public static DBPeriodicalAlert createUserCredentialPeriodicalAlert(ExpiringEntity entityType, String entityId, OffsetDateTime lastAlertSent) {
         DBPeriodicalAlert alert = new DBPeriodicalAlert();
         alert.setEntityType(entityType);
         alert.setEntityIdentifier(entityId);
-        alert.setExpireAlertOn(lastAlertSent);
+        alert.setAlertScope(AlertScope.USER_CREDENTIAL);
+        alert.setLastAlertOn(lastAlertSent);
         return alert;
     }
 

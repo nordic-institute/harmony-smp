@@ -20,7 +20,6 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.AlertScope;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.enums.ExpiringEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -28,27 +27,25 @@ import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_PERIODICAL_ALERTS_BY_ENTITY_IDENTIFIER_AND_ALERT_TYPE;
 
-@Entity
-@Audited
-@Table(name = "SMP_PERIODICAL_ALERT", comment = "SMP periodical alerts")
-@NamedQuery(name = QUERY_PERIODICAL_ALERTS_BY_TYPES,
-        query = "SELECT distinct a FROM DBPeriodicalAlert a" +
-                " WHERE a.entityType IN :entityTypes")
-@NamedQuery(name = QUERY_PERIODICAL_ALERTS_BY_CREDENTIAL_ENTITY_ID,
-        query = "SELECT distinct a FROM DBPeriodicalAlert a" +
-                " WHERE a.entityType = :entityType" +
-                " AND a.entityIdentifier = :credentialEntityId")
-@NamedQuery(name = QUERY_PERIODICAL_ALERTS_BY_SYSTEM_CERTIFICATE_ALIAS_AND_ALERT_TYPE,
-        query = "SELECT distinct a FROM DBPeriodicalAlert a" +
-                " WHERE a.entityType = :entityType" +
-                " AND a.entityIdentifier = :certificateAlias" +
-                " AND a.alertScope = :alertScope")
 /**
+ * Represents a periodical alert for expiring entities e.g. User passwords, user authentication access tokens or certificates
+ * and system keys for signing or encryption. The table is generic, using PK of the credentials or alias from system keystores/truststores as entity identifier.
+ *
  * @author Sebastian-Ion TINCU
  * @since 5.2
  */
+@Entity
+@Audited
+@Table(name = "SMP_PERIODICAL_ALERT", comment = "SMP periodical alerts",
+        indexes = {@Index(name = "SMP_ALERT_COMPOSITE_IDX", columnList = "ENTITY_IDENTIFIER, ENTITY_TYPE, ALERT_SCOPE", unique = true)
+        })
+@NamedQuery(name = QUERY_PERIODICAL_ALERTS_BY_ENTITY_IDENTIFIER_AND_ALERT_TYPE,
+        query = "SELECT distinct a FROM DBPeriodicalAlert a" +
+                " WHERE a.entityType = :entity_type" +
+                " AND a.entityIdentifier = :identifier" +
+                " AND a.alertScope = :alertScope")
 public class DBPeriodicalAlert extends BaseEntity {
 
     @Id
@@ -61,9 +58,10 @@ public class DBPeriodicalAlert extends BaseEntity {
     Long id;
 
     @Column(name = "LAST_ALERT_ON")
-    @ColumnDescription(comment = "Generated last password expire alert")
-    private OffsetDateTime expireAlertOn;
+    @ColumnDescription(comment = "Date and time when the last alert was sent for this entity")
+    private OffsetDateTime lastAlertOn;
 
+    @ColumnDescription(comment = "Entity identifier for which the alert is sent, credential database id, certificate alias, etc.")
     @Column(name = "ENTITY_IDENTIFIER")
     private String entityIdentifier;
 
@@ -75,17 +73,27 @@ public class DBPeriodicalAlert extends BaseEntity {
     @Column(name = "ALERT_SCOPE")
     private AlertScope alertScope;
 
+    public DBPeriodicalAlert() {
+        // Default constructor for JPA
+    }
+
+    public DBPeriodicalAlert(ExpiringEntity entityType, String entityIdentifier, AlertScope alertScope) {
+        this.entityType = entityType;
+        this.entityIdentifier = entityIdentifier;
+        this.alertScope = alertScope;
+    }
+
     @Override
     public Object getId() {
         return id;
     }
 
-    public OffsetDateTime getExpireAlertOn() {
-        return expireAlertOn;
+    public OffsetDateTime getLastAlertOn() {
+        return lastAlertOn;
     }
 
-    public void setExpireAlertOn(OffsetDateTime expireAlertOn) {
-        this.expireAlertOn = expireAlertOn;
+    public void setLastAlertOn(OffsetDateTime expireAlertOn) {
+        this.lastAlertOn = expireAlertOn;
     }
 
     public String getEntityIdentifier() {

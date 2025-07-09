@@ -677,18 +677,22 @@
         ID number(19,0) not null,
         CREATED_ON timestamp(6) with time zone not null,
         LAST_UPDATED_ON timestamp(6) with time zone not null,
-        ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
+        ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('USER_CREDENTIAL','SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
         ENTITY_IDENTIFIER varchar2(255 char),
         ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
         LAST_ALERT_ON timestamp(6) with time zone,
-        primary key (ID)
+        primary key (ID),
+        constraint SMP_ALERT_COMPOSITE_IDX unique (ENTITY_IDENTIFIER, ENTITY_TYPE, ALERT_SCOPE)
     );
 
     comment on column SMP_PERIODICAL_ALERT.ID is
         'Unique periodical alert id';
 
+    comment on column SMP_PERIODICAL_ALERT.ENTITY_IDENTIFIER is
+        'Entity identifier for which the alert is sent, credential database id, certificate alias, etc.';
+
     comment on column SMP_PERIODICAL_ALERT.LAST_ALERT_ON is
-        'Generated last password expire alert';
+        'Date and time when the last alert was sent for this entity';
 
     create table SMP_PERIODICAL_ALERT_AUD (
         ID number(19,0) not null,
@@ -696,7 +700,7 @@
         REVTYPE number(3,0),
         CREATED_ON timestamp(6) with time zone,
         LAST_UPDATED_ON timestamp(6) with time zone,
-        ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
+        ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('USER_CREDENTIAL','SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
         ENTITY_IDENTIFIER varchar2(255 char),
         ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
         LAST_ALERT_ON timestamp(6) with time zone,
