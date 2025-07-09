@@ -1,4 +1,4 @@
-import {Component, Input, OnInit,} from '@angular/core';
+import {AfterViewInit, Component, Input, ViewChild,} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
@@ -8,15 +8,17 @@ import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resour
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
 import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
+import {SmpTableComponent} from "../../common/components/smp-table/smp-table.component";
 
 
 @Component({
   templateUrl: './edit-resource.component.html',
   styleUrls: ['./edit-resource.component.css']
 })
-export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
+export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
 
+  @ViewChild("resourceTable") resourceTable: SmpTableComponent
   selected: ResourceRo;
   isLoadingResults = false;
   dataSource: EditResourceController;
@@ -41,8 +43,9 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     ];
   }
 
-  ngOnInit() {
-    console.log("EditResourceComponent: ngOnInit  " + this.columns.length);
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.resourceTable.paginator;
+
     this.editResourceController.refreshDataOnDataChange();
 
     if (!this.selectedResource) {
@@ -85,7 +88,6 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     this.editResourceController.selectedGroup = resource;
   };
 
-
   get selectedDomainResourceDefs(): ResourceDefinitionRo[] {
     return this.editResourceController._selectedDomainResourceDefs;
   }
@@ -116,10 +118,6 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
 
   get isLoading(): boolean {
     return this.editResourceController.isLoadingResults;
-  }
-
-  get dataLength(): number {
-    return this.editResourceController.dataLength;
   }
 
   isDirty(): boolean {

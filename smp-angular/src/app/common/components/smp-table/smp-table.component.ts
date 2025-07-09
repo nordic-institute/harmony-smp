@@ -36,10 +36,8 @@ export class SmpTableComponent implements AfterViewInit {
   // else complete data must be set to table datasource and pagination
   // is done on client side
   @Input() isLoadableTable: boolean = false;
-
-
   @Input() dataSource: MatTableDataSource<any>;
-  @ViewChild("smpTablePaginator") paginator: MatPaginator;
+  @ViewChild("smpTablePaginator") _paginator: MatPaginator;
 
   selected: any;
   isLoadingResults = false;
@@ -51,7 +49,7 @@ export class SmpTableComponent implements AfterViewInit {
     // do not bind paginator here, it will be done in parent component
     // because internal paginator has its own paginator which is limited only to page.
     if (!this.isLoadableTable) {
-      this.dataSource.paginator = this.paginator;
+       this.dataSource.paginator = this.paginator;
     }
     if (this.filterValue === undefined) {
       this.filterValue = '';
@@ -91,39 +89,43 @@ export class SmpTableComponent implements AfterViewInit {
     return this.isLoadingResults;
   }
 
+  get paginator() : MatPaginator {
+    return this._paginator;
+  }
+
   @Input() set dataLength(value: number) {
     console.log("Setting paginator size: " + value);
-    if (this.paginator) {
-      this.paginator.length = value;
+    if (this._paginator) {
+      this._paginator.length = value;
     }
   }
 
   get dataLength(): number {
-    return this.paginator.length;
+    return this._paginator.length;
   }
 
   @Input() set pageSize(value: number) {
-    if (this.paginator) {
-      this.paginator.pageSize = value;
+    if (this._paginator) {
+      this._paginator.pageSize = value;
     }
   }
 
   get pageSize(): number {
-    return this.paginator.pageSize;
+    return this._paginator.pageSize;
   }
 
   @Input() set pageIndex(value: number) {
-    if (this.paginator) {
-      this.paginator.pageIndex = value;
+    if (this._paginator) {
+      this._paginator.pageIndex = value;
     }
   }
 
   firstPage(): void {
-      this.paginator.firstPage();
+      this._paginator.firstPage();
   }
 
   lastPage(): void {
-    this.paginator.lastPage();
+    this._paginator.lastPage();
   }
 
   getHeaderStyle(col: SmpTableColDef): string {
