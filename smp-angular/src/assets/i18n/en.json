@@ -113,6 +113,9 @@
   "alert.panel.user.title": "{{value}} (Email: '{{mailTo}}')",
   "alert.panel.title": "Alerts",
 
+  "timer.label.time.remaining": "Remaining time:",
+  "timer.label.time.current": "Current time:",
+
   "certificate.panel.title": "Selected certificate data",
   "certificate.panel.label.alias": "Alias",
   "certificate.panel.label.crl": "Certificate revocation list URL",

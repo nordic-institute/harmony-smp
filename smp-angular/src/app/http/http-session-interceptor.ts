@@ -34,7 +34,7 @@ export class HttpSessionInterceptor implements HttpInterceptor {
     clearTimeout(this.timerToLogoutId);
     let user = this.securityService.getCurrentUser();
     // set the last UI session call
-    this.securityService.uiUserSessionCallDetected()
+    this.securityService.uiUserSessionCallDetected();
     if (user?.sessionMaxIntervalTimeoutInSeconds && user.sessionMaxIntervalTimeoutInSeconds > SecurityService.TIME_BEFORE_EXPIRATION_IN_SECONDS) {
       let timeout = Math.min((user.sessionMaxIntervalTimeoutInSeconds - SecurityService.TIME_BEFORE_EXPIRATION_IN_SECONDS) * 1000, SecurityService.MAXIMUM_TIMEOUT_VALUE);
       this.timerId = setTimeout(() => this.sessionExpiringSoon(user.sessionMaxIntervalTimeoutInSeconds), timeout);
