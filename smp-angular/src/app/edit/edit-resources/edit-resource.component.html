@@ -92,13 +92,14 @@
         <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
       </div>
       <smp-table
+        #resourceTable
         filterLabel="edit.resource.label.filter"
         filterPlaceholder="edit.resource.placeholder.filter"
         noResultLabel="edit.resource.label.no.data.found"
         noResultForFilterLabel="edit.resource.label.no.filter.results"
         [isLoadableTable]="true"
         [dataSource]="dataSource"
-        [dataLength]="dataLength"
+        [dataLength]="dataSource.resourceCount"
         [selectedRow]="selectedResource"
         [filterValue]="filterResourceValue"
         [columnDefList]="columns"
