@@ -17,7 +17,7 @@ See the Licence for the specific language governing permissions and limitations 
     <artifactId>harmonysmp-modules</artifactId>
     <packaging>pom</packaging>
     <name>Harmony SMP</name>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>2.2.1</version>
     <licenses>
         <license>
             <name>EUPL-2.1</name>
