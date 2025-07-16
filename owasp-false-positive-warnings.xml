@@ -31,6 +31,8 @@
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2024-38828</cve>
+        <!-- Application does not use affected headers or vulnerable URL construction patterns -->
+        <vulnerabilityName>CVE-2025-41234</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[

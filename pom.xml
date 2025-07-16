@@ -73,11 +73,11 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.versions-maven-plugin.version>2.18.0</plugin.versions-maven-plugin.version>
 
         <aspectj.version>1.9.24</aspectj.version>
-        <commons-beanutils.version>1.10.1</commons-beanutils.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.19.0</commons-io.version>
-        <commons-lang3.version>3.17.0</commons-lang3.version>
-        <commons-fileupload.version>1.5</commons-fileupload.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-net.version>3.11.1</commons-net.version>
         <commons-validator.version>1.9.0</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.4</cxf-xjc-runtime.version>
@@ -108,7 +108,7 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.105</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.107</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.1</xmlunit.version>
