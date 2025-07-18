@@ -118,7 +118,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   }
 
   updateDomainList(domainList: DomainRo[]) {
-    this.domainList = domainList
+    this.domainList = domainList.sort((a, b) => a.domainCode.localeCompare(b.domainCode));
     this.dataSource.data = this.domainList;
 
     if (!!this.domainList && this.domainList.length > 0) {
