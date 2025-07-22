@@ -116,7 +116,7 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   }
 
   updateDomainList(list: DomainRo[]) {
-    this.domainList = list;
+    this.domainList = list.sort((a, b) => a.domainCode.localeCompare(b.domainCode));
     if (!!this.domainList && this.domainList.length > 0) {
       this.selectedDomain = this.domainList[0];
     } else {
@@ -125,7 +125,7 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   }
 
   updateGroupList(list: GroupRo[]) {
-    this.groupList = list
+    this.groupList = list.sort((a, b) => a.groupName.localeCompare(b.groupName));
     if (!!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
     } else {
