@@ -29,8 +29,9 @@ import {SmpTableComponent} from "../../common/components/smp-table/smp-table.com
 
 
 @Component({
-  templateUrl: './admin-domain.component.html',
-  styleUrls: ['./admin-domain.component.css']
+    templateUrl: './admin-domain.component.html',
+    styleUrls: ['./admin-domain.component.css'],
+    standalone: false
 })
 export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, BeforeLeaveGuard {
   readonly membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;

@@ -12,8 +12,9 @@ import {
 
 
 @Component({
-  templateUrl: './group-dialog.component.html',
-  styleUrls: ['./group-dialog.component.css']
+    templateUrl: './group-dialog.component.html',
+    styleUrls: ['./group-dialog.component.css'],
+    standalone: false
 })
 export class GroupDialogComponent {
 

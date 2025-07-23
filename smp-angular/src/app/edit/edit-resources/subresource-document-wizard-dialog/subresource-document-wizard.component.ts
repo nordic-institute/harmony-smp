@@ -12,8 +12,9 @@ import {lastValueFrom} from "rxjs";
 
 
 @Component({
-  templateUrl: './subresource-document-wizard.component.html',
-  styleUrls: ['./subresource-document-wizard.component.css']
+    templateUrl: './subresource-document-wizard.component.html',
+    styleUrls: ['./subresource-document-wizard.component.css'],
+    standalone: false
 })
 export class SubresourceDocumentWizardComponent {
 

@@ -33,8 +33,9 @@ import {lastValueFrom} from "rxjs";
 import {SecurityEventService} from "../security/security-event.service";
 
 @Component({
-  templateUrl: './resource-search.component.html',
-  styleUrls: ['./resource-search.component.css']
+    templateUrl: './resource-search.component.html',
+    styleUrls: ['./resource-search.component.css'],
+    standalone: false
 })
 export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterViewChecked {
 

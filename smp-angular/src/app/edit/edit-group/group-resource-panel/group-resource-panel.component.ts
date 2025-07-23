@@ -40,9 +40,10 @@ import {
 import {NavigationService} from "../../../window/sidenav/navigation-model.service";
 
 @Component({
-  selector: 'group-resource-panel',
-  templateUrl: './group-resource-panel.component.html',
-  styleUrls: ['./group-resource-panel.component.scss']
+    selector: 'group-resource-panel',
+    templateUrl: './group-resource-panel.component.html',
+    styleUrls: ['./group-resource-panel.component.scss'],
+    standalone: false
 })
 export class GroupResourcePanelComponent implements BeforeLeaveGuard {
 

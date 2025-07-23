@@ -9,11 +9,13 @@ ng {
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist",
+            "outputPath": {
+              "base": "./src/main/resources/META-INF/resources/ui/",
+              "browser": ""
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
             "polyfills": ["zone.js"],
             "assets": [
@@ -24,7 +26,8 @@ ng {
               "src/styles.css",
               "src/theme.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -34,8 +37,6 @@ ng {
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -48,8 +49,6 @@ ng {
               "sourceMap": true,
               "namedChunks": true,
               "extractLicenses": true,
-              "vendorChunk": true,
-              "buildOptimizer": false,
               "budgets": [
                 {
                   "type": "initial",

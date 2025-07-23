@@ -30,8 +30,9 @@ import {TranslateService} from "@ngx-translate/core";
 import {WindowSpinnerService} from "../common/services/window-spinner.service";
 
 @Component({
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent implements OnInit, OnDestroy {
 

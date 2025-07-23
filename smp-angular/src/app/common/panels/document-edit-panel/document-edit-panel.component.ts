@@ -96,10 +96,11 @@ export enum SmpShowDocumentType {
  * </ul>
  */
 @Component({
-  selector: 'document-edit-panel',
-  templateUrl: './document-edit-panel.component.html',
-  styleUrls: ['./document-edit-panel.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    selector: 'document-edit-panel',
+    templateUrl: './document-edit-panel.component.html',
+    styleUrls: ['./document-edit-panel.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   readonly reviewAllowedStatusList: DocumentVersionsStatus[] = [DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.REJECTED, DocumentVersionsStatus.RETIRED];

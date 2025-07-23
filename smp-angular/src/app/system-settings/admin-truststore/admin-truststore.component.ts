@@ -14,8 +14,9 @@ import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
-  templateUrl: './admin-truststore.component.html',
-  styleUrls: ['./admin-truststore.component.css']
+    templateUrl: './admin-truststore.component.html',
+    styleUrls: ['./admin-truststore.component.css'],
+    standalone: false
 })
 export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['alias'];

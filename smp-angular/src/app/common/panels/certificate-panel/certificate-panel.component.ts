@@ -3,9 +3,10 @@ import {CertificateRo} from "../../model/certificate-ro.model";
 import {DateTimeService} from "../../services/date-time.service";
 
 @Component({
-  selector: 'certificate-panel',
-  templateUrl: './certificate-panel.component.html',
-  styleUrls: ['./certificate-panel.component.scss'],
+    selector: 'certificate-panel',
+    templateUrl: './certificate-panel.component.html',
+    styleUrls: ['./certificate-panel.component.scss'],
+    standalone: false
 })
 export class CertificatePanelComponent {
 

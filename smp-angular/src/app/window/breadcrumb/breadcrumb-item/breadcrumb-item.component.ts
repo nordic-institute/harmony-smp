@@ -10,9 +10,10 @@ import {TranslateService} from "@ngx-translate/core";
  * @since 5.0
  */
 @Component({
-  selector: 'smp-breadcrumb-item',
-  templateUrl: './breadcrumb-item.component.html',
-  styleUrls: ['./breadcrumb-item.component.scss']
+    selector: 'smp-breadcrumb-item',
+    templateUrl: './breadcrumb-item.component.html',
+    styleUrls: ['./breadcrumb-item.component.scss'],
+    standalone: false
 })
 
 export class BreadcrumbItemComponent implements OnInit {

@@ -12,9 +12,10 @@ import {SmpTableColDef} from "./smp-table-coldef.model";
 
 
 @Component({
-  selector: 'smp-table',
-  templateUrl: './smp-table.component.html',
-  styleUrls: ['./smp-table.component.css']
+    selector: 'smp-table',
+    templateUrl: './smp-table.component.html',
+    styleUrls: ['./smp-table.component.css'],
+    standalone: false
 })
 export class SmpTableComponent implements AfterViewInit {
   @Output() onFilterChanged: EventEmitter<string> = new EventEmitter<string>();

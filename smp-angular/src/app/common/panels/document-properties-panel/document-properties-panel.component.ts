@@ -45,16 +45,17 @@ import {
  * @since 5.1
  */
 @Component({
-  selector: 'document-properties-panel',
-  templateUrl: './document-properties-panel.component.html',
-  styleUrls: ['./document-properties-panel.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DocumentPropertiesPanelComponent),
-      multi: true
-    }
-  ]
+    selector: 'document-properties-panel',
+    templateUrl: './document-properties-panel.component.html',
+    styleUrls: ['./document-properties-panel.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => DocumentPropertiesPanelComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, ControlValueAccessor {
   private readonly NEW_PROPERTY_NAME_TEMPLATE: string = 'document.property.v';

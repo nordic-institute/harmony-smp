@@ -1,11 +1,12 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'smp-label',
-  template: '<div style="display:flex; flex-direction: row;gap:0.5em; align-items: center;">' +
-    '<mat-icon *ngIf="icon">{{icon}}</mat-icon>' +
-    '<span>{{label}}</span>' +
-    '</div>'
+    selector: 'smp-label',
+    template: '<div style="display:flex; flex-direction: row;gap:0.5em; align-items: center;">' +
+        '<mat-icon *ngIf="icon">{{icon}}</mat-icon>' +
+        '<span>{{label}}</span>' +
+        '</div>',
+    standalone: false
 })
 export class SmpLabelComponent {
   @Input() label:string;

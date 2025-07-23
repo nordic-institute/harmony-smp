@@ -49,16 +49,17 @@ function normalizeLineEndings(str: string): string {
 }
 
 @Component({
-  selector: 'smp-editor',
-  templateUrl: './smp-editor.component.html',
-  styleUrls: ['./smp-editor.component.css'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => SmpEditorComponent),
-      multi: true
-    }
-  ]
+    selector: 'smp-editor',
+    templateUrl: './smp-editor.component.html',
+    styleUrls: ['./smp-editor.component.css'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => SmpEditorComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class SmpEditorComponent
   implements AfterViewInit, OnDestroy, ControlValueAccessor {

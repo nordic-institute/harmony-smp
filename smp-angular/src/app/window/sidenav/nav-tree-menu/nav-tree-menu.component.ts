@@ -4,8 +4,9 @@ import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
-  selector: "nav-tree-menu",
-  templateUrl: "nav-tree-menu.component.html",
+    selector: "nav-tree-menu",
+    templateUrl: "nav-tree-menu.component.html",
+    standalone: false
 })
 export class NavTreeMenu implements OnInit {
 

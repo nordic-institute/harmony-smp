@@ -19,9 +19,10 @@ import {DateTimeService} from "../../services/date-time.service";
 import DateUtils from "../../utils/date-utils";
 
 @Component({
-  selector: 'user-profile-panel',
-  templateUrl: './user-profile-panel.component.html',
-  styleUrls: ['./user-profile-panel.component.scss']
+    selector: 'user-profile-panel',
+    templateUrl: './user-profile-panel.component.html',
+    styleUrls: ['./user-profile-panel.component.scss'],
+    standalone: false
 })
 export class UserProfilePanelComponent {
 

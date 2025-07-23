@@ -7,9 +7,10 @@ import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.comp
 import {firstValueFrom} from "rxjs";
 
 @Component({
-  selector: 'domain-selector',
-  templateUrl: './domain-selector.component.html',
-  styleUrls: ['./domain-selector.component.css']
+    selector: 'domain-selector',
+    templateUrl: './domain-selector.component.html',
+    styleUrls: ['./domain-selector.component.css'],
+    standalone: false
 })
 export class DomainSelectorComponent {
 
