@@ -29,36 +29,36 @@
     "@angular/platform-browser-dynamic": "^20.1.2",
     "@angular/platform-server": "^20.1.2",
     "@angular/router": "^20.1.2",
-    "@codemirror/commands": "^6.7.1",
-    "@codemirror/language": "^6.10.3",
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/language": "^6.11.2",
     "@codemirror/language-data": "^6.5.1",
-    "@codemirror/merge": "^6.7.2",
-    "@codemirror/search": "^6.5.6",
-    "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.34.1",
-    "@ngx-translate/core": "^15.0.0",
+    "@codemirror/merge": "^6.10.2",
+    "@codemirror/search": "^6.5.11",
+    "@codemirror/theme-one-dark": "^6.1.3",
+    "@codemirror/view": "^6.38.1",
+    "@ngx-translate/core": "^16.0.4",
     "@ngx-translate/http-loader": "^8.0.0",
     "@swimlane/ngx-datatable": "^20.1.0",
     "moment": "^2.30.1",
     "ngx-mat-timepicker": "^20.0.1",
-    "rxjs": "^7.8.1",
+    "rxjs": "^7.8.2",
     "zone.js": "^0.15.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.1.1",
     "@angular/cli": "^20.1.1",
     "@angular/compiler-cli": "^20.1.2",
-    "@types/jasmine": "^5.1.4",
-    "@types/node": "^18.19.120",
+    "@types/jasmine": "^5.1.8",
+    "@types/node": "^22.16.5",
     "hammerjs": "^2.0.8",
     "jasmine-spec-reporter": "7.0.0",
     "karma": "^6.4.4",
     "karma-jasmine": "^5.1.0",
     "ng-packagr": "^20.1.0",
-    "postcss": "^8.4.47",
+    "postcss": "^8.5.6",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
-    "postcss": "^8.4.47"
+    "postcss": "^8.5.6"
   }
 }
