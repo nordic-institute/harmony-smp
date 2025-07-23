@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,16 +28,17 @@ import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.helpers.IOUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpHost;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.x500.X500Principal;
@@ -59,7 +60,7 @@ public class CRLVerifierService implements ICRLVerifierService {
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
     public static final long REFRESH_CRL_INTERVAL = 1000L * 60 * 60;
-    public static final Long NULL_LONG = Long.valueOf(-1);
+    public static final Long NULL_LONG = -1L;
 
     private static final X500Principal NULL_ISSUER = new X500Principal("");
     private static final CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
@@ -212,8 +213,8 @@ public class CRLVerifierService implements ICRLVerifierService {
         CredentialsProvider credentialsProvider = null;
         if (isValidParameter(proxyUser, proxyPassword)) {
             credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
-                    new UsernamePasswordCredentials(proxyUser, proxyPassword));
+            ((BasicCredentialsProvider)credentialsProvider).setCredentials(new AuthScope(proxyHost, proxyPort),
+                    new UsernamePasswordCredentials(proxyUser, proxyPassword.toCharArray()));
         }
 
 
@@ -251,6 +252,12 @@ public class CRLVerifierService implements ICRLVerifierService {
         return true;
     }
 
+    /**
+     * Checks if the parameters are valid. Valid means that they are not null and not empty.
+     *
+     * @param parameters the parameters to check
+     * @return true if the parameters are valid, false otherwise
+     */
     protected boolean isValidParameter(String... parameters) {
         if (parameters == null || parameters.length == 0) {
             return false;
