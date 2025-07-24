@@ -29,7 +29,6 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -71,30 +70,54 @@ public class DomainResolverService {
     /**
      * DomiSMP resolves the domain in the following order.
      * <ol>
-     * <li>If only one domain is registered, it sets it by default (legacy).</li>
-     * <li>The next attempt is to determine it via HTTP Header "domain." If the header is set with the invalid "domain code," it throws the error.</li>
-     * <li>The next attempt is with the first path parameter (must be at least two path parameters).</li>
-     * <li>The next attempt is to set the default domain configured in DomiSMP configuration properties.</li>
-     * <li>If the default domain is not set, it uses the first registered domain to the DomiSMP.</li>
-     * <li>Throws Resource not found error</li>
+     *   <li>If "domain" header exists attempt to determine domain via HTTP Header
+     *     <ul>
+     *       <li>If present and valid, use it.</li>
+     *       <li>If the domain code is invalid/domain with code not exists, throw an error.</li>
+     *     </ul>
+     *   </li>
+     *   <li>Check if only one domain is registered
+     *     <ul>
+     *       <li>If true, set it as the default domain (legacy behavior).</li>
+     *     </ul>
+     *   </li>
+     *   <li>Attempt to determine domain from URL path parameters
+     *     <ul>
+     *       <li>Check if there are at least two path parameters.</li>
+     *       <li>If so, use the first path parameter as the domain.</li>
+     *     </ul>
+     *   </li>
+     *   <li>Attempt to use the default domain from DomiSMP configuration
+     *     <ul>
+     *       <li>If a default domain is configured, use it.</li>
+     *     </ul>
+     *   </li>
+     *   <li>Fallback to the first registered domain in DomiSMP
+     *     <ul>
+     *       <li>If no default is configured, use the first available domain.</li>
+     *     </ul>
+     *   </li>
+     *   <li>If all steps fail
+     *     <ul>
+     *       <li>Throw a “Domain not found” error.</li>
+     *     </ul>
+     *   </li>
      * </ol>
+     *
      * <p>
      * NOTE: To allow the domain path parameter and the HTTP header to be used together, the first path parameter is skipped if it matches a resolved domain with an HTTP parameter or "single domain condition" and if there are more than two path parameters.
      * <p/>
      *
-     * @param headerParameter the http header
-     * @return true if path parameter  matched the domain code and the resolving should continue with the next parameter
+     * @param headerParameter the domain code from  http header
+     * @param pathParameter the first path parameter which can potentially be the domain code
+     * @return DBDomain from the database if found, otherwise throws an exception.
+     * @throws  SMPRuntimeException if no domain is found or the domain code is invalid.
      */
     public DBDomain resolveDomain(String headerParameter, String pathParameter) {
         LOG.info("Resolve domain for HTTP header [{}] and path parameter [{}]", headerParameter, pathParameter);
 
-
         // get single domain
-        Optional<DBDomain> optDomain = domainDao.getTheOnlyDomain();
-        if (optDomain.isPresent()) {
-            LOG.debug("Only one domain is registered to DomiSmp [{}]", optDomain.get().getDomainCode());
-            return optDomain.get();
-        }
+        Optional<DBDomain> optDomain;
         // get
         if (StringUtils.isNotBlank(headerParameter)) {
             optDomain = validatedAndReturnDomainByCode(headerParameter);
@@ -104,6 +127,12 @@ public class DomainResolverService {
             } else {
                 throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, headerParameter);
             }
+        }
+
+        optDomain = domainDao.getTheOnlyDomain();
+        if (optDomain.isPresent()) {
+            LOG.debug("Only one domain is registered to DomiSmp [{}]", optDomain.get().getDomainCode());
+            return optDomain.get();
         }
 
         optDomain = domainDao.getDomainByCode(pathParameter);
@@ -118,6 +147,7 @@ public class DomainResolverService {
             LOG.debug("Located domain by DomiSMP configuration [{}] value [{}]", SMPPropertyEnum.DEFAULT_DOMAIN.getProperty(), domainCode);
             return optDomain.get();
         }
+
         optDomain = domainDao.getFirstDomain();
         if (optDomain.isPresent()) {
             DBDomain domain = optDomain.get();
@@ -172,7 +202,7 @@ public class DomainResolverService {
             return authorizedGroup;
         }
 
-        if (authorizedGroup.stream().filter(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup)).count() == 0) {
+        if (authorizedGroup.stream().noneMatch(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup))) {
             throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, domainGroup);
         }
 
