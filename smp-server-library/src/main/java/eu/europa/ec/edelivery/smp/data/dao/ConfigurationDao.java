@@ -62,7 +62,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
     boolean isRefreshProcess = false;
     final Properties cachedProperties = new Properties();
-    Map<String, Object> cachedPropertyValues = new HashMap();
+    Map<String, Object> cachedPropertyValues = new HashMap<>();
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
     boolean serverRestartNeeded = false;
@@ -94,7 +94,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @Transactional
     public DBConfiguration setPropertyToDatabase(String key, String value) {
         Optional<SMPPropertyEnum> optionalSMPPropertyEnum = SMPPropertyEnum.getByProperty(key);
-        if (!optionalSMPPropertyEnum.isPresent()) {
+        if (optionalSMPPropertyEnum.isEmpty()) {
             LOG.warn("Property: [{}] is not SMP property and it is ignored!", key);
             return null;
         }
@@ -110,7 +110,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
         DBConfiguration configurationEntity;
-        if (!result.isPresent()) {
+        if (result.isEmpty()) {
             configurationEntity = new DBConfiguration();
             configurationEntity.setProperty(key.getProperty());
             configurationEntity.setValue(prepareValue(key, value));
@@ -150,7 +150,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @Transactional
     public Optional<DBConfiguration> deletePropertyFromDatabase(SMPPropertyEnum key) {
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
-        if (!result.isPresent()) {
+        if (result.isEmpty()) {
             return Optional.empty();
         }
         memEManager.remove(result.get());
@@ -172,7 +172,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     @Transactional
-    public <T extends Object> T getCachedPropertyValue(SMPPropertyEnum key) {
+    public <T> T getCachedPropertyValue(SMPPropertyEnum key) {
         if (lastUpdate == null) {
             // init properties
             refreshProperties();
@@ -372,7 +372,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
         // check SML integration data
         Boolean isSMLEnabled = (Boolean) propertyValues.get(SML_ENABLED.getProperty());
-        if (isSMLEnabled != null && isSMLEnabled.booleanValue()) {
+        if (isSMLEnabled != null && isSMLEnabled) {
             // if SML is enabled then following properties are mandatory
             validateIfExists(propertyValues, SML_URL);
             validateIfExists(propertyValues, SML_PHYSICAL_ADDRESS);
@@ -438,8 +438,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     /**
      * Method validates if new value for deprecated value is already set. If not it set the value from deprecated property if exists!
      *
-     * @param properties
-     * @return
+     * @param properties Properties to update
+     * @return Updated properties with deprecated values set
      */
     public Properties updateDeprecatedValues(Properties properties) {
         if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
@@ -463,7 +463,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         File configFolder = getSecurityFolder();
         File encryptionKeyFile = new File(configFolder, encryptionKeyFilename);
 
-        HashMap<String, Object> propertyValues = new HashMap();
+        HashMap<String, Object> propertyValues = new HashMap<>();
         // put the first two values
 
         propertyValues.put(ENCRYPTION_FILENAME.getProperty(), encryptionKeyFile);
@@ -502,7 +502,13 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
 
-    private static File checkFileExist(File file) {
+    /**
+     * Checks if the file exists and is a file.
+     *
+     * @param file the file to check
+     * @throws SMPRuntimeException if the file does not exist or is not a file
+     */
+    private static void checkFileExist(File file) {
         if (file == null || !file.exists()) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("The file [%s] not exists.", file == null ? "null" : file.getAbsolutePath()));
         } else {
@@ -510,7 +516,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                 throw new SMPRuntimeException(CONFIGURATION_ERROR, file.getAbsolutePath() + " must be a file");
             }
         }
-        return file;
     }
 
 
