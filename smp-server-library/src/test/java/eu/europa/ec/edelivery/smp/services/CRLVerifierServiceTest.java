@@ -56,7 +56,7 @@ class CRLVerifierServiceTest {
 
 
     @Test
-    void verifyCertificateCRLsTest() throws CertificateException, CRLException, IOException {
+    void verifyCertificateCRLsTest() throws CertificateException, CRLException {
         // given
         X509Certificate certificate = loadCertificate("smp-crl-test-all.pem");
 
@@ -92,7 +92,8 @@ class CRLVerifierServiceTest {
         // when - then
         assertThrowsContainingMessages(SMPRuntimeException.class, () ->
                         testInstance.verifyCertificateCRLs(certificate),
-                "Certificate error [Error occurred while downloading CRL:'https://localhost/clr']. Error: ConnectException: Connection refused"
+                "Certificate error [Error occurred while downloading CRL:'https://localhost/clr'].",
+                "Connection refused!"
         );
     }
 

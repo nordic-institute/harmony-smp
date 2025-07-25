@@ -54,7 +54,7 @@ See the Licence for the specific language governing permissions and limitations 
         <edelivery.dynamic-discovery-client.version>3.0</edelivery.dynamic-discovery-client.version>
         <bdmsl-api.version>5.0</bdmsl-api.version>
         <!-- plugin versions -->
-        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.13</plugin.jacoco-maven-plugin.version>
         <plugin.sonar-maven-plugin.version>5.1.0.4751</plugin.sonar-maven-plugin.version>
@@ -77,21 +77,21 @@ See the Licence for the specific language governing permissions and limitations 
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>20040616</commons-collections.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
-        <commons-io.version>2.19.0</commons-io.version>
-        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <commons-io.version>2.20.0</commons-io.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-net.version>3.11.1</commons-net.version>
-        <commons-validator.version>1.9.0</commons-validator.version>
+        <commons-validator.version>1.10.0</commons-validator.version>
         <cxf-xjc-runtime.version>4.1.0</cxf-xjc-runtime.version>
         <cxf.version>4.1.2</cxf.version>
         <ehcache.version>3.10.8</ehcache.version>
         <fasterxml.classmate.version>1.7.0</fasterxml.classmate.version>
         <h2.version>2.3.232</h2.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <hibernate-tools-orm.version>6.6.17.Final</hibernate-tools-orm.version>
+        <hibernate-tools-orm.version>6.6.20.Final</hibernate-tools-orm.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
-        <hibernate.version>6.6.18.Final</hibernate.version>
-        <httpclient.version>4.5.14</httpclient.version>
-        <jackson.version>2.19.1</jackson.version>
+        <hibernate.version>6.6.22.Final</hibernate.version>
+        <httpclient5.version>5.5</httpclient5.version>
+        <jackson.version>2.19.2</jackson.version>
         <jakarta.activation-api.version>2.1.3</jakarta.activation-api.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
@@ -103,7 +103,7 @@ See the Licence for the specific language governing permissions and limitations 
         <javax.cache-api.version>1.1.1</javax.cache-api.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
-        <junit-jupiter.version>5.13.2</junit-jupiter.version>
+        <junit-jupiter.version>5.13.4</junit-jupiter.version>
         <junit-platform-surefire-provider.version>1.3.2</junit-platform-surefire-provider.version>
         <junitparams.version>1.1.1</junitparams.version>
         <logback.version>1.5.18</logback.version>
@@ -112,11 +112,11 @@ See the Licence for the specific language governing permissions and limitations 
         <mysql.jdbc.version>9.3.0</mysql.jdbc.version>
         <org.glassfish.jaxb.jaxb-runtime.version>4.0.5</org.glassfish.jaxb.jaxb-runtime.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <spring-boot.tomcat.version>10.1.42</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>10.1.43</spring-boot.tomcat.version>
         <spring-boot.version>3.5.3</spring-boot.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring.security.version>6.5.1</spring.security.version>
-        <spring.version>6.2.8</spring.version>
+        <spring.security.version>6.5.2</spring.security.version>
+        <spring.version>6.2.9</spring.version>
         <xmlunit.version>2.10.3</xmlunit.version>
 
         <!-- plugins -->
@@ -255,9 +255,9 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${org.glassfish.jaxb.jaxb-runtime.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${httpclient.version}</version>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.persistence</groupId>
