@@ -39,9 +39,10 @@ import {
 
 
 @Component({
-  selector: 'subresource-panel',
-  templateUrl: './subresource-panel.component.html',
-  styleUrls: ['./subresource-panel.component.scss']
+    selector: 'subresource-panel',
+    templateUrl: './subresource-panel.component.html',
+    styleUrls: ['./subresource-panel.component.scss'],
+    standalone: false
 })
 export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuard {
 

@@ -21,8 +21,9 @@ import {
 } from "../../common/error/http-error-handler.service";
 
 @Component({
-  templateUrl: './edit-group.component.html',
-  styleUrls: ['./edit-group.component.css']
+    templateUrl: './edit-group.component.html',
+    styleUrls: ['./edit-group.component.css'],
+    standalone: false
 })
 export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
 

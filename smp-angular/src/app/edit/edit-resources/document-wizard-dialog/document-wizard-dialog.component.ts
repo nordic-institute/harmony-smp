@@ -4,8 +4,9 @@ import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular
 import {ResourceRo} from "../../../common/model/resource-ro.model";
 
 @Component({
-  templateUrl: './document-wizard-dialog.component.html',
-  styleUrls:  ['./document-wizard-dialog.component.css']
+    templateUrl: './document-wizard-dialog.component.html',
+    styleUrls: ['./document-wizard-dialog.component.css'],
+    standalone: false
 })
 export class DocumentWizardDialogComponent {
   dialogForm: UntypedFormGroup;

@@ -7,9 +7,10 @@ import {DateTimeService} from "../../../common/services/date-time.service";
 
 
 @Component({
-  selector: 'user-certificate-panel',
-  templateUrl: './user-certificate-panel.component.html',
-  styleUrls: ['./user-certificate-panel.component.scss']
+    selector: 'user-certificate-panel',
+    templateUrl: './user-certificate-panel.component.html',
+    styleUrls: ['./user-certificate-panel.component.scss'],
+    standalone: false
 })
 export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();

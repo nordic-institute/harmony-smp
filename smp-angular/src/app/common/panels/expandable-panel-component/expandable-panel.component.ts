@@ -33,9 +33,10 @@ import {
  * @since 5.1
  */
 @Component({
-  selector: 'expandable-panel',
-  templateUrl: './expandable-panel.component.html',
-  styleUrls: ['./expandable-panel.component.scss'],
+    selector: 'expandable-panel',
+    templateUrl: './expandable-panel.component.html',
+    styleUrls: ['./expandable-panel.component.scss'],
+    standalone: false
 })
 export class ExpandablePanelComponent implements AfterViewInit {
   @ContentChildren(ExpandableItemComponent) private _expandableItems: QueryList<ExpandableItemComponent>;

@@ -5,9 +5,10 @@ import {
 
 
 @Component({
-  selector: 'data-panel',
-  templateUrl: './data-panel.component.html',
-  styleUrls: ['./data-panel.component.scss']
+    selector: 'data-panel',
+    templateUrl: './data-panel.component.html',
+    styleUrls: ['./data-panel.component.scss'],
+    standalone: false
 })
 export class DataPanelComponent {
 

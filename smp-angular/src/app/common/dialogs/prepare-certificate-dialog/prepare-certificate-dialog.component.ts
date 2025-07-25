@@ -2,15 +2,15 @@ import {Component, Inject} from "@angular/core";
 import {CertificateRo} from "../../model/certificate-ro.model";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import * as moment from 'moment';
+import moment from 'moment';
 import {Moment} from "moment";
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS} from "@angular/material-moment-adapter";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 
 @Component({
-  templateUrl: './prepare-certificate-dialog.component.html',
-  providers: [{ provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } }]
-
+    templateUrl: './prepare-certificate-dialog.component.html',
+    providers: [{ provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } }],
+    standalone: false
 })
 export class PrepareCertificateDialogComponent {
 

@@ -13,8 +13,9 @@ import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
 @Component({
-  templateUrl: './user-access-tokens.component.html',
-  styleUrls: ['./user-access-tokens.component.scss']
+    templateUrl: './user-access-tokens.component.html',
+    styleUrls: ['./user-access-tokens.component.scss'],
+    standalone: false
 })
 export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['accessTokens'];

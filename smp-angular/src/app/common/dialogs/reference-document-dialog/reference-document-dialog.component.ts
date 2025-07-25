@@ -27,8 +27,9 @@ import {SubresourceRo} from "../../model/subresource-ro.model";
  * @author Joze RIHTARSIC
  */
 @Component({
-  templateUrl: './reference-document-dialog.component.html',
-  styleUrls: ['./reference-document-dialog.component.css']
+    templateUrl: './reference-document-dialog.component.html',
+    styleUrls: ['./reference-document-dialog.component.css'],
+    standalone: false
 })
 export class ReferenceDocumentDialogComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;

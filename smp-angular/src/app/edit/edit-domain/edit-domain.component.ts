@@ -18,8 +18,9 @@ import {
 } from "../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
-  templateUrl: './edit-domain.component.html',
-  styleUrls: ['./edit-domain.component.css']
+    templateUrl: './edit-domain.component.html',
+    styleUrls: ['./edit-domain.component.css'],
+    standalone: false
 })
 export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
 

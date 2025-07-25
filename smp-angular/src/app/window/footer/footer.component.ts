@@ -3,9 +3,10 @@ import {SmpInfoService} from '../../app-info/smp-info.service';
 import {SmpInfo} from '../../app-info/smp-info.model';
 
 @Component({
-  templateUrl: './footer.component.html',
-  selector: 'footer',
-  styleUrls: ['./footer.component.css']
+    templateUrl: './footer.component.html',
+    selector: 'footer',
+    styleUrls: ['./footer.component.css'],
+    standalone: false
 })
 
 export class FooterComponent implements OnInit {

@@ -48,16 +48,17 @@ import {
  * @since 5.1
  */
 @Component({
-  selector: 'document-versions-panel',
-  templateUrl: './document-versions-panel.component.html',
-  styleUrls: ['./document-versions-panel.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DocumentVersionsPanelComponent),
-      multi: true
-    }
-  ]
+    selector: 'document-versions-panel',
+    templateUrl: './document-versions-panel.component.html',
+    styleUrls: ['./document-versions-panel.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => DocumentVersionsPanelComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class DocumentVersionsPanelComponent implements BeforeLeaveGuard, ControlValueAccessor {
   @Output() selectedVersionChange: EventEmitter<number> = new EventEmitter<number>();

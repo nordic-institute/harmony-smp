@@ -58,16 +58,17 @@ import {
  * @since 5.1
  */
 @Component({
-  selector: 'document-configuration-panel',
-  templateUrl: './document-configuration-panel.component.html',
-  styleUrls: ['./document-configuration-panel.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DocumentConfigurationPanelComponent),
-      multi: true
-    }
-  ]
+    selector: 'document-configuration-panel',
+    templateUrl: './document-configuration-panel.component.html',
+    styleUrls: ['./document-configuration-panel.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => DocumentConfigurationPanelComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class DocumentConfigurationPanelComponent implements OnInit, AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
 

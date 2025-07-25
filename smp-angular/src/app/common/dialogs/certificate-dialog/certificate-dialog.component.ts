@@ -5,8 +5,9 @@ import {CertificateRo} from "../../model/certificate-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'keystore-certificate-dialog',
-  templateUrl: './certificate-dialog.component.html'
+    selector: 'keystore-certificate-dialog',
+    templateUrl: './certificate-dialog.component.html',
+    standalone: false
 })
 export class CertificateDialogComponent {
 

@@ -35,9 +35,10 @@ import {DateTimeService} from "../../services/date-time.service";
  * This is a generic alert panel component for previewing alert list
  */
 @Component({
-  selector: 'review-tasks-panel',
-  templateUrl: './review-tasks-panel.component.html',
-  styleUrls: ['./review-tasks-panel.component.css']
+    selector: 'review-tasks-panel',
+    templateUrl: './review-tasks-panel.component.html',
+    styleUrls: ['./review-tasks-panel.component.css'],
+    standalone: false
 })
 export class ReviewTasksPanelComponent implements OnInit, AfterViewInit, AfterViewChecked {
 

@@ -12,9 +12,10 @@ import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
 @Component({
-  selector: 'domain-panel',
-  templateUrl: './domain-panel.component.html',
-  styleUrls: ['./domain-panel.component.scss']
+    selector: 'domain-panel',
+    templateUrl: './domain-panel.component.html',
+    styleUrls: ['./domain-panel.component.scss'],
+    standalone: false
 })
 export class DomainPanelComponent implements BeforeLeaveGuard {
   @Output() onSaveBasicDataEvent: EventEmitter<DomainRo> = new EventEmitter();

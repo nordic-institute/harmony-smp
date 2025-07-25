@@ -24,9 +24,10 @@ import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
 @Component({
-  selector: 'document-property-dialog',
-  templateUrl: './document-property-dialog.component.html',
-  styleUrls: ['./document-property-dialog.component.css']
+    selector: 'document-property-dialog',
+    templateUrl: './document-property-dialog.component.html',
+    styleUrls: ['./document-property-dialog.component.css'],
+    standalone: false
 })
 export class DocumentPropertyDialogComponent {
 

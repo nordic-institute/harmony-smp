@@ -33,9 +33,10 @@ import {MatTableDataSource} from "@angular/material/table";
 
 
 @Component({
-  selector: 'domain-member-panel',
-  templateUrl: './membership-panel.component.html',
-  styleUrls: ['./membership-panel.component.scss']
+    selector: 'domain-member-panel',
+    templateUrl: './membership-panel.component.html',
+    styleUrls: ['./membership-panel.component.scss'],
+    standalone: false
 })
 export class MembershipPanelComponent implements BeforeLeaveGuard {
 

@@ -15,8 +15,9 @@ import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
-  templateUrl: './admin-keystore.component.html',
-  styleUrls: ['./admin-keystore.component.css']
+    templateUrl: './admin-keystore.component.html',
+    styleUrls: ['./admin-keystore.component.css'],
+    standalone: false
 })
 export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['alias', 'entry-type'];

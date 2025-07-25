@@ -18,8 +18,9 @@ import {lastValueFrom} from "rxjs";
 
 
 @Component({
-  templateUrl: './property.component.html',
-  styleUrls: ['./property.component.css']
+    templateUrl: './property.component.html',
+    styleUrls: ['./property.component.css'],
+    standalone: false
 })
 export class PropertyComponent implements AfterViewInit, AfterViewChecked {
 

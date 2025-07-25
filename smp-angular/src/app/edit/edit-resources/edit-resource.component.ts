@@ -12,8 +12,9 @@ import {SmpTableComponent} from "../../common/components/smp-table/smp-table.com
 
 
 @Component({
-  templateUrl: './edit-resource.component.html',
-  styleUrls: ['./edit-resource.component.css']
+    templateUrl: './edit-resource.component.html',
+    styleUrls: ['./edit-resource.component.css'],
+    standalone: false
 })
 export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;

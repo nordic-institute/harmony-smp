@@ -61,7 +61,7 @@ public class PropertyController {
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
             @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = PARAM_QUERY_PROPERTY) @Filter String filterValue
+            @RequestParam(value = PARAM_QUERY_PROPERTY, required = false) @Filter String filterValue
     ) {
         LOG.info("Search for page: {}, page size: {}", page, pageSize);
         return uiPropertyService.getTableList(page, pageSize, orderBy, orderType, filterValue);

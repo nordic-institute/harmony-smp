@@ -25,9 +25,10 @@ import {DateTimeService} from "../../services/date-time.service";
  * This is a generic alert panel component for previewing alert list
  */
 @Component({
-  selector: 'alert-panel',
-  templateUrl: './alert-panel.component.html',
-  styleUrls: ['./alert-panel.component.css']
+    selector: 'alert-panel',
+    templateUrl: './alert-panel.component.html',
+    styleUrls: ['./alert-panel.component.css'],
+    standalone: false
 })
 export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChecked {
 

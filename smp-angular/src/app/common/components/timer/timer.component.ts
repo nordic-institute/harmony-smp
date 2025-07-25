@@ -2,8 +2,11 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angula
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
-@Component({selector: 'timer',
-  templateUrl: './timer.component.html',})
+@Component({
+    selector: 'timer',
+    templateUrl: './timer.component.html',
+    standalone: false
+})
 export class TimerComponent implements OnInit, OnDestroy {
 
   @Input() durationInSeconds = 60;

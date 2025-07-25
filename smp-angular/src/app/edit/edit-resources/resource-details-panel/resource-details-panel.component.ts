@@ -31,9 +31,10 @@ import {
 
 
 @Component({
-  selector: 'resource-detail-panel',
-  templateUrl: './resource-details-panel.component.html',
-  styleUrls: ['./resource-details-panel.component.scss']
+    selector: 'resource-detail-panel',
+    templateUrl: './resource-details-panel.component.html',
+    styleUrls: ['./resource-details-panel.component.scss'],
+    standalone: false
 })
 export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
   readonly groupVisibilityOptions = Object.keys(VisibilityEnum)

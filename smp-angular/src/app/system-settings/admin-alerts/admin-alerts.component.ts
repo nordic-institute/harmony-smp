@@ -10,8 +10,9 @@ import {UserRo} from "../../common/model/user-ro.model";
 
 
 @Component({
-  templateUrl: './admin-alerts.component.html',
-  styleUrls: ['./admin-alerts.component.scss']
+    templateUrl: './admin-alerts.component.html',
+    styleUrls: ['./admin-alerts.component.scss'],
+    standalone: false
 })
 export class AdminAlertsComponent implements OnInit, OnDestroy, BeforeLeaveGuard {
 

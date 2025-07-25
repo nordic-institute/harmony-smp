@@ -34,9 +34,10 @@ import {
 } from "../../edit-resources/edit-resource.controller";
 
 @Component({
-  selector: 'domain-group-panel',
-  templateUrl: './domain-group.component.html',
-  styleUrls: ['./domain-group.component.scss']
+    selector: 'domain-group-panel',
+    templateUrl: './domain-group.component.html',
+    styleUrls: ['./domain-group.component.scss'],
+    standalone: false
 })
 export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
 

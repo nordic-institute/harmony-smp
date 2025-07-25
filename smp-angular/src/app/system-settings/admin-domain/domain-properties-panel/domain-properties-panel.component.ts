@@ -21,9 +21,10 @@ import {PropertySourceEnum} from "../../../common/enums/property-source.enum";
 import {EditDomainService} from "../../../edit/edit-domain/edit-domain.service";
 
 @Component({
-  selector: 'domain-properties-panel',
-  templateUrl: './domain-properties-panel.component.html',
-  styleUrls: ['./domain-properties-panel.component.scss']
+    selector: 'domain-properties-panel',
+    templateUrl: './domain-properties-panel.component.html',
+    styleUrls: ['./domain-properties-panel.component.scss'],
+    standalone: false
 })
 export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, BeforeLeaveGuard {
   @Input() systemAdminService: boolean;

@@ -3,7 +3,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {SecurityService} from "../../../security/security.service";
 
 @Component({
-  templateUrl: './session-expiration-dialog.component.html',
+    templateUrl: './session-expiration-dialog.component.html',
+    standalone: false
 })
 export class SessionExpirationDialogComponent {
 

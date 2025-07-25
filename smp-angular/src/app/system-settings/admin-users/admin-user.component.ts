@@ -22,8 +22,9 @@ import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
-  templateUrl: './admin-user.component.html',
-  styleUrls: ['./admin-user.component.css']
+    templateUrl: './admin-user.component.html',
+    styleUrls: ['./admin-user.component.css'],
+    standalone: false
 })
 export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['username', 'fullName'];

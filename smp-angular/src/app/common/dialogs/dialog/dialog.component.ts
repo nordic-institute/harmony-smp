@@ -2,9 +2,10 @@ import {Component, Input} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
-  selector: 'smp-dialog',
-  templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.css']
+    selector: 'smp-dialog',
+    templateUrl: './dialog.component.html',
+    styleUrls: ['./dialog.component.css'],
+    standalone: false
 })
 export class DialogComponent {
 

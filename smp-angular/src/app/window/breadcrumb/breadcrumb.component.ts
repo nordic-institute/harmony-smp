@@ -9,9 +9,10 @@ import {NavigationService, NavigationNode} from "../sidenav/navigation-model.ser
  * @since 5.0
  */
 @Component({
-  selector: 'smp-breadcrumb',
-  templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.css']
+    selector: 'smp-breadcrumb',
+    templateUrl: './breadcrumb.component.html',
+    styleUrls: ['./breadcrumb.component.css'],
+    standalone: false
 })
 export class BreadcrumbComponent{
 

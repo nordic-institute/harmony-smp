@@ -2,8 +2,9 @@ import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@an
 import {AlertMessageService} from "../alert-message/alert-message.service";
 
 @Component({
-  selector: 'app-column-picker',
-  templateUrl: './column-picker.component.html'
+    selector: 'app-column-picker',
+    templateUrl: './column-picker.component.html',
+    standalone: false
 })
 export class ColumnPickerComponent {
 

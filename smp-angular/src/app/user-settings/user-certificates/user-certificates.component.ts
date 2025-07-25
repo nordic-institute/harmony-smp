@@ -16,8 +16,9 @@ import {lastValueFrom} from "rxjs";
 
 
 @Component({
-  templateUrl: './user-certificates.component.html',
-  styleUrls: ['./user-certificates.component.scss']
+    templateUrl: './user-certificates.component.html',
+    styleUrls: ['./user-certificates.component.scss'],
+    standalone: false
 })
 export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['certificates'];

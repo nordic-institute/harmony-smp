@@ -20,9 +20,10 @@ import {SMLChangeCertificate} from "../../../common/model/sml-change-certificate
 
 
 @Component({
-  selector: 'domain-sml-integration-panel',
-  templateUrl: './domain-sml-integration-panel.component.html',
-  styleUrls: ['./domain-sml-integration-panel.component.scss']
+    selector: 'domain-sml-integration-panel',
+    templateUrl: './domain-sml-integration-panel.component.html',
+    styleUrls: ['./domain-sml-integration-panel.component.scss'],
+    standalone: false
 })
 export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   @Output() onSaveSmlIntegrationDataEvent: EventEmitter<DomainRo> = new EventEmitter();

@@ -37,8 +37,9 @@ import {
 
 
 @Component({
-  templateUrl: './resource-dialog.component.html',
-  styleUrls: ['./resource-dialog.component.css']
+    templateUrl: './resource-dialog.component.html',
+    styleUrls: ['./resource-dialog.component.css'],
+    standalone: false
 })
 export class ResourceDialogComponent implements OnInit {
   readonly PROPERTY_RESOURCE_SCHEME_VALIDATION_REGEXP_VAL: string = 'identifiersBehaviour.ParticipantIdentifierScheme.validationRegex';

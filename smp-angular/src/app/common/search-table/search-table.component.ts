@@ -36,9 +36,10 @@ import ObjectUtils from "../utils/object-utils";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'smp-search-table',
-  templateUrl: './search-table.component.html',
-  styleUrls: ['./search-table.component.css']
+    selector: 'smp-search-table',
+    templateUrl: './search-table.component.html',
+    styleUrls: ['./search-table.component.css'],
+    standalone: false
 })
 export class SearchTableComponent implements OnInit {
   @Output() onRowDoubleClicked: EventEmitter<SearchTableEntity> = new EventEmitter<SearchTableEntity>();
