@@ -34,9 +34,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -120,17 +117,12 @@ class SMPLanguageResourceServiceTest {
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
         assertEquals(2, files.length);
-
-        Set<String> expectedFileNames = new HashSet<>(Arrays.asList(
-                LANGUAGE_FILENAME_UI_PREFIX + "en.json",
-                LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"
-        ));
-
-        Set<String> actualFileNames = Arrays.stream(files)
-                .map(File::getName)
-                .collect(Collectors.toSet());
-
-        assertEquals(expectedFileNames, actualFileNames);
+        // check if bot files are created regardless the order
+        String[] expectedNames = new String[]{LANGUAGE_FILENAME_UI_PREFIX + "en.json", LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"};
+        String[] fileNames = new String[] {files[0].getName(), files[1].getName()};
+        Arrays.sort(expectedNames);
+        Arrays.sort(fileNames);
+        assertArrayEquals(expectedNames, fileNames);
     }
 
     @Test
@@ -151,21 +143,22 @@ class SMPLanguageResourceServiceTest {
 
         // when
         testInstance.updateLocalesOnDisk();
+
         // then
         assertTrue(localeFolder.exists());
+        // Compare the sorted arrays
+
+
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
         assertEquals(2, files.length);
-        Set<String> expectedFileNames = new HashSet<>(Arrays.asList(
-                LANGUAGE_FILENAME_UI_PREFIX + "en.json",
-                LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"
-        ));
 
-        Set<String> actualFileNames = Arrays.stream(files)
-                .map(File::getName)
-                .collect(Collectors.toSet());
-
-        assertEquals(expectedFileNames, actualFileNames);
+        // check if bot files are created regardless the order
+        String[] expectedNames = new String[]{LANGUAGE_FILENAME_UI_PREFIX + "en.json", LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"};
+        String[] fileNames = new String[] {files[0].getName(), files[1].getName()};
+        Arrays.sort(expectedNames);
+        Arrays.sort(fileNames);
+        assertArrayEquals(expectedNames, fileNames);
 
         JsonNode result = objectMapper.readTree(pathToFile.toFile());
         assertEquals(testText, result.get(testKey).asText());

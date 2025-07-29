@@ -13,7 +13,7 @@ See the Licence for the specific language governing permissions and limitations 
 This product includes dynamically linked software developed by third parties which is provided under their respective licences:
 
 
-***ch.qos.logback:logback-classic:1.2.13*** 
+***ch.qos.logback:logback-classic:1.5.18*** 
 - License: EPL-1.0
 - Url: http://www.eclipse.org/legal/epl-v10.html
 - File: license/third-party-licenses/EPL-1.0.txt
@@ -24,28 +24,28 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 2005 - 2024 QOS.ch (http://www.qos.ch), Ceki Gulcu, Joern Huxhorn
 
-***com.fasterxml.jackson.core:jackson-core:2.18.0*** 
+***com.fasterxml.jackson.core:jackson-core:2.19.0*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2008 - 2024 FasterXML (http://fasterxml.com/), Tatu Saloranta
 
-***com.fasterxml.jackson.core:jackson-databind:2.18.0*** 
+***com.fasterxml.jackson.core:jackson-databind:2.19.0*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2008 - 2024 FasterXML (http://fasterxml.com/), Tatu Saloranta
 
-***com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0*** 
+***com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0*** 
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 FasterXML (http://fasterxml.com/), Nick Williams
 
-***com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.18.0*** 
+***com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.19.0*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
@@ -119,21 +119,21 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 2001 - 2024 The Apache Software Foundation (https://www.apache.org/), Daniel Rall, Stephen Colebourne, Henri Yandell, Steven Caswell, Robert Burrell Donkin, Gary Gregory, Fredrik Westermarck, James Carman, Niall Pemberton, Matt Benson, Joerg Schaible, Oliver Heger, Paul Benedict, Benedikt Ritter, Duncan Jones, Loic Guibert, Rob Tompkins
 
-***org.apache.cxf:cxf-rt-features-logging:3.5.9*** 
+***org.apache.cxf:cxf-rt-features-logging:3.6.6*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2006 - 2024 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
 
-***org.apache.cxf:cxf-rt-frontend-jaxws:3.5.9*** 
+***org.apache.cxf:cxf-rt-frontend-jaxws:3.6.6*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2006 - 2024 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
 
-***org.apache.cxf:cxf-rt-transports-http:3.5.9*** 
+***org.apache.cxf:cxf-rt-transports-http:3.6.6*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
@@ -147,7 +147,7 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 1999 - 2024 The Apache Software Foundation (http://www.apache.org/), Ortwin Glueck, Oleg Kalnichevski, Asankha C. Perera, Sebastian Bazley, Erik Abele, Ant Elder, Paul Fremantle, Roland Weber, Sam Berlin, Sean C. Sullivan, Jonathan Moore, Gary Gregory, William Speirs, Karl Wright, Francois-Xavier Bonnet
 
-***org.apache.tomcat.embed:tomcat-embed-jasper:9.0.96*** 
+***org.apache.tomcat.embed:tomcat-embed-jasper:9.0.105*** 
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
@@ -259,28 +259,28 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 2024 VMware, Inc. (https://spring.io), Spring
 
-***org.springframework.security:spring-security-cas:5.8.15*** 
+***org.springframework.security:spring-security-cas:5.8.16*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-config:5.8.15*** 
+***org.springframework.security:spring-security-config:5.8.16*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-core:5.8.15*** 
+***org.springframework.security:spring-security-core:5.8.16*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-test:5.8.15*** 
+***org.springframework.security:spring-security-test:5.8.16*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
