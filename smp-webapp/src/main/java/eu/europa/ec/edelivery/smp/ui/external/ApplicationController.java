@@ -72,12 +72,12 @@ public class ApplicationController {
     public SmpInfoRO getApplicationInfo() {
         SmpInfoRO info = new SmpInfoRO();
         info.setVersion(getDisplayVersion());
-        List<String> authTypes = configurationService.getUIAuthenticationTypes();
+        List<SMPUserAuthenticationTypes> authTypes = configurationService.getUIAuthenticationTypes();
         // set default password
         authTypes = authTypes ==null || authTypes.isEmpty()?
-                Collections.singletonList(SMPUserAuthenticationTypes.PASSWORD.name()):authTypes;
+                Collections.singletonList(SMPUserAuthenticationTypes.PASSWORD):authTypes;
         info.addAuthTypes(authTypes);
-        if (authTypes.contains(SMPUserAuthenticationTypes.SSO.name())){
+        if (authTypes.contains(SMPUserAuthenticationTypes.SSO)){
             info.setSsoAuthenticationLabel(configurationService.getCasUILabel());
             info.setSsoAuthenticationURI(configurationService.getCasSMPLoginRelativePath());
         }

@@ -1,8 +1,8 @@
 insert into SMP_USER (ID, USERNAME, ACTIVE, APPLICATION_ROLE, EMAIL, CREATED_ON, LAST_UPDATED_ON) values
 (1, 'system', 1, 'SYSTEM_ADMIN', 'system@mail-example.local',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(2, 1, 1, 'system', '$2a$06$FDmjewn/do3C219uysNm9.XG8mIn.ubHnMydAzC8lsv61HsRpOR36', 'USERNAME_PASSWORD','UI',  NOW(),  NOW()),
-(3, 1, 1, 'pat_system', '$2a$06$FDmjewn/do3C219uysNm9.XG8mIn.ubHnMydAzC8lsv61HsRpOR36', 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW());
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, ACTIVE_FROM, EXPIRE_ON, CREATED_ON, LAST_UPDATED_ON) values
+(2, 1, 1, 'system', '$2a$06$FDmjewn/do3C219uysNm9.XG8mIn.ubHnMydAzC8lsv61HsRpOR36', 'USERNAME_PASSWORD','UI',  DATE_SUB(NOW(), INTERVAL 3 DAY),  DATE_ADD(NOW(), INTERVAL 3 DAY), NOW(),  NOW()),
+(3, 1, 1, 'pat_system', '$2a$06$FDmjewn/do3C219uysNm9.XG8mIn.ubHnMydAzC8lsv61HsRpOR36', 'ACCESS_TOKEN', 'REST_API', DATE_SUB(NOW(), INTERVAL 3 DAY),  DATE_ADD(NOW(), INTERVAL 3 DAY), NOW(),  NOW());
 
 insert into SMP_USER (ID, USERNAME, ACTIVE, APPLICATION_ROLE, EMAIL, CREATED_ON, LAST_UPDATED_ON) values
 (2, 'user', 1, 'USER', 'user@mail-example.local',  NOW(),  NOW());
@@ -42,7 +42,8 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, SUBJECT, ISSUER, SERIALNUMBER,V
 
 
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_CLIENT_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values
-(1, 'testdomain','PUBLIC', 'test-domain', 'DOMI-SMP-001','sample_key','smp_domain_01',1,1, NOW(),  NOW());
+(1, 'testdomain','PUBLIC', 'test-domain', 'DOMI-SMP-001','sample_key','smp_domain_01',1,1, NOW(),  NOW()),
+(2, 'oots-smp-domain','PRIVATE', 'private-domain', 'DOMI-SMP-001','sample_key','smp_domain_01',1,1, NOW(),  NOW());
 
 insert into SMP_EXTENSION ( ID, IDENTIFIER,  IMPLEMENTATION_NAME, NAME, VERSION, DESCRIPTION, CREATED_ON, LAST_UPDATED_ON) values
 (1, 'edelivery-oasis-smp-extension',  'OasisSMPExtension','Oasis SMP 1.0 and 2.0','1.0', 'Oasis SMP 1.0 and 2.0 extension',  NOW(),  NOW());
@@ -57,18 +58,24 @@ insert into SMP_SUBRESOURCE_DEF (ID,FK_RESOURCE_DEF_ID,URL_SEGMENT, IDENTIFIER, 
 
 insert into SMP_DOMAIN_RESOURCE_DEF (ID, FK_RESOURCE_DEF_ID, FK_DOMAIN_ID,CREATED_ON, LAST_UPDATED_ON ) values
 (1, 1, 1, NOW(),  NOW()),
-(2, 2, 1, NOW(),  NOW());
+(2, 2, 1, NOW(),  NOW()),
+(3, 1, 2, NOW(),  NOW()),
+(4, 2, 2, NOW(),  NOW());
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'Group001', 'PUBLIC', NOW(),  NOW()),
-(2, 1, 'Group002', 'PUBLIC', NOW(),  NOW());
+(2, 1, 'Group002', 'PUBLIC', NOW(),  NOW()),
+(3, 2, 'GroupPublic001', 'PUBLIC', NOW(),  NOW()),
+(4, 2, 'GroupPrivate002', 'PRIVATE', NOW(),  NOW());
 
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 2, 'ADMIN', NOW(),  NOW()),
 (2, 1, 3, 'ADMIN', NOW(),  NOW()),
-(3, 1, 4, 'ADMIN', NOW(),  NOW());
+(3, 1, 4, 'ADMIN', NOW(),  NOW()),
+(4, 3, 1, 'ADMIN', NOW(),  NOW()),
+(5, 4, 1, 'ADMIN', NOW(),  NOW());
 
 insert into SMP_DOMAIN_MEMBER (ID, FK_DOMAIN_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 1, 'ADMIN', NOW(),  NOW()),
-(2, 1, 2, 'VIEWER', NOW(),  NOW());
-
+(2, 1, 2, 'VIEWER', NOW(),  NOW()),
+(3, 2, 1, 'ADMIN', NOW(),  NOW());

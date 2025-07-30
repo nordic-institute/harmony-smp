@@ -18,6 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -33,9 +35,7 @@ import org.springframework.scheduling.support.CronExpression;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -68,7 +68,11 @@ public class PropertyUtils {
         }
 
         SMPPropertyTypeEnum type = prop.getPropertyType();
-        return parsePropertyType(type, value, rootFolder);
+        Object result =  parsePropertyType(type, value, rootFolder);
+        return switch (prop) {
+            case AUTOMATION_AUTHENTICATION_TYPES, UI_AUTHENTICATION_TYPES -> parseEnumListPropertyType(prop, (List<String>) result);
+            default -> result;
+        };
     }
 
     public static boolean isValidProperty(SMPPropertyEnum prop, String value, File confFolder) {
@@ -184,6 +188,29 @@ public class PropertyUtils {
         return null;
     }
 
+    /** Parse the property value for the given type.
+     *
+     * @param type  - property type
+     * @param value - property value
+     * @return parsed value
+     */
+    private static List<?> parseEnumListPropertyType(SMPPropertyEnum type, List<String> value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+
+        return switch (type) {
+            case AUTOMATION_AUTHENTICATION_TYPES -> value.stream()
+                    .map(SMPAutomationAuthenticationTypes::fromString)
+                    .filter(Objects::nonNull)
+                    .toList();
+            case UI_AUTHENTICATION_TYPES -> value.stream()
+                    .map(SMPUserAuthenticationTypes::fromString)
+                    .filter(Objects::nonNull)
+                    .toList();
+            default -> value;
+        };
+    }
 
     /**
      * Return true for properties with sensitive data. For example the property value must not be logged

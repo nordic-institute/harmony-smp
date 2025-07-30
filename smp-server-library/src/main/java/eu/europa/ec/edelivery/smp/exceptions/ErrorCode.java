@@ -32,7 +32,8 @@ public enum ErrorCode {
     UNAUTHORIZED(401, "SMP:003",ErrorBusinessCode.UNAUTHORIZED, "User not authorized!"),
     UNAUTHORIZED_INVALID_USER_IDENTIFIER(401, "SMP:004",ErrorBusinessCode.UNAUTHORIZED, "Invalid user identifier! User not authorized."),
     UNAUTHORIZED_INVALID_IDENTIFIER(401, "SMP:005",ErrorBusinessCode.UNAUTHORIZED, "Invalid entity identifier!  User not authorized to access the entity data"),
-    UNAUTHORIZED_INVALID_RESET_TOKEN(401, "SMP:006",ErrorBusinessCode.UNAUTHORIZED, "The reset token it is invalid or not active any more. Please try to reset your password again."),
+    UNAUTHORIZED_INVALID_RESET_TOKEN(401, "SMP:006",ErrorBusinessCode.UNAUTHORIZED, "The reset token is invalid or not active any more. Please try to reset your password again."),
+    UNAUTHORIZED_INVALID_BEARER_TOKEN(401, "SMP:006",ErrorBusinessCode.UNAUTHORIZED, "The bearer token is invalid or not active any more. Please try to regenerate your token."),
 
     USER_CHANGE_INVALID_NEW_CREDENTIAL(400, "SMP:010",ErrorBusinessCode.INVALID_INPUT_DATA, "Password change failed. %s"),
 

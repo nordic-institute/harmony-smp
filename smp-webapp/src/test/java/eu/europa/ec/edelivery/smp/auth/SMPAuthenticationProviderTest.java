@@ -65,7 +65,7 @@ class SMPAuthenticationProviderTest {
 
 
     CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mockAlertService, mockPeriodicalAlertDao);
-    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService);
+    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService, null);
 
 
     // response time for existing and nonexistent user should be "approx. equal"

@@ -29,7 +29,6 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,7 @@ public class DomainResolverService {
     /**
      * Domain pattern as defined in documentation since SMP 3.0.0
      */
-    public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
+    public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("^[^-._+0-9][-._+a-zA-Z0-9]{1,63}$");
     final DomainDao domainDao;
     final GroupDao groupDao;
     final ConfigurationService configurationService;

@@ -21,7 +21,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
 
   @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
   readonly warningTimeout: number = 3000;
-  readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
+  readonly domainCodePattern = '^[^-._+0-9][-._+a-zA-Z0-9]{1,63}$';
   readonly domainVisibilityOptions = Object.keys(VisibilityEnum)
     .map(el => {
       return {key: el, value: VisibilityEnum[el]}

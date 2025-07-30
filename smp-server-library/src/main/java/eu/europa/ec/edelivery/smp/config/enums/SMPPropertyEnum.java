@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -75,11 +75,11 @@ public enum SMPPropertyEnum {
             "^(?i)(urn:ehealth(:.*)?|mailto(:.*)?)\\s*$", "Regular expression to detect if this is template identifiers. If the party identifier schema (or identifier it self if scheme is null ) matches the regexp. Then Identifier is processed as the template identifier. Example: ^(?i)(urn:)|(mailto:).*$",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP("identifiersBehaviour.template.split.regexp", "^\\s*(::)?(?<scheme>urn:ehealth:[a-zA-Z]{2}|mailto)::?(?<identifier>.+)$",
-            "Regular expression with groups <scheme> and <identifier> for splitting the identifiers to scheme and identifier part!",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
+            "Regular expression with groups <scheme> and <identifier> for splitting the identifiers to scheme and identifier part!", OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     RESOURCE_IDENTIFIER_TMPL_CONCATENATE("identifiersBehaviour.template.concatenate", "${scheme}:${identifier}",
-            "Format which defines how sheme and identifier should be concatenated in to the single string value",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+            "Format which defines how sheme and identifier should be concatenated in to the single string value", OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME("identifiersBehaviour.template.concatenate.null-scheme", "${identifier}",
-            "Format which defines how identifier should be formated without scheme!",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+            "Format which defines how identifier should be formated without scheme!", OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     RESOURCE_CASE_SENSITIVE_SCHEMES("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
     SUBRESOURCE_CASE_SENSITIVE_SCHEMES("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.",
@@ -199,11 +199,30 @@ public enum SMPPropertyEnum {
 
     // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
-    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "TOKEN|CERTIFICATE",
-            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported TOKEN, CERTIFICATE: ex. TOKEN|CERTIFICATE",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, LIST_STRING),
+    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "BASIC_TOKEN|CERTIFICATE",
+            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported BASIC_TOKEN, CERTIFICATE, JWT: ex. BASIC_TOKEN|CERTIFICATE|JWT",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, LIST_STRING
     ),
+
+    AUTOMATION_AUTHORIZATION_JWT_ISSUER("smp.authorization.jwt.issuer", "",
+            "Validate issuer of the JWT token. If empty, no validation is done. If set, the issuer must match the value of the JWT token's 'iss' claim.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+    ),
+    AUTOMATION_AUTHORIZATION_JWT_AUDIENCE("smp.authorization.jwt.audience", "",
+            "Validate audience of the JWT token. If empty, no validation is done. If set, the audience must match the value of the JWT token's 'aud' claim.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+    ),
+    AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_KEY("smp.authorization.jwt.key", "",
+            "The base64 signature key used to verify the JWT token.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+    ),
+
+    AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_ALGORITHM("smp.authorization.jwt.algorithm", "RS256",
+            "The signature algorithm used to verify the JWT token e.g.: RS256, HS256, ES256, PS256.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+    ),
+
 
     EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
             "Authentication with external module as: reverse proxy. Authenticated data are send send to application using 'Client-Cert' HTTP header. Do not enable this feature " +
@@ -236,7 +255,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
     SSO_CAS_AUTOMATIC_REGISTRATION_CONFIRMATION("smp.sso.cas.registration.confirmation.mandatory", "false", "If true - user must be activated by system administrator. If false - user is activated automatically",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    SSO_CAS_AUTOMATIC_REGISTRATION_PROPERTY_MAPPING("smp.sso.cas.registration.mapping", "EMAIL:${email}|FULL_NAME:${firstName} ${lastName}","The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'",
+    SSO_CAS_AUTOMATIC_REGISTRATION_PROPERTY_MAPPING("smp.sso.cas.registration.mapping", "EMAIL:${email}|FULL_NAME:${firstName} ${lastName}", "The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
 
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.",
@@ -270,7 +289,7 @@ public enum SMPPropertyEnum {
             "HIGH", "Alert level for login suspended. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
             "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
-     ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
+    ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
             "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will submit mail for all logon attempts to suspended account, WHEN_BLOCKED: An alert will be triggered only the first time when the account got suspended.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "Allowed values are: AT_LOGON,WHEN_BLOCKED"),
 

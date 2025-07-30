@@ -20,7 +20,6 @@ package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
-import eu.europa.ec.edelivery.smp.auth.SMPCertificateAuthentication;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -28,6 +27,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -55,8 +55,8 @@ public class SessionSecurityUtils {
     protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(
             UILoginAuthenticationToken.class,
             CasAuthenticationToken.class,
-            SMPAuthenticationToken.class,
-            SMPCertificateAuthentication.class);
+            JwtAuthenticationToken.class,
+            SMPAuthenticationToken.class);
 
     /**
      * SMP uses entity ids type long. Because the keys are sequence keys, SMP encrypts ids for the User.
@@ -134,6 +134,10 @@ public class SessionSecurityUtils {
         if (authentication instanceof CasAuthenticationToken) {
             LOG.debug("Return session secret from CasAuthenticationToken");
             return (SMPUserDetails) ((CasAuthenticationToken) authentication).getUserDetails();
+        }
+
+        if (authentication instanceof JwtAuthenticationToken) {
+            return (SMPUserDetails) ((JwtAuthenticationToken) authentication).getDetails();
         }
 
         LOG.warn("Authentication class [{}] is not session enabled class types: [{}]!", authentication.getClass(),
