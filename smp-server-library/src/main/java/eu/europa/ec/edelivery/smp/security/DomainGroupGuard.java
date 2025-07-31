@@ -155,7 +155,12 @@ public class DomainGroupGuard {
         if (domain.getVisibility() == VisibilityType.PUBLIC) {
             LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] authorized to read public domain[{}]", user, domain);
             return true;
+        } else if (user == null) {
+            // if resource is private and user is anonymous, it can not read it
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Anonymous user:  is not authorized to read domain: [{}]", domain);
+            return false;
         }
+
         if (user.isJwtAuthenticated()) {
             if (user.getAuthorizedScopes().stream().anyMatch(domain.getDomainCode()::equals)) {
                 LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is authorized to read domain: [{}] by JWT scope", user, domain);
