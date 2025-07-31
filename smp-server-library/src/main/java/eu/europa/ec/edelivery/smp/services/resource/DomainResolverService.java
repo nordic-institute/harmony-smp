@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -161,7 +162,8 @@ public class DomainResolverService {
 
         // else test if domain is ok.
         if (!DOMAIN_ID_PATTERN.matcher(domain).matches()) {
-            throw new SMPRuntimeException(INVALID_DOMAIN_CODE, domain, DOMAIN_ID_PATTERN);
+            throw new SMPRuntimeException(INVALID_DOMAIN_CODE,
+                    "error.domain.invalid.domain.code", Map.of("domainCode", domain, "pattern", DOMAIN_ID_PATTERN));
         }
         // get domain by code
         return domainDao.getDomainByCode(domain);
@@ -203,7 +205,7 @@ public class DomainResolverService {
         }
 
         if (authorizedGroup.stream().noneMatch(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup))) {
-            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, domainGroup);
+            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, "error.domain.group.not.exists", Map.of("groupName", domainGroup));
         }
 
         DBGroup group = authorizedGroup.stream()

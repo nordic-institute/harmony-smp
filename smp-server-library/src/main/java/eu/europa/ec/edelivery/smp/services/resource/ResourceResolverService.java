@@ -47,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
@@ -158,7 +159,7 @@ public class ResourceResolverService {
                         resourceRequest.getAction(),
                         getUsername(user),
                         resource.getGroup().getGroupName(), domain.getDomainCode());
-                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
+                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user");
             }
         }
 
@@ -172,7 +173,7 @@ public class ResourceResolverService {
             if (resourceGuard.userIsNotAuthorizedForAction(user, resourceRequest.getAction(), resource, domain)) {
                 LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]",
                         getUsername(user), resourceRequest.getAction(), resource);
-                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
+                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user");
             }
             return locationVector;
         }
@@ -205,7 +206,7 @@ public class ResourceResolverService {
         if (!resourceGuard.userIsAuthorizedForAction(user, resourceRequest.getAction(), subresource)) {
             LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the subresource resource [{}]",
                     getUsername(user), resourceRequest.getAction(), subresource);
-            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
+            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user");
         }
         locationVector.setSubresource(subresource);
         locationVector.setSubResourceDef(subresourceDef);
@@ -328,8 +329,8 @@ public class ResourceResolverService {
         List<DBGroup> adminListGroup =
                 groupDao.getGroupsByDomainUserIdAndGroupRoles(domain.getId(), user.getId(), MembershipRoleType.ADMIN);
         if (adminListGroup.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
-                    "User [" + user.getUsername() + "] is not admin for any group in domain [" + domain.getDomainCode() + "]");
+            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user.not.admin",
+                    Map.of("username", user.getUsername(),"domainCode", domain.getDomainCode()));
         }
         if (domainGroup == null) {
             LOG.debug("Set first/default group [{}] for domain [{}]", adminListGroup.get(0).getGroupName(),
@@ -340,9 +341,8 @@ public class ResourceResolverService {
                 .stream()
                 .filter(group -> equalsIgnoreCase(group.getGroupName(), domainGroup))
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
-                        "User [" + user.getUsername() + "] is not authorized for group ["
-                                + domainGroup + "] in domain [" + domain.getDomainCode() + "]"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user.for.group",
+                                Map.of("username", user.getUsername(), "domainGroup", domainGroup, "domainCode", domain.getDomainCode())));
     }
 
     /**

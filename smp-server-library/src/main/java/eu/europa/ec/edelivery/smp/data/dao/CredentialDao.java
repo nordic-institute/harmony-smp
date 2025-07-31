@@ -37,6 +37,7 @@ import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -97,7 +98,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional");
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, username);
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entry", Map.of("identifier", username));
         }
     }
 
@@ -125,7 +126,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for reset token: [{}]", resetTokenIdentifier);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, resetTokenIdentifier);
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entry", Map.of("identifier", resetTokenIdentifier));
         }
     }
 
@@ -151,7 +152,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for user ID: [{}]", userId);
             return Optional.empty();
         } else if (list.size() > 1) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, userId);
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entry", Map.of("identifier", userId));
         }
         return Optional.of(list.get(0));
     }
@@ -180,7 +181,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for access token: [{}]", accessToken);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, accessToken);
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entry", Map.of("identifier", accessToken));
         }
     }
 
@@ -289,7 +290,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for certificate ID: [{}]", certificateId);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY, certificateId);
+            throw new SMPRuntimeException(ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY, "error.user.illegal.state.cert.id.multiple.entry", Map.of("identifier", certificateId));
         }
     }
 }

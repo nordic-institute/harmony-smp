@@ -25,6 +25,7 @@ package eu.europa.ec.smp.spi.exceptions;
  * The external validation library throws the exception if the payload validation does not pass.
  */
 public class ResourceException extends Exception {
+
     public enum ErrorCode {
         PARSE_ERROR,
         PROCESS_ERROR,
@@ -33,17 +34,17 @@ public class ResourceException extends Exception {
         INTERNAL_ERROR,
     }
 
-    final ErrorCode errorCode;
-    public ResourceException(ErrorCode code, String message) {
-        super(message);
+    private final ErrorCode errorCode;
+
+    public ResourceException(ErrorCode code, String messageCode) {
+        super(messageCode);
         this.errorCode = code;
     }
 
-    public ResourceException(ErrorCode code, String message, Throwable cause) {
-        super(message, cause);
+    public ResourceException(ErrorCode code, String messageCode, Throwable cause) {
+        super(messageCode, cause);
         this.errorCode = code;
     }
-
 
     public ErrorCode getErrorCode() {
         return errorCode;

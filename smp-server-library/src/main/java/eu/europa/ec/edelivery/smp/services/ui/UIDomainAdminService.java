@@ -43,10 +43,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -132,11 +129,11 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     @Transactional
     public void createDomainData(DomainRO data) {
         if (StringUtils.isBlank(data.getDomainCode())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain code must not be empty!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "error.domain.domain.code.empty");
         }
 
         if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain with code [" + data.getDomainCode() + "] already exists!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "error.domain.domain.code.already.exists", Map.of("domainCode", data.getDomainCode()));
         }
         DBDomain domain = new DBDomain();
         domain.setDomainCode(data.getDomainCode());

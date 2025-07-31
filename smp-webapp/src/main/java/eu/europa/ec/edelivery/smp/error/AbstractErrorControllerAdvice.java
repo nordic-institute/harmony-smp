@@ -62,7 +62,6 @@ abstract class AbstractErrorControllerAdvice {
             response = buildAndLog(INTERNAL_SERVER_ERROR, TECHNICAL, "Unexpected technical error occurred.", runtimeException);
         }
 
-
         String errorCodeId = response.getBody()!=null && response.getBody() instanceof  ErrorResponseRO?
                 ((ErrorResponseRO) response.getBody()).getErrorUniqueId(): null;
 

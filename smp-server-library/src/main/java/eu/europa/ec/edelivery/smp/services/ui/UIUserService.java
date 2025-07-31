@@ -397,12 +397,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      */
     @Transactional(readOnly = true)
     public DBUser findUser(Long userId) {
-        return userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
+        return userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS, "error.user.not.exists"));
     }
 
     @Transactional(readOnly = true)
     public UserRO getUserById(Long userId) {
-        DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
+        DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS, "error.user.not.exists"));
         return convertToRo(user);
     }
 
@@ -535,7 +535,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     @Transactional(readOnly = true)
     public DBUser findUserByUsername(String userName) {
-        return userDao.findUserByUsername(userName).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
+        return userDao.findUserByUsername(userName).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS, "error.user.not.exists"));
     }
 
     @Override

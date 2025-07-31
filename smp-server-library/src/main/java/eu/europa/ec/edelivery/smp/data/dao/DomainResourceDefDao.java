@@ -22,12 +22,14 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -40,7 +42,11 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 @Repository
 public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
 
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
+    public DomainResourceDefDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
 
     /**
      * Returns the ResourceDef configuration for domain
@@ -72,6 +78,7 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
+            smpExceptionLanguageService.getMessageTranslation("error.non.unique.result.resource.def", Map.of("resourceIdentifier", resourceIdentifier, "domainId", domainId));
             throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef identifier [" + resourceIdentifier + "] and domain code [" + domainId + "]"));
         }
     }

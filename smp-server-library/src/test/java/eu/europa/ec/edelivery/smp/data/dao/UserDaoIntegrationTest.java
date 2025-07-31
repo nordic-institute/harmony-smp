@@ -63,7 +63,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
         DBUser u = new DBUser();
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.persistFlushDetach(u));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(INVALID_USER_NO_IDENTIFIERS.getMessage()));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid user: no identifiers!"));
     }
 
     @Test

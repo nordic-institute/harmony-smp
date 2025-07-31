@@ -974,5 +974,40 @@
   "navigation.label.user.settings.membership": "Membership",
   "navigation.tooltip.search.resources": "Search registered resources",
   "navigation.tooltip.search.tools": "Search tools",
-  "navigation.tooltip.search.dns.tools": "DNS lookup tools"
+  "navigation.tooltip.search.dns.tools": "DNS lookup tools",
+
+  "error.unauthorized.invalid.username.password": "Login failed; Invalid userID or password!",
+  "error.unauthorized.credential.suspended": "The user credential is suspended. Please try again later or contact your administrator.",
+  "error.unauthorized.user": "User not authorized!",
+  "error.unauthorized.user.for.group": "User [{{username}}] is not authorized for group [{{domainGroup}}] in domain [{{domainCode}}]",
+  "error.unauthorized.user.not.admin": "User [{{username}}] is not admin for any group in domain [{{domainCode}}]",
+  "error.unauthorized.unauthorized.invalid.user.identifier": "Invalid user identifier! User not authorized.",
+  "error.unauthorized.unauthorized.invalid.identifier": "Invalid entity identifier! User not authorized to access the entity data",
+  "error.unauthorized.invalid.reset.token": "The reset token it is invalid or not active any more. Please try to reset your password again.",
+  "error.unauthorized.user.change.invalid.new.credential": "Password change failed. [{{validationMessage}}]",
+
+  "error.domain.none.configured": "No domain configured on SMP, at least one domain is mandatory!",
+  "error.domain.not.exists": "Invalid domain [{{domainCode}}]!",
+  "error.domain.invalid.domain.code": "Provided domain code [{{domainCode}}] does not match required pattern: [{{pattern}}]",
+  "error.domain.illegal.state.multiple.entries": "More than one domain entry (domain: [{{domain}}]) is defined in database!",
+  "error.domain.illegal.state.multiple.group.entries": "More than one group for domain entry (group: [{{groupName}}], domain: [{{domainId}}]) is defined in database!",
+  "error.domain.domain.code.empty": "Invalid domain data! Domain code must not be empty!",
+  "error.domain.domain.code.already.exists": "Invalid domain data! Domain with code [{{domainCode}}] already exists!",
+  "error.domain.group.not.exists": "Invalid group [{{groupName}}]",
+
+  "error.user.invalid.no.identifiers": "Invalid user: no identifiers!",
+  "error.user.illegal.state.username.multiple.entry": "More than one user entry (credential token: [{{identifier}}]) is defined in database!",
+  "error.user.illegal.state.cert.id.multiple.entry": "More than one certificate entry (cert. id: [{{identifier}}]) is defined in database!",
+  "error.user.not.exists": "User does not exist or the password is wrong!",
+  "error.user.invalid.owner": "Invalid owner id: [{{identifier}}]",
+
+  "error.service.group.illegal.state.multiple.entry": "More than one service group (part. id: [{{identifier}}], part. sch.: [{{scheme}}]) is defined in database!",
+  "error.service.group.": "",
+
+  "error.service.metadata.": "",
+  "error.service.metadata.": "",
+
+  "error.payload.validation.payload.starts.with.e": "This is invalid payload starting with E",
+  "error.payload.validation.cannot.read.payload": "Can not read payload",
+  "error.non.unique.result.resource.def": "More than one result for ResourceDef identifier [{{resourceIdentifier}}] and domain [{{domainId}}]"
 }
