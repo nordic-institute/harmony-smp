@@ -39,15 +39,33 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.function.Predicate;
 
+/**
+ * \
+ * Configuration for JWT authorization. If JWT token authentication is enabled, the class provides the
+ * JwtDecoder and a custom authentication converter for handling JWT tokens.
+ * It also includes a custom claim validator to ensure that specific claims are present in the JWT.
+ *
+ * @author Joze Rihtarsic
+ * @since 5.2
+ */
 @Configuration
 public class SMPJwtConfig {
     private static final Logger LOG = LoggerFactory.getLogger(SMPJwtConfig.class);
 
+    /**
+     * Configures the JwtDecoder bean if JWT authentication is enabled in the configuration service.
+     * It loads the RSA public key from the configuration and sets up the JWT decoder with custom validators.
+     *
+     * @param configurationService the service to access configuration settings
+     * @return a configured JwtDecoder or null if JWT authentication is not enabled
+     * @throws Exception if there is an error loading the RSA public key
+     */
     @Bean
     public JwtDecoder jwtDecoder(ConfigurationService configurationService) throws Exception {
         if (!configurationService.getAutomationAuthenticationTypes().contains(SMPAutomationAuthenticationTypes.JWT)) {
@@ -77,11 +95,19 @@ public class SMPJwtConfig {
         return decoder;
     }
 
-
+    /**
+     * Configures the SMPBearerTokenAuthenticationConverter bean if JWT authentication is enabled.
+     * This converter is responsible for converting bearer tokens into SMPAuthenticationToken.
+     *
+     * @param jwtDecoder        the JwtDecoder bean, or null if JWT authentication is not enabled
+     * @param credentialService the service to access credentials for the authenticated user by client_id in the JWT token
+     * @param domainDao         the DAO for domain operations
+     * @return a configured SMPBearerTokenAuthenticationConverter or null if JWT authentication is not enabled
+     */
     @Bean
     public SMPBearerTokenAuthenticationConverter smpBearerTokenAuthenticationConverter(@Nullable JwtDecoder jwtDecoder,
                                                                                        CredentialService credentialService,
-                                                                                       DomainDao domainDao) throws Exception {
+                                                                                       DomainDao domainDao) {
         if (jwtDecoder == null) {
             LOG.info("SMP JWT Authentication is not enabled. Skipping SMPBearerTokenAuthenticationConverter configuration.");
             return null; // No JWT authentication configured
@@ -89,7 +115,15 @@ public class SMPJwtConfig {
         return new SMPBearerTokenAuthenticationConverter(jwtDecoder, credentialService, domainDao);
     }
 
-    public static RSAPublicKey loadRSAPublicKey(String pemKey) throws Exception {
+    /**
+     * Loads an RSA public key from a PEM formatted string.
+     *
+     * @param pemKey the PEM formatted RSA public key
+     * @return the RSAPublicKey object
+     * @throws NoSuchAlgorithmException if the RSA algorithm is not available
+     * @throws InvalidKeySpecException  if the key specification is invalid
+     */
+    public static RSAPublicKey loadRSAPublicKey(String pemKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] encoded = Base64.getDecoder().decode(pemKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
         return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(keySpec);
@@ -97,7 +131,11 @@ public class SMPJwtConfig {
     }
 
 
-    private static final class NotNullClaimValidator implements OAuth2TokenValidator<Jwt> {
+    /**
+     * A custom OAuth2TokenValidator that checks if a specific claim is present in the JWT.
+     * If the claim is not present, it returns an error indicating that the claim must have a value.
+     */
+    protected static final class NotNullClaimValidator implements OAuth2TokenValidator<Jwt> {
 
         private final String claimName;
 
@@ -107,35 +145,12 @@ public class SMPJwtConfig {
 
         @Override
         public OAuth2TokenValidatorResult validate(Jwt token) {
-            if (token.getClaim(this.claimName) == null) {
+            if (StringUtils.isBlank(token.getClaim(this.claimName))) {
                 return OAuth2TokenValidatorResult
                         .failure(new OAuth2Error(OAuth2ErrorCodes.INVALID_TOKEN, this.claimName + " must have a value",
                                 "https://datatracker.ietf.org/doc/html/rfc9068#name-data-structure"));
             }
             return OAuth2TokenValidatorResult.success();
         }
-
-        OAuth2TokenValidator<Jwt> isEqualTo(String value) {
-            return and(satisfies((jwt) -> StringUtils.isNotBlank(jwt.getClaim(this.claimName))));
-        }
-
-        OAuth2TokenValidator<Jwt> satisfies(Predicate<Jwt> predicate) {
-            return and((jwt) -> {
-                OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_TOKEN, this.claimName + " is not valid",
-                        "https://datatracker.ietf.org/doc/html/rfc9068#name-data-structure");
-                if (predicate.test(jwt)) {
-                    return OAuth2TokenValidatorResult.success();
-                }
-                return OAuth2TokenValidatorResult.failure(error);
-            });
-        }
-
-        OAuth2TokenValidator<Jwt> and(OAuth2TokenValidator<Jwt> that) {
-            return (jwt) -> {
-                OAuth2TokenValidatorResult result = validate(jwt);
-                return (result.hasErrors()) ? result : that.validate(jwt);
-            };
-        }
-
     }
 }

@@ -1,7 +1,7 @@
 DomiSMP 5.2
     - allow characters as '_', '-', '.' and '+' in the domain code
-    - Change Token to TOKEN_BASIC for API
-    - Added JWT authentication for Read action to the API
+    - Change api authentication property enum value: 'TOKEN' to 'TOKEN_BASIC' for API
+    - Added JWT authentication for Read action to the API. Currently, supports only RSA signed JWT tokens.
     - added new properties:
         smp.authorization.jwt.issuer: The JWT issuer used for validating the token.
         smp.authorization.jwt.audience: The JWT audience used for validating the token.

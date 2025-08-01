@@ -51,8 +51,9 @@ import java.util.Collections;
 @Order(2)
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);final CredentialService credentialService;
-    SMPBearerTokenAuthenticationConverter bearerTokenAuthenticationConverter;
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
+    protected final CredentialService credentialService;
+    protected final SMPBearerTokenAuthenticationConverter bearerTokenAuthenticationConverter;
 
 
     @Autowired

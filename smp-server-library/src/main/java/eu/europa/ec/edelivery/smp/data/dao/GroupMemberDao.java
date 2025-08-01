@@ -85,7 +85,7 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
     public boolean isUserAnyDomainGroupResourceMember(DBUser user, DBDomain domain) {
         LOG.debug("User [{}], domain [{}]", user, domain);
         if (user == null || domain == null) {
-            LOG.debug("User or domain is null, returning false");
+            LOG.debug("Cannot deduce if user is a member of any domain group resource because the user or the domain is null");
             return false;
         }
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_COUNT,

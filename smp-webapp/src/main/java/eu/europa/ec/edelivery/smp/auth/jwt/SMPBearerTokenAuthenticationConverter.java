@@ -40,10 +40,19 @@ import org.springframework.util.Assert;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * Converter that transforms a BearerTokenAuthenticationToken into an SMPAuthenticationToken.
+ * It validates the JWT token, extracts the necessary claims, and creates an SMPAuthenticationToken
+ * with the user's details and authorities.
+ * <p>
+ * This class is used in the context of DomiSMP  authentication,
+ *  for handling JWT bearer tokens.
+ *
+ * @author Joze Rihtarsic
+ * @since 5.2
+ */
 public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTokenAuthenticationToken, SMPAuthenticationToken> {
     private static final Logger LOG = LoggerFactory.getLogger(SMPBearerTokenAuthenticationConverter.class);
     protected static final BadCredentialsException UNAUTHORIZED_INVALID_BEARER_TOKEN = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_BEARER_TOKEN.getMessage());
@@ -75,13 +84,14 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
      */
     @Override
     public final SMPAuthenticationToken convert(BearerTokenAuthenticationToken authBearer) {
+        LOG.info("Converting BearerTokenAuthenticationToken to SMPAuthenticationToken: [{}]", authBearer.getToken());
         Jwt jwt = this.getJwt(authBearer);
         if (StringUtils.isBlank(jwt.getSubject())) {
             LOG.debug("Failed to authenticate since the JWT subject is empty");
             throw UNAUTHORIZED_INVALID_BEARER_TOKEN;
         }
         List<SMPAuthority> authorities = getGrantedAuthorities(jwt);
-        String principalClaimValue = jwt.getClaimAsString(principalClaimName);
+        String principalClaimValue = jwt.getClaimAsString(getPrincipalClaimName());
         String claimScope = jwt.getClaim("scope");
         if (StringUtils.isBlank(claimScope)) {
             LOG.warn("JWT does not contain 'scope' claim");
@@ -97,17 +107,14 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         return new SMPAuthenticationToken(principalClaimValue, jwt, userDetails);
     }
 
-    /**
-     * Sets the principal claim name. Defaults to {@link JwtClaimNames#SUB}.
-     *
-     * @param principalClaimName The principal claim name
-     * @since 5.4
-     */
-    public void setPrincipalClaimName(String principalClaimName) {
-        Assert.hasText(principalClaimName, "principalClaimName cannot be empty");
-        this.principalClaimName = principalClaimName;
-    }
 
+    /**
+     * Extracts and decodes the JWT from the BearerTokenAuthenticationToken.
+     * If the JWT is invalid, it throws an InvalidBearerTokenException or AuthenticationServiceException.
+     *
+     * @param bearer The BearerTokenAuthenticationToken containing the JWT
+     * @return The decoded Jwt object
+     */
     private Jwt getJwt(BearerTokenAuthenticationToken bearer) {
         LOG.info("Decoding JWT token: [{}]", bearer.getToken());
         try {
@@ -121,12 +128,16 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         }
     }
 
+    /**
+     * Converts the JWT claims into a list of GrantedAuthorities.
+     * It checks the 'scope' claim in the JWT and verifies if it contains valid domain scopes.
+     * If valid, it returns a list with the WS_USER authority; otherwise, it throws an AuthenticationServiceException.
+     *
+     * @param jwt The decoded JWT containing user claims
+     * @return A list of GrantedAuthorities based on the JWT claims
+     */
     public List<SMPAuthority> getGrantedAuthorities(Jwt jwt) {
         LOG.info("Converting JWT to GrantedAuthorities: {}", jwt.getClaims());
-        Map<String, Object> claims = jwt.getClaims();
-        claims.forEach((key, value) -> {
-            LOG.info("JWT claim: {} = {}", key, value);
-        });
         //  get scop claim as string and split it into a list
         String scopeClaim = jwt.getClaimAsString("scope");
         if (StringUtils.isBlank(scopeClaim)) {
@@ -151,12 +162,23 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         throw new AuthenticationServiceException(message);
     }
 
+    /**
+     * Retrieves all domain scopes from the database.
+     * It fetches all domains and maps them to their domain codes.
+     *
+     * @return A list of domain codes representing the valid domain scopes
+     */
     public List<String> getDomainScopes() {
         return domainDao.getAllDomains().stream()
                 .map(DBDomain::getDomainCode)
                 .collect(Collectors.toList());
-
-
     }
 
+    public String getPrincipalClaimName() {
+        return principalClaimName;
+    }
+
+    public void setPrincipalClaimName(String principalClaimName) {
+        this.principalClaimName = principalClaimName;
+    }
 }
