@@ -155,15 +155,30 @@ public class DomainGroupGuard {
         if (domain.getVisibility() == VisibilityType.PUBLIC) {
             LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] authorized to read public domain[{}]", user, domain);
             return true;
+        } else if (user == null) {
+            // if resource is private and user is anonymous, it can not read it
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Anonymous user:  is not authorized to read domain: [{}]", domain);
+            return false;
         }
-        if (user == null || user.getUser() == null || user.getUser().getId() == null) {
+
+        if (user.isJwtAuthenticated()) {
+            if (user.getAuthorizedScopes().stream().anyMatch(domain.getDomainCode()::equals)) {
+                LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is authorized to read domain: [{}] by JWT scope", user, domain);
+                return true;
+            }
+            // if user exists in the system, but does not have the scope for the domain, try also with  the SMP authorization
+            if (user.getUser() == null) {
+                LOG.warn(SMPLogger.SECURITY_MARKER, "User: [{}] is not authorized to read domain: [{}] by JWT scope [{}]", user, domain, user.getAuthorizedScopes());
+                return false;
+            }
+        }
+
+        if (user.getUser() == null || user.getUser().getId() == null) {
             LOG.warn(SMPLogger.SECURITY_MARKER, "Anonymous user: [{}] is not authorized to read domain: [{}]", user, domain);
             return false;
         }
         // to be able to read internal(private) domain resources it must be member of domain, domain group or domain resources
-        boolean isAuthorized = domainMemberDao.isUserDomainMember(user.getUser(), domain)
-                || groupMemberDao.isUserAnyDomainGroupResourceMember(user.getUser(), domain)
-                || resourceMemberDao.isUserAnyDomainResourceMember(user.getUser(), domain);
+        boolean isAuthorized = domainMemberDao.isUserDomainGroupOrResourceMember(user.getUser(), domain);
 
 
         LOG.debug(SMPLogger.SECURITY_MARKER, "User: [{}] is authorized:[{}] to read resources from Domain: [{}]", user, isAuthorized, domain);

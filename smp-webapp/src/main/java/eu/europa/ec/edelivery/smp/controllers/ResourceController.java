@@ -31,6 +31,8 @@ import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -127,6 +129,17 @@ public class ResourceController {
      * @param pathParameters path parameters
      */
     protected void handleRequest(HttpServletRequest httpReq, HttpServletResponse httpRes, List<String> pathParameters) {
+
+        Authentication authentication = (Authentication) httpReq.getUserPrincipal();
+
+        if (authentication instanceof JwtAuthenticationToken token) {
+            String scope = token.getToken().getClaimAsString("scope");
+            LOG.info("JwtAuthenticationToken access. Scope [{}] is authenticated with JWT token.", scope);
+        } else if (authentication != null) {
+            LOG.info("User [{}] is authenticated with [{}] token.", authentication.getName(), authentication.getClass().getSimpleName());
+        } else {
+            LOG.info("Unauthorized access.");
+        }
 
         ResourceRequest resourceRequest = fromServletRequest(httpReq, pathParameters);
         LOG.debug("Got resource request [{}]", resourceRequest);

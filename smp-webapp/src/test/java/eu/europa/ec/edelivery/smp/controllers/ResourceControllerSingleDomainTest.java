@@ -166,11 +166,11 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
     }
 
     @Test
-    void creatingResourceUnderBadFormattedDomainReturnsBadRequestNoDomain() throws Exception {
+    void creatingResourceUnderBadFormattedDomainReturnsBadDomainCode() throws Exception {
         mvc.perform(put(URL_PATH)
                         .with(ADMIN_CREDENTIALS)
                         .contentType(APPLICATION_XML_VALUE)
-                        .header(HTTP_HEADER_KEY_DOMAIN, "not-existing-domain")
+                        .header(HTTP_HEADER_KEY_DOMAIN, "Bad$-Dom@in-Code%")
                         .content(SERVICE_GROUP_INPUT_BODY))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(stringContainsInOrder("FORMAT_ERROR")));

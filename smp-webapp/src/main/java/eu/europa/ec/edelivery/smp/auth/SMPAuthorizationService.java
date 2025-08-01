@@ -247,7 +247,7 @@ public class SMPAuthorizationService {
 
         userRO.setForceChangePassword(userRO.isPasswordExpired() && configurationService.getPasswordPolicyForceChangeIfExpired());
         // set cas authentication data
-        if (configurationService.getUIAuthenticationTypes().contains(SMPUserAuthenticationTypes.SSO.name())) {
+        if (configurationService.getUIAuthenticationTypes().contains(SMPUserAuthenticationTypes.SSO)) {
             URL casUrlData = configurationService.getCasUserDataURL();
             userRO.setCasUserDataUrl(casUrlData != null ? casUrlData.toString() : null);
         }

@@ -18,19 +18,41 @@
  */
 package eu.europa.ec.edelivery.smp.auth.enums;
 
+import org.slf4j.Logger;
+
+import static org.apache.commons.lang3.StringUtils.*;
+
 /**
  *  Authentication types for application accounts supporting automated application functionalities. The application accounts
  *  are used for SMP web-service integrations.
- *
- *  Supported authentication types
- *   - PASSWORD: the user password authentication (Note:automation-user authentication is different than ui-user
- *               password and it can be used only for the UI!).
- *   - SSO: Single sign-on authentication using CAS server. ,
+ *  Supported authentication types:
+ *  <ul>
+ *      <li>PASSWORD: the user password authentication (Note:automation-user authentication is different than ui-user password and it can be used only for the UI!).</li>
+ *      <li>SSO: Single sign-on authentication using CAS server.</li>
+ *  </ul>
  *
  *  @author Joze Rihtarsic
  *  @since 4.2
  */
 public enum SMPUserAuthenticationTypes {
     PASSWORD,
-    SSO
+    SSO;
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SMPUserAuthenticationTypes.class);
+    /**
+     * Returns the enum value for the given string representation.
+     *
+     * @param type the string representation of the enum value
+     * @return the corresponding enum value, or null if the input is blank or does not match any enum value
+     */
+    public static SMPUserAuthenticationTypes fromString(String type) {
+        if (isBlank(type)) {
+            return null;
+        }
+        try {
+            return SMPUserAuthenticationTypes.valueOf(upperCase(trim(type)));
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Invalid SMPAutomationAuthenticationTypes value: [{}]", type);
+            return null;
+        }
+    }
 }

@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
@@ -350,8 +351,8 @@ public class ConfigurationService {
     }
 
     public boolean isSSOEnabledForUserAuthentication() {
-        List<String> userAuthenticationTypes = getUIAuthenticationTypes();
-        return userAuthenticationTypes != null && userAuthenticationTypes.contains(SMPUserAuthenticationTypes.SSO.name());
+        List<SMPUserAuthenticationTypes> userAuthenticationTypes = getUIAuthenticationTypes();
+        return userAuthenticationTypes != null && userAuthenticationTypes.contains(SMPUserAuthenticationTypes.SSO);
     }
 
     public String getCasUILabel() {
@@ -432,12 +433,28 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
     }
 
-    public List<String> getUIAuthenticationTypes() {
+    public List<SMPUserAuthenticationTypes> getUIAuthenticationTypes() {
         return configurationDAO.getCachedPropertyValue(UI_AUTHENTICATION_TYPES);
     }
 
-    public List<String> getAutomationAuthenticationTypes() {
+    public List<SMPAutomationAuthenticationTypes> getAutomationAuthenticationTypes() {
         return configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHENTICATION_TYPES);
+    }
+
+    public String getJWTIssuer() {
+        return configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHORIZATION_JWT_ISSUER);
+    }
+
+    public String getJWTAudience() {
+        return configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHORIZATION_JWT_AUDIENCE);
+    }
+
+    public String getJWTSignatureKey() {
+        return configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_KEY);
+    }
+
+    public String getJWTSignatureAlgorithm() {
+        return configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_ALGORITHM);
     }
 
     //-----------------------

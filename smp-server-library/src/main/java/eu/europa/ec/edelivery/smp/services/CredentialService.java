@@ -238,7 +238,7 @@ public class CredentialService {
 
     @Transactional(noRollbackFor = {AuthenticationException.class, BadCredentialsException.class, SMPRuntimeException.class})
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
-        LOG.info("authenticateByCertificateToken:" + principal.getName());
+        LOG.info("authenticateByCertificateToken: [{}]", principal.getName());
         X509Certificate x509Certificate = principal.getCertificate();
         String certificateIdentifier = principal.getName();
         long startTime = Calendar.getInstance().getTimeInMillis();
@@ -333,6 +333,11 @@ public class CredentialService {
 
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, principal, authority.getRole());
         return smpAuthenticationToken;
+    }
+
+    @Transactional(noRollbackFor = {AuthenticationException.class, BadCredentialsException.class, SMPRuntimeException.class})
+    public Authentication authenticateByJwtTokenToken(PreAuthenticatedCertificatePrincipal principal) {
+        return null;
     }
 
     /**

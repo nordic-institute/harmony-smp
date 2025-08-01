@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -21,12 +21,12 @@ package eu.europa.ec.edelivery.smp.auth;
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import jakarta.persistence.Transient;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Transient;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,13 +41,22 @@ public class SMPUserDetails implements UserDetails {
     @Transient
     private final SecurityUtils.Secret sessionSecret;
     private boolean casAuthenticated = false;
-    private final List<SMPAuthority> smpAuthorities = new ArrayList<>();
+    private boolean jwtAuthenticated = false;
+    @Transient
+    private final List<String> authorizedScopes;
+    @Transient
+    private final List<SMPAuthority> smpAuthorities;
 
     public SMPUserDetails(DBUser user, SecurityUtils.Secret sessionSecret, List<SMPAuthority> smpAuthorities) {
+        this(user, sessionSecret, smpAuthorities, null);
+    }
+
+    public SMPUserDetails(DBUser user, SecurityUtils.Secret sessionSecret, List<SMPAuthority> smpAuthorities, List<String> authorizedScopes) {
         this.user = user;
-        if (smpAuthorities != null) {
-            this.smpAuthorities.addAll(smpAuthorities);
-        }
+        //make unmodifiable list of smpAuthorities
+        this.smpAuthorities = smpAuthorities == null ? Collections.emptyList() : Collections.unmodifiableList(smpAuthorities);
+        //make unmodifiable list of scopes
+        this.authorizedScopes = authorizedScopes == null ? Collections.emptyList() : Collections.unmodifiableList(authorizedScopes);
         this.sessionSecret = sessionSecret;
     }
 
@@ -70,6 +79,18 @@ public class SMPUserDetails implements UserDetails {
 
     public void setCasAuthenticated(boolean casAuthenticated) {
         this.casAuthenticated = casAuthenticated;
+    }
+
+    public boolean isJwtAuthenticated() {
+        return jwtAuthenticated;
+    }
+
+    public void setJwtAuthenticated(boolean jwtAuthenticated) {
+        this.jwtAuthenticated = jwtAuthenticated;
+    }
+
+    public List<String> getAuthorizedScopes() {
+        return authorizedScopes;
     }
 
     @Override
@@ -106,7 +127,7 @@ public class SMPUserDetails implements UserDetails {
     public String toString() {
         return "SMPUserDetails{" +
                 "username=" + getUsername() +
-                "user=" + getUser()+
+                "user=" + getUser() +
                 '}';
     }
 }
