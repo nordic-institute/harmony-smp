@@ -76,7 +76,7 @@ See the Licence for the specific language governing permissions and limitations 
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.19.0</commons-io.version>
-        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
         <commons-net.version>3.11.1</commons-net.version>
         <commons-validator.version>1.9.0</commons-validator.version>
@@ -89,7 +89,7 @@ See the Licence for the specific language governing permissions and limitations 
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <jackson.version>2.19.1</jackson.version>
+        <jackson.version>2.19.2</jackson.version>
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
@@ -108,10 +108,10 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.106</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.107</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
-        <xmlunit.version>2.10.2</xmlunit.version>
+        <xmlunit.version>2.10.3</xmlunit.version>
 
         <!-- plugins -->
         <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
