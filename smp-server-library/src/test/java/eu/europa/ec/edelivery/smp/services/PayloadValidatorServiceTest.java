@@ -36,9 +36,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PayloadValidatorServiceTest {
 
+    private SMPExceptionLanguageService smpExceptionLanguageService = Mockito.mock(SMPExceptionLanguageService.class);
+
     @Test
     void validateUploadedContentNoValidatorsMostNotFail() {
-        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.empty());
+        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.empty(), smpExceptionLanguageService);
         InputStream inputStream = Mockito.mock(InputStream.class);
 
         testInstance.validateUploadedContent(inputStream, MimeTypeUtils.APPLICATION_JSON.getType());
@@ -47,7 +49,7 @@ class PayloadValidatorServiceTest {
 
     @Test
     void validateUploadedContentNoValidatorsMostNotFailEmpty() {
-        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Collections.emptyList()));
+        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Collections.emptyList()), smpExceptionLanguageService);
         InputStream inputStream = Mockito.mock(InputStream.class);
 
         testInstance.validateUploadedContent(inputStream, MimeTypeUtils.APPLICATION_JSON.getType());
@@ -58,7 +60,7 @@ class PayloadValidatorServiceTest {
     void validateUploadedContent() throws PayloadValidatorSpiException {
         PayloadValidatorSpi validatorSpi1 = Mockito.mock(PayloadValidatorSpi.class);
         PayloadValidatorSpi validatorSpi2 = Mockito.mock(PayloadValidatorSpi.class);
-        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Arrays.asList(validatorSpi1, validatorSpi2)));
+        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Arrays.asList(validatorSpi1, validatorSpi2)), smpExceptionLanguageService);
         InputStream inputStream = Mockito.mock(InputStream.class);
         String mimeType = MimeTypeUtils.APPLICATION_JSON.getType();
 
@@ -81,7 +83,7 @@ class PayloadValidatorServiceTest {
     @Test
     void validateUploadedContentThrowException() throws PayloadValidatorSpiException {
         PayloadValidatorSpi validatorSpi1 = Mockito.mock(PayloadValidatorSpi.class);
-        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Collections.singletonList(validatorSpi1)));
+        PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Collections.singletonList(validatorSpi1)), smpExceptionLanguageService);
         InputStream inputStream = Mockito.mock(InputStream.class);
         String mimeType = MimeTypeUtils.APPLICATION_JSON.getType();
         PayloadValidatorSpiException spiException = new PayloadValidatorSpiException("TestError");

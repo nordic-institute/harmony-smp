@@ -41,6 +41,7 @@ import org.xbill.DNS.Record;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class provide dynamic discovery tools for UI.
@@ -114,7 +115,8 @@ public class UIDynamicDiscoveryTools {
                 dnsQuery = bdxrLocator.buildNaptrDNSQuery(resourceIdentifier, domain);
                 break;
             default:
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DNS Lookup", "Unknown DNS lookup type: " + dnsLookupType);
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.dns.lookup.unknown",
+                        Map.of("dnsLookupType", dnsLookupType));
         }
 
         DNSQueryRO dnsQueryRO = new DNSQueryRO(dnsQuery,

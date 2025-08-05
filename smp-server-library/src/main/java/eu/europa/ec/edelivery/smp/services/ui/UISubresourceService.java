@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,9 +55,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UISubresourceService {
-
-    private static final String ACTION_SUBRESOURCE_CREATE = "CreateSubresourceForResource";
-    private static final String ACTION_SUBRESOURCE_DELETE = "DeleteSubresourceFromResource";
 
     private final SubresourceDao subresourceDao;
     private final ResourceDao resourceDao;
@@ -94,14 +92,14 @@ public class UISubresourceService {
     public SubresourceRO deleteSubresourceFromResource(Long subResourceId, Long resourceId) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_DELETE, "Resource does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.delete.resource.not.exists");
         }
         DBSubresource subresource = subresourceDao.find(subResourceId);
         if (subresource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_DELETE, "Subresource does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.delete.subresource.not.exists");
         }
         if (!Objects.equals(subresource.getResource().getId(), resourceId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_DELETE, "Subresource does not belong to the resource!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.delete.subresource.not.part.of.resource");
         }
         resource.getSubresources().remove(subresource);
         documentDao.unlinkDocument(subresource.getDocument());
@@ -114,12 +112,13 @@ public class UISubresourceService {
 
         DBResource resParent = resourceDao.find(resourceId);
         if (resParent == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Resource does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.create.resource.not.exists");
         }
 
         Optional<DBSubresourceDef> optRedef = subresourceDefDao.getSubresourceDefByIdentifier(subResourceRO.getSubresourceTypeIdentifier());
         if (!optRedef.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Subresource definition [" + subResourceRO.getSubresourceTypeIdentifier() + "] does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.create.subresource.not.exists",
+                    Map.of("identifier", subResourceRO.getSubresourceTypeIdentifier()));
         }
         DBDomain domain = resParent.getDomainResourceDef().getDomain();
 
@@ -127,7 +126,8 @@ public class UISubresourceService {
                 subResourceRO.getIdentifierValue());
         Optional<DBSubresource> exists = subresourceDao.getSubResourcesForResource(docId, resParent);
         if (exists.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Subresource definition [val:" + docId.getValue() + " scheme:" + docId.getScheme() + "] already exists for the resource!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.create.subresource.already.exists",
+                    Map.of("identifier", docId.getValue(), "scheme", docId.getScheme()));
         }
 
         DBSubresource subresource = new DBSubresource();

@@ -75,7 +75,7 @@ public class PayloadValidatorService {
             }
         } catch (PayloadValidatorSpiException e) {
             LOG.error(SECURITY_MARKER, "Content validation failed: [" + smpExceptionLanguageService.getMessageTranslation(e) + "]", smpExceptionLanguageService.getTranslated(e));
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Upload payload", "Content validation failed");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.validate.payload");
         }
     }
 }

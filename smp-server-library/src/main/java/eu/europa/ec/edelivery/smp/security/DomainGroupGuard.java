@@ -129,7 +129,7 @@ public class DomainGroupGuard {
         String userInfo = user != null ? user.getUsername() : "anonymous";
         LOG.debug("Authorize check for user [{}], domain [{}] and action [{}]", userInfo, domain, action);
         if (action == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Null http action ", "Action cannot be null!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.is.user.authorized.for.resource");
         }
         switch (action) {
             case READ:
@@ -226,7 +226,7 @@ public class DomainGroupGuard {
         String userInfo = EntityLoggingUtils.userDetailToString(user);
         LOG.debug("Authorize check for user [{}], group size [{}] and action [{}]", userInfo, groups.size(), action);
         if (action == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Null http action", "Action cannot be null!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.is.user.authorized.for.group");
         }
         switch (action) {
             case READ:

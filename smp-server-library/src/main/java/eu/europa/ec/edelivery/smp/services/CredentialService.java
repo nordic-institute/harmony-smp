@@ -75,8 +75,6 @@ public class CredentialService {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialService.class);
     protected static final int RESET_TOKEN_LENGTH = 64;
 
-    private static final String USER_ID_REQUEST_TYPE = "UserId";
-
     final UserDao userDao;
     final CredentialDao credentialDao;
     final ConversionService conversionService;
@@ -478,7 +476,7 @@ public class CredentialService {
         DBUser dbUserToUpdate = userDao.find(userID);
         if (dbUserToUpdate == null) {
             LOG.error("Can not create user password credentials, because user [{}] does not exist!", userID);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id to update!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.create.user.credentials");
         }
         DBCredential credential = new DBCredential();
         credential.setUser(dbUserToUpdate);

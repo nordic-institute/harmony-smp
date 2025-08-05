@@ -117,8 +117,8 @@ public class ResourceResolverService {
         // if domain code matches first parameter skip it!
         if (StringUtils.equals(currentParameter, domain.getDomainCode())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
-                        "Not enough path parameters to locate resource (The first match the domain)!");
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.first.match",
+                        Map.of("pathParams", join(pathParameters, ",")));
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
@@ -127,8 +127,8 @@ public class ResourceResolverService {
         locationVector.setResourceDef(resourceDef);
         if (StringUtils.equals(currentParameter, resourceDef.getUrlSegment())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
-                        "Not enough path parameters to locate resource (The first two match the domain and resource type)!");
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.first.two.matches",
+                        Map.of("pathParams", join(pathParameters, ",")));
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
@@ -181,8 +181,8 @@ public class ResourceResolverService {
 
         // resolve subresource - expected exactly two parameters
         if (pathParameters.size() != iParameterIndex + 2) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
-                    "Invalid remaining subresource parameters (expected only subresourceDef and subresource identifier)");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.first.remaining.matches",
+                    Map.of("pathParams", join(pathParameters, ",")));
 
         }
         String subResourceDefUrl = pathParameters.get(iParameterIndex);
@@ -224,11 +224,12 @@ public class ResourceResolverService {
     public void validateRequestData(ResourceRequest resourceRequest) {
         List<String> pathParameters = resourceRequest.getUrlPathParameters();
         if (pathParameters == null || pathParameters.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Null", "Resource Location vector coordinates must not be null!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.no.matches");
         }
 
         if (pathParameters.size() > MAX_COUNT_COORDINATES) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "More than max. count (5) of Resource Location vector coordinates!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.too.many.matches",
+                    Map.of("pathParams", join(pathParameters, ",")));
         }
         if (resourceRequest.getAuthorizedDomain() == null) {
             throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.resource.reading.unknown.domain");
@@ -389,8 +390,8 @@ public class ResourceResolverService {
         return resourceDef.getSubresources()
                 .stream()
                 .filter(subresourceDef -> StringUtils.equals(subresourceDef.getUrlSegment(), urlPathSegment))
-                .findFirst().orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST,
-                        urlPathSegment, "Subresource [" + urlPathSegment + "] does not exist for resource type [" + resourceDef.getName() + "]"));
+                .findFirst().orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.subresource.match",
+                        Map.of("urlSegment", urlPathSegment, "resource", resourceDef.getName())));
     }
 
     public String getUsername(UserDetails user) {

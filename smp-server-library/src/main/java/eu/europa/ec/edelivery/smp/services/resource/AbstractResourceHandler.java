@@ -145,7 +145,7 @@ public class AbstractResourceHandler {
         if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING, "error.subresource.document.missing",
                     Map.of("documentIdentifier", subresource.getIdentifierValue(), "documentScheme", subresource.getIdentifierScheme(),
-                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme());
+                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
         }
         return buildRequestDataForSubResource(domain, resource, subresource, new ByteArrayInputStream(content));
     }

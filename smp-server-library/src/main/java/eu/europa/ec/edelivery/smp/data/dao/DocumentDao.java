@@ -67,7 +67,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
-                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme(), "error", "Multiple documents"));
+                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme()));
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -91,7 +91,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
-                    Map.of("identifier", dbSubresource.getIdentifierValue(), "scheme", dbSubresource.getIdentifierScheme(), "error", "Multiple documents"));
+                    Map.of("identifier", dbSubresource.getIdentifierValue(), "scheme", dbSubresource.getIdentifierScheme()));
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -106,7 +106,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
-                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme(), "error", "Multiple documents"));
+                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme()));
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -134,7 +134,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
             DBResource resource = subresource.getResource();
             throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_ERROR, "error.subresource.document.reading",
                     Map.of("documentIdentifier", subresource.getIdentifierValue(), "documentScheme", subresource.getIdentifierScheme(),
-                            "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme(), "error", "Multiple documents for subresource"));
+                            "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
         } catch (NoResultException e) {
             return Optional.empty();
         }

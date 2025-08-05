@@ -59,9 +59,9 @@ public enum ErrorCode {
     SML_INTEGRATION_EXCEPTION(500,"SMP:150", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
     XML_SIGNING_EXCEPTION(500,"SMP:500", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
 
-    INTERNAL_ERROR_GENERIC(500,"SMP:501", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/), // "Internal error!"
-    INVALID_REQUEST(400,"SMP:513", ErrorBusinessCode.TECHNICAL, "Invalid request [%s]. Error: %s!"),
-    INTERNAL_ERROR(500,"SMP:514", ErrorBusinessCode.TECHNICAL, ),
+    INTERNAL_ERROR_GENERIC(500,"SMP:501", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    INVALID_REQUEST(400,"SMP:513", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    INTERNAL_ERROR(500,"SMP:514", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
     CERTIFICATE_ERROR(500,"SMP:515", ErrorBusinessCode.TECHNICAL, "Certificate error [%s]. Error: %s!"),
     CONFIGURATION_ERROR(500,"SMP:516", ErrorBusinessCode.TECHNICAL, "Configuration error: [%s]!"),
 

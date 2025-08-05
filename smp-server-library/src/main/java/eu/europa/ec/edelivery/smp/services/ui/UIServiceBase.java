@@ -126,7 +126,7 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
             String msg = "Error occurred while converting to RO Entity for " + roClass.getName();
             LOG.error(msg, e);
             throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.conversion.from.database.entity.to.value.object",
-                    Map.of("error", msg);
+                    Map.of("error", msg));
         }
     }
 

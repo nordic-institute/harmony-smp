@@ -18,7 +18,6 @@
  */
 package eu.europa.ec.edelivery.smp.ui.edit;
 
-
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
@@ -36,6 +35,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -100,7 +100,8 @@ public class GroupEditController {
         if (StringUtils.equalsIgnoreCase("all-roles", forRole)) {
             return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, null);
         }
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "getGroupsForDomain", "Unknown parameter type [" + forRole + "]!");
+        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.get.domain.groups",
+                Map.of("userRole", forRole));
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_CREATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)

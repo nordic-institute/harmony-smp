@@ -36,6 +36,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 /**
@@ -96,7 +98,8 @@ public class ResourceEditController {
             return uiResourceService.getResourcesForUserAndGroup(userId, MembershipRoleType.ADMIN, groupId, page, pageSize, filter);
         }
 
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ResourcesForGroups", "Unknown parameter type [" + forRole + "]!");
+        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.get.group.resources",
+                Map.of("userRole", forRole));
     }
 
     /**

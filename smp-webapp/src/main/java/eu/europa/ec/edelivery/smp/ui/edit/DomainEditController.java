@@ -34,6 +34,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -54,7 +55,6 @@ public class DomainEditController {
 
     public DomainEditController(UIDomainEditService uiDomainService) {
         this.uiDomainEditService = uiDomainService;
-
     }
 
     /**
@@ -80,9 +80,9 @@ public class DomainEditController {
         if (StringUtils.isBlank(forRole) || StringUtils.equals(forRole, "domain-admin")) {
             return uiDomainEditService.getAllDomainsForDomainAdminUser(userId);
         }
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "GetDomains", "Unknown parameter type [" + forRole + "]!");
+        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.get.user.domains",
+                Map.of("userRole", forRole));
     }
-
 
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
@@ -203,7 +203,7 @@ public class DomainEditController {
         LOG.info("Validate Domain property: [{}]", propertyRO);
 
         if (propertyRO == null || StringUtils.isBlank(propertyRO.getProperty())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ValidateProperty", "Property name is empty!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.validate.property");
         }
         return uiDomainEditService.validateDomainProperty(propertyRO);
     }
