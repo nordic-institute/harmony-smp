@@ -175,7 +175,7 @@ public class UserDao extends BaseDao<DBUser> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entry", Map.of("identifier", credentialName));
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entries", Map.of("identifier", credentialName));
         }
     }
 
@@ -198,7 +198,7 @@ public class UserDao extends BaseDao<DBUser> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entry", Map.of("identifier", username));
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entries", Map.of("identifier", username));
         }
     }
 

@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,12 +43,14 @@ class AuthenticationResourceTest {
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     SMPCookieWriter smpCookieWriter = Mockito.mock(SMPCookieWriter.class);
     CsrfTokenRepository csrfTokenRepository = Mockito.mock(CsrfTokenRepository.class);
+    SMPExceptionLanguageService smpExceptionLanguageService = Mockito.mock(SMPExceptionLanguageService.class);
 
     AuthenticationController testInstance = new AuthenticationController(authenticationService,
             authorizationService,
             configurationService,
             smpCookieWriter,
-            csrfTokenRepository);
+            csrfTokenRepository,
+            smpExceptionLanguageService);
 
     @Test
     void logout() {

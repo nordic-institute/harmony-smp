@@ -48,40 +48,29 @@ public enum ErrorCode {
     INVALID_OWNER(400, "SMP:127", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
 
     // service group error
-    SG_NOT_EXISTS(404,"SMP:131", ErrorBusinessCode.NOT_FOUND,"ServiceGroup not found (part. id: '%s', part. sch.: '%s')!"),
-    SG_NOT_REGISTRED_FOR_DOMAIN(400,"SMP:131", ErrorBusinessCode.NOT_FOUND,"Service group not registered for domain (domain: %s, part. id: '%s', part. sch.: '%s')!"),
-    INVALID_EXTENSION_FOR_SG(400,"SMP:132", ErrorBusinessCode.XSD_INVALID,"Invalid extension for service group (part. id: '%s', part. sch.: '%s'). Error: %s!"),
-    DUPLICATE_DOMAIN_FOR_SG(400,"SMP:133", ErrorBusinessCode.INVALID_INPUT_DATA,"Repeated domain for Service group (part. id: '%s', part. sch.: '%s', domainCode %s, smlDomain %s).!"),
-    MISSING_SG_ID(400,"SMP:134", ErrorBusinessCode.INVALID_INPUT_DATA,"Missing service group(part. id: '%s', part. sch.: '%s'!"),
-    INVALID_SG_ID(400,"SMP:135", ErrorBusinessCode.INVALID_INPUT_DATA,"Invalid Id for Service group(part. id: '%s', part. sch.: '%s', id %d).!"),
+    SG_NOT_EXISTS(404,"SMP:131", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
+    INVALID_EXTENSION_FOR_SG(400,"SMP:132", ErrorBusinessCode.XSD_INVALID, null /*tmplMsg*/),
 
     // service metadata error
-    ILLEGAL_STATE_SMD_MULTIPLE_ENTRY(500,"SMP:140", ErrorBusinessCode.TECHNICAL,"More than one service metadata ( doc. id: %s, doc. sch.: '%s') for participant ( part. id %s, part. sch. : '%s') is defined in database!"),
-    METADATA_NOT_EXISTS(404,"SMP:141", ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found (part. id: '%s', part. sch.: '%s',doc. id: '%s', doc. sch.: '%s')!"),
-    SMD_NOT_EXISTS_FOR_DOMAIN(404,"SMP:142", ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found for domain (domain: %s, part. id: '%s', part. sch.: '%s')!"),
-    INVALID_SMD_XML(400,"SMP:143", ErrorBusinessCode.XSD_INVALID,"Invalid service metadata. Error: %s"),
-    INVALID_SMD_DOCUMENT_DATA(400,"SMP:143", ErrorBusinessCode.INVALID_INPUT_DATA,"XML serviceMetadata document (doc. id: '%s', doc. sch.: '%s') " +
-            "do not match metadata request (doc. id: '%s', doc. sch.: '%s')."),
-    ILLEGAL_STATE_SMD_ON_MULTIPLE_SGD(500,"SMP:144", ErrorBusinessCode.TECHNICAL,"Found than one service group domain for metadata id [%s] and user id [%s]!"),
+    METADATA_NOT_EXISTS(404,"SMP:141", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
+    INVALID_SMD_XML(400,"SMP:143", ErrorBusinessCode.XSD_INVALID, null /*tmplMsg*/),
 
     // SML integration
-    SML_INTEGRATION_EXCEPTION(500,"SMP:150", ErrorBusinessCode.TECHNICAL,"SML integration error! Error: %s "),
-    XML_SIGNING_EXCEPTION(500,"SMP:500", ErrorBusinessCode.TECHNICAL,"Error occurred while signing response!"),
-    INTERNAL_ERROR_GENERIC(500,"SMP:501", ErrorBusinessCode.TECHNICAL, "Internal error!"),
-    JAXB_INITIALIZATION(500,"SMP:511", ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class [%s]!"),
-    XML_PARSE_EXCEPTION(500,"SMP:512", ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for [%s].  Error: %s!"),
+    SML_INTEGRATION_EXCEPTION(500,"SMP:150", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    XML_SIGNING_EXCEPTION(500,"SMP:500", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+
+    INTERNAL_ERROR_GENERIC(500,"SMP:501", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/), // "Internal error!"
     INVALID_REQUEST(400,"SMP:513", ErrorBusinessCode.TECHNICAL, "Invalid request [%s]. Error: %s!"),
-    INVALID_REQUEST_NO_DETAILS(400,"SMP:513", ErrorBusinessCode.TECHNICAL, "Invalid request"),
-    INTERNAL_ERROR(500,"SMP:514", ErrorBusinessCode.TECHNICAL, "Internal error [%s]. Error: %s!"),
+    INTERNAL_ERROR(500,"SMP:514", ErrorBusinessCode.TECHNICAL, ),
     CERTIFICATE_ERROR(500,"SMP:515", ErrorBusinessCode.TECHNICAL, "Certificate error [%s]. Error: %s!"),
     CONFIGURATION_ERROR(500,"SMP:516", ErrorBusinessCode.TECHNICAL, "Configuration error: [%s]!"),
 
-    MAIL_SUBMISSION_ERROR(500,"SMP:550", ErrorBusinessCode.TECHNICAL, "Mail submission error: %s!"),
+    MAIL_SUBMISSION_ERROR(500,"SMP:550", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
 
-    RESOURCE_DOCUMENT_MISSING(500,"SMP:180", ErrorBusinessCode.TECHNICAL, "Empty document for the resource: [id: '%s', sch.: '%s']!"),
-    RESOURCE_DOCUMENT_ERROR(500,"SMP:181", ErrorBusinessCode.TECHNICAL, "Error occurred while reading the resource document: [id: '%s', sch.: '%s']! Error [%s]"),
-    SUBRESOURCE_DOCUMENT_MISSING(500,"SMP:182", ErrorBusinessCode.TECHNICAL, "Empty document for the subresource: [docId: '%s', docSch.: '%s'] of the resource [id: '%s', sch.: '%s']"),
-    SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183", ErrorBusinessCode.TECHNICAL, "Error occurred while reading the subresource document: : [docId: '%s', docSch.: '%s'] of the resource[id: '%s', sch: '%s']! Error [%s]"),
+    RESOURCE_DOCUMENT_MISSING(500,"SMP:180", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    RESOURCE_DOCUMENT_ERROR(500,"SMP:181", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    SUBRESOURCE_DOCUMENT_MISSING(500,"SMP:182", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
     ;
 
     private final int httpCode;

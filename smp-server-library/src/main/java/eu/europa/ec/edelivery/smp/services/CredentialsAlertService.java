@@ -404,7 +404,7 @@ public class CredentialsAlertService {
                 resetUrl = smpUrlBuilder.buildSMPUriForApplication().toURL();
                 LOG.warn("Reset URL is not set! Use default SMP URL [{}]", resetUrl);
             } catch (MalformedURLException e) {
-                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e);
+                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal", e);
             }
         }
         String resetUrlPath = StringUtils.appendIfMissing(resetUrl.toString(), "/", "/") + "ui/#/reset-credential/" + token;

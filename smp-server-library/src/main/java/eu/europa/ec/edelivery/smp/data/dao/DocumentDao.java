@@ -33,6 +33,7 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -65,7 +66,8 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_RESOURCE_ID, dbResource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), "Multiple documents");
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
+                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme(), "error", "Multiple documents"));
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -88,7 +90,8 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_SUBRESOURCE_ID, dbSubresource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, dbSubresource.getIdentifierValue(), dbSubresource.getIdentifierScheme(), "Multiple documents");
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
+                    Map.of("identifier", dbSubresource.getIdentifierValue(), "scheme", dbSubresource.getIdentifierScheme(), "error", "Multiple documents"));
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -102,14 +105,14 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_RESOURCE_ID, dbResource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), "Multiple documents");
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
+                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme(), "error", "Multiple documents"));
         } catch (NoResultException e) {
             return Optional.empty();
         }
     }
 
     public Optional<DBDocumentVersion> getCurrentDocumentVersionForDocument(DBDocument document) {
-
         try {
             // expected is only one domain,
             TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT, DBDocumentVersion.class);
@@ -122,7 +125,6 @@ public class DocumentDao extends BaseDao<DBDocument> {
 
 
     public Optional<DBDocumentVersion> getCurrentDocumentVersionForSubresource(DBSubresource subresource) {
-
         try {
             // expected is only one domain,
             TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE, DBDocumentVersion.class);
@@ -130,10 +132,9 @@ public class DocumentDao extends BaseDao<DBDocument> {
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
             DBResource resource = subresource.getResource();
-            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_ERROR,
-                    subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
-                    resource.getIdentifierValue(), resource.getIdentifierScheme(),
-                    "Multiple documents for subresource");
+            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_ERROR, "error.subresource.document.reading",
+                    Map.of("documentIdentifier", subresource.getIdentifierValue(), "documentScheme", subresource.getIdentifierScheme(),
+                            "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme(), "error", "Multiple documents for subresource"));
         } catch (NoResultException e) {
             return Optional.empty();
         }

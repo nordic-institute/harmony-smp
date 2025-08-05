@@ -39,6 +39,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -138,7 +139,8 @@ public class DomainGroupGuard {
             case DELETE:
                 return canDelete(user, domain);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Unknown user [" + userInfo + "] action: [" + action + "]");
+        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.resource.action",
+                Map.of("user", userInfo, "action", action));
     }
 
     /**
@@ -234,7 +236,8 @@ public class DomainGroupGuard {
             case DELETE:
                 return canDelete(user, groups);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Unknown user action: [" + action + "]");
+        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.group.action",
+                Map.of("user", user, "action", action));
     }
 
     protected boolean canRead(SMPUserDetails user, List<DBGroup> groups) {

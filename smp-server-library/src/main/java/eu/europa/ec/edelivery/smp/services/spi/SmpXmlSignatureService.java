@@ -153,7 +153,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
             // Marshal, generate, and sign the enveloped signature
             signature.sign(domSignContext);
         } catch (Exception e) {
-            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, e);
+            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, "error.domisml.integration.xml.signing.response", e);
         }
     }
 
@@ -166,7 +166,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
                     null,
                     null);
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, e);
+            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, "error.domisml.integration.xml.signing.response", e);
         }
     }
 

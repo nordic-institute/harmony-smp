@@ -77,7 +77,7 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException(
-                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entry",
+                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entries",
                             Map.of("identifier", subresourceId.getValue(), "scheme", subresourceId.getScheme())));
         }
     }
@@ -109,7 +109,7 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException(
-                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entry",
+                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entries",
                             Map.of("identifier", subresourceId.getValue(), "scheme", subresourceId.getScheme())));
         }
     }

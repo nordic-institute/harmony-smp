@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
@@ -78,7 +79,7 @@ public class UIAlertService extends UIServiceBase<DBAlert, AlertRO> {
         } catch (InvocationTargetException | IllegalAccessException e) {
             String msg = "Error occurred while converting  DBAlert to AlertRO";
             LOG.error(msg, e);
-            throw new SMPRuntimeException(INTERNAL_ERROR, "DB to RO entity conversion.", msg);
+            throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.conversion.from.database.entity.to.value.object", Map.of("error", msg));
         }
         return alertRO;
     }

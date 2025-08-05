@@ -141,7 +141,8 @@ public class ResourceResolverService {
             // the resource must be found because if action is not "create" action nor the last parameter to be resolved
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE
                     || pathParameters.size() > iParameterIndex + 1) {
-                throw new SMPRuntimeException(ErrorCode.SG_NOT_EXISTS, resourceId.getValue(), resourceId.getScheme());
+                throw new SMPRuntimeException(ErrorCode.SG_NOT_EXISTS, "error.service.group.not.exists",
+                        Map.of("identifier", resourceId.getValue(), "scheme", resourceId.getScheme()));
             }
             resource = createNewResource(resourceId, resourceDef, domain);
             // determine the group for the resource
@@ -196,9 +197,9 @@ public class ResourceResolverService {
         LOG.debug("Got subresource [{}]", subresource);
         if (subresource == null) {
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
-                throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS,
-                        resource.getIdentifierValue(), resource.getIdentifierScheme(),
-                        subResourceId.getValue(), subResourceId.getScheme());
+                throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, "error.service.metadata.not.exists",
+                        Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme(),
+                        "documentIdentifier", subResourceId.getValue(), "documentScheme", subResourceId.getScheme()));
             }
             subresource = createNewSubResource(subResourceId, resource, subresourceDef);
         }
@@ -230,7 +231,7 @@ public class ResourceResolverService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "More than max. count (5) of Resource Location vector coordinates!");
         }
         if (resourceRequest.getAuthorizedDomain() == null) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Null", "Can not resolve resource for unknown domain!");
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.resource.reading.unknown.domain");
         }
     }
 

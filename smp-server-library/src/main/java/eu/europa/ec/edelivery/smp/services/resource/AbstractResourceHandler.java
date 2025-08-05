@@ -66,13 +66,11 @@ public class AbstractResourceHandler {
                 .filter(rdspi -> StringUtils.equals(resourceDef.getIdentifier(), rdspi.identifier()))
                 .findFirst();
 
-        return definitionSpi.orElseThrow(() -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR,
-                resourceDef.getIdentifier(),
-                "Can not find resource definition for identifier: [" + resourceDef.getIdentifier() + "] Registered resource SPI IDs ["
-                        + resourceDefinitionSpiList.stream()
-                        .map(ResourceDefinitionSpi::identifier)
-                        .collect(Collectors.joining(","))
-                        + "]"));
+        return definitionSpi.orElseThrow(() -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.cannot.find.resource.definition.for.identifier",
+                Map.of("identifier", resourceDef.getIdentifier(),
+                        "identifiers", resourceDefinitionSpiList.stream()
+                                                    .map(ResourceDefinitionSpi::identifier)
+                                                    .collect(Collectors.joining(",")))));
     }
 
     public ResourceHandlerSpi getResourceHandler(DBResourceDef resourceDef) {
@@ -89,12 +87,11 @@ public class AbstractResourceHandler {
                 .filter(def -> StringUtils.equals(def.identifier(), subResourceId)).findFirst();
 
         return optSubresourceDefinitionSpi.orElseThrow(
-                () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, subResourceId,
-                        "Can not find subresource definition: [" + subResourceId + "]. Registered subresource IDs ["
-                                + resourceDefinitionSpi.getSubresourceSpiList().stream()
-                                .map(SubresourceDefinitionSpi::identifier)
-                                .collect(Collectors.joining(","))
-                                + "]"));
+                () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.cannot.find.subresource.definition.for.identifier",
+                        Map.of("identifier", subResourceId,
+                                "identifiers", resourceDefinitionSpi.getSubresourceSpiList().stream()
+                                                            .map(SubresourceDefinitionSpi::identifier)
+                                                            .collect(Collectors.joining(",")))));
     }
 
     public ResourceHandlerSpi getSubresourceHandler(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
@@ -113,7 +110,8 @@ public class AbstractResourceHandler {
 
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
         if (content == null || content.length == 0) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, "error.resource.document.missing",
+                    Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
         }
         return buildRequestDataForResource(domain, resource, new ByteArrayInputStream(content));
     }
@@ -128,7 +126,8 @@ public class AbstractResourceHandler {
                     SPIUtils.toUrlIdentifier(resource),
                     new ByteArrayInputStream(baos.toByteArray()));
         } catch (IOException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, "error.resource.document.missing",
+                    Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
         }
     }
 
@@ -144,9 +143,9 @@ public class AbstractResourceHandler {
                                                       DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
         if (content == null || content.length == 0) {
-            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING,
-                    subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
-                    resource.getIdentifierValue(), resource.getIdentifierScheme());
+            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING, "error.subresource.document.missing",
+                    Map.of("documentIdentifier", subresource.getIdentifierValue(), "documentScheme", subresource.getIdentifierScheme(),
+                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme());
         }
         return buildRequestDataForSubResource(domain, resource, subresource, new ByteArrayInputStream(content));
     }
@@ -171,7 +170,8 @@ public class AbstractResourceHandler {
                     SPIUtils.toUrlIdentifier(subresource),
                     new ByteArrayInputStream(baos.toByteArray()));
         } catch (IOException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, "error.resource.document.missing",
+                    Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
         }
     }
 
@@ -184,7 +184,7 @@ public class AbstractResourceHandler {
             responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
 
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e, "Error occurred while reading the subresource!");
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.cannot.read.subresource", e);
         }
     }
 }

@@ -131,7 +131,7 @@ public class ResourceDao extends BaseDao<DBResource> {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException(
-                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entry",
+                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entries",
                             Map.of("identifier", identifierValue, "scheme", identifierSchema)));
         }
     }
@@ -244,7 +244,7 @@ public class ResourceDao extends BaseDao<DBResource> {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException(
-                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entry",
+                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entries",
                             Map.of("identifier", participantId, "scheme", schema));
         }
     }

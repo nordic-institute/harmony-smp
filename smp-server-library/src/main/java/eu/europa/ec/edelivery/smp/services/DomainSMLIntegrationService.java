@@ -35,6 +35,7 @@ import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SML_MANAGE_MAX_COUNT;
@@ -161,11 +162,13 @@ public class DomainSMLIntegrationService {
         DBDomain dbDomain = domainDao.find(domainId);
 
         if (dbDomain.getSmlClientKeyChangeAlias() != null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("There is already a certificate alias prepared to change [%s] for domain [%s]!", dbDomain.getSmlClientKeyChangeAlias(), dbDomain.getDomainCode()));
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certificate.already.prepared.for.change",
+                    Map.of("smlClientKeyChangeAlias", dbDomain.getSmlClientKeyChangeAlias(), "domainCode", dbDomain.getDomainCode()));
         }
 
         if (migrationDateTime.isBefore(OffsetDateTime.now())) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The migration date for the SML certificate change is in the past [%s]!", migrationDateTime));
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certificate.migration.date.not.future",
+                    Map.of("migrationDate", migrationDateTime));
         }
 
         dbDomain.setSmlClientKeyChangeAlias(certificateAlias);
@@ -181,11 +184,13 @@ public class DomainSMLIntegrationService {
         DBDomain dbDomain = domainDao.find(domainId);
 
         if (dbDomain.getSmlClientKeyChangeAlias() == null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The certificate change has not yet been prepared for domain [%s]!", dbDomain.getDomainCode()));
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certificate.change.not.prepared",
+                    Map.of("domainCode", dbDomain.getDomainCode()));
         }
 
         if (dbDomain.getSmlClientKeyChangeDate() == null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, String.format("The migration date is not defined for domain [%s]!", dbDomain.getDomainCode()));
+            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certoificate.migration.date.undefined",
+                    Map.of("domainCode", dbDomain.getDomainCode()));
         }
 
         String preparedCertificateAlias = dbDomain.getSmlClientKeyChangeAlias();

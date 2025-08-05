@@ -189,7 +189,8 @@ public class ResourceController {
         try {
             return header == null ? null : URLDecoder.decode(header, UTF_8);
         } catch (UnsupportedEncodingException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, "DecodeHeader", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.detailed",
+                    Map.of("scope", "DecodeHeader", "error", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

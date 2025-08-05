@@ -52,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_CREATED;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_UPDATED;
@@ -149,11 +150,10 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                 case INVALID_PARAMETERS:
                     throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, e.getMessage());
                 case INVALID_RESOURCE:
-                    throw new SMPRuntimeException(ErrorCode.INVALID_EXTENSION_FOR_SG, resource.getIdentifierValue(),
-                            resource.getIdentifierScheme(),
-                            e.getMessage());
+                    throw new SMPRuntimeException(ErrorCode.INVALID_EXTENSION_FOR_SG, "error.service.group.invalid.extension",
+                            Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme(),"error", e.getMessage()));
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e, "Error occurred while reading the resource!");
+                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.resource.reading", e);
             }
         }
         // set headers to response
@@ -220,10 +220,10 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                 case INVALID_PARAMETERS:
                     throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, ExceptionUtils.getRootCauseMessage(e));
                 case INVALID_RESOURCE:
-                    throw new SMPRuntimeException(ErrorCode.INVALID_SMD_XML,
-                            ExceptionUtils.getRootCauseMessage(e));
+                    throw new SMPRuntimeException(ErrorCode.INVALID_SMD_XML, "error.service.metadata.invalid.xml",
+                            Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e, "Error occurred while reading the subresource!");
+                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.subresource.reading", e);
             }
         }
         // set headers to response

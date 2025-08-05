@@ -901,7 +901,6 @@
   "user.access.tokens.success.deleted": "Access token \"{{credentialName}}\" has been deleted!",
   "user.access.tokens.success.updated": "Access token \"{{credentialName}}\" has been updated!",
 
-
   "user.certificate.panel.button.delete": "Delete",
   "user.certificate.panel.button.show.details": "Show Details",
   "user.certificate.panel.button.save": "Save",
@@ -996,18 +995,55 @@
   "error.domain.group.not.exists": "Invalid group [{{groupName}}]",
 
   "error.user.invalid.no.identifiers": "Invalid user: no identifiers!",
-  "error.user.illegal.state.username.multiple.entry": "More than one user entry (credential token: [{{identifier}}]) is defined in database!",
-  "error.user.illegal.state.cert.id.multiple.entry": "More than one certificate entry (cert. id: [{{identifier}}]) is defined in database!",
+  "error.user.illegal.state.username.multiple.entries": "More than one user entry (credential token: [{{identifier}}]) is defined in database!",
+  "error.user.illegal.state.cert.id.multiple.entries": "More than one certificate entry (cert. id: [{{identifier}}]) is defined in database!",
   "error.user.not.exists": "User does not exist or the password is wrong!",
   "error.user.invalid.owner": "Invalid owner id: [{{identifier}}]",
 
-  "error.service.group.illegal.state.multiple.entry": "More than one service group (part. id: [{{identifier}}], part. sch.: [{{scheme}}]) is defined in database!",
-  "error.service.group.": "",
+  "error.service.group.illegal.state.multiple.entries": "More than one service group (part. id: [{{identifier}}], part. sch.: [{{scheme}}]) is defined in database!",
+  "error.service.group.not.exists": "ServiceGroup not found (part. id: [{{identifier}}], part. sch.: [{{scheme}}])!",
+  "error.service.group.invalid.extension": "Invalid extension for service group (part. id: [{{identifier}}], part. sch.: [{{scheme}}]). Error: [{{error}}]!",
 
-  "error.service.metadata.": "",
-  "error.service.metadata.": "",
+  "error.service.metadata.not.exists": "ServiceMetadata not found (part. id: [{{identifier}}], part. sch.: [{{scheme}}],doc. id: [{{documentIdentifier}}], doc. sch.: [{{documentScheme}}])!",
+  "error.service.metadata.invalid.xml": "Invalid service metadata. Error: [{{error}}]",
+
+  "error.domisml.integration": "SML integration error! Error: [{{error}}]",
+  "error.domisml.integration.certificate.already.prepared.for.change": "SML integration error! Error: There is already a certificate alias prepared to change [{{smlClientKeyChangeAlias}}] for domain [{{domainCode}}]!",
+  "error.domisml.integration.certificate.migration.date.not.future": "SML integration error! Error: The migration date for the SML certificate change is in the past [{{migrationDate}}]!",
+  "error.domisml.integration.certificate.change.not.prepared": "SML integration error! Error: The certificate change has not yet been prepared for domain [{{domainCode}}]!",
+  "error.domisml.integration.certoificate.migration.date.undefined": "SML integration error! Error: The migration date is not defined for domain [{{domainCode}}]!",
+  "error.domisml.integration.xml.signing.response": "Error occurred while signing response!",
+
+  "error.mail.submission": "Mail submission error: [{{error}}]!",
+
+  "error.resource.document.missing": "Empty document for the resource: (id: [{{identifier}}], sch.: [{{scheme}}])!",
+  "error.resource.document.reading": "Error occurred while reading the resource document: (id: [{{identifier}}], sch.: [{{scheme}}])! Error [{{error}}]",
+  "error.subresource.document.missing": "Empty document for the subresource: (docId: [{{documentIdentifier}}], docSch.: [{{documentScheme}}]) of the resource (id: [{{identifier}}], sch.: [{{scheme}}])",
+  "error.subresource.document.reading": "Error occurred while reading the subresource document: : (docId: [{{documentIdentifier}}], docSch.: [{{documentScheme}}]] of the resource (id: [{{identifier}}], sch: [{{scheme}}])! Error [{{error}}]",
+
+  "error.internal": "Internal error occurred!",
+  "error.internal.detailed": "Internal error [{{scope}}]. Error: [{{error}}]!",
+  "error.internal.setting.client.cert.feature.enabled": "Internal error occurred while setting the ClientCert feature (enable [{{clientCertEnabled}}]). Error: [{{error}}]!",
+  "error.internal.cannot.find.resource.definition.for.identifier": "Internal error occurred because could not find resource definition for identifier [{{identifier}}]). Registered resource IDs [{{identifiers}}]!",
+  "error.internal.cannot.find.subresource.definition.for.identifier": "Internal error occurred because could not find subresource definition for identifier [{{identifier}}]). Registered subresource IDs [{{identifiers}}]!",
+  "error.internal.cannot.read.subresource": "Internal error occurred while reading the subresource!",
+  "error.internal.cannot.read.mail.template": "Internal error occurred while reading the mail template. Error: [{{error}}]!",
+  "error.internal.invalid.jndi.datasource": "Internal error occurred because of an invalid JNDI datasource: [{{jndiDatasourceName}}]. Error: [{{error}}]!",
+  "error.internal.user.unauthorized.for.resource.action": "Internal error occurred because of unknown user [{{user}}] resource action: [{{action}}]!",
+  "error.internal.user.unauthorized.for.group.action": "Internal error occurred because of unknown user [{{user}}] group action: [{{action}}]!",
+  "error.internal.resource.lookup.by.identifier.illegal.state.multiple.entries": "Internal error occurred because of more than one result for ResourceDef with identifier [{{identifier}}]",
+  "error.internal.resource.lookup.by.url.illegal.state.multiple.entries": "Internal error occurred because of more than one result for ResourceDef with url context: [{{urlSegment}}]",
+  "error.internal.resource.lookup.by.url.and.domain.code.illegal.state.multiple.entries": "Internal error occurred because of more than one result for ResourceDef with url context [{{urlSegment}}] and domain code [{{domainCode}}]",
+  "error.internal.resource.lookup.by.url.and.domain.id.illegal.state.multiple.entries": "Internal error occurred because of more than one result for ResourceDef identifier [{{identifier}}] and domain identifier [{{domainId}}]",
+  "error.internal.subresource.lookup.by.identifier.illegal.state.multiple.entries": "Internal error occurred because of more than one result for SubresourceDef with identifier [{{identifier}}]",
+  "error.internal.subresource.lookup.by.url.illegal.state.multiple.entries": "Internal error occurred because of more than one result for SubresourceDef with url context: [{{urlSegment}}]",
+  "error.internal.resource.reading": "Internal error occurred while reading the resource!",
+  "error.internal.resource.reading.unknown.domain": "Internal error occurred because could not resolve resource for unknown domain!",
+  "error.internal.subresource.reading": "Internal error occurred while reading the subresource!",
+  "error.internal.conversion.from.database.entity.to.value.object": "Internal error occurred because of a conversion from a database entity to a value object. Error: [{{error}}]!",
+  "error.internal.conversion.from.value.object.to.database.entity": "Internal error occurred because of a conversion from a a value object to a database entity. Error: [{{error}}]!",
+  "error.internal.database.list.query": "Internal error occurred because of database list query exception. Error: [{{error}}]!",
 
   "error.payload.validation.payload.starts.with.e": "This is invalid payload starting with E",
-  "error.payload.validation.cannot.read.payload": "Can not read payload",
-  "error.non.unique.result.resource.def": "More than one result for ResourceDef identifier [{{resourceIdentifier}}] and domain [{{domainId}}]"
+  "error.payload.validation.cannot.read.payload": "Can not read payload"
 }
