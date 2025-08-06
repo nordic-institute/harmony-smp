@@ -27,7 +27,7 @@ import gen.eu.europa.ec.ddc.api.smp20.ServiceMetadata;
 import gen.eu.europa.ec.ddc.api.smp20.aggregate.Endpoint;
 import gen.eu.europa.ec.ddc.api.smp20.aggregate.ProcessMetadata;
 import gen.eu.europa.ec.ddc.api.smp20.basic.ParticipantID;
-import gen.eu.europa.ec.ddc.api.smp20.basic.ServiceID;
+import gen.eu.europa.ec.ddc.api.smp20.UnqualifiedDataTypes.IdentifierType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,15 @@ public class Subresource20Validator {
         LOG.debug("Validate service metadata for participant [{}], document [{}]", participantIdentifierFromUrl, documentIdentifierFromUrl);
 
         final ParticipantID participantId = subresource.getParticipantID();
-        final ServiceID documentId = subresource.getServiceID();
+
+        IdentifierType documentId = subresource.getID();
+        if (documentId == null) {
+            documentId = subresource.getServiceID();
+        }
+
+        if (documentId == null) {
+            throw new ResourceException(INVALID_PARAMETERS, "ServiceMetadata XML must contain either <smb:ID> or <smb:ServiceID>");
+        }
 
         String participantIdValue = participantId.getValue();
         String participantIdScheme = participantId.getSchemeID();
