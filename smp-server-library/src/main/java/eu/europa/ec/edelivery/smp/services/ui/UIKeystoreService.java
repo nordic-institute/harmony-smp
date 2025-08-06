@@ -245,7 +245,8 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (keystoreKeys.isEmpty() || keyManagers == null || keyManagers.length < 1) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: [" + keyAlias + "] from empty keystore: [" + configurationService.getKeystoreFile() + "]!");
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.empty.keystore",
+                    Map.of("alias", keyAlias, "keystoreFile", configurationService.getKeystoreFile()));
         }
 
         final String searchAlias = getKeyAlias(keyAlias);
@@ -255,8 +256,8 @@ public class UIKeystoreService extends BasicKeystoreService {
                 .map(X509KeyManager.class::cast)
                 .map(km -> km.getPrivateKey(searchAlias))
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR,
-                        "Could not retrieve key: [" + keyAlias + "] from empty keystore: [" + configurationService.getKeystoreFile() + "]!"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.empty.keystore",
+                        Map.of("alias", keyAlias, "keystoreFile", configurationService.getKeystoreFile())));
     }
 
     /**
@@ -274,7 +275,8 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (isBlank(trimAlias) || !keystoreKeys.contains(trimAlias)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Wrong configuration, missing key pair from keystore or wrong alias: " + keyAlias);
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.missing.keypair.or.wrong.alias",
+                    Map.of("alias", keyAlias));
         }
         return trimAlias;
     }
@@ -293,7 +295,8 @@ public class UIKeystoreService extends BasicKeystoreService {
             return keystoreCertificates.values().iterator().next();
         }
         if (isBlank(certAlias) || !keystoreCertificates.containsKey(certAlias)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Wrong configuration, missing key pair from keystore or wrong alias: " + certAlias);
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.missing.keypair.or.wrong.alias",
+                    Map.of("alias", certAlias));
         }
         return keystoreCertificates.get(certAlias);
     }

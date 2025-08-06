@@ -143,7 +143,7 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "More than one resource type is registered for the name!");
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.resource.multiple.entries");
         }
     }
 

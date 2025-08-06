@@ -458,7 +458,8 @@ public class UITruststoreService extends BasicKeystoreService {
 
             String certificateAlias = truststore.getCertificateAlias(certificate);
             if (certificateAlias != null) {
-                throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "duplicate", "The certificate you are trying to upload already exists under the [" + certificateAlias + "] entry");
+                throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.cannot.upload.duplicate",
+                        Map.of("alias", certificateAlias));
             }
 
             String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();

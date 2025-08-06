@@ -155,7 +155,7 @@ public class DomainResolverService {
             LOG.info("Can not locate the domain, user the registered domain [{}]", domain.getDomainCode());
             return domain;
         }
-        throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "No domain is configured for the DomiSMP instance!");
+        throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.no.domains");
     }
 
     public Optional<DBDomain> validatedAndReturnDomainByCode(final String domain) {

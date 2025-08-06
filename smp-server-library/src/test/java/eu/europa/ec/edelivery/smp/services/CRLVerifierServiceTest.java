@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.*;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertThrowsContainingMessages;
 import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertThrowsMatchingRegexExpressions;
@@ -129,8 +130,9 @@ class CRLVerifierServiceTest {
     void verifyCertificateCRLsRevokedSerialTestThrowIOExceptionHttps() {
         String crlURL = "https://localhost/crl";
 
-        doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL + "'", "IOException: Can not access URL"))
-                .when(testInstance).getCRLByURL("https://localhost/crl");
+        doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.download.issue",
+                Map.of("crlURL", crlURL, "error", "IOException: Can not access URL")))
+            .when(testInstance).getCRLByURL("https://localhost/crl");
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.verifyCertificateCRLs("11", "https://localhost/crl"));
         // then

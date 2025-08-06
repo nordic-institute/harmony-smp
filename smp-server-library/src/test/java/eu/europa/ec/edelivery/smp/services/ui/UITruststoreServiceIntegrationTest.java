@@ -427,7 +427,9 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509CRL crl = (X509CRL) cf.generateCRL(getClass().getResourceAsStream("/certificates/smp-crl-test.crl"));
         Mockito.doReturn(false).when(configurationService).forceCRLValidation();
-        Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:" + crlUrl, "")).when(crlVerifierService).downloadURL(crlUrl);
+        Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.download.issue",
+                Map.of("crlURL", crlUrl, "error", "")))
+            .when(crlVerifierService).downloadURL(crlUrl);
 
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(

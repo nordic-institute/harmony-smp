@@ -58,16 +58,17 @@ import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.*;
 public class SMLIntegrationService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMLIntegrationService.class);
-    private static final String ERROR_MESSAGE_DNS_NOT_ENABLED = "SML integration is not enabled!";
 
     private final ConfigurationService configurationService;
     private final SmlConnector smlConnector;
     private final DomainDao domainDao;
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
-    public SMLIntegrationService(ConfigurationService configurationService, SmlConnector smlConnector, DomainDao domainDao) {
+    public SMLIntegrationService(ConfigurationService configurationService, SmlConnector smlConnector, DomainDao domainDao, SMPExceptionLanguageService smpExceptionLanguageService) {
         this.configurationService = configurationService;
         this.smlConnector = smlConnector;
         this.domainDao = domainDao;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     /**
@@ -79,7 +80,7 @@ public class SMLIntegrationService {
      */
     public boolean participantExists(DBResource resource, DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
         }
         return smlConnector.participantExists(resource.getIdentifierScheme(), resource.getIdentifierValue(), domain);
     }
@@ -93,7 +94,7 @@ public class SMLIntegrationService {
     @Transactional
     public void registerDomain(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
         }
         domain.setSmlRegistered(true);
         domainDao.update(domain);
@@ -109,7 +110,7 @@ public class SMLIntegrationService {
      */
     public boolean isDomainValid(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
         }
         return smlConnector.isDomainValid(domain);
     }
@@ -123,7 +124,7 @@ public class SMLIntegrationService {
     @Transactional
     public void unRegisterDomain(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
         }
 
         domain.setSmlRegistered(false);
@@ -146,7 +147,7 @@ public class SMLIntegrationService {
         LOG.businessDebug(BUS_SML_REGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         if (!isSMLIntegrationEnabled()) {
             LOG.businessWarn(BUS_SML_REGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(),
-                    resource.getIdentifierScheme(), domain.getDomainCode(), ERROR_MESSAGE_DNS_NOT_ENABLED);
+                    resource.getIdentifierScheme(), domain.getDomainCode(), smpExceptionLanguageService.getMessageTranslation("error.configuration.domisml.integration.disabled"));
             return;
         }
         // register only not registered services
@@ -197,7 +198,7 @@ public class SMLIntegrationService {
         if (!isSMLIntegrationEnabled()) {
 
             LOG.businessWarn(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(),
-                    domain.getDomainCode(), ERROR_MESSAGE_DNS_NOT_ENABLED);
+                    domain.getDomainCode(), smpExceptionLanguageService.getMessageTranslation("error.configuration.domisml.integration.disabled"));
             return;
         }
 
@@ -230,7 +231,8 @@ public class SMLIntegrationService {
         LOG.businessDebug(BUS_SML_PREPARE_CERTIFICATE_CHANGE, certificate, migrationDateTime, domain.getDomainCode());
 
         if (!isSMLIntegrationEnabled()) {
-            LOG.businessWarn(BUS_SML_PREPARE_CERTIFICATE_CHANGE_FAILED, certificate, migrationDateTime, domain.getDomainCode(), ERROR_MESSAGE_DNS_NOT_ENABLED);
+            LOG.businessWarn(BUS_SML_PREPARE_CERTIFICATE_CHANGE_FAILED, certificate, migrationDateTime, domain.getDomainCode(),
+                    smpExceptionLanguageService.getMessageTranslation("error.configuration.domisml.integration.disabled"));
             return;
         }
 
@@ -245,7 +247,8 @@ public class SMLIntegrationService {
         try {
             encoded = Base64.getEncoder().encodeToString(certificate.getEncoded());
         } catch (CertificateEncodingException e) {
-            throw new SMPRuntimeException(CERTIFICATE_ERROR, e, "Can not encode certificate '" + certificate + "'", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(CERTIFICATE_ERROR, "error.certificate.cannot.encode", e,
+                    Map.of("certificate", certificate, "error", ExceptionUtils.getRootCauseMessage(e)));
         }
         return encoded;
     }

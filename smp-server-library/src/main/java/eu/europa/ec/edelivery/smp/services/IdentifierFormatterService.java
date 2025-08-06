@@ -218,13 +218,13 @@ public class IdentifierFormatterService {
     private static SMPPropertyEnum getSmpPropertyEnum(SMPDomainPropertyEnum property) {
         SMPPropertyEnum sysPropType = property.getPropertyEnum();
         if (sysPropType.isEncrypted()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encrypted domain Properties are not supported!. Can not parse   ["
-                    + property + "]!");
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.encrypted.domain.property.not.allowed",
+                    Map.of("propertyName", property));
         }
         if (sysPropType.getPropertyType() == SMPPropertyTypeEnum.PATH ||
                 sysPropType.getPropertyType() == SMPPropertyTypeEnum.FILENAME) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Path or filename domain properties are not supported!. Can not parse   ["
-                    + property + "]!");
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.file.or.path.domain.property.not.allowed",
+                    Map.of("propertyName", property));
         }
         return sysPropType;
     }

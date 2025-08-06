@@ -27,54 +27,53 @@ package eu.europa.ec.edelivery.smp.exceptions;
  */
 public enum ErrorCode {
 
-    UNAUTHORIZED_INVALID_USERNAME_PASSWORD(401, "SMP:001", ErrorBusinessCode.UNAUTHORIZED, null /*tmplMsg*/),
-    UNAUTHORIZED(401, "SMP:003", ErrorBusinessCode.UNAUTHORIZED, null /*tmplMsg*/),
+    UNAUTHORIZED_INVALID_USERNAME_PASSWORD(401, "SMP:001", ErrorBusinessCode.UNAUTHORIZED),
+    UNAUTHORIZED(401, "SMP:003", ErrorBusinessCode.UNAUTHORIZED),
 
-    USER_CHANGE_INVALID_NEW_CREDENTIAL(400, "SMP:010", ErrorBusinessCode.INVALID_INPUT_DATA, null /*tmplMsg*/),
+    USER_CHANGE_INVALID_NEW_CREDENTIAL(400, "SMP:010", ErrorBusinessCode.INVALID_INPUT_DATA),
 
     // domain error
-    DOMAIN_NOT_EXISTS(404,"SMP:111", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
-    INVALID_DOMAIN_CODE(400,"SMP:112", ErrorBusinessCode.FORMAT_ERROR, null /*tmplMsg*/),
-    ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY(500,"SMP:113", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY(500,"SMP:115", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    INVALID_DOMAIN_DATA(400,"SMP:116", ErrorBusinessCode.INVALID_INPUT_DATA, null /*tmplMsg*/),
-    GROUP_NOT_EXISTS(404,"SMP:117", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
+    DOMAIN_NOT_EXISTS(404,"SMP:111", ErrorBusinessCode.NOT_FOUND),
+    INVALID_DOMAIN_CODE(400,"SMP:112", ErrorBusinessCode.FORMAT_ERROR),
+    ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY(500,"SMP:113", ErrorBusinessCode.TECHNICAL),
+    ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY(500,"SMP:115", ErrorBusinessCode.TECHNICAL),
+    INVALID_DOMAIN_DATA(400,"SMP:116", ErrorBusinessCode.INVALID_INPUT_DATA),
+    GROUP_NOT_EXISTS(404,"SMP:117", ErrorBusinessCode.NOT_FOUND),
 
     // user error messages
-    INVALID_USER_NO_IDENTIFIERS(400,"SMP:120", ErrorBusinessCode.MISSING_FIELD, null /*tmplMsg*/),
-    ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY(500,"SMP:121", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY(504,"SMP:122", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    USER_NOT_EXISTS(400,"SMP:123", ErrorBusinessCode.USER_NOT_FOUND, null /*tmplMsg*/), // OWASP recommendation\
-    INVALID_OWNER(400, "SMP:127", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
+    INVALID_USER_NO_IDENTIFIERS(400,"SMP:120", ErrorBusinessCode.MISSING_FIELD),
+    ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY(500,"SMP:121", ErrorBusinessCode.TECHNICAL),
+    ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY(504,"SMP:122", ErrorBusinessCode.TECHNICAL),
+    USER_NOT_EXISTS(400,"SMP:123", ErrorBusinessCode.USER_NOT_FOUND), // OWASP recommendation\
+    INVALID_OWNER(400, "SMP:127", ErrorBusinessCode.NOT_FOUND),
 
     // service group error
-    SG_NOT_EXISTS(404,"SMP:131", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
-    INVALID_EXTENSION_FOR_SG(400,"SMP:132", ErrorBusinessCode.XSD_INVALID, null /*tmplMsg*/),
+    SG_NOT_EXISTS(404,"SMP:131", ErrorBusinessCode.NOT_FOUND),
+    INVALID_EXTENSION_FOR_SG(400,"SMP:132", ErrorBusinessCode.XSD_INVALID),
 
     // service metadata error
-    METADATA_NOT_EXISTS(404,"SMP:141", ErrorBusinessCode.NOT_FOUND, null /*tmplMsg*/),
-    INVALID_SMD_XML(400,"SMP:143", ErrorBusinessCode.XSD_INVALID, null /*tmplMsg*/),
+    METADATA_NOT_EXISTS(404,"SMP:141", ErrorBusinessCode.NOT_FOUND),
+    INVALID_SMD_XML(400,"SMP:143", ErrorBusinessCode.XSD_INVALID),
 
     // SML integration
-    SML_INTEGRATION_EXCEPTION(500,"SMP:150", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    XML_SIGNING_EXCEPTION(500,"SMP:500", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    SML_INTEGRATION_EXCEPTION(500,"SMP:150", ErrorBusinessCode.TECHNICAL),
+    XML_SIGNING_EXCEPTION(500,"SMP:500", ErrorBusinessCode.TECHNICAL),
 
-    INTERNAL_ERROR_GENERIC(500,"SMP:501", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    INVALID_REQUEST(400,"SMP:513", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    INTERNAL_ERROR(500,"SMP:514", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    CERTIFICATE_ERROR(500,"SMP:515", ErrorBusinessCode.TECHNICAL, "Certificate error [%s]. Error: %s!"),
-    CONFIGURATION_ERROR(500,"SMP:516", ErrorBusinessCode.TECHNICAL, "Configuration error: [%s]!"),
+    INTERNAL_ERROR_GENERIC(500,"SMP:501", ErrorBusinessCode.TECHNICAL),
+    INVALID_REQUEST(400,"SMP:513", ErrorBusinessCode.TECHNICAL),
+    INTERNAL_ERROR(500,"SMP:514", ErrorBusinessCode.TECHNICAL),
+    CERTIFICATE_ERROR(500,"SMP:515", ErrorBusinessCode.TECHNICAL),
+    CONFIGURATION_ERROR(500,"SMP:516", ErrorBusinessCode.TECHNICAL),
 
-    MAIL_SUBMISSION_ERROR(500,"SMP:550", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    MAIL_SUBMISSION_ERROR(500,"SMP:550", ErrorBusinessCode.TECHNICAL),
 
-    RESOURCE_DOCUMENT_MISSING(500,"SMP:180", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    RESOURCE_DOCUMENT_ERROR(500,"SMP:181", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    SUBRESOURCE_DOCUMENT_MISSING(500,"SMP:182", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
-    SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183", ErrorBusinessCode.TECHNICAL, null /*tmplMsg*/),
+    RESOURCE_DOCUMENT_MISSING(500,"SMP:180", ErrorBusinessCode.TECHNICAL),
+    RESOURCE_DOCUMENT_ERROR(500,"SMP:181", ErrorBusinessCode.TECHNICAL),
+    SUBRESOURCE_DOCUMENT_MISSING(500,"SMP:182", ErrorBusinessCode.TECHNICAL),
+    SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183", ErrorBusinessCode.TECHNICAL),
     ;
 
     private final int httpCode;
-    private final String messageTemplate;
     private final String errorCode;
     private final ErrorBusinessCode errorBusinessCode;
 
@@ -82,18 +81,10 @@ public enum ErrorCode {
         return httpCode;
     }
 
-    ErrorCode(int httpCode, String errorCode, ErrorBusinessCode ebc, String tmplMsg) {
+    ErrorCode(int httpCode, String errorCode, ErrorBusinessCode ebc) {
         this.httpCode = httpCode;
-        this.messageTemplate = tmplMsg;
         this.errorCode = errorCode;
         this.errorBusinessCode = ebc;
-    }
-
-    public String getMessage(Object ... args) {
-        if (args == null || args.length == 0) {
-            return messageTemplate;
-        }
-        return String.format(messageTemplate, args);
     }
 
     public String getErrorCode() {

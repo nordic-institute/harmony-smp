@@ -264,7 +264,7 @@ public class ResourceResolverService {
         // get single domain
         List<DBResourceDef> resourceDefs = resourceDefinitionDao.getAllResourceDefForDomain(domain);
         if (resourceDefs.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "No resource type is registered for the domain!");
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.no.resources");
         }
 
         if (resourceDefs.size() == 1) {
@@ -279,7 +279,8 @@ public class ResourceResolverService {
                 LOG.debug("Located ResourceDef for domain [{}] by the http header [{}]", domain.getDomainCode(), headerParameter);
                 return optResDef.get();
             } else {
-                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "No resource def [" + headerParameter + "] is registered for the domain [" + domain.getDomainCode() + "]");
+                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.no.resource.definition.for.domain",
+                        Map.of("headerParameter", headerParameter, "domainCode", domain.getDomainCode()));
             }
         }
         // find by path parameter

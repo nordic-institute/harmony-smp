@@ -72,7 +72,7 @@ public class DatabaseConnectionBeanCreator {
         }
         String jdbcURL = databaseConnectionConfig.getJdbcUrl();
         if (StringUtils.isBlank(jdbcURL)) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "Invalid datasource configuration. Both jndi or jdbc url are empty");
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.datasource");
         }
 
         LOG.info("Create datasource with URL: [{}].", jdbcURL);
