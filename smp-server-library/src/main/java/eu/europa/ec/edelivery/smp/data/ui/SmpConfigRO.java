@@ -18,6 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,7 @@ public class SmpConfigRO implements Serializable {
 
     private String passwordValidationRegExp;
     private String passwordValidationRegExpMessage;
-    private final List<String> webServiceAuthTypes = new ArrayList<>();
+    private final List<SMPAutomationAuthenticationTypes> webServiceAuthTypes = new ArrayList<>();
 
 
     public boolean isSmlIntegrationOn() {
@@ -98,11 +100,11 @@ public class SmpConfigRO implements Serializable {
         this.passwordValidationRegExpMessage = passwordValidationRegExpMessage;
    }
 
-    public List<String> getWebServiceAuthTypes() {
+    public List<SMPAutomationAuthenticationTypes> getWebServiceAuthTypes() {
         return webServiceAuthTypes;
     }
 
-    public void addWebServiceAuthTypes(List<String> webServiceAuthTypes) {
+    public void addWebServiceAuthTypes(List<SMPAutomationAuthenticationTypes> webServiceAuthTypes) {
         this.webServiceAuthTypes.addAll(webServiceAuthTypes);
     }
 }

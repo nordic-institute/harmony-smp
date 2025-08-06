@@ -61,8 +61,9 @@ class SMPAuthenticationProviderTest {
     PeriodicalAlertDao mockPeriodicalAlertDao = Mockito.mock(PeriodicalAlertDao.class);
     SMPExceptionLanguageService smpExceptionLanguageService = Mockito.mock(SMPExceptionLanguageService.class);
 
+
     CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mockAlertService, mockPeriodicalAlertDao, smpExceptionLanguageService);
-    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService);
+    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService, null);
 
 
     // response time for existing and nonexistent user should be "approx. equal"

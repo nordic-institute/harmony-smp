@@ -1,4 +1,14 @@
-eDelivery SMP 5.1
+DomiSMP 5.2
+    - allow characters as '_', '-', '.' and '+' in the domain code
+    - Change api authentication property enum value: 'TOKEN' to 'TOKEN_BASIC' for API
+    - Added JWT authentication for Read action to the API. Currently, supports only RSA signed JWT tokens.
+    - added new properties:
+        smp.authorization.jwt.issuer: The JWT issuer used for validating the token.
+        smp.authorization.jwt.audience: The JWT audience used for validating the token.
+        smp.authorization.jwt.key: The JWT key used for signing the token.
+        smp.authorization.jwt.algorithm: The JWT algorithm used for signing the token. Default is HS256.
+
+DomiSMP 5.1
 - change the default "smp.configuration.file" from "smp.conf.properties" to smp.config.properties
 - added new HTTP headers when creating a new resource:
     'Resource-Admin' as alternative to ServiceGroup-Owner
@@ -29,7 +39,7 @@ eDelivery SMP 5.1
     smp.alert.password.expired.mail.subject
 
 
-eDelivery SMP 5.0
+DomiSMP 5.0
 - removed: bdmsl.participant.multidomain.enabled
 - environment properties have now 'smp.' prefix
 - application property: 'configuration.dir' was replaced by the environment 'smp.security.folder' property

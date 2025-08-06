@@ -22,6 +22,7 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
+import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
@@ -42,6 +43,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -128,14 +130,33 @@ public class WSSecurityConfig {
 
 
         PathPatternRequestMatcher.Builder pathPatternRequestMatcherBuilder = PathPatternRequestMatcher.withDefaults();
+        if (configurationService.getAutomationAuthenticationTypes().contains(SMPAutomationAuthenticationTypes.CERTIFICATE)) {
+            LOG.info("X509Certificate Authentication is enabled for API access..");
+            httpSecurity
+                    .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class);
+        }
+        if (configurationService.getAutomationAuthenticationTypes().contains(SMPAutomationAuthenticationTypes.CERTIFICATE)) {
+            LOG.info("X509Certificate Authentication is enabled for API access.");
+            httpSecurity
+                    .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class)
+                    .addFilter(getClientCertAuthenticationFilter())
+                    .addFilter(getEDeliveryX509AuthenticationFilter());
+        } else {
+            httpSecurity.addFilter(mdcLogRequestFilter);
+        }
+
+        if (configurationService.getAutomationAuthenticationTypes().contains(SMPAutomationAuthenticationTypes.BASIC_TOKEN)) {
+            LOG.info("Basic Authentication token is enabled for API access.");
+            httpSecurity
+                    .httpBasic(httpBasic -> httpBasic
+                            .authenticationEntryPoint(smpSecurityExceptionHandler));
+        } else {
+            LOG.info("Basic Authentication token is disabled for API access.");
+            httpSecurity
+                    .httpBasic(AbstractHttpConfigurer::disable);
+        }
 
         httpSecurity
-                .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class)
-                .addFilter(getClientCertAuthenticationFilter())
-                .addFilter(getEDeliveryX509AuthenticationFilter())
-                .httpBasic(httpBasic -> httpBasic
-                        .authenticationEntryPoint(smpSecurityExceptionHandler)
-                )
                 .anonymous(anonymous -> anonymous
                         .authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority())
                 )
@@ -150,11 +171,20 @@ public class WSSecurityConfig {
                                 ApplicationRoleType.USER.getAPIRole(),
                                 ApplicationRoleType.SYSTEM_ADMIN.getAPIRole())
                         .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "^/(?!ui/)([^/]+)(/[^/]+){0,4}$")).permitAll()
+                ).oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.authenticationManager(getAPIAuthenticationManager())
+                        )
                 );
+        if (configurationService.getAutomationAuthenticationTypes().contains(SMPAutomationAuthenticationTypes.JWT)) {
+            LOG.info("JWT Authentication token is enabled for API access.");
+            httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
+                    .jwt(jwt -> jwt.authenticationManager(getAPIAuthenticationManager())
+                    )
+            );
+        }
         // set authentication manager
         httpSecurity.authenticationManager(getAPIAuthenticationManager());
         return httpSecurity.build();
-
     }
 
     /**

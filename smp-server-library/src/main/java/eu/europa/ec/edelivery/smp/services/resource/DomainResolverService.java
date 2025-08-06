@@ -55,7 +55,7 @@ public class DomainResolverService {
     /**
      * Domain pattern as defined in documentation since SMP 3.0.0
      */
-    public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
+    public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("^[^-._+0-9][-._+a-zA-Z0-9]{1,63}$");
     final DomainDao domainDao;
     final GroupDao groupDao;
     final ConfigurationService configurationService;

@@ -983,6 +983,7 @@
   "error.unauthorized.unauthorized.invalid.user.identifier": "Invalid user identifier! User not authorized.",
   "error.unauthorized.unauthorized.invalid.identifier": "Invalid entity identifier! User not authorized to access the entity data",
   "error.unauthorized.invalid.reset.token": "The reset token it is invalid or not active any more. Please try to reset your password again.",
+  "error.unauthorized.invalid.bearer.token": "The bearer token is invalid or not active any more. Please try to regenerate your token.",
   "error.unauthorized.user.change.invalid.new.credential": "Password change failed. [{{validationMessage}}]",
 
   "error.domain.none.configured": "No domain configured on SMP, at least one domain is mandatory!",
@@ -1181,5 +1182,5 @@
   "error.configuration.missing.keypair.or.wrong.alias": "Configuration error: wrong configuration, missing key pair from keystore or wrong alias [{{alias}}]!",
 
   "error.payload.validation.payload.starts.with.e": "This is invalid payload starting with E",
-  "error.payload.validation.cannot.read.payload": "Cannot read payload"
+  "error.payload.validation.cannot.read.payload": "Cannot read payload",
 }
