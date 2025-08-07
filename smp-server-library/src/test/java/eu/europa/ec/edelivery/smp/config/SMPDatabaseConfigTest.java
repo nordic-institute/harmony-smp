@@ -21,11 +21,17 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.smp.config.init.DatabaseConnectionBeanCreator;
 import eu.europa.ec.edelivery.smp.config.init.DatabaseConnectionProperties;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -34,6 +40,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,18 +58,26 @@ public class SMPDatabaseConfigTest {
     public static final String DATABASE_PASS = "smp-dev";
 
     DatabaseConnectionProperties environmentProperties = Mockito.mock(DatabaseConnectionProperties.class);
-
     SMPDatabaseConfig testInstance = new SMPDatabaseConfig();
+
+    File localeFolder = new File("target/locales");
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
+
     @BeforeEach
-    public void init(){
+    public void init() {
         ReflectionTestUtils.setField(testInstance, "databaseConnectionBeanCreator", new DatabaseConnectionBeanCreator(environmentProperties));
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
 
     @Test
     void getDataSourceMissingConfiguration() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
 
-        assertEquals("Configuration error: [Invalid datasource configuration. Both jndi or jdbc url are empty]!", result.getMessage());
+        assertEquals("Configuration error: invalid datasource configuration. Both JNDI and JDBC URLs are empty!",
+                smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()));
     }
 
     @Test
@@ -66,7 +86,8 @@ public class SMPDatabaseConfigTest {
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid JNDI datasource: jdbc/eDeliverySmpDs"));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+                CoreMatchers.containsString("invalid JNDI datasource: [jdbc/eDeliverySmpDs]"));
     }
 
     @Test

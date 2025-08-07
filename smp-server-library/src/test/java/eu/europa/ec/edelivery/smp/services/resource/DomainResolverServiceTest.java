@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.data.dao.TestUtilsDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -52,6 +53,8 @@ class DomainResolverServiceTest extends AbstractJunit5BaseDao {
     ConfigurationDao configurationDao;
     @Autowired
     DomainResolverService testInstance;
+    @Autowired
+    SMPExceptionLanguageService smpExceptionLanguageService;
 
 
     @BeforeEach
@@ -67,12 +70,11 @@ class DomainResolverServiceTest extends AbstractJunit5BaseDao {
     @ParameterizedTest
     @CsvSource({
             //desc,  headerParameter, pathParameter, expectedDomainCode, expectedException
-            "'Wrong header domain', DomainNotExist,,,Invalid domain 'DomainNotExist'!",
-            "'Wrong header domain even if path domain is OK', DomainNotExist,pathDomain,,Invalid domain 'DomainNotExist'!",
-            "'Wrong header domain even if path and default domain are OK', DomainNotExist,pathDomain,defaultDomain,Invalid domain 'DomainNotExist'!"
+            "'Wrong header domain', DomainNotExist,,,Invalid domain [DomainNotExist]!",
+            "'Wrong header domain even if path domain is OK', DomainNotExist,pathDomain,,Invalid domain [DomainNotExist]!",
+            "'Wrong header domain even if path and default domain are OK', DomainNotExist,pathDomain,defaultDomain,Invalid domain [DomainNotExist]!"
     })
     void testResolveDomainNegativeFlows(String desc, String headerParameter, String pathParameter, String dbDefaultDomainProperty, String expectedException) {
-
         LOG.info("Running test: [{}]", desc);
         // given
         configurationDao.setPropertyToDatabase(
@@ -82,7 +84,7 @@ class DomainResolverServiceTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.resolveDomain(headerParameter, pathParameter));
         // Assert that the exception is thrown with the expected error code
         assertEquals(ErrorCode.DOMAIN_NOT_EXISTS, result.getErrorCode());
-        assertThat(result.getMessage(), containsString(expectedException));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()), containsString(expectedException));
     }
 
     @ParameterizedTest

@@ -245,7 +245,7 @@ public class ResourceDao extends BaseDao<DBResource> {
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException(
                     smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entries",
-                            Map.of("identifier", participantId, "scheme", schema));
+                             Map.of("identifier", participantId, "scheme", schema)));
         }
     }
 

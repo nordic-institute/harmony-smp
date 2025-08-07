@@ -24,13 +24,20 @@ import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.authentication.AuthenticationServiceException;
+
+import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -44,6 +51,11 @@ class DomainGroupGuardTest extends AbstractJunit5BaseDao {
 
     ResourceRequest resourceRequest = Mockito.mock(ResourceRequest.class);
     SMPUserDetails userDetails = Mockito.mock(SMPUserDetails.class);
+    File localeFolder = new File("target/locales");
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
 
     @BeforeEach
     public void prepareDatabase() {
@@ -51,15 +63,15 @@ class DomainGroupGuardTest extends AbstractJunit5BaseDao {
         testUtilsDao.creatDomainMemberships();
         testUtilsDao.createGroupMemberships();
         testUtilsDao.createResourceMemberships();
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
 
     @Test
     void testResolveAndAuthorizeForDomainInvalidRequestMissingAction() {
-
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails));
 
-        assertThat(result.getMessage(), containsString("Invalid request"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()), containsString("Invalid request"));
     }
 
     @Test

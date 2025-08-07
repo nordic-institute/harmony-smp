@@ -22,11 +22,15 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.smp.spi.PayloadValidatorSpi;
 import eu.europa.ec.smp.spi.exceptions.PayloadValidatorSpiException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.MimeTypeUtils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +40,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PayloadValidatorServiceTest {
 
-    private SMPExceptionLanguageService smpExceptionLanguageService = Mockito.mock(SMPExceptionLanguageService.class);
+    File localeFolder = new File("target/locales");
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
+
+    @BeforeEach
+    public void init() {
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
+    }
 
     @Test
     void validateUploadedContentNoValidatorsMostNotFail() {
@@ -89,13 +102,12 @@ class PayloadValidatorServiceTest {
         PayloadValidatorSpiException spiException = new PayloadValidatorSpiException("TestError");
         Mockito.doThrow(spiException).when(validatorSpi1).validatePayload(Mockito.any(), Mockito.any());
 
-
         SMPRuntimeException smpRuntimeException =
                 assertThrows(SMPRuntimeException.class, () -> testInstance.validateUploadedContent(inputStream, mimeType));
 
         assertEquals(ErrorCode.INVALID_REQUEST, smpRuntimeException.getErrorCode());
         // generic error
-        assertEquals("Invalid request [Upload payload]. Error: Content validation failed!", smpRuntimeException.getMessage());
+        assertEquals("Invalid request [UploadPayload]. Error: content validation failed!", smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode()));
 
     }
 }

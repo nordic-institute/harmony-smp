@@ -29,6 +29,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,7 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 @Service
 public class DomainResolverService {
 
+
     /**
      * Domain pattern as defined in documentation since SMP 3.0.0
      */
@@ -59,11 +61,13 @@ public class DomainResolverService {
     final DomainDao domainDao;
     final GroupDao groupDao;
     final ConfigurationService configurationService;
+    final SMPExceptionLanguageService smpExceptionLanguageService;
 
-    public DomainResolverService(DomainDao domainDao, ConfigurationService configurationService, GroupDao groupDao) {
+    public DomainResolverService(DomainDao domainDao, ConfigurationService configurationService, GroupDao groupDao, SMPExceptionLanguageService smpExceptionLanguageService) {
         this.domainDao = domainDao;
         this.groupDao = groupDao;
         this.configurationService = configurationService;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainResolverService.class);
@@ -126,7 +130,8 @@ public class DomainResolverService {
                 LOG.debug("Located domain by the http header [{}]", headerParameter);
                 return optDomain.get();
             } else {
-                throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, headerParameter);
+                throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,
+                        smpExceptionLanguageService.getMessageTranslation("error.domain.not.exists", Map.of("domainCode", headerParameter)));
             }
         }
 
