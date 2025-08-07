@@ -23,6 +23,8 @@ import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.validation.Subresource20Validator;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -42,11 +44,14 @@ class OasisSMPSubresource20HandlerTest extends AbstractHandlerTest {
         generateResourceAction(resourceIdentifier, subResourceIdentifier);
     }
 
-    @Test
-    void validateResourceOK() throws ResourceException {
-
+    @ParameterizedTest(name = "with file: {0}")
+    @ValueSource(strings = {
+        "/examples/oasis-smp-2.0/subresource_unsigned_valid_draft_iso6523.xml",
+        "/examples/oasis-smp-2.0/subresource_unsigned_valid_final_iso6523.xml"
+    })
+    void validateResourceOK(String xmlFilePath) throws ResourceException {
         // validate
-        validateResourceAction("/examples/oasis-smp-2.0/subresource_unsigned_valid_iso6523.xml", resourceIdentifier, subResourceIdentifier);
+        validateResourceAction(xmlFilePath, resourceIdentifier, subResourceIdentifier);
     }
 
     @Test
@@ -62,7 +67,7 @@ class OasisSMPSubresource20HandlerTest extends AbstractHandlerTest {
         ResourceIdentifier resourceIdentifierInvalid = new ResourceIdentifier("urn:poland:ncpb:wrongIdentifier", "ehealth-actorid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-2.0/subresource_unsigned_valid_iso6523.xml", resourceIdentifierInvalid, subResourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-2.0/subresource_unsigned_valid_draft_iso6523.xml", resourceIdentifierInvalid, subResourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Participant identifiers don't match"));
     }
 
@@ -72,7 +77,7 @@ class OasisSMPSubresource20HandlerTest extends AbstractHandlerTest {
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::101:invalidIdentifeir", "ehealth-resid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-2.0/subresource_unsigned_valid_iso6523.xml", resourceIdentifier, subResourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-2.0/subresource_unsigned_valid_draft_iso6523.xml", resourceIdentifier, subResourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Document identifiers don't match"));
     }
 
@@ -85,17 +90,22 @@ class OasisSMPSubresource20HandlerTest extends AbstractHandlerTest {
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("SAXParseException"));
     }
 
-    @Test
-    void readResourceOK() throws ResourceException {
-        String resourceName = "/examples/oasis-smp-2.0/subresource_unsigned_valid_iso6523.xml";
-
-        readResourceAction(resourceName, resourceIdentifier, subResourceIdentifier);
+    @ParameterizedTest(name = "with file: {0}")
+    @ValueSource(strings = {
+        "/examples/oasis-smp-2.0/subresource_unsigned_valid_draft_iso6523.xml",
+        "/examples/oasis-smp-2.0/subresource_unsigned_valid_final_iso6523.xml"
+    })
+    void readResourceOK(String xmlFilePath) throws ResourceException {
+        readResourceAction(xmlFilePath, resourceIdentifier, subResourceIdentifier);
     }
 
-    @Test
-    void storeResourceOK() throws ResourceException {
-        String resourceName = "/examples/oasis-smp-2.0/subresource_unsigned_valid_iso6523.xml";
-        storeResourceAction(resourceName, resourceIdentifier, subResourceIdentifier);
+    @ParameterizedTest(name = "with file: {0}")
+    @ValueSource(strings = {
+        "/examples/oasis-smp-2.0/subresource_unsigned_valid_draft_iso6523.xml",
+        "/examples/oasis-smp-2.0/subresource_unsigned_valid_final_iso6523.xml"
+    })
+    void storeResourceOK(String xmlFilePath) throws ResourceException {
+        storeResourceAction(xmlFilePath, resourceIdentifier, subResourceIdentifier);
     }
 
 
