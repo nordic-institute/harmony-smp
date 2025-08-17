@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
@@ -38,12 +39,16 @@ import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 class ResourceServiceTest extends AbstractJunit5BaseDao {
     @Autowired
     ResourceService testInstance;
+
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     ResourceRequest resourceRequest = Mockito.mock(ResourceRequest.class);
     ResolvedData resolvedData = Mockito.mock(ResolvedData.class);
@@ -64,24 +69,37 @@ class ResourceServiceTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.handleRequest(user, resourceRequest, resourceResponse));
 
-        assertThat(result.getMessage(), containsString("Invalid request"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()), containsStringIgnoringCase("Invalid request"));
     }
 
     @ParameterizedTest
     @CsvSource({
-            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,, 'Location vector coordinates must not be null!'",
-            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,1/2/3/4/5/6/7, 'More than max. count (5) of Resource Location vector coordinates!'",
-            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,"+TestConstants.TEST_DOMAIN_CODE_1 + ", 'Not enough path parameters to locate resource'",
-            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,"+TestConstants.TEST_DOMAIN_CODE_1 + "/" + TestConstants.TEST_RESOURCE_DEF_CPP + ", 'Not enough path parameters to locate resource'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,, 'No path parameters provided to locate the resource!'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,1/2/3/4/5/6/7, 'More than the maximum count of 5 path parameters provided to locate the resource'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,"+TestConstants.TEST_DOMAIN_CODE_1 + ", 'Not enough path parameters provided to locate the resource'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,"+TestConstants.TEST_DOMAIN_CODE_1 + "/" + TestConstants.TEST_RESOURCE_DEF_CPP + ", 'Not enough path parameters provided to locate the resource'",
+    })
+    void handleRequestFailBadPath(Class<? extends SMPRuntimeException> clazz, String path, String errorMessage) {
+        when(resourceRequest.getUrlPathParameters()).thenReturn(path == null ? null : Arrays.asList(path.split("/")));
+        when(resourceRequest.getAuthorizedDomain()).thenReturn(testUtilsDao.getD1());
+
+        SMPRuntimeException result = assertThrows(clazz,
+                () -> testInstance.handleRequest(user, resourceRequest, resourceResponse));
+
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase(errorMessage));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
             "eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException,badIdentifier, 'Invalid Identifier: [badIdentifier]. Can not detect schema!'",
             "eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException,doc-type/badIdentifier, 'Invalid Identifier: [doc-type]. Can not detect schema!'",
             "eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException,domain/doc-type/badIdentifier, 'Invalid Identifier: [domain]. Can not detect schema!'",
     })
-    void handleRequestFailBadPath(Class<? extends RuntimeException> clazz, String path, String errorMessage) {
+    void handleRequestFailBadPath_MalformedIdentifierException(Class<? extends MalformedIdentifierException> clazz, String path, String errorMessage) {
         when(resourceRequest.getUrlPathParameters()).thenReturn(path == null ? null : Arrays.asList(path.split("/")));
         when(resourceRequest.getAuthorizedDomain()).thenReturn(testUtilsDao.getD1());
 
-        RuntimeException result = assertThrows(clazz,
+        MalformedIdentifierException result = assertThrows(clazz,
                 () -> testInstance.handleRequest(user, resourceRequest, resourceResponse));
 
         assertThat(result.getMessage(), containsString(errorMessage));
@@ -144,7 +162,6 @@ class ResourceServiceTest extends AbstractJunit5BaseDao {
 
     @Test
     void handleRequestCreateNotAuthorized() {
-
         when(resourceRequest.getUrlPathParameters()).thenReturn(Arrays.asList(TestConstants.TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_SCHEMA_1 + "::0007:001:utest"));
         when(resourceRequest.getAuthorizedDomain()).thenReturn(testUtilsDao.getD1());
         when(resourceRequest.getAction()).thenReturn(ResourceAction.CREATE_UPDATE);
@@ -156,7 +173,7 @@ class ResourceServiceTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.handleRequest(user, resourceRequest, resourceResponse));
 
-        assertThat(result.getMessage(), containsString("User not authorized"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()), containsStringIgnoringCase("User not authorized"));
     }
 
 
@@ -170,9 +187,8 @@ class ResourceServiceTest extends AbstractJunit5BaseDao {
     @Test
     void testFindOwnerNotExists() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.findOwner("CN=User not exists,OU=Test Users,O=Test Domain,C=BE:1234567890"));
-        assertThat(result.getMessage(), containsString("Invalid owner id"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()), containsStringIgnoringCase("Invalid owner id"));
     }
-
 
     @Test
     void testSplitSerialFromSubject() {

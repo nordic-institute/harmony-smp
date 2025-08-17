@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,8 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-class BaseDaoTest extends AbstractBaseDao {
-
+class  BaseDaoTest extends AbstractBaseDao {
 
     @Autowired
     DomainDao testInstance;
