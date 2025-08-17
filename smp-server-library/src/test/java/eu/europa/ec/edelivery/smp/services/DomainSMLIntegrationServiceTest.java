@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
@@ -54,9 +54,9 @@ class DomainSMLIntegrationServiceTest extends AbstractJunit5BaseDao {
     @Autowired
     private DomainSMLIntegrationService testInstance;
     // needed for mocking WS services
-    @MockitoBean
+    @MockBean
     private IManageParticipantIdentifierWS iManageParticipantIdentifierWS;
-    @MockitoBean
+    @MockBean
     private IManageServiceMetadataWS iManageServiceMetadataWS;
 
     @BeforeEach

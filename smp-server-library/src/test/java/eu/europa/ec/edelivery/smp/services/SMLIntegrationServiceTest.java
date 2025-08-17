@@ -31,8 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,15 +53,15 @@ class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     private SMPExceptionLanguageService smpExceptionLanguageService;
     @Autowired
     IdentifierService identifierService;
-    @MockitoBean
+    @MockBean
     private IManageServiceMetadataWS iManageServiceMetadataWS;
-    @MockitoBean
+    @MockBean
     private IManageParticipantIdentifierWS iManageParticipantIdentifierWS;
-    @MockitoSpyBean
+    @SpyBean
     protected SmlConnector smlConnector;
     @Autowired
     protected SMLIntegrationService testInstance;
-    @MockitoSpyBean
+    @SpyBean
     ConfigurationService configurationService;
 
     @BeforeEach

@@ -35,8 +35,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
@@ -57,11 +57,11 @@ import static org.mockito.Mockito.verify;
 class SmlConnectorDomainTest extends AbstractServiceTest {
 
     // Beans
-    @MockitoSpyBean
+    @SpyBean
     private ConfigurationService configurationService;
-    @MockitoBean
+    @MockBean
     private IManageServiceMetadataWS iManageServiceMetadataWS;
-    @MockitoSpyBean
+    @SpyBean
     private SmlConnector testInstance;
     @Autowired
     private SMPExceptionLanguageService smpExceptionLanguageService;

@@ -30,8 +30,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -56,7 +56,7 @@ class ServiceMetadataSignerTest extends AbstractJunit5BaseDao {
 
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
-    @MockitoSpyBean
+    @SpyBean
     UIKeystoreService uiKeystoreService;
 
     @Autowired
