@@ -76,7 +76,8 @@ public class SMPAuthorizationService {
                                    GroupMemberDao groupMemberDao,
                                    ResourceMemberDao resourceMemberDao,
                                    ConversionService conversionService,
-                                   ConfigurationService configurationService, SMPExceptionLanguageService smpExceptionLanguageService) {
+                                   ConfigurationService configurationService,
+                                   SMPExceptionLanguageService smpExceptionLanguageService) {
         this.userDao = userDao;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;

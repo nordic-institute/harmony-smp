@@ -46,14 +46,13 @@ import java.util.UUID;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOC_SCHEMA_2;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @ContextConfiguration(classes = {ResourceResolverService.class, ConversionTestConfig.class})
 public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest {
-
 
     @Autowired
     protected ResourceResolverService testInstance;
 
+    @Autowired
     private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach

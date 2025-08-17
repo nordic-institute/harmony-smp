@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,9 +47,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
-
     @Autowired
     private ConfigurationDao configurationDao;
+
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach
     public void before() throws IOException {
@@ -288,7 +291,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    void encryptDefault() throws IOException {
+    void encryptDefault() {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
@@ -310,11 +313,12 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
                 () -> configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f));
         //then
         assertNotNull(result);
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Error occurred while encrypting the property:"));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                CoreMatchers.containsStringIgnoringCase("Cannot encrypt the property"));
     }
 
     @Test
-    void decryptDefault() throws IOException {
+    void decryptDefault() {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
@@ -328,7 +332,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    void decryptDefaultError() throws IOException {
+    void decryptDefaultError() {
         // given
         File f = generateRandomPrivateKey();
         File fErr = new File("no.key");
@@ -340,7 +344,8 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
                 () -> configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, fErr));
         //then
         assertNotNull(result);
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Error occurred while decrypting the property:"));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                CoreMatchers.containsStringIgnoringCase("Cannot decrypt the property"));
     }
 
     @Test

@@ -24,7 +24,6 @@ import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,12 +42,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
  */
 @RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers"})
 public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice {
-
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
-
-    public ServiceErrorControllerAdvice(SMPExceptionLanguageService smpExceptionLanguageService) {
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
-    }
 
     @Override
     @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class,  AuthenticationException.class,})
@@ -72,6 +65,7 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
     }
 
     ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, ErrorBusinessCode businessCode, String msg, Exception exception) {
+
         ResponseEntity response = ErrorResponseBuilder.status(status)
                 .businessCode(businessCode)
                 .errorCode(errorCode)

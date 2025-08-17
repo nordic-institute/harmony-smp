@@ -35,13 +35,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
+import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.ERROR_UNEXPECTED_MESSAGE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,11 +57,11 @@ import static org.mockito.Mockito.verify;
 class SmlConnectorDomainTest extends AbstractServiceTest {
 
     // Beans
-    @SpyBean
+    @MockitoSpyBean
     private ConfigurationService configurationService;
-    @MockBean
+    @MockitoBean
     private IManageServiceMetadataWS iManageServiceMetadataWS;
-    @SpyBean
+    @MockitoSpyBean
     private SmlConnector testInstance;
     @Autowired
     private SMPExceptionLanguageService smpExceptionLanguageService;
