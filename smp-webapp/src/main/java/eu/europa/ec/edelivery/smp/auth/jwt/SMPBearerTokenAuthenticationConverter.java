@@ -24,8 +24,8 @@ import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,23 +55,24 @@ import java.util.stream.Collectors;
  */
 public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTokenAuthenticationToken, SMPAuthenticationToken> {
     private static final Logger LOG = LoggerFactory.getLogger(SMPBearerTokenAuthenticationConverter.class);
-    protected static final BadCredentialsException UNAUTHORIZED_INVALID_BEARER_TOKEN = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_BEARER_TOKEN.getMessage());
 
     private String principalClaimName = "client_id"; // Default claim name for the principal, can be overridden
 
     protected final JwtDecoder jwtDecoder;
     protected final CredentialService credentialService;
     protected final DomainDao domainDao;
+    protected final SMPExceptionLanguageService smpExceptionLanguageService;
 
     public SMPBearerTokenAuthenticationConverter(JwtDecoder jwtDecoder,
                                                  CredentialService credentialService,
-                                                 DomainDao domainDao) {
+                                                 DomainDao domainDao, SMPExceptionLanguageService smpExceptionLanguageService) {
         Assert.notNull(jwtDecoder, "jwtDecoder cannot be null");
         Assert.notNull(credentialService, "credentialService cannot be null");
         Assert.notNull(domainDao, "domainDao cannot be null");
         this.jwtDecoder = jwtDecoder;
         this.credentialService = credentialService;
         this.domainDao = domainDao;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     /**
@@ -88,7 +89,7 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         Jwt jwt = this.getJwt(authBearer);
         if (StringUtils.isBlank(jwt.getSubject())) {
             LOG.debug("Failed to authenticate since the JWT subject is empty");
-            throw UNAUTHORIZED_INVALID_BEARER_TOKEN;
+            throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.bearer.token"));
         }
         List<SMPAuthority> authorities = getGrantedAuthorities(jwt);
         String principalClaimValue = jwt.getClaimAsString(getPrincipalClaimName());

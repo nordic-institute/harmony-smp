@@ -37,6 +37,7 @@ import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * Service implements logic if user can activate action on the resource
@@ -70,6 +71,7 @@ public class ResourceGuard {
     }
 
     public boolean userIsAuthorizedForAction(SMPUserDetails user, ResourceAction action, DBResource resource, DBDomain domain) {
+        String userInfo = user != null ? user.getUsername() : "anonymous";
         switch (action) {
             case READ:
                 return canRead(user, resource);
@@ -78,10 +80,12 @@ public class ResourceGuard {
             case DELETE:
                 return canDelete(user, resource, domain);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Action not supported", "Unknown user action: [" + action + "]");
+        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.resource.action",
+                Map.of("user", userInfo, "action", action));
     }
 
     public boolean userIsAuthorizedForAction(SMPUserDetails user, ResourceAction action, DBSubresource subresource) {
+        String userInfo = user != null ? user.getUsername() : "anonymous";
         switch (action) {
             case READ:
                 return canRead(user, subresource);
@@ -90,7 +94,8 @@ public class ResourceGuard {
             case DELETE:
                 return canDelete(user, subresource);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Action not supported", "Unknown user action: [" + action + "]");
+        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.resource.action",
+                Map.of("user", userInfo, "action", action));
     }
 
 

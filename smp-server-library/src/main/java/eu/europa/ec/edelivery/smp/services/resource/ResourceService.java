@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_OWNER;
@@ -168,13 +169,13 @@ public class ResourceService {
         }
 
         return optOwnerUser.orElseThrow(
-                () -> new SMPRuntimeException(ErrorCode.INVALID_OWNER, ownerName));
+                () -> new SMPRuntimeException(ErrorCode.INVALID_OWNER, "error.user.invalid.owner", Map.of("identifier", ownerName)));
     }
 
     public static String[] splitSerialFromSubject(String certificateId) {
         int idx = certificateId.lastIndexOf(":");
         if (idx <= 0) {
-            throw new SMPRuntimeException(INVALID_OWNER, certificateId);
+            throw new SMPRuntimeException(INVALID_OWNER, "error.user.invalid.owner", Map.of("identifier", certificateId));
         }
         return new String[]{certificateId.substring(0, idx), certificateId.substring(idx + 1)};
 

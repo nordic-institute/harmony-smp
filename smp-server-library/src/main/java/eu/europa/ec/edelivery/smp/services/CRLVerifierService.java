@@ -158,14 +158,14 @@ public class CRLVerifierService implements ICRLVerifierService {
                 crl = (X509CRL) cf.generateCRL(crlStream);
             }
         } catch (IOException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, e, "Can not download CRL '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e));
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.cannot.download", e,
+                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(e)));
         } catch (CertificateException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, e, "CRL list is not supported '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e));
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.not.supported", e,
+                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(e)));
         } catch (CRLException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, e, "CRL can not be read: '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e));
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.cannot.read", e,
+                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(e)));
         } catch (SMPRuntimeException exc) {
             exception = exc;
         }
@@ -203,7 +203,8 @@ public class CRLVerifierService implements ICRLVerifierService {
             }
             return inputStream;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL + "'", ExceptionUtils.getRootCauseMessage(exc));
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.download.issue",
+                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(exc)));
         }
     }
 

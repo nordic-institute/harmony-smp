@@ -20,6 +20,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +28,10 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * @author Joze Rihtarsic
@@ -39,6 +40,11 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 @Repository
 public class SubresourceDefDao extends BaseDao<DBSubresourceDef> {
 
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public SubresourceDefDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
 
     /**
      * Returns DBSubresourceDef records from the database.
@@ -66,7 +72,8 @@ public class SubresourceDefDao extends BaseDao<DBSubresourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for SubresourceDef with identifier:" + resourceDeftIdentifier));
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.subresource.lookup.by.identifier.illegal.state.multiple.entries",
+                    Map.of("identifier", resourceDeftIdentifier)));
         }
     }
 
@@ -85,7 +92,8 @@ public class SubresourceDefDao extends BaseDao<DBSubresourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for SubresourceDef with url context:" + resourceDeftUrlSegment));
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.subresource.lookup.by.url.illegal.state.multiple.entries",
+                    Map.of("urlSegment", resourceDeftUrlSegment)));
         }
     }
 

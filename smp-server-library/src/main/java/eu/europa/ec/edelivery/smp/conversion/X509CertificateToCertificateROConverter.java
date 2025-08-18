@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -109,8 +110,8 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         try {
             certPolicyIdentifiers = X509CertificateUtils.getCertificatePolicyIdentifiers(cert);
         } catch (CertificateException cex) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
-                    "Error occurred while retrieving certPolicyIdentifiers " + subject, cex.getMessage());
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.cannot.get.policy.identifier", cex,
+                    Map.of("certificate", subject, "error", cex.getMessage()));
         }
 
 
@@ -136,8 +137,8 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         try {
             cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
         } catch (CertificateEncodingException cex) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
-                    "Error occurred while decoding certificate " + subject, cex.getMessage());
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.cannot.decode", cex,
+                    Map.of("certificate", subject, "error", cex.getMessage()));
 
         }
         // generate clientCertHeader header

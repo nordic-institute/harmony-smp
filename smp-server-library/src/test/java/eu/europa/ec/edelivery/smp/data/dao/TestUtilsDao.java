@@ -33,6 +33,7 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -57,6 +58,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @Repository
 public class TestUtilsDao {
+
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @Autowired
     UserDao userDao;

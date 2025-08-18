@@ -18,6 +18,11 @@
  */
 package eu.europa.ec.edelivery.smp.testutil;
 
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.smp.spi.exceptions.SMPException;
+import eu.europa.ec.smp.spi.exceptions.TranslatedMessage;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.junit.jupiter.api.function.Executable;
 
 import java.time.OffsetDateTime;
@@ -28,6 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Utility class for DomiSMP assertions.
@@ -72,10 +78,29 @@ public class DomiSMPAssertions {
         assertResultContainsExpected(exception.getMessage(), messages);
     }
 
+    public static void assertThrowsContainingMessages(Class<? extends Throwable> exceptionClass, Executable executable, SMPExceptionLanguageService smpExceptionLanguageService, String... messages) {
+        Throwable exception = assertThrows(exceptionClass, executable);
+        if (!(exception instanceof TranslatedMessage)) {
+            fail("Cannot translate exception message for unknown exception type: " + exception.getClass());
+        }
+        assertResultContainsExpected(smpExceptionLanguageService.getMessageTranslation(
+                ((TranslatedMessage) exception).getMessageCode(), ((TranslatedMessage) exception).getMessageArgs()), messages);
+    }
+
     public static void assertThrowsMatchingRegexExpressions(Class<? extends Throwable> exceptionClass, Executable executable, String... regexExpressions) {
         Throwable exception = assertThrows(exceptionClass, executable);
         assertResultMatchesExpected(exception.getMessage(), regexExpressions);
     }
+
+    public static void assertThrowsMatchingRegexExpressions(Class<? extends Throwable> exceptionClass, Executable executable, SMPExceptionLanguageService smpExceptionLanguageService, String... regexExpressions) {
+        Throwable exception = assertThrows(exceptionClass, executable);
+        if (!(exception instanceof TranslatedMessage)) {
+            fail("Cannot translate exception message for unknown exception type: " + exception.getClass());
+        }
+        assertResultMatchesExpected(smpExceptionLanguageService.getMessageTranslation(
+                    ((TranslatedMessage) exception).getMessageCode(), ((TranslatedMessage) exception).getMessageArgs()), regexExpressions);
+    }
+
 
     public static void assertResultContainsExpected(String result, String... expected) {
         Arrays.stream(expected).forEach(message -> assertThat(result, containsString(message)));

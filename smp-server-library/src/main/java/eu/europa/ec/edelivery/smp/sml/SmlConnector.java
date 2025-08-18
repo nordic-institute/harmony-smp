@@ -136,7 +136,8 @@ public class SmlConnector implements ApplicationContextAware {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (InternalErrorFault | UnauthorizedFault e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 
@@ -160,7 +161,8 @@ public class SmlConnector implements ApplicationContextAware {
             normalizedParticipantString = identifierService.formatParticipant(domain.getDomainCode(), normalizedParticipantId);
         } catch (MalformedIdentifierException e) {
             LOG.error("Invalid participant identifier: [{}].", e.getMessage());
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
 
         }
         if (!domain.isSmlRegistered()) {
@@ -178,7 +180,8 @@ public class SmlConnector implements ApplicationContextAware {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 
@@ -197,7 +200,8 @@ public class SmlConnector implements ApplicationContextAware {
     protected boolean processSMLErrorMessage(Exception e, Identifier participantIdentifierType) {
         if (!isOkMessage(participantIdentifierType, e.getMessage())) {
             LOG.error(e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
         LOG.warn(e.getMessage(), e);
         return true;
@@ -237,7 +241,8 @@ public class SmlConnector implements ApplicationContextAware {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
         // if not error is thrown - the registration is done OK.
         return true;
@@ -262,7 +267,8 @@ public class SmlConnector implements ApplicationContextAware {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
         // if not error is thrown - the domain exists and is valid
         return true;
@@ -284,7 +290,8 @@ public class SmlConnector implements ApplicationContextAware {
     private void processSMLErrorMessage(Exception e, DBDomain domain) {
         if (!isOkMessage(domain, e.getMessage())) {
             LOG.error(e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
         LOG.warn(e.getMessage(), e);
     }
@@ -336,7 +343,8 @@ public class SmlConnector implements ApplicationContextAware {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 
@@ -351,7 +359,8 @@ public class SmlConnector implements ApplicationContextAware {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 
@@ -371,7 +380,8 @@ public class SmlConnector implements ApplicationContextAware {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
+                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 

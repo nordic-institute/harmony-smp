@@ -30,6 +30,7 @@ import org.springframework.core.GenericTypeResolver;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
@@ -100,7 +101,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     String msg = "Error occurred while retrieving list for " + roClass.getName();
                     LOG.error(msg, e);
-                    throw new SMPRuntimeException(INTERNAL_ERROR, "DB list query exception.", msg);
+                    throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.database.list.query",
+                            Map.of("error", msg));
                 }
             }
             sg.getServiceEntities().addAll(lstRo);
@@ -123,7 +125,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             String msg = "Error occurred while converting to RO Entity for " + roClass.getName();
             LOG.error(msg, e);
-            throw new SMPRuntimeException(INTERNAL_ERROR, "DB to RO entity conversion.", msg);
+            throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.conversion.from.database.entity.to.value.object",
+                    Map.of("error", msg));
         }
     }
 
@@ -140,7 +143,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             String msg = "Error occurred while converting to DB entity for " + dbClass.getName();
             LOG.error(msg, e);
-            throw new SMPRuntimeException(INTERNAL_ERROR, "RO to DB entity conversion.", msg);
+            throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.conversion.from.value.object.to.database.entity",
+                    Map.of("error", msg));
         }
     }
 

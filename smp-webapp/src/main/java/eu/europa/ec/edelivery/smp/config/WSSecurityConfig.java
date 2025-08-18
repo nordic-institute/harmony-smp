@@ -56,6 +56,8 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.util.Map;
+
 import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN;
 import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_SECURITY_PATH_AUTHENTICATE;
 
@@ -287,7 +289,8 @@ public class WSSecurityConfig {
         try {
             getClientCertAuthenticationFilter().setClientCertAuthenticationEnabled(clientCertEnabled);
         } catch (Exception e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + clientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.setting.client.cert.feature.enabled",
+                    Map.of("clientCertEnabled", clientCertEnabled, "error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 
@@ -295,7 +298,8 @@ public class WSSecurityConfig {
         try {
             getEDeliveryX509AuthenticationFilter().setHttpHeaderAuthenticationEnabled(sslClientCertEnabled);
         } catch (Exception e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + sslClientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.setting.client.cert.feature.enabled",
+                    Map.of("clientCertEnabled", sslClientCertEnabled, "error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 }

@@ -58,13 +58,15 @@ public class PropertyUtils {
         if (StringUtils.isBlank(value)) {
             // empty/ null value is invalid
             if (prop.isMandatory()) {
-                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Empty mandatory property: " + prop.getProperty());
+                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.mandatory.property",
+                        Map.of("propertyName", prop.getProperty()));
             }
             return null;
         }
         if (!prop.getValuePattern().matcher(value).find()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, prop.getErrorValueMessage());
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
+                    Map.of("error", prop.getErrorValueMessage()));
         }
 
         SMPPropertyTypeEnum type = prop.getPropertyType();
@@ -83,7 +85,8 @@ public class PropertyUtils {
 
         if (!prop.getValuePattern().matcher(value).matches()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, prop.getErrorValueMessage());
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
+                    Map.of("error", prop.getErrorValueMessage()));
         }
         SMPPropertyTypeEnum type = prop.getPropertyType();
         return isValidPropertyType(type, value, confFolder);
@@ -108,7 +111,7 @@ public class PropertyUtils {
         }
 
         if (StringUtils.length(value) > 2000) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid property value! Error: Value to long. Max. allowed size 2000 characters!");
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.length");
         }
 
         switch (type) {
@@ -116,29 +119,29 @@ public class PropertyUtils {
                 if (StringUtils.equalsAnyIgnoreCase(trim(value), "true", "false")) {
                     return Boolean.valueOf(value.trim());
                 }
-                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid boolean value: ["
-                        + value + "]. Error: Only {true, false} are allowed!");
+                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.boolean",
+                        Map.of("propertyValue", value));
             case REGEXP:
                 try {
                     return Pattern.compile(value);
                 } catch (PatternSyntaxException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "Invalid regular expression: ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.regular.expression", ex,
+                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
                 }
             case INTEGER:
                 try {
                     return Integer.parseInt(value);
                 } catch (NumberFormatException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "Invalid integer: ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.integer", ex,
+                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
                 }
             case LIST_STRING: {
                 return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR));
             }
             case MAP_STRING: {
                 if (!value.contains(":")) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid map: ["
-                            + value + "]. Error: Map must have at least one key:value entry!");
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.map",
+                            Map.of("propertyValue", value));
                 }
                 return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR)).stream().collect(Collectors.toMap(
                         val -> trim(substringBefore(val, REG_EXP_MAP_SEPARATOR)), val -> trim(substringAfter(val, REG_EXP_MAP_SEPARATOR))));
@@ -146,11 +149,12 @@ public class PropertyUtils {
             case PATH: {
                 File file = new File(rootFolder, value);
                 if (!file.exists() && !file.mkdirs()) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Folder: ["
-                            + value + "] does not exist, and can not be created!");
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.folder",
+                            Map.of("propertyValue", value));
                 }
                 if (!file.isDirectory()) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Path: [" + value + "] is not folder!");
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.folder.not.directory",
+                            Map.of("propertyValue", value));
                 }
                 return new File(value);
             }
@@ -166,14 +170,15 @@ public class PropertyUtils {
                 if (EmailValidator.getInstance().isValid(trimVal)) {
                     return trimVal;
                 } else {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid email address: [" + value + "].");
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.email",
+                            Map.of("propertyValue", value));
                 }
             case URL:
                 try {
                     return new URL(value.trim());
                 } catch (MalformedURLException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "Invalid URL address:  ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.url", ex,
+                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
                 }
             case STRING:
                 return value;
@@ -181,8 +186,8 @@ public class PropertyUtils {
                 try {
                     return CronExpression.parse(value);
                 } catch (IllegalArgumentException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, ex, "cron expression:  ["
-                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex));
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.cron.expression", ex,
+                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
                 }
         }
         return null;

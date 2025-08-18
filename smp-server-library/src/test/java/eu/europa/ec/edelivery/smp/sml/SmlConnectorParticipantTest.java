@@ -19,8 +19,8 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponse;
 import ec.services.wsdl.bdmsl.data._1.ExistsParticipant;
+import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponse;
 import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
@@ -45,7 +45,8 @@ import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -56,13 +57,13 @@ import static org.mockito.Mockito.*;
 class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
 
     // Beans
-    @MockitoSpyBean
+    @SpyBean
     private ConfigurationService configurationService;
-    @MockitoSpyBean
+    @SpyBean
     private IBDMSLServiceWS ibdmslServiceWS;
-    @MockitoSpyBean
+    @SpyBean
     private IManageParticipantIdentifierWS iManageParticipantIdentifierWS;
-    @MockitoSpyBean
+    @SpyBean
     private SmlConnector testInstance;
 
     // Mocks

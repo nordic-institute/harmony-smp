@@ -154,6 +154,6 @@ class SMPLanguageResourceServiceTest {
         assertEquals(testText, result.get(testKey).asText());
         // 3 properties are added by the updateLocalesOnDisk method
         // from the classpath resource META-INF/resources/ui/assets/i18n/en.json
-        assertEquals(4, result.size());
+        assertEquals(1133, result.size());
     }
 }

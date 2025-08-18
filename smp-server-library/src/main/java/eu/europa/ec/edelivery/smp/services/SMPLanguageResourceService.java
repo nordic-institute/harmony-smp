@@ -55,13 +55,16 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 @Service
 public class SMPLanguageResourceService {
 
+    public static final String LANGUAGE_DEFAULT = "en";
+    public static final String LANGUAGE_RESOURCE_SUFFIX = ".json";
+
     public static final String LANGUAGE_FILENAME_UI_PREFIX = "ui_";
     public static final String LANGUAGE_RESOURCE_UI_FOLDER = "/META-INF/resources/ui/assets/i18n/";
-    public static final String LANGUAGE_RESOURCE_UI_DEFAULT = LANGUAGE_RESOURCE_UI_FOLDER + "en.json";
+    public static final String LANGUAGE_RESOURCE_UI_DEFAULT = LANGUAGE_RESOURCE_UI_FOLDER + LANGUAGE_DEFAULT + LANGUAGE_RESOURCE_SUFFIX;
 
     public static final String LANGUAGE_FILENAME_MAIL_PREFIX = "mail-messages_";
     public static final String LANGUAGE_RESOURCE_MAIL_FOLDER = "/mail-messages/";
-    public static final String LANGUAGE_RESOURCE_MAIL_DEFAULT = LANGUAGE_RESOURCE_MAIL_FOLDER + "en.json";
+    public static final String LANGUAGE_RESOURCE_MAIL_DEFAULT = LANGUAGE_RESOURCE_MAIL_FOLDER + LANGUAGE_DEFAULT + LANGUAGE_RESOURCE_SUFFIX;
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPLanguageResourceService.class);
 
@@ -94,16 +97,26 @@ public class SMPLanguageResourceService {
         return new File(localeFolder, languageFileName).toPath().toAbsolutePath();
     }
 
+    @Cacheable("ui-translations")
+    public Properties getUiProperties(String langCode) {
+        Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_UI_PREFIX, langCode, LANGUAGE_RESOURCE_UI_DEFAULT);
+        return loadProperties(langRes);
+    }
+
     @Cacheable("mail-templates-translations")
     public Properties getMailProperties(String langCode) {
         Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_MAIL_PREFIX, langCode, LANGUAGE_RESOURCE_MAIL_DEFAULT);
+        return loadProperties(langRes);
+    }
+
+    private Properties loadProperties(Resource langRes) {
         ObjectMapper mapper = jsonObjectMapper();
         try (InputStream target = langRes.getInputStream()) {
             // Read JSON nodes from input streams
             JsonNode jsonTranslation = mapper.readTree(target);
             Properties properties = new Properties();
             jsonTranslation.fieldNames().forEachRemaining(fieldName ->
-                properties.setProperty(fieldName, jsonTranslation.get(fieldName).asText()));
+                    properties.setProperty(fieldName, jsonTranslation.get(fieldName).asText()));
             return properties;
         } catch (IOException e) {
             LOG.error("Error occurred while merging the translation files", e);
@@ -112,7 +125,6 @@ public class SMPLanguageResourceService {
     }
 
     public Resource getTranslationResourceFile(String prefix, String code, String defaultResourceFile) {
-
         Path langResourcePath = getLanguageFile(prefix, code);
         if (langResourcePath != null && langResourcePath.toFile().exists()) {
             LOG.debug("Returning local mail translation file [{}]", langResourcePath.toAbsolutePath());
@@ -136,8 +148,8 @@ public class SMPLanguageResourceService {
      * existing translation file, the method will add it from the classpath translation file.
      */
     public void updateLocalesOnDisk() {
-        updateLocalesOnDisk(LANGUAGE_FILENAME_UI_PREFIX, LANGUAGE_RESOURCE_UI_FOLDER + "*.json");
-        updateLocalesOnDisk(LANGUAGE_FILENAME_MAIL_PREFIX, LANGUAGE_RESOURCE_MAIL_FOLDER + "*.json");
+        updateLocalesOnDisk(LANGUAGE_FILENAME_UI_PREFIX, LANGUAGE_RESOURCE_UI_FOLDER + "*" + LANGUAGE_RESOURCE_SUFFIX);
+        updateLocalesOnDisk(LANGUAGE_FILENAME_MAIL_PREFIX, LANGUAGE_RESOURCE_MAIL_FOLDER + "*" + LANGUAGE_RESOURCE_SUFFIX);
     }
 
     public void updateLocalesOnDisk(String filenamePrefix, String resourcePathPattern) {
@@ -192,7 +204,7 @@ public class SMPLanguageResourceService {
      * @return the filename for the language file
      */
     private String getLanguageFilename(String prefix, String langCode) {
-        return normalize(prefix) + normalize(langCode) + ".json";
+        return normalize(prefix) + normalize(langCode) + LANGUAGE_RESOURCE_SUFFIX;
     }
 
     /**
@@ -223,8 +235,8 @@ public class SMPLanguageResourceService {
         }
         // update file
         ObjectMapper mapper = jsonObjectMapper();
-        JsonNode mergedJson = null;
-        boolean changed = false;
+        JsonNode mergedJson;
+        boolean changed;
         try (InputStream target = new FileInputStream(localFilePath.toFile());
              InputStream classpathTranslation = resourceTranslation.getInputStream()) {
             // Read JSON nodes from input streams

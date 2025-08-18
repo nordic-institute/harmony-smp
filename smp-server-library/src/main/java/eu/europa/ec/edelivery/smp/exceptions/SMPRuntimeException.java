@@ -18,23 +18,63 @@
  */
 package eu.europa.ec.edelivery.smp.exceptions;
 
-/**
- *
- */
-public class SMPRuntimeException  extends RuntimeException  {
+import eu.europa.ec.smp.spi.exceptions.TranslatedMessage;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class SMPRuntimeException extends RuntimeException implements TranslatedMessage {
+
     private final ErrorCode errorCode;
 
-    public SMPRuntimeException(ErrorCode errorCode, Object ... args) {
-        super(errorCode.getMessage(args));
-        this.errorCode = errorCode;
+    private final String messageCode;
+
+    private final Map<String, Object> args;
+
+    private String defaultTranslatedMessage;
+
+    public SMPRuntimeException(ErrorCode errorCode, String messageCode) {
+        this(errorCode, messageCode, new HashMap<>());
     }
 
-    public SMPRuntimeException(ErrorCode errorCode, Throwable th, Object ... args) {
-        super(errorCode.getMessage(args), th);
+    public SMPRuntimeException(ErrorCode errorCode, String messageCode, Map<String, Object> args) {
         this.errorCode = errorCode;
+        this.messageCode = messageCode;
+        this.args = args;
+    }
+
+    public SMPRuntimeException(ErrorCode errorCode, String messageCode, Throwable th) {
+        this(errorCode, messageCode, th, new HashMap<>());
+    }
+
+    public SMPRuntimeException(ErrorCode errorCode, String messageCode, Throwable th, Map<String, Object> args) {
+        super(th);
+        this.errorCode = errorCode;
+        this.messageCode = messageCode;
+        this.args = args;
     }
 
     public ErrorCode getErrorCode() {
         return errorCode;
+    }
+
+    @Override
+    public void setDefaultTranslatedMessage(String message) {
+        this.defaultTranslatedMessage = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return defaultTranslatedMessage;
+    }
+
+    @Override
+    public String getMessageCode() {
+        return messageCode;
+    }
+
+    @Override
+    public Map<String, Object> getMessageArgs() {
+        return args;
     }
 }

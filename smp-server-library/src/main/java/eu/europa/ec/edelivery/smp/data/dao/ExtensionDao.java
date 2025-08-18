@@ -22,16 +22,17 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
 /**
  * The Extension repository
@@ -42,8 +43,14 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMA
 @Repository
 public class ExtensionDao extends BaseDao<DBExtension> {
 
-
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ExtensionDao.class);
+
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public ExtensionDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
+
 
     /**
      * Returns extension records from the database.
@@ -74,7 +81,8 @@ public class ExtensionDao extends BaseDao<DBExtension> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(identifier));
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation(
+                    "error.domain.illegal.state.multiple.entries", Map.of("domain", identifier)));
         }
     }
 }

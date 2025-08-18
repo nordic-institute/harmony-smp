@@ -26,10 +26,7 @@ import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.CredentialService;
-import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
+import eu.europa.ec.edelivery.smp.services.*;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -62,9 +59,10 @@ class SMPAuthenticationProviderTest {
     CredentialsAlertService mockAlertService = Mockito.mock(CredentialsAlertService.class);
     UserDao mockUserDao = Mockito.mock(UserDao.class);
     PeriodicalAlertDao mockPeriodicalAlertDao = Mockito.mock(PeriodicalAlertDao.class);
+    SMPExceptionLanguageService smpExceptionLanguageService = Mockito.mock(SMPExceptionLanguageService.class);
 
 
-    CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mockAlertService, mockPeriodicalAlertDao);
+    CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mockAlertService, mockPeriodicalAlertDao, smpExceptionLanguageService);
     SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService, null);
 
 

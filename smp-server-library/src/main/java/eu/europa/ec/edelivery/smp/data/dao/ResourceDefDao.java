@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 
@@ -32,11 +33,11 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * @author Joze Rihtarsic
@@ -45,6 +46,12 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 @Repository
 public class ResourceDefDao extends BaseDao<DBResourceDef> {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(ResourceDefDao.class);
+
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public ResourceDefDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
 
     /**
      * Returns DBResourceDef records from the database.
@@ -72,8 +79,9 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
      * Returns the ResourceDef by url path segment.
      * Returns the ResourceDef or Optional.empty() if there is no ResourceDef.
      *
+     * @param resourceDeftUrlSegment the URL segment
      * @return the only single record for ResourceDef url segment or empty value
-     * @throws IllegalStateException if more than one ResourceDef is returned
+     * @throws IllegalStateException if more than one ResourceDef is found
      */
     public Optional<DBResourceDef> getResourceDefByURLSegment(String resourceDeftUrlSegment) {
         try {
@@ -83,16 +91,17 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef with url context:" + resourceDeftUrlSegment));
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.resource.lookup.by.url.illegal.state.multiple.entries",
+                    Map.of("urlSegment", resourceDeftUrlSegment)));
         }
     }
 
     /**
-     * Returns the ResourceDef by url path segment.
+     * Returns the ResourceDef by resource identifier.
      * Returns the ResourceDef or Optional.empty() if there is no ResourceDef.
      *
      * @return the only single record for ResourceDef url segment or empty value
-     * @throws IllegalStateException if more than one ResourceDef is returned
+     * @throws IllegalStateException if more than one ResourceDef is found
      */
     public Optional<DBResourceDef> getResourceDefByIdentifier(String resourceIdentifier) {
         try {
@@ -102,7 +111,8 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef with identifier:" + resourceIdentifier));
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.resource.lookup.by.identifier.illegal.state.multiple.entries",
+                    Map.of("identifier", resourceIdentifier)));
         }
     }
 
@@ -133,7 +143,7 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "More than one resource type is registered for the name!");
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.resource.multiple.entries");
         }
     }
 

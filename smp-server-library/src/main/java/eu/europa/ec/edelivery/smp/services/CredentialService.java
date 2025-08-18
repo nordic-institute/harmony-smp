@@ -73,12 +73,7 @@ import static java.util.Locale.US;
 @Service
 public class CredentialService {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialService.class);
-    protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
-    protected static final BadCredentialsException UNAUTHORIZED_INVALID_RESET_TOKEN = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_RESET_TOKEN.getMessage());
-    protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_CREDENTIAL_SUSPENDED.getMessage());
     protected static final int RESET_TOKEN_LENGTH = 64;
-
-    private static final String USER_ID_REQUEST_TYPE = "UserId";
 
     final UserDao userDao;
     final CredentialDao credentialDao;
@@ -88,6 +83,11 @@ public class CredentialService {
     final ConfigurationService configurationService;
     final CredentialsAlertService alertService;
     final PeriodicalAlertDao periodicalAlertDao;
+    final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    protected final BadCredentialsException badCredentialsException;
+    protected final BadCredentialsException unauthorizedInvalidResetToken;
+    protected final BadCredentialsException suspendedCredentialsException;
 
     /**
      * thread safe validator
@@ -95,7 +95,7 @@ public class CredentialService {
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US));
 
 
-    public CredentialService(UserDao mUserDao, CredentialDao credentialDao, ConversionService conversionService, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService, CredentialsAlertService alertService, PeriodicalAlertDao periodicalAlertDao) {
+    public CredentialService(UserDao mUserDao, CredentialDao credentialDao, ConversionService conversionService, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService, CredentialsAlertService alertService, PeriodicalAlertDao periodicalAlertDao, SMPExceptionLanguageService smpExceptionLanguageService) {
         this.userDao = mUserDao;
         this.credentialDao = credentialDao;
         this.conversionService = conversionService;
@@ -104,6 +104,11 @@ public class CredentialService {
         this.configurationService = configurationService;
         this.alertService = alertService;
         this.periodicalAlertDao = periodicalAlertDao;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+
+        this.badCredentialsException = new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.username.password"));
+        this.unauthorizedInvalidResetToken = new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.reset.token"));
+        this.suspendedCredentialsException = new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.credential.suspended"));
     }
 
     @Transactional(noRollbackFor = {AuthenticationException.class, SMPRuntimeException.class, RuntimeException.class})
@@ -119,13 +124,13 @@ public class CredentialService {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider", username);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, "Username does not exits", username);
                 delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
-                throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
+                throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.username.password"));
             }
             credential = dbCredential.get();
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
             delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
-            throw  new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
+            throw badCredentialsException;
 
         }
         validateIfCredentialIsSuspended(credential, startTime);
@@ -175,14 +180,13 @@ public class CredentialService {
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
                 delayResponse(CredentialType.ACCESS_TOKEN, startTime);
-                throw BAD_CREDENTIALS_EXCEPTION;
+                throw badCredentialsException;
             }
             credential = dbCredential.get();
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
             delayResponse(CredentialType.ACCESS_TOKEN, startTime);
-            throw BAD_CREDENTIALS_EXCEPTION;
-
+            throw badCredentialsException;
         }
 
         validateIfCredentialIsSuspended(credential, startTime);
@@ -261,7 +265,7 @@ public class CredentialService {
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
                 delayResponse(CredentialType.CERTIFICATE, startTime);
-                throw BAD_CREDENTIALS_EXCEPTION;
+                throw badCredentialsException;
             }
             credential = optCredential.get();
         } catch (AuthenticationException ex) {
@@ -375,23 +379,27 @@ public class CredentialService {
         Optional<DBCredential> optCredential = getActiveCredentialsForUsernameToReset(username, false);
         if (optCredential.isEmpty()) {
             LOG.warn("User [{}] does not have active reset token!", username);
-            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+            throw unauthorizedInvalidResetToken;
         }
         DBCredential dbCredential = optCredential.get();
         if (!resetToken.equals(dbCredential.getResetToken())) {
             LOG.warn("User [{}] reset token does not match the active reset token!", username);
-            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+            throw unauthorizedInvalidResetToken;
         }
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
         if (pattern != null && !pattern.matcher(newPassword).matches()) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because it does not match password policy!: [{}]", username);
-            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL, configurationService.getPasswordPolicyValidationMessage());
+            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL,
+                    smpExceptionLanguageService.getMessageTranslation("error.unauthorized.user.change.invalid.new.credential",
+                            Map.of("validationMessage", configurationService.getPasswordPolicyValidationMessage())));
         }
 
         if (StringUtils.isNotBlank(dbCredential.getValue()) && BCrypt.checkpw(newPassword, dbCredential.getValue())) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", username);
-            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL, configurationService.getPasswordPolicyValidationMessage());
+            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL,
+                    smpExceptionLanguageService.getMessageTranslation("error.unauthorized.user.change.invalid.new.credential",
+                            Map.of("validationMessage", configurationService.getPasswordPolicyValidationMessage())));
         }
 
         OffsetDateTime now = OffsetDateTime.now();
@@ -453,7 +461,7 @@ public class CredentialService {
         // If action is reset then check if the user has active reset token
         if (!toGenerateResetToken && !hasValidResetToken) {
             LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_INVALID, dbCredential.getName(), CredentialType.USERNAME_PASSWORD);
-            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+            throw unauthorizedInvalidResetToken;
         }
 
         return optCredential;
@@ -473,7 +481,7 @@ public class CredentialService {
         DBUser dbUserToUpdate = userDao.find(userID);
         if (dbUserToUpdate == null) {
             LOG.error("Can not create user password credentials, because user [{}] does not exist!", userID);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id to update!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.create.user.credentials");
         }
         DBCredential credential = new DBCredential();
         credential.setUser(dbUserToUpdate);
@@ -488,12 +496,12 @@ public class CredentialService {
         Optional<DBCredential> optCredential = credentialDao.findCredentialForUsernamePasswordTypeAndResetToken(resetToken);
         if (optCredential.isEmpty()) {
             LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_NOT_EXISTS, resetToken, CredentialType.USERNAME_PASSWORD);
-            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+            throw unauthorizedInvalidResetToken;
         }
         DBCredential dbCredential = optCredential.get();
         if (!hasValidResetToken(dbCredential)) {
             LOG.securityWarn(SMPMessageCode.SEC_RESET_TOKEN_INVALID, dbCredential.getName(), CredentialType.USERNAME_PASSWORD);
-            throw UNAUTHORIZED_INVALID_RESET_TOKEN;
+            throw unauthorizedInvalidResetToken;
         }
     }
 
@@ -595,9 +603,9 @@ public class CredentialService {
         }
         delayResponse(credentialType, startTime);
         if (isUserSuspended) {
-            throw SUSPENDED_CREDENTIALS_EXCEPTION;
+            throw suspendedCredentialsException;
         } else {
-            throw BAD_CREDENTIALS_EXCEPTION;
+            throw badCredentialsException;
         }
 
     }

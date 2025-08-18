@@ -62,7 +62,7 @@ public class ResourceResponse {
         try {
             return response.getOutputStream();
         } catch (IOException e) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Can not open output stream for response!", e);
+            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.response.output.stream", e);
         }
     }
 

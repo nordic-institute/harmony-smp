@@ -29,12 +29,14 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -51,6 +53,7 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 @Service
 public class DomainResolverService {
 
+
     /**
      * Domain pattern as defined in documentation since SMP 3.0.0
      */
@@ -58,11 +61,13 @@ public class DomainResolverService {
     final DomainDao domainDao;
     final GroupDao groupDao;
     final ConfigurationService configurationService;
+    final SMPExceptionLanguageService smpExceptionLanguageService;
 
-    public DomainResolverService(DomainDao domainDao, ConfigurationService configurationService, GroupDao groupDao) {
+    public DomainResolverService(DomainDao domainDao, ConfigurationService configurationService, GroupDao groupDao, SMPExceptionLanguageService smpExceptionLanguageService) {
         this.domainDao = domainDao;
         this.groupDao = groupDao;
         this.configurationService = configurationService;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainResolverService.class);
@@ -125,7 +130,8 @@ public class DomainResolverService {
                 LOG.debug("Located domain by the http header [{}]", headerParameter);
                 return optDomain.get();
             } else {
-                throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, headerParameter);
+                throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,
+                        smpExceptionLanguageService.getMessageTranslation("error.domain.not.exists", Map.of("domainCode", headerParameter)));
             }
         }
 
@@ -154,14 +160,15 @@ public class DomainResolverService {
             LOG.info("Can not locate the domain, user the registered domain [{}]", domain.getDomainCode());
             return domain;
         }
-        throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "No domain is configured for the DomiSMP instance!");
+        throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.no.domains");
     }
 
     public Optional<DBDomain> validatedAndReturnDomainByCode(final String domain) {
 
         // else test if domain is ok.
         if (!DOMAIN_ID_PATTERN.matcher(domain).matches()) {
-            throw new SMPRuntimeException(INVALID_DOMAIN_CODE, domain, DOMAIN_ID_PATTERN);
+            throw new SMPRuntimeException(INVALID_DOMAIN_CODE,
+                    "error.domain.invalid.domain.code", Map.of("domainCode", domain, "pattern", DOMAIN_ID_PATTERN));
         }
         // get domain by code
         return domainDao.getDomainByCode(domain);
@@ -203,7 +210,7 @@ public class DomainResolverService {
         }
 
         if (authorizedGroup.stream().noneMatch(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup))) {
-            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, domainGroup);
+            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, "error.domain.group.not.exists", Map.of("groupName", domainGroup));
         }
 
         DBGroup group = authorizedGroup.stream()

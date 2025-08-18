@@ -32,6 +32,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
@@ -67,6 +68,7 @@ public class SMPAuthorizationService {
 
     private final ConversionService conversionService;
     private final ConfigurationService configurationService;
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
 
     public SMPAuthorizationService(UserDao userDao,
@@ -74,13 +76,15 @@ public class SMPAuthorizationService {
                                    GroupMemberDao groupMemberDao,
                                    ResourceMemberDao resourceMemberDao,
                                    ConversionService conversionService,
-                                   ConfigurationService configurationService) {
+                                   ConfigurationService configurationService,
+                                   SMPExceptionLanguageService smpExceptionLanguageService) {
         this.userDao = userDao;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
         this.resourceMemberDao = resourceMemberDao;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     public boolean isSystemAdministrator() {
@@ -264,9 +268,9 @@ public class SMPAuthorizationService {
         } catch (SMPRuntimeException | NumberFormatException ex) {
             LOG.error("Error occurred while decrypting entity-id:[" + entityId + "]", ex);
             if (userEntity) {
-                throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USER_IDENTIFIER.getMessage());
+                throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.unauthorized.invalid.user.identifier"));
             }
-            throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_IDENTIFIER.getMessage());
+            throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.unauthorized.invalid.identifier"));
         }
     }
 }

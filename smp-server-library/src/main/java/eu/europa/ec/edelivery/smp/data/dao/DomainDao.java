@@ -23,8 +23,8 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
@@ -34,13 +34,13 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType.toList;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
 /**
  * @author gutowpa
@@ -49,6 +49,12 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMA
 @Repository
 public class DomainDao extends BaseDao<DBDomain> {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(DomainDao.class);
+
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public DomainDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
 
     /**
      * Returns the only single record from smp_domain table.
@@ -65,7 +71,7 @@ public class DomainDao extends BaseDao<DBDomain> {
         } catch (NonUniqueResultException e) {
             return Optional.empty();
         } catch (NoResultException e) {
-            throw new IllegalStateException(ErrorCode.NO_DOMAIN.getMessage());
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.domain.none"));
         }
     }
 
@@ -126,7 +132,8 @@ public class DomainDao extends BaseDao<DBDomain> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(domainParameter));
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation(
+                    "error.domain.illegal.state.multiple.entries", Map.of("domain", domainParameter)));
         }
     }
 
@@ -200,7 +207,9 @@ public class DomainDao extends BaseDao<DBDomain> {
             if (od.isPresent()) {
                 domain = od.get();
             } else {
-                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, domainCode);
+                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS,
+                        smpExceptionLanguageService.getMessageTranslation("error.domain.not.exists",
+                                Map.of("domainCode", domainCode)));
             }
         }
         return domain;

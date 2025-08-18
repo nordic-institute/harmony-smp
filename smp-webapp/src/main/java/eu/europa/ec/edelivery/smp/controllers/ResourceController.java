@@ -182,11 +182,12 @@ public class ResourceController {
     protected ResourceRequest fromServletRequest(HttpServletRequest httpReq, List<String> pathParameters) {
         ResourceAction resourceAction = ResourceAction.resolveForHeader(httpReq.getMethod());
         if (resourceAction == null) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Missing or invalid HTTP request method: [" + httpReq.getMethod() + "]!");
+            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.request.method",
+                    Map.of("httpMethod", httpReq.getMethod()));
         }
 
         if (pathParameters.isEmpty()) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "At least one path parameter must be provided!");
+            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.request.uri.variable");
         }
         InputStream inputStream = getInputStreamFromRequest(httpReq, resourceAction);
 
@@ -202,7 +203,8 @@ public class ResourceController {
         try {
             return header == null ? null : URLDecoder.decode(header, UTF_8);
         } catch (UnsupportedEncodingException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, "DecodeHeader", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.detailed",
+                    Map.of("scope", "DecodeHeader", "error", ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 
@@ -227,7 +229,7 @@ public class ResourceController {
         try {
             return new BufferedInputStream(httpReq.getInputStream());
         } catch (IOException e) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Can not read input stream!", e);
+            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.request.input.stream", e);
         }
     }
 }

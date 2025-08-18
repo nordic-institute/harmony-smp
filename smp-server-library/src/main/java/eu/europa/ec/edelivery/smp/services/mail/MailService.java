@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 
 /**
@@ -87,7 +88,7 @@ public class MailService {
             javaMailSender.send(message);
         } catch (MessagingException | MailException e) {
             LOG.error("Exception while sending mail from [{}] to [{}]", from, to, e);
-            throw new SMPRuntimeException(ErrorCode.MAIL_SUBMISSION_ERROR, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.MAIL_SUBMISSION_ERROR, "error.mail.submission", e, Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
         return subject;
     }

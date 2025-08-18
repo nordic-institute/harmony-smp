@@ -33,6 +33,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.naming.NamingException;
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Map;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
@@ -64,13 +65,14 @@ public class DatabaseConnectionBeanCreator {
                 jndiDataSource.afterPropertiesSet();
             } catch (IllegalArgumentException | NamingException e) {
                 // rethrow
-                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Invalid JNDI datasource: " + jndiDatasourceName, e.getMessage());
+                throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.invalid.jndi.datasource", e,
+                        Map.of("jndiDatasourceName", jndiDatasourceName, "error", e.getMessage()));
             }
             return (DataSource) jndiDataSource.getObject();
         }
         String jdbcURL = databaseConnectionConfig.getJdbcUrl();
         if (StringUtils.isBlank(jdbcURL)) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "Invalid datasource configuration. Both jndi or jdbc url are empty");
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.datasource");
         }
 
         LOG.info("Create datasource with URL: [{}].", jdbcURL);

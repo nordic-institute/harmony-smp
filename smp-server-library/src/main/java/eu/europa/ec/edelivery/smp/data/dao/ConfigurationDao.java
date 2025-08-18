@@ -105,7 +105,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
         File rootFolder = getSecurityFolder();
         if (!PropertyUtils.isValidProperty(key, value, rootFolder)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, key.getPropertyType().getErrorMessage(key.getProperty()));
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
+                    Map.of("error", key.getPropertyType().getErrorMessage(key.getProperty())));
         }
 
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
@@ -399,39 +400,40 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         // because they are important for 'parsing and validating' other parameters
         String encryptionKeyFilename = getProperty(properties, ENCRYPTION_FILENAME);
         if (StringUtils.isBlank(encryptionKeyFilename)) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Empty configuration folder. Property [%s] is mandatory", ENCRYPTION_FILENAME.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.mandatory.encryption.file.name",
+                    Map.of("propertyName", ENCRYPTION_FILENAME.getProperty()));
         }
 
         File configFolder = getSecurityFolder();
         if (!configFolder.exists()) {
             LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", configFolder.getPath(), configFolder.getAbsolutePath());
             if (!configFolder.mkdirs()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Configuration folder does not exists and can not be created! Value: [%s] (Absolute path [%s])",
-                        configFolder.getPath(), configFolder.getAbsolutePath()));
+                throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.configuration.folder.creation",
+                        Map.of("path", configFolder.getPath(), "absolutePath", configFolder.getAbsolutePath()));
             }
         }
         if (!configFolder.isDirectory()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Configuration folder is not a folder! Value: [%s] (Absolute path [%s])",
-                    configFolder.getPath(), configFolder.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.configuration.folder.not.directory",
+                    Map.of("path", configFolder.getPath(), "absolutePath", configFolder.getAbsolutePath()));
         }
 
         File encryptionKeyFile = new File(configFolder, encryptionKeyFilename);
         if (!encryptionKeyFile.exists() || !encryptionKeyFile.isFile()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Encryption file does not exists or is not a File! Value:  [%s]",
-                    encryptionKeyFile.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.encryption.file.not.file",
+                    Map.of("absolutePath", encryptionKeyFile.getAbsolutePath()));
         }
 
         File localeFolder = getLocaleFolder();
         if (!localeFolder.exists()) {
             LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", localeFolder.getPath(), localeFolder.getAbsolutePath());
             if (!localeFolder.mkdirs()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Locale folder does not exists and can not be created! Value: [%s] (Absolute path [%s])",
-                        localeFolder.getPath(), localeFolder.getAbsolutePath()));
+                throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.locale.folder.creation",
+                        Map.of("path", localeFolder.getPath(), "absolutePath", localeFolder.getAbsolutePath()));
             }
         }
         if (!localeFolder.isDirectory()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Locale folder is not a folder! Value: [%s] (Absolute path [%s])",
-                    localeFolder.getPath(), localeFolder.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.locale.folder.not.directory",
+                    Map.of("path", localeFolder.getPath(), "absolutePath", localeFolder.getAbsolutePath()));
         }
     }
 
@@ -497,7 +499,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     private static void validateIfExists(Map<String, Object> propertyValues, SMPPropertyEnum key) {
         Object value = propertyValues.get(key.getProperty());
         if (value == null) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Missing property %s.", key.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.missing.property",
+                    Map.of("propertyName", key.getProperty()));
         }
     }
 
@@ -510,10 +513,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
      */
     private static void checkFileExist(File file) {
         if (file == null || !file.exists()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("The file [%s] not exists.", file == null ? "null" : file.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.file.not.exists",
+                    Map.of("absolutePath", file == null ? "null" : file.getAbsolutePath()));
         } else {
             if (!file.isFile()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, file.getAbsolutePath() + " must be a file");
+                throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.file.not.file",
+                        Map.of("absolutePath", file.getAbsolutePath()));
             }
         }
     }
@@ -527,8 +532,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         try {
             return SecurityUtils.decrypt(encryptionKey, value);
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Error occurred while decrypting the property: "
-                    + key.getProperty() + "Error:" + ExceptionUtils.getRootCause(exc));
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.property.decryption",
+                    Map.of("propertyName", key.getProperty(), "error", ExceptionUtils.getRootCause(exc)));
         }
     }
 
@@ -536,8 +541,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         try {
             return SecurityUtils.encrypt(encryptionKey, value);
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Error occurred while encrypting the property: "
-                    + key.getProperty() + "Error:" + ExceptionUtils.getRootCause(exc));
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.property.encryption",
+                    Map.of("propertyName", key.getProperty(), "error", ExceptionUtils.getRootCause(exc)));
         }
     }
 

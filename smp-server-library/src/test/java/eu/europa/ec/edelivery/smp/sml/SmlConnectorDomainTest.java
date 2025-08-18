@@ -1,4 +1,3 @@
-
 /*-
  * #START_LICENSE#
  * smp-webapp
@@ -28,19 +27,21 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
+import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.ERROR_UNEXPECTED_MESSAGE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,6 +63,8 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     private IManageServiceMetadataWS iManageServiceMetadataWS;
     @SpyBean
     private SmlConnector testInstance;
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach
     public void setup() {
@@ -111,7 +114,8 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
                 testInstance.registerDomain(testUtilsDao.getD1()));
 
         //then
-        assertEquals("SML integration error! Error: InternalErrorFault: " + message, smpRuntimeException.getMessage().trim());
+        assertEquals("SML integration error! Error: [InternalErrorFault: " + message + "]",
+                smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode(), smpRuntimeException.getMessageArgs()));
         verify(iManageServiceMetadataWS, times(1)).create(any(ServiceMetadataPublisherServiceType.class));
     }
 
@@ -154,7 +158,8 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
                 testInstance.unregisterDomain(testUtilsDao.getD1()));
 
         //then
-        assertEquals("SML integration error! Error: BadRequestFault: " + ERROR_UNEXPECTED_MESSAGE, smpRuntimeException.getMessage().trim());
+        assertEquals("SML integration error! Error: [BadRequestFault: " + ERROR_UNEXPECTED_MESSAGE + "]",
+                smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode(), smpRuntimeException.getMessageArgs()));
         verify(iManageServiceMetadataWS, times(1)).delete(anyString());
 
     }
@@ -169,7 +174,8 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
                 testInstance.unregisterDomain(testUtilsDao.getD1()));
 
         //then
-        assertEquals("SML integration error! Error: InternalErrorFault: something unexpected", smpRuntimeException.getMessage().trim());
+        assertEquals("SML integration error! Error: [InternalErrorFault: something unexpected]",
+                smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode(), smpRuntimeException.getMessageArgs()));
         verify(iManageServiceMetadataWS, times(1)).delete(anyString());
     }
 
@@ -253,7 +259,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
                 testInstance.isDomainValid(testUtilsDao.getD1()));
 
         //then
-        assertThat(smpRuntimeException.getMessage(),
+        assertThat(smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode()),
                 containsString("SML integration error!"));
     }
 
@@ -268,7 +274,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
                 testInstance.isDomainValid(testUtilsDao.getD1()));
 
         //then
-        assertThat(smpRuntimeException.getMessage(),
+        assertThat(smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode()),
                 containsString("SML integration error!"));
     }
 
@@ -284,7 +290,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
                 testInstance.isDomainValid(testUtilsDao.getD1()));
 
         //then
-        assertThat(smpRuntimeException.getMessage(),
+        assertThat(smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode()),
                 containsString("SML integration error!"));
 
     }

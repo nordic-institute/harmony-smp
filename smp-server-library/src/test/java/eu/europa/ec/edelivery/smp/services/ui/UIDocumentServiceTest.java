@@ -25,7 +25,7 @@ import eu.europa.ec.edelivery.smp.data.ui.DocumentPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
-import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import eu.europa.ec.smp.spi.def.OasisSMPResource10;
 import eu.europa.ec.smp.spi.def.OasisSMPSubresource10;
@@ -47,8 +47,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
-@ContextConfiguration(classes = {UIDocumentService.class, ConversionTestConfig.class, ResourceHandlerService.class,
+@ContextConfiguration(classes = {UIDocumentService.class, ConversionTestConfig.class,
         OasisSMPResource10.class, OasisSMPResource10Handler.class, OasisSMPSubresource10.class, OasisSMPSubresource10Handler.class, Subresource10Validator.class,})
 class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
 
@@ -56,7 +55,7 @@ class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     protected UIDocumentService testInstance;
 
     @Autowired
-    ResourceHandlerService resourceHandlerService;
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach
     public void prepareDatabase() {
@@ -101,7 +100,8 @@ class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 testInstance.validateDocumentForResource(resource.getId(), testDoc));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
 
 
@@ -125,7 +125,8 @@ class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
 
     @Test

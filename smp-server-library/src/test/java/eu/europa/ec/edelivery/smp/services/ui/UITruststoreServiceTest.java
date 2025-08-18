@@ -26,6 +26,8 @@ import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.MatcherAssert;
@@ -39,6 +41,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
@@ -55,7 +59,8 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class UITruststoreServiceTest {
+class  UITruststoreServiceTest {
+
     // test data
     protected Path resourceDirectory = Paths.get("src", "test", "resources", "truststore");
     protected Path targetDirectory = Paths.get("target", "test-uitruststoreservice");
@@ -70,10 +75,16 @@ class UITruststoreServiceTest {
 
     UITruststoreService testInstance = spy(new UITruststoreService(configurationService, crlVerifierService, conversionService, userDao));
 
+    File localeFolder = new File("target/locales");
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
+
     @BeforeEach
     public void setup() throws IOException {
         testInstance.init();
         resetKeystore();
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
 
     @Test
@@ -422,7 +433,8 @@ class UITruststoreServiceTest {
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () -> testInstance.addCertificate(alias, certificate));
 
         // then
-        Assertions.assertEquals("Certificate error [duplicate]. Error: The certificate you are trying to upload already exists under the [duplicate] entry!", smpRuntimeException.getMessage());
+        Assertions.assertEquals("Certificate error: duplicate certificate. The certificate you are trying to upload already exists under the [duplicate] entry!",
+                smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode(), smpRuntimeException.getMessageArgs()));
     }
 
     @Test

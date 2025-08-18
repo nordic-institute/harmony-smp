@@ -80,10 +80,9 @@ class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Test
     void getTheOnlyDomainNoDomain() {
-
         // execute
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testInstance.getTheOnlyDomain());
-        assertEquals(ErrorCode.NO_DOMAIN.getMessage(), exception.getMessage());
+        assertEquals("No domain configured on SMP, at least one domain is mandatory!", exception.getMessage());
     }
 
     @Test

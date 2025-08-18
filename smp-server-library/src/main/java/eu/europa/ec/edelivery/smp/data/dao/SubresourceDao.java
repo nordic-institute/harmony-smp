@@ -21,10 +21,10 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +32,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -42,7 +43,14 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Repository
 public class SubresourceDao extends BaseDao<DBSubresource> {
+
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SubresourceDao.class);
+
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public SubresourceDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
 
     /**
      * Method returns DBSubresource for the resource object with given subresource identifier resource type.
@@ -68,7 +76,10 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(subresourceId.getValue(), subresourceId.getScheme(), resource.getIdentifierValue(), resource.getIdentifierScheme()));
+            throw new IllegalStateException(
+                    smpExceptionLanguageService.getMessageTranslation("error.service.metadata.illegal.state.multiple.entries",
+                            Map.of("documentIdentifier", subresourceId.getValue(), "documentScheme", subresourceId.getScheme(),
+                                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme())));
         }
     }
 
@@ -80,7 +91,6 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
      * @return List of DBSubresources
      */
     public List<DBSubresource> getSubResourcesForResource(Identifier identifier, String subresourceDefIdentifier) {
-
         TypedQuery<DBSubresource> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF, DBSubresource.class);
         query.setParameter(PARAM_SUBRESOURCE_DEF_IDENTIFIER, subresourceDefIdentifier);
         query.setParameter(PARAM_RESOURCE_IDENTIFIER, identifier.getValue());
@@ -89,7 +99,6 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
     }
 
     public Optional<DBSubresource> getSubResourcesForResource(Identifier subresourceId, DBResource resource) {
-
         try {
             TypedQuery<DBSubresource> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID, DBSubresource.class);
             query.setParameter(PARAM_RESOURCE_ID, resource.getId());
@@ -100,14 +109,14 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(subresourceId.getValue(), subresourceId.getScheme(), resource.getIdentifierValue(), resource.getIdentifierScheme()));
+            throw new IllegalStateException(
+                    smpExceptionLanguageService.getMessageTranslation("error.service.metadata.illegal.state.multiple.entries",
+                            Map.of("documentIdentifier", subresourceId.getValue(), "documentScheme", subresourceId.getScheme(),
+                                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme())));
         }
-
     }
 
-
     public List<DBSubresource> getSubResourcesForResourceId(Long resourceId) {
-
         TypedQuery<DBSubresource> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_BY_RESOURCE_ID, DBSubresource.class);
         query.setParameter(PARAM_RESOURCE_ID, resourceId);
         return query.getResultList();

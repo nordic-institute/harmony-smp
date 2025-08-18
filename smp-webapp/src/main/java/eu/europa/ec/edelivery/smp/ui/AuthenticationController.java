@@ -28,10 +28,10 @@ import eu.europa.ec.edelivery.smp.data.ui.CredentialRequestResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.CredentialResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,22 +75,26 @@ public class AuthenticationController {
 
     private final CsrfTokenRepository csrfTokenRepository;
 
-    SMPCookieWriter smpCookieWriter;
+    private SMPCookieWriter smpCookieWriter;
+
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     private final SecurityContextRepository securityContextRepository =
             new HttpSessionSecurityContextRepository();
 
     @Autowired
-    public AuthenticationController(SMPAuthenticationService authenticationService
-            , SMPAuthorizationService authorizationService
-            , ConfigurationService configurationService
-            , SMPCookieWriter smpCookieWriter
-            , CsrfTokenRepository csrfTokenRepository) {
+    public AuthenticationController(SMPAuthenticationService authenticationService,
+                                    SMPAuthorizationService authorizationService,
+                                    ConfigurationService configurationService,
+                                    SMPCookieWriter smpCookieWriter,
+                                    CsrfTokenRepository csrfTokenRepository,
+                                    SMPExceptionLanguageService smpExceptionLanguageService) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.configurationService = configurationService;
         this.smpCookieWriter = smpCookieWriter;
         this.csrfTokenRepository = csrfTokenRepository;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     @PostMapping(value = ResourceConstants.PATH_ACTION_AUTHENTICATION)
@@ -128,7 +132,7 @@ public class AuthenticationController {
         } else {
             LOG.warn("Invalid or null credential type [{}] not supported for reset!",
                     requestResetRO.getCredentialType());
-            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+            throw new IllegalArgumentException(smpExceptionLanguageService.getMessageTranslation("error.invalid.request"));
 
         }
     }
@@ -147,7 +151,7 @@ public class AuthenticationController {
                 || StringUtils.isBlank(resetRO.getCredentialName())
                 || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
             LOG.warn("Invalid or incomplete reset token!");
-            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+            throw new IllegalArgumentException(smpExceptionLanguageService.getMessageTranslation("error.invalid.request"));
         }
         authenticationService.resetUsernamePassword(resetRO.getCredentialName(),
                 resetRO.getResetToken(),
@@ -169,7 +173,7 @@ public class AuthenticationController {
                 || StringUtils.isBlank(resetRO.getResetToken())
                 || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
             LOG.warn("Invalid or null reset token or invalid reset token type!");
-            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+            throw new IllegalArgumentException(smpExceptionLanguageService.getMessageTranslation("error.invalid.request"));
         }
 
         authenticationService.validateUsernamePasswordResetToken(resetRO.getResetToken());

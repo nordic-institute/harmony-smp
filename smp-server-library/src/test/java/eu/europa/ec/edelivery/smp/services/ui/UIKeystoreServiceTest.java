@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,14 +56,15 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
     public static final String S_ALIAS = "single_domain_key";
 
-
     public static final X500Principal CERT_SUBJECT_X500PRINCIPAL = new X500Principal("CN=SMP Mock Services, OU=DIGIT, O=European Commision, C=BE");
 
     @Autowired
     protected UIKeystoreService testInstance;
 
-    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
     @BeforeEach
     public void setup() throws IOException {
@@ -195,8 +197,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.getCert(S_ALIAS));
 
-        MatcherAssert.assertThat(result.getMessage(),
-                CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+                CoreMatchers.containsStringIgnoringCase("Wrong configuration, missing key pair from keystore or wrong alias [" + S_ALIAS + "]!"));
     }
 
     @Test
@@ -211,8 +213,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.getKey(S_ALIAS));
 
-        MatcherAssert.assertThat(result.getMessage(),
-                CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+                CoreMatchers.containsStringIgnoringCase("Wrong configuration, missing key pair from keystore or wrong alias [" + S_ALIAS + "]!"));
     }
 
     private KeyStore loadKeystore(String keystoreName, String password, String type) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {

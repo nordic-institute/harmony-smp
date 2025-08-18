@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,20 +100,22 @@ public class SMPJwtConfig {
      * Configures the SMPBearerTokenAuthenticationConverter bean if JWT authentication is enabled.
      * This converter is responsible for converting bearer tokens into SMPAuthenticationToken.
      *
-     * @param jwtDecoder        the JwtDecoder bean, or null if JWT authentication is not enabled
-     * @param credentialService the service to access credentials for the authenticated user by client_id in the JWT token
-     * @param domainDao         the DAO for domain operations
+     * @param jwtDecoder                        the JwtDecoder bean, or null if JWT authentication is not enabled
+     * @param credentialService                 the service to access credentials for the authenticated user by client_id in the JWT token
+     * @param domainDao                         the DAO for domain operations
+     * @param smpExceptionLanguageService       the SMP exception translator
      * @return a configured SMPBearerTokenAuthenticationConverter or null if JWT authentication is not enabled
      */
     @Bean
     public SMPBearerTokenAuthenticationConverter smpBearerTokenAuthenticationConverter(@Nullable JwtDecoder jwtDecoder,
                                                                                        CredentialService credentialService,
-                                                                                       DomainDao domainDao) {
+                                                                                       DomainDao domainDao,
+                                                                                       SMPExceptionLanguageService smpExceptionLanguageService) {
         if (jwtDecoder == null) {
             LOG.info("SMP JWT Authentication is not enabled. Skipping SMPBearerTokenAuthenticationConverter configuration.");
             return null; // No JWT authentication configured
         }
-        return new SMPBearerTokenAuthenticationConverter(jwtDecoder, credentialService, domainDao);
+        return new SMPBearerTokenAuthenticationConverter(jwtDecoder, credentialService, domainDao, smpExceptionLanguageService);
     }
 
     /**
