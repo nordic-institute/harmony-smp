@@ -1005,7 +1005,8 @@
   "error.service.group.not.exists": "ServiceGroup not found (part. id: [{{identifier}}], part. sch.: [{{scheme}}])!",
   "error.service.group.invalid.extension": "Invalid extension for service group (part. id: [{{identifier}}], part. sch.: [{{scheme}}]). Error: [{{error}}]!",
 
-  "error.service.metadata.not.exists": "ServiceMetadata not found (part. id: [{{identifier}}], part. sch.: [{{scheme}}],doc. id: [{{documentIdentifier}}], doc. sch.: [{{documentScheme}}])!",
+  "error.service.metadata.illegal.state.multiple.entries": "More than one service metadata (part. id: [{{identifier}}], part. sch.: [{{scheme}}], doc. id: [{{documentIdentifier}}], doc. sch.: [{{documentScheme}}]) is defined in database!",
+  "error.service.metadata.not.exists": "ServiceMetadata not found (part. id: [{{identifier}}], part. sch.: [{{scheme}}], doc. id: [{{documentIdentifier}}], doc. sch.: [{{documentScheme}}])!",
   "error.service.metadata.invalid.xml": "Invalid service metadata. Error: [{{error}}]",
 
   "error.domisml.integration": "SML integration error! Error: [{{error}}]",
