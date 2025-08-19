@@ -96,13 +96,13 @@ public class SMPLanguageResourceService {
         return new File(localeFolder, languageFileName).toPath().toAbsolutePath();
     }
 
-    @Cacheable(value = "ui-translations", key = "#langCode")
+     @Cacheable(value = "ui-translations")
     public Properties getUiProperties(String langCode) {
         Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_UI_PREFIX, langCode, LANGUAGE_RESOURCE_UI_DEFAULT);
         return loadProperties(langRes);
     }
 
-    @Cacheable(value="mail-templates-translations", key = "#langCode")
+    @Cacheable(value="mail-templates-translations")
     public Properties getMailProperties(String langCode) {
         Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_MAIL_PREFIX, langCode, LANGUAGE_RESOURCE_MAIL_DEFAULT);
         return loadProperties(langRes);
