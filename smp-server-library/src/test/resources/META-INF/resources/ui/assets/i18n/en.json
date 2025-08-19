@@ -1183,5 +1183,12 @@
   "error.configuration.missing.keypair.or.wrong.alias": "Configuration error: wrong configuration, missing key pair from keystore or wrong alias [{{alias}}]!",
 
   "error.payload.validation.payload.starts.with.e": "This is invalid payload starting with E",
-  "error.payload.validation.cannot.read.payload": "Cannot read payload"
+  "error.payload.validation.cannot.read.payload": "Cannot read payload",
+
+  "error.ui.smp.runtime.exception": "Unexpected runtime error occurred.",
+  "error.ui.authentication.exception": "Unexpected authentication error occurred.",
+  "error.ui.access.denied.exception": "Unexpected access denies error occurred.",
+  "error.ui.bad.request.exception": "Unexpected bad request error occurred.",
+  "error.ui.malformed.identifier.exception": "Unexpected malformed identifier error occurred.",
+  "error.ui.internal.error": "Unexpected technical error occurred."
 }
