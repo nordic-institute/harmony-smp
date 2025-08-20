@@ -246,6 +246,8 @@
   "user.profile.panel.tooltip.application.role": "application role for the user.",
   "user.profile.panel.tooltip.password.expiration.date": "Default password set by system admin! User must change password immediately!",
   "user.profile.panel.value.password.expiration.date": "Default or null password",
+  "user.profile.panel.success.update": "The operation 'update user' completed successfully.",
+  "user.profile.panel.error.update": "The operation 'update user' not completed successfully.",
   "row.limiter.placeholder": "Rows",
   "search.table.button.cancel": "Cancel",
   "search.table.button.delete": "Delete",
@@ -1185,10 +1187,10 @@
   "error.payload.validation.payload.starts.with.e": "This is invalid payload starting with E",
   "error.payload.validation.cannot.read.payload": "Cannot read payload",
 
-  "error.ui.smp.runtime.exception": "[RO] Unexpected runtime error occurred.",
-  "error.ui.authentication.exception": "[RO] Unexpected authentication error occurred.",
-  "error.ui.access.denied.exception": "[RO] Unexpected access denies error occurred.",
-  "error.ui.bad.request.exception": "[RO] Unexpected bad request error occurred.",
-  "error.ui.malformed.identifier.exception": "[RO] Unexpected malformed identifier error occurred.",
-  "error.ui.internal.error": "[RO] Unexpected technical error occurred."
+  "error.ui.smp.runtime.exception": "Unexpected runtime error occurred.",
+  "error.ui.authentication.exception": "Unexpected authentication error occurred.",
+  "error.ui.access.denied.exception": "Unexpected access denies error occurred.",
+  "error.ui.bad.request.exception": "Unexpected bad request error occurred.",
+  "error.ui.malformed.identifier.exception": "Unexpected malformed identifier error occurred.",
+  "error.ui.internal.error": "Unexpected technical error occurred."
 }
