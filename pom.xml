@@ -81,8 +81,8 @@ See the Licence for the specific language governing permissions and limitations 
         <commons-net.version>3.12.0</commons-net.version>
         <commons-validator.version>1.10.0</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.4</cxf-xjc-runtime.version>
-        <cxf.version>3.6.7</cxf.version>
-        <ehcache.version>3.10.8</ehcache.version>
+        <cxf.version>3.6.8</cxf.version>
+        <ehcache.version>3.11.0</ehcache.version>
         <h2.version>2.3.232</h2.version>
         <hamcrest.version>2.2</hamcrest.version>
         <hibernate-jpa.version>1.0.2.Final</hibernate-jpa.version>
@@ -107,7 +107,7 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.107</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.108</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.3</xmlunit.version>
