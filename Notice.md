@@ -73,14 +73,21 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 2024 FasterXML (http://fasterxml.com/), Tatu Saloranta
 
-***com.mysql:mysql-connector-j:9.3.0*** 
+***com.mysql:mysql-connector-j:9.4.0*** 
 - License: GPL-2.0-or-later
 - Url: 
 - File: license/third-party-licenses/GPL-2.0-or-later.txt
 - Copyright:
   - Copyright (c) 2024 Oracle Corporation (https://www.oracle.com/), Filipe Silva
 
-***com.sun.mail:jakarta.mail:2.0.1*** 
+***com.nimbusds:nimbus-jose-jwt:10.4.2*** 
+- License: Apache-2.0
+- Url: https://www.apache.org/licenses/LICENSE-2.0.txt
+- File: license/third-party-licenses/Apache-2.0.txt
+- Copyright:
+  - Copyright (c) 2024 Connect2id Ltd. (https://connect2id.com), Vladimir Dzhuvinov
+
+***com.sun.mail:jakarta.mail:2.0.2*** 
 - License: EPL-2.0
 - Url: http://www.eclipse.org/legal/epl-2.0
 - File: license/third-party-licenses/EPL-2.0.txt
@@ -166,21 +173,21 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 2001 - 2024 The Apache Software Foundation (https://www.apache.org/), Daniel Rall, Stephen Colebourne, Henri Yandell, Steven Caswell, Robert Burrell Donkin, Gary Gregory, Fredrik Westermarck, James Carman, Niall Pemberton, Matt Benson, Joerg Schaible, Oliver Heger, Paul Benedict, Benedikt Ritter, Duncan Jones, Loic Guibert, Rob Tompkins
 
-***org.apache.cxf:cxf-rt-features-logging:4.1.2*** 
+***org.apache.cxf:cxf-rt-features-logging:4.1.3*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2006 - 2024 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
 
-***org.apache.cxf:cxf-rt-frontend-jaxws:4.1.2*** 
+***org.apache.cxf:cxf-rt-frontend-jaxws:4.1.3*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2006 - 2024 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
 
-***org.apache.cxf:cxf-rt-transports-http:4.1.2*** 
+***org.apache.cxf:cxf-rt-transports-http:4.1.3*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
@@ -194,26 +201,26 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 1999 - 2024 The Apache Software Foundation (https://www.apache.org/), Michael Osipov, Ortwin Glueck, Oleg Kalnichevski, Asankha C. Perera, Sebastian Bazley, Erik Abele, Ant Elder, Paul Fremantle, Roland Weber, Sam Berlin, Sean C. Sullivan, Jonathan Moore, Gary Gregory, William Speirs, Karl Wright, Francois-Xavier Bonnet, Ryan Schmitt, Arturo Bernal
 
-***org.apache.tomcat.embed:tomcat-embed-jasper:10.1.43*** 
+***org.apache.tomcat.embed:tomcat-embed-jasper:10.1.44*** 
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024
 
-***org.apache.tomcat.embed:tomcat-embed-websocket:10.1.43*** 
+***org.apache.tomcat.embed:tomcat-embed-websocket:10.1.44*** 
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024
 
-***org.ehcache:ehcache:3.10.8*** 
+***org.ehcache:ehcache:3.11.0*** 
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2024 Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc. (http://terracotta.org), Terracotta Engineers
+  - Copyright (c) 2024 IBM Corp. (http://terracotta.org), Terracotta Engineers
 
 ***org.glassfish.jaxb:jaxb-runtime:4.0.5*** 
 - License: BSD-3-Clause
@@ -222,21 +229,21 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 2017 - 2024 Eclipse Foundation (https://www.eclipse.org), Roman Grigoriadi
 
-***org.hibernate.orm:hibernate-core:6.6.22.Final*** 
+***org.hibernate.orm:hibernate-core:6.6.27.Final*** 
 - License: LGPL-2.1+
 - Url: https://www.opensource.org/licenses/LGPL-2.1
 - File: license/third-party-licenses/LGPL-2.1+.txt
 - Copyright:
   - Copyright (c) 2024 Hibernate.org (https://hibernate.org), The Hibernate Development Team
 
-***org.hibernate.orm:hibernate-envers:6.6.22.Final*** 
+***org.hibernate.orm:hibernate-envers:6.6.27.Final*** 
 - License: LGPL-2.1+
 - Url: https://www.opensource.org/licenses/LGPL-2.1
 - File: license/third-party-licenses/LGPL-2.1+.txt
 - Copyright:
   - Copyright (c) 2024 Hibernate.org (https://hibernate.org), The Hibernate Development Team
 
-***org.hibernate.tool:hibernate-tools-orm:6.6.20.Final*** 
+***org.hibernate.tool:hibernate-tools-orm:6.6.27.Final*** 
 - License: LGPL-2.1+
 - Url: http://www.gnu.org/licenses/lgpl-2.1.html
 - File: license/third-party-licenses/LGPL-2.1+.txt
@@ -257,91 +264,105 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 2005 - 2024 QOS.ch (http://www.qos.ch), Ceki Gulcu
 
-***org.springframework:spring-beans:6.2.9*** 
+***org.springframework:spring-beans:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-context:6.2.9*** 
+***org.springframework:spring-context:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-context-support:6.2.9*** 
+***org.springframework:spring-context-support:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-core:6.2.9*** 
+***org.springframework:spring-core:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-jdbc:6.2.9*** 
+***org.springframework:spring-jdbc:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-orm:6.2.9*** 
+***org.springframework:spring-orm:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-web:6.2.9*** 
+***org.springframework:spring-web:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-webmvc:6.2.9*** 
+***org.springframework:spring-webmvc:6.2.10*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework.boot:spring-boot-starter-web:3.5.3*** 
+***org.springframework.boot:spring-boot-starter-web:3.5.5*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 VMware, Inc. (https://spring.io), Spring
 
-***org.springframework.security:spring-security-cas:6.5.2*** 
+***org.springframework.security:spring-security-cas:6.5.3*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-config:6.5.2*** 
+***org.springframework.security:spring-security-config:6.5.3*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-core:6.5.2*** 
+***org.springframework.security:spring-security-core:6.5.3*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-test:6.5.2*** 
+***org.springframework.security:spring-security-oauth2-jose:6.5.3*** 
+- License: Apache-2.0
+- Url: https://www.apache.org/licenses/LICENSE-2.0
+- File: license/third-party-licenses/Apache-2.0.txt
+- Copyright:
+  - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
+
+***org.springframework.security:spring-security-oauth2-resource-server:6.5.3*** 
+- License: Apache-2.0
+- Url: https://www.apache.org/licenses/LICENSE-2.0
+- File: license/third-party-licenses/Apache-2.0.txt
+- Copyright:
+  - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
+
+***org.springframework.security:spring-security-test:6.5.3*** 
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
