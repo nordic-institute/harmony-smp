@@ -27,12 +27,14 @@
    file name: spring-web-5.3.*.jar
    CVE-2016-1000027 - The data serialized by the application are from authenticated users and trusted
    CVE-2025-41234 - The application does not set a “Content-Disposition” response header and filenames are not derived from user-supplied input.
+   CVE-2025-41242 - SMP does not server static resources with Spring resource handling.
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2024-38828</cve>
         <vulnerabilityName>CVE-2025-41234</vulnerabilityName>
+        <vulnerabilityName>CVE-2025-41242</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -43,6 +45,7 @@
    ]]></notes>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2024-38820</cve>
+
     </suppress>
     <suppress>
         <notes><![CDATA[
