@@ -37,15 +37,17 @@ export class UserService {
   }
 
   updateUser(user: User) {
-    this.http.put<User>(SmpConstants.REST_PUBLIC_USER_MANAGE.replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId), user).subscribe(response => {
-      this.notifyProfileDataChanged(response)
-      this.securityService.updateUserDetails(response);
-      this.alertService.success('The operation \'update user\' completed successfully.');
-    }, err => {
-      this.alertService.exception('The operation \'update user\' not completed successfully.', err);
+    this.http.put<User>(SmpConstants.REST_PUBLIC_USER_MANAGE.replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId), user).subscribe({
+      next: async (response: User) => {
+        this.notifyProfileDataChanged(response)
+        this.securityService.updateUserDetails(response);
+        this.alertService.success(await lastValueFrom(this.translateService.get('user.profile.panel.success.update')));
+      },
+      error: async (err: any) => {
+        this.alertService.exception(await lastValueFrom(this.translateService.get('user.profile.panel.error.update')), err);
+      }
     });
   }
-
 
   getUserPwdCredentialStatus() {
     let user = this.securityService.getCurrentUser();

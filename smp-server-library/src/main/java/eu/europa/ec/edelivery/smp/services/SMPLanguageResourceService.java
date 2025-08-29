@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -55,16 +56,15 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 @Service
 public class SMPLanguageResourceService {
 
-    public static final String LANGUAGE_DEFAULT = "en";
     public static final String LANGUAGE_RESOURCE_SUFFIX = ".json";
 
     public static final String LANGUAGE_FILENAME_UI_PREFIX = "ui_";
     public static final String LANGUAGE_RESOURCE_UI_FOLDER = "/META-INF/resources/ui/assets/i18n/";
-    public static final String LANGUAGE_RESOURCE_UI_DEFAULT = LANGUAGE_RESOURCE_UI_FOLDER + LANGUAGE_DEFAULT + LANGUAGE_RESOURCE_SUFFIX;
+    public static final String LANGUAGE_RESOURCE_UI_DEFAULT = LANGUAGE_RESOURCE_UI_FOLDER + LocaleUtils.DEFAULT_LOCALE + LANGUAGE_RESOURCE_SUFFIX;
 
     public static final String LANGUAGE_FILENAME_MAIL_PREFIX = "mail-messages_";
     public static final String LANGUAGE_RESOURCE_MAIL_FOLDER = "/mail-messages/";
-    public static final String LANGUAGE_RESOURCE_MAIL_DEFAULT = LANGUAGE_RESOURCE_MAIL_FOLDER + LANGUAGE_DEFAULT + LANGUAGE_RESOURCE_SUFFIX;
+    public static final String LANGUAGE_RESOURCE_MAIL_DEFAULT = LANGUAGE_RESOURCE_MAIL_FOLDER + LocaleUtils.DEFAULT_LOCALE + LANGUAGE_RESOURCE_SUFFIX;
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPLanguageResourceService.class);
 
@@ -76,7 +76,6 @@ public class SMPLanguageResourceService {
         this.configurationService = configurationService;
         this.resourceResolver = resourceResolver;
     }
-
 
     /**
      * Method for getting the language file for a specific ISO 639 language code.
@@ -97,13 +96,13 @@ public class SMPLanguageResourceService {
         return new File(localeFolder, languageFileName).toPath().toAbsolutePath();
     }
 
-    @Cacheable("ui-translations")
+     @Cacheable(value = "ui-translations")
     public Properties getUiProperties(String langCode) {
         Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_UI_PREFIX, langCode, LANGUAGE_RESOURCE_UI_DEFAULT);
         return loadProperties(langRes);
     }
 
-    @Cacheable("mail-templates-translations")
+    @Cacheable(value="mail-templates-translations")
     public Properties getMailProperties(String langCode) {
         Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_MAIL_PREFIX, langCode, LANGUAGE_RESOURCE_MAIL_DEFAULT);
         return loadProperties(langRes);

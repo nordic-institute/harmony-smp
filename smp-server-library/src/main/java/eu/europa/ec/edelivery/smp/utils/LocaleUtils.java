@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -28,12 +29,14 @@ import org.apache.commons.lang3.StringUtils;
  * @author Joze RIHTARSIC
  */
 public class LocaleUtils {
+
+    public static final String DEFAULT_LOCALE = "en";
+
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(LocaleUtils.class);
 
     private LocaleUtils() {
         // private constructor
     }
-
 
     /**
      * Method validates the locale string if locale is valid then returns "en"
@@ -42,13 +45,21 @@ public class LocaleUtils {
      */
     public static String validateLocale(String locale) {
         if (StringUtils.isBlank(locale)) {
-            LOG.warn("Locale is not set, defaulting to 'en'");
-            return "en";
+            LOG.warn("Locale is not set, defaulting to [{}]", DEFAULT_LOCALE);
+            return DEFAULT_LOCALE;
         }
         if (locale.length() != 2) {
-            LOG.warn("Invalid locale [{}], defaulting to 'en'", locale);
-            return "en";
+            LOG.warn("Invalid locale [{}], defaulting to [{}]", locale, DEFAULT_LOCALE);
+            return DEFAULT_LOCALE;
         }
         return locale;
+    }
+
+    public static String getCurrentLocale() {
+        SMPUserDetails sessionUserDetails = SessionSecurityUtils.getSessionUserDetails();
+        if (sessionUserDetails != null && sessionUserDetails.getUser() != null) {
+            return validateLocale(sessionUserDetails.getUser().getSmpLocale());
+        }
+        return DEFAULT_LOCALE;
     }
 }

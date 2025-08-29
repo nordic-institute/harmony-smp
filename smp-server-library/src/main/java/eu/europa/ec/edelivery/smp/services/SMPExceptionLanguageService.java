@@ -20,9 +20,11 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.smp.spi.exceptions.TranslatedMessage;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bouncycastle.asn1.LocaleUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -56,11 +58,21 @@ public class SMPExceptionLanguageService {
     }
 
     public String getMessageTranslation(String messageCode) {
-        return getMessageTranslation(messageCode, new HashMap<>());
+        return getMessageTranslation(messageCode, LocaleUtils.DEFAULT_LOCALE);
     }
 
     public String getMessageTranslation(String messageCode, Map<String, Object> args) {
-        Properties uiProperties = smpLanguageResourceService.getUiProperties(SMPLanguageResourceService.LANGUAGE_DEFAULT);
+        return getMessageTranslation(messageCode, args, LocaleUtils.DEFAULT_LOCALE);
+    }
+
+    public String getMessageTranslation(String messageCode, String localeCode) {
+        return getMessageTranslation(messageCode, new HashMap<>(), localeCode);
+    }
+
+    public String getMessageTranslation(String messageCode, Map<String, Object> args, String localeCode) {
+        localeCode = LocaleUtils.validateLocale(localeCode);
+
+        Properties uiProperties = smpLanguageResourceService.getUiProperties(localeCode);
 
         if (!uiProperties.containsKey(messageCode)) {
             LOG.debug("The [{}] message code is missing the default English translation so returning the message code as the actual translation.", messageCode);

@@ -24,6 +24,8 @@ import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -36,12 +38,16 @@ import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-
 /**
  * Created by gutowpa on 14/09/2017.
  */
 @RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers"})
 public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice {
+
+    @Autowired
+    public ServiceErrorControllerAdvice(SMPExceptionLanguageService smpExceptionLanguageService) {
+        super(smpExceptionLanguageService);
+    }
 
     @Override
     @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class,  AuthenticationException.class,})
