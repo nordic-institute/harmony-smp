@@ -28,7 +28,7 @@ public class UsersPgTests extends SeleniumTest {
         loginPage = homePage.goToLoginPage();
     }
 
-    @Test(description = "USR-01 System admin is able to create new users")
+    @Test(description = "USR-01 - System admin is able to create new users")
     public void systemAdminIsAbleToCreateNewUsers() throws Exception {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));

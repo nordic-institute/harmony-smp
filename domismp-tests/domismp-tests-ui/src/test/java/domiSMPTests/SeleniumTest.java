@@ -45,7 +45,7 @@ public class SeleniumTest {
         // TODO: this is a workaround to locate "Resource URL" column in the search grid. see EditResourcePgTests.documentUsingASharedReferenceSeesOnlyThePublishedVersionOfTheReference
         // TODO: fix the search grid to be responsive and remove this workaround
         // set minimum window size for the tests
-        driver.manage().window().setSize(new Dimension(2000, 800));
+        driver.manage().window().setSize(new Dimension(2000, 1000));
         java.util.logging.Logger.getLogger("io.netty.util.NetUtil").setLevel(Level.OFF);
         java.util.logging.Logger.getLogger("org.asynchttpclient.netty.handler").setLevel(Level.OFF);
     }
@@ -68,7 +68,7 @@ public class SeleniumTest {
         }
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     protected void afterMethod(Method method) {
         try {
             driver.quit();

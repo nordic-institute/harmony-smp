@@ -406,6 +406,9 @@ public class EditDomainsPgTests extends SeleniumTest {
         createResourceDetailsDialog.fillResourceDetails(resourceModel2);
         Boolean saveisDisabled = createResourceDetailsDialog.tryClickOnSave();
         soft.assertFalse(saveisDisabled, "Save action didn't worked");
+        if (!saveisDisabled) {
+            createResourceDetailsDialog.getCloseBtn().click();
+        }
         soft.assertFalse(editGroupsPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel2.getIdentifierValue()), "Resource is  present in the grid");
 
 

@@ -54,6 +54,7 @@ public class DomiSMPPage extends DComponent {
 
     public void logout() {
         wait.waitforOverlayToGone();
+        wait.forElementToBeClickable(rightMenuBtn);
         rightMenuBtn.click();
         // TODO investigate why sometimes the button is not in view
         // Driver Issue:  is not clickable at point (105, 356). Other element would receive the click:

@@ -37,6 +37,7 @@ public class EditGroupsPage extends CommonPageWithTabs {
 
     public void selectDomain(DomainModel domainModel, GroupModel groupModel) {
         weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
+        wait.forElementToBeClickable(groupDdl);
         weToMatSelect(groupDdl).selectByVisibleText(groupModel.getGroupName());
     }
 

@@ -73,6 +73,30 @@ public class CertificatesPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "CERT-02 Users are able to import expired certificates")
+    public void userIsAbleToImportExpiredCertificates() throws Exception {
+        String path = FileUtils.getAbsoluteTruststorePath("expiredCertificate.cer");
+        String certificateId = "CN=TE,C=BE:000000005f74a821";
+        //Delete certificate if exists
+        try {
+            certificatePage.deleteCertificate(certificateId);
+        } catch (Exception ignored) {
+
+        }
+        //Import new certificate
+        ImportNewCertificatesDialog importNewCertificatesDialog = certificatePage.clickOnImportNewCertificate();
+
+        importNewCertificatesDialog.importCertificate(path);
+        String expiredMsg = importNewCertificatesDialog.getAlertMessage();
+
+        importNewCertificatesDialog.getSaveCertificateBtn().click();
+        certificatePage.getAlertArea().closeAlert();
+        soft.assertTrue(certificatePage.isCertificatePresent(certificateId));
+        soft.assertEquals(expiredMsg, "Certificate is expired!", "Expired certificate alert is not appearing in the import certificate dialog!");
+        soft.assertEquals(certificatePage.getCertificateInfo(certificateId).get("AlertMessage"), "Invalid certificate: Certificate is expired!", "Expired certificate warning is not appearing!");
+        soft.assertAll();
+    }
+
     @Test(description = "CERT-03 User is not able to add duplicated certificate")
     public void userIsNotAbleToAddDuplicatedCertificate() {
 

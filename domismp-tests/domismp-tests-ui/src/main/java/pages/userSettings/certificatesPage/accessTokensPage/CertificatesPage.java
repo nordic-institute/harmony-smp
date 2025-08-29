@@ -28,6 +28,8 @@ public class CertificatesPage extends DomiSMPPage {
     protected static final By isActiveLocator = By.cssSelector("mat-checkbox");
     protected static final By startDateLocator = By.cssSelector("input[formcontrolname=\"activeFrom\"");
     protected static final By endDateLocator = By.cssSelector("input[formcontrolname=\"expireOn\"]");
+    protected static final By alertMessageLocator = By.cssSelector(".smp-warning-panel > span:nth-child(2)");
+
     protected static final By pagination = By.id("tokens-paginator");
     private final static Logger LOG = LoggerFactory.getLogger(CertificatesPage.class);
     GridPagination gridPagination = new GridPagination(driver, driver.findElement(pagination));
@@ -84,6 +86,7 @@ public class CertificatesPage extends DomiSMPPage {
         certificateIdInfo.put("Active", String.valueOf(weToDChecked(accessToken.findElement(isActiveLocator)).isChecked()));
         certificateIdInfo.put("StartDate", weToDInput(accessToken.findElement(startDateLocator)).getText());
         certificateIdInfo.put("EndDate", weToDInput(accessToken.findElement(endDateLocator)).getText());
+        certificateIdInfo.put("AlertMessage", accessToken.findElement(alertMessageLocator).getText());
         return certificateIdInfo;
 
     }

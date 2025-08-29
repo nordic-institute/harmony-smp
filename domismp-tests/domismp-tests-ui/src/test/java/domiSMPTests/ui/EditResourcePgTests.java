@@ -314,8 +314,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentPage.getSaveBtn().click();
 
         String error = editResourceDocumentPage.getAlertArea().getAlertMessage();
-        soft.assertEquals(error, "Invalid Identifier: [" + invalidScheme + "::" + resourceModel.getIdentifierValue() + "]. Invalid scheme [" + invalidScheme + "]!", "Wrong error message for invalid scheme: ");
-
+        soft.assertEquals(error, "Identifier: [" + invalidScheme + "::" + resourceModel.getIdentifierValue() + "] has invalid scheme [" + invalidScheme + "] (Check the length or scheme pattern)!", "Wrong error message for invalid scheme: ");
 
         editResourceDocumentPage.clickOnCancelAndConfirm();
         editResourceDocumentPage.getNewVersionBtn().click();
