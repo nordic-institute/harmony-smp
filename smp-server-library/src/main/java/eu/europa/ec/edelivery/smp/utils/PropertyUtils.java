@@ -66,7 +66,7 @@ public class PropertyUtils {
         if (!prop.getValuePattern().matcher(value).find()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
-                    Map.of("error", prop.getErrorValueMessage()));
+                    Map.of("error", prop.getErrorMessageCode(), "property", prop.getProperty()));
         }
 
         SMPPropertyTypeEnum type = prop.getPropertyType();
@@ -86,7 +86,7 @@ public class PropertyUtils {
         if (!prop.getValuePattern().matcher(value).matches()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
-                    Map.of("error", prop.getErrorValueMessage()));
+                    Map.of("error", prop.getErrorMessageCode(), "property", prop.getProperty()));
         }
         SMPPropertyTypeEnum type = prop.getPropertyType();
         return isValidPropertyType(type, value, confFolder);

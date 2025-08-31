@@ -280,7 +280,7 @@ public enum SMPPropertyEnum {
     ALERT_USER_LOGIN_FAILURE_LEVEL("smp.alert.user.login_failure.level",
             "LOW", "Alert level for login failure. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.login.failure.level"),
 
     ALERT_USER_SUSPENDED_ENABLED("smp.alert.user.suspended.enabled",
             "true", "Enable/disable the login suspended alert of the authentication module.",
@@ -288,10 +288,10 @@ public enum SMPPropertyEnum {
     ALERT_USER_SUSPENDED_LEVEL("smp.alert.user.suspended.level",
             "HIGH", "Alert level for login suspended. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.suspended.level"),
     ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
             "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will submit mail for all logon attempts to suspended account, WHEN_BLOCKED: An alert will be triggered only the first time when the account got suspended.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "Allowed values are: AT_LOGON,WHEN_BLOCKED"),
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "error.invalid.property.alert.user.suspended.moment"),
 
     ALERT_PASSWORD_BEFORE_EXPIRATION_ENABLED("smp.alert.password.imminent_expiration.enabled",
             "true", "Enable/disable the imminent password expiration alert",
@@ -305,7 +305,7 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_BEFORE_EXPIRATION_LEVEL("smp.alert.password.imminent_expiration.level",
             "LOW", "Password imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.password.before.expiration.level"),
 
     ALERT_PASSWORD_EXPIRED_ENABLED("smp.alert.password.expired.enabled",
             "true", "Enable/disable the password expiration alert",
@@ -319,7 +319,7 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_EXPIRED_LEVEL("smp.alert.password.expired.level",
             "LOW", "Password expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.password.expired.level"),
 
 
     ALERT_USER_CREATED_ENABLED("smp.alert.user.created.enabled",
@@ -328,7 +328,7 @@ public enum SMPPropertyEnum {
     ALERT_USER_CREATED_LEVEL("smp.alert.user.created.level",
             "HIGH", "User creation alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.created.level"),
 
     ALERT_USER_UPDATED_ENABLED("smp.alert.user.updated.enabled",
             "true", "Enable/disable the user update alert",
@@ -336,7 +336,7 @@ public enum SMPPropertyEnum {
     ALERT_USER_UPDATED_LEVEL("smp.alert.user.updated.level",
             "HIGH", "User update alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.updated.level"),
 
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_ENABLED("smp.alert.accessToken.imminent_expiration.enabled",
             "true", "Enable/disable the imminent accessToken expiration alert",
@@ -350,7 +350,7 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_LEVEL("smp.alert.accessToken.imminent_expiration.level",
             "LOW", "AccessToken imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.access.token.before.expiration.level"),
 
     ALERT_ACCESS_TOKEN_EXPIRED_ENABLED("smp.alert.accessToken.expired.enabled",
             "true", "Enable/disable the accessToken expiration alert",
@@ -364,7 +364,7 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_EXPIRED_LEVEL("smp.alert.accessToken.expired.level",
             "LOW", "Access Token expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.access.token.expired.level"),
 
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_ENABLED("smp.alert.certificate.imminent_expiration.enabled",
             "true", "Enable/disable the imminent certificate expiration alert",
@@ -378,7 +378,7 @@ public enum SMPPropertyEnum {
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_LEVEL("smp.alert.certificate.imminent_expiration.level",
             "LOW", "Certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.certificate.before.expiration.level"),
 
     ALERT_CERTIFICATE_EXPIRED_ENABLED("smp.alert.certificate.expired.enabled",
             "true", "Enable/disable the certificate expiration alert",
@@ -392,7 +392,7 @@ public enum SMPPropertyEnum {
     ALERT_CERTIFICATE_EXPIRED_LEVEL("smp.alert.certificate.expired.level",
             "LOW", "Certificate expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.certificate.expired.level"),
 
     SMP_ALERT_CREDENTIALS_CRON("smp.alert.credentials.cronJobExpression", "0 52 4 */1 * *", "Property cron expression for triggering alert messages about credentials!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, CRON_EXPRESSION),
@@ -409,7 +409,7 @@ public enum SMPPropertyEnum {
     ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_LEVEL("smp.alert.system.certificate.imminent_expiration.level",
             "LOW", "System certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.system.certificate.before.expiration.level"),
 
     ALERT_SYSTEM_CERTIFICATE_EXPIRED_ENABLED("smp.alert.system.certificate.expired.enabled",
             "true", "Enable/disable the system certificate expiration alert",
@@ -423,7 +423,7 @@ public enum SMPPropertyEnum {
     ALERT_SYSTEM_CERTIFICATE_EXPIRED_LEVEL("smp.alert.system.certificate.expired.level",
             "LOW", "System certificate expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.system.certificate.expired.level"),
 
     SMP_ALERT_SYSTEM_CERTIFICATES_CRON("smp.alert.system.certificates.cronJobExpression", "0 42 4 */1 * *", "Property cron expression for triggering alert messages about system certificates!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, CRON_EXPRESSION),
@@ -453,22 +453,20 @@ public enum SMPPropertyEnum {
     PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate", "false",
             "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-
     ;
-
 
     private final String property;
     private final String defValue;
     private final String desc;
     private final Pattern valuePattern;
-    private final String errorValueMessage;
+    private final String errorMessageCode;
     private final boolean isEncrypted;
     private final boolean isMandatory;
     private final boolean restartNeeded;
     private final SMPPropertyTypeEnum propertyType;
 
     SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded,
-                    SMPPropertyTypeEnum propertyType, String valuePattern, String errorValueMessage) {
+                    SMPPropertyTypeEnum propertyType, String valuePattern, String errorMessageCode) {
         this.property = property;
         this.defValue = defValue;
         this.desc = desc;
@@ -477,11 +475,11 @@ public enum SMPPropertyEnum {
         this.restartNeeded = restartNeeded;
         this.propertyType = propertyType;
         this.valuePattern = Pattern.compile(valuePattern);
-        this.errorValueMessage = errorValueMessage;
+        this.errorMessageCode = errorMessageCode;
     }
 
     SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded, SMPPropertyTypeEnum propertyType) {
-        this(property, defValue, desc, isMandatory, isEncrypted, restartNeeded, propertyType, propertyType.defValidationRegExp, propertyType.getErrorMessage(property));
+        this(property, defValue, desc, isMandatory, isEncrypted, restartNeeded, propertyType, propertyType.defValidationRegExp, propertyType.getErrorMessageCode());
 
     }
 
@@ -529,8 +527,8 @@ public enum SMPPropertyEnum {
         return valuePattern;
     }
 
-    public String getErrorValueMessage() {
-        return this.errorValueMessage;
+    public String getErrorMessageCode() {
+        return this.errorMessageCode;
     }
 }
 

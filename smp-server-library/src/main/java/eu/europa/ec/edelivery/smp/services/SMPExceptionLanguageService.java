@@ -38,6 +38,8 @@ public class SMPExceptionLanguageService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPExceptionLanguageService.class);
 
+    public static final String PREFIX_MESSAGE_VALUE_TRANSLATION = "TRANSLATION_REQUIRED_";
+
     private final SMPLanguageResourceService smpLanguageResourceService;
 
     public SMPExceptionLanguageService(SMPLanguageResourceService smpLanguageResourceService) {
@@ -67,8 +69,13 @@ public class SMPExceptionLanguageService {
             return messageCode;
         }
         String property = uiProperties.getProperty(messageCode);
+
         for (String placeholder : args.keySet()) {
-            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}", args.get(placeholder).toString());
+            Object value = args.get(placeholder);
+            if (value instanceof String && ((String) value).startsWith(PREFIX_MESSAGE_VALUE_TRANSLATION)) {
+                value = getMessageTranslation(((String) value).replaceFirst(PREFIX_MESSAGE_VALUE_TRANSLATION, ""), args);
+            }
+            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}", value.toString());
         }
         return property;
     }

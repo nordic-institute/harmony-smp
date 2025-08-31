@@ -33,14 +33,21 @@ public class SMPRuntimeException extends RuntimeException implements TranslatedM
 
     private String defaultTranslatedMessage;
 
+    private final boolean translateMessageArgs;
+
     public SMPRuntimeException(ErrorCode errorCode, String messageCode) {
         this(errorCode, messageCode, new HashMap<>());
     }
 
     public SMPRuntimeException(ErrorCode errorCode, String messageCode, Map<String, Object> args) {
+        this(errorCode, messageCode, args, false);
+    }
+
+    public SMPRuntimeException(ErrorCode errorCode, String messageCode, Map<String, Object> args, boolean translateMessageArgs) {
         this.errorCode = errorCode;
         this.messageCode = messageCode;
         this.args = args;
+        this.translateMessageArgs = translateMessageArgs;
     }
 
     public SMPRuntimeException(ErrorCode errorCode, String messageCode, Throwable th) {
@@ -48,10 +55,15 @@ public class SMPRuntimeException extends RuntimeException implements TranslatedM
     }
 
     public SMPRuntimeException(ErrorCode errorCode, String messageCode, Throwable th, Map<String, Object> args) {
+        this(errorCode, messageCode, args, false);
+    }
+
+    public SMPRuntimeException(ErrorCode errorCode, String messageCode, Throwable th, Map<String, Object> args, boolean translateMessageArgs) {
         super(th);
         this.errorCode = errorCode;
         this.messageCode = messageCode;
         this.args = args;
+        this.translateMessageArgs = translateMessageArgs;
     }
 
     public ErrorCode getErrorCode() {
@@ -76,5 +88,10 @@ public class SMPRuntimeException extends RuntimeException implements TranslatedM
     @Override
     public Map<String, Object> getMessageArgs() {
         return args;
+    }
+
+    @Override
+    public boolean getTranslateMessageArgs() {
+        return translateMessageArgs;
     }
 }
