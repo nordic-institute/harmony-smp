@@ -32,6 +32,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_CLUSTER_ENABLED;
 import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_PROPERTY_REFRESH;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.time.DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT;
 
 /**
@@ -82,12 +84,10 @@ public class UIPropertyService {
                                                 String sortOrder, String filterByProperty) {
 
         LOG.debug("Get properties for page [{}], pageSize [{}] and filter [{}]", page, pageSize, filterByProperty);
-        List<SMPPropertyEnum> filteredProperties = Arrays.asList(SMPPropertyEnum.values()).stream()
-                .filter(prop -> StringUtils.isBlank(filterByProperty)
-                        || StringUtils.containsIgnoreCase(prop.getProperty(), filterByProperty))
-                .collect(Collectors.toList());
-        LOG.debug("Got filtered properties count [{}]", filteredProperties.size());
-
+        List<SMPPropertyEnum> filteredProperties = Arrays.stream(SMPPropertyEnum.values())
+                .filter(prop -> isBlank(filterByProperty)
+                        || Strings.CI.contains(prop.getProperty(), filterByProperty))
+                .toList();
         Map<String, DBConfiguration> changedProps = configurationDao.getPendingUpdateProperties().stream()
                 .collect(Collectors.toMap(DBConfiguration::getProperty, Function.identity()));
 
@@ -95,7 +95,7 @@ public class UIPropertyService {
                 .skip(page < 0 ? 0 : page * (long) pageSize)
                 .limit(pageSize < 0 ? SMPPropertyEnum.values().length : pageSize)
                 .map(prop -> createProperty(prop, changedProps))
-                .collect(Collectors.toList());
+                .toList();
 
         ServiceResultProperties result = new ServiceResultProperties();
         result.getServiceEntities().addAll(properties);
@@ -121,7 +121,7 @@ public class UIPropertyService {
 
         if (changedProps.containsKey(property.getProperty())) {
             String newVal = changedProps.get(propertyType.getProperty()).getValue();
-            if (!StringUtils.equals(newVal, property.getValue())) {
+            if (!Strings.CI.equals(newVal, property.getValue())) {
                 property.setNewValue(changedProps.get(propertyType.getProperty()).getValue());
                 property.setUpdateDate(refreshPropertiesTrigger.getNextExecutionDate());
             } else {
@@ -152,14 +152,14 @@ public class UIPropertyService {
         propertyValidationRO.setValue(propertyRO.getValue());
 
         Optional<SMPPropertyEnum> optPropertyEnum = SMPPropertyEnum.getByProperty(propertyRO.getProperty());
-        if (!optPropertyEnum.isPresent()) {
+        if (optPropertyEnum.isEmpty()) {
             LOG.debug("Property: [{}] is not SMP property!", propertyRO.getProperty());
             propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] is not SMP property!");
             propertyValidationRO.setPropertyValid(false);
             return propertyValidationRO;
         }
         SMPPropertyEnum propertyEnum = optPropertyEnum.get();
-        if (StringUtils.isBlank(propertyRO.getValue()) && propertyEnum.isMandatory()) {
+        if (isBlank(propertyRO.getValue()) && propertyEnum.isMandatory()) {
             propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] must not be NULL OR empty!");
             propertyValidationRO.setPropertyValid(false);
             return propertyValidationRO;
