@@ -191,7 +191,7 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.eclipse.angus/angus-mail -->
+        <!-- This is dependant library of the apache-cxf. New version might not need it. -->
         <dependency>
             <groupId>org.eclipse.angus</groupId>
             <artifactId>angus-mail</artifactId>

@@ -20,12 +20,14 @@ package eu.europa.ec.edelivery.smp.error;
 
 import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -46,12 +48,12 @@ abstract class AbstractErrorControllerAdvice {
         this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
-    public ResponseEntity handleRuntimeException(RuntimeException runtimeException) {
-        ResponseEntity response;
+    public ResponseEntity<?> handleRuntimeException(RuntimeException runtimeException) {
+        ResponseEntity<?> response;
         String currentLocale = LocaleUtils.getCurrentLocale();
         if (runtimeException instanceof SMPRuntimeException ex) {
             response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()), ex.getErrorCode(),
-                    smpExceptionLanguageService.getMessageTranslation("error.ui.smp.runtime.exception", currentLocale), ex);
+                    smpExceptionLanguageService.getMessageTranslation(ex.getMessageCode(), ex.getMessageArgs(),  currentLocale), ex);
         } else if (runtimeException instanceof AuthenticationException ex) {
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED,
                     smpExceptionLanguageService.getMessageTranslation("error.ui.authentication.exception", currentLocale), ex);
@@ -69,23 +71,27 @@ abstract class AbstractErrorControllerAdvice {
                     smpExceptionLanguageService.getMessageTranslation("error.ui.internal.error", currentLocale), runtimeException);
         }
 
-        String errorCodeId = (response.getBody() != null && response.getBody() instanceof  ErrorResponseRO)
-                ? ((ErrorResponseRO) response.getBody()).getErrorUniqueId()
-                : null;
+        String errorCodeId = "N/A";
+        Object body = response.getBody();
+        if (body instanceof ErrorResponseRO error) {
+            errorCodeId = error.getErrorUniqueId();
+        } else if (body instanceof ErrorResponse error) {
+            errorCodeId = error.getErrorUniqueId();
+        }
 
-        LOG.error("Unhandled exception occurred, unique ID: [{}]", errorCodeId, runtimeException);
+        LOG.error("Unhandled exception occurred, unique ID: [{}] with cause [{}]", errorCodeId, ExceptionUtils.getRootCauseMessage(runtimeException));
         return response;
     }
 
-    ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
+    ResponseEntity<?> buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
         return buildAndLog(status, ErrorCode.INTERNAL_ERROR_GENERIC, businessCode, msg, exception);
     }
 
-    ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, String msg, Exception exception) {
+    ResponseEntity<?> buildAndLog(HttpStatus status, ErrorCode errorCode, String msg, Exception exception) {
         return buildAndLog(status, errorCode, errorCode.getErrorBusinessCode(), msg, exception);
     }
 
-    abstract ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode,
+    abstract ResponseEntity<?> buildAndLog(HttpStatus status, ErrorCode errorCode,
                                         ErrorBusinessCode businessCode,
                                         String msg, Exception exception);
 }

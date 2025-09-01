@@ -29,7 +29,7 @@ public class SMPRuntimeException extends RuntimeException implements TranslatedM
 
     private final String messageCode;
 
-    private final Map<String, Object> args;
+    private final Map<String, Object> args = new HashMap<>();
 
     private String defaultTranslatedMessage;
 
@@ -40,18 +40,27 @@ public class SMPRuntimeException extends RuntimeException implements TranslatedM
     public SMPRuntimeException(ErrorCode errorCode, String messageCode, Map<String, Object> args) {
         this.errorCode = errorCode;
         this.messageCode = messageCode;
-        this.args = args;
+        if (args != null) {
+            this.args.putAll(args);
+        }
     }
 
     public SMPRuntimeException(ErrorCode errorCode, String messageCode, Throwable th) {
-        this(errorCode, messageCode, th, new HashMap<>());
+        this(errorCode, messageCode, th, null);
     }
 
     public SMPRuntimeException(ErrorCode errorCode, String messageCode, Throwable th, Map<String, Object> args) {
         super(th);
         this.errorCode = errorCode;
         this.messageCode = messageCode;
-        this.args = args;
+        if (args != null) {
+            this.args.putAll(args);
+        }
+    }
+
+    public SMPRuntimeException addParam(String key, Object value) {
+        this.args.put(key, value == null? "" : value);
+        return this;
     }
 
     public ErrorCode getErrorCode() {
