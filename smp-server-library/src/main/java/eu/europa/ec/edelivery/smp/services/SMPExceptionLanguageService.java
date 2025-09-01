@@ -24,12 +24,13 @@ import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.smp.spi.exceptions.TranslatedMessage;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.bouncycastle.asn1.LocaleUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.regex.Matcher;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -80,7 +81,8 @@ public class SMPExceptionLanguageService {
         }
         String property = uiProperties.getProperty(messageCode);
         for (String placeholder : args.keySet()) {
-            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}", args.get(placeholder).toString());
+            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}",
+                    Matcher.quoteReplacement(Objects.toString(args.get(placeholder))));
         }
         return property;
     }

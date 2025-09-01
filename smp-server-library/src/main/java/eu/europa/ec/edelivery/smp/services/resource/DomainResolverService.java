@@ -31,7 +31,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_DOMAIN_CODE;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.*;
 
 
 /**
@@ -124,7 +124,7 @@ public class DomainResolverService {
         // get single domain
         Optional<DBDomain> optDomain;
         // get
-        if (StringUtils.isNotBlank(headerParameter)) {
+        if (isNotBlank(headerParameter)) {
             optDomain = validatedAndReturnDomainByCode(headerParameter);
             if (optDomain.isPresent()) {
                 LOG.debug("Located domain by the http header [{}]", headerParameter);
@@ -165,10 +165,12 @@ public class DomainResolverService {
 
     public Optional<DBDomain> validatedAndReturnDomainByCode(final String domain) {
 
-        // else test if domain is ok.
+        // the test if domain is ok.
         if (!DOMAIN_ID_PATTERN.matcher(domain).matches()) {
             throw new SMPRuntimeException(INVALID_DOMAIN_CODE,
-                    "error.domain.invalid.domain.code", Map.of("domainCode", domain, "pattern", DOMAIN_ID_PATTERN));
+                    "error.domain.invalid.domain.code")
+                    .addParam("domainCode", domain)
+                    .addParam("pattern", DOMAIN_ID_PATTERN);
         }
         // get domain by code
         return domainDao.getDomainByCode(domain);
@@ -203,18 +205,18 @@ public class DomainResolverService {
         List<DBGroup> authorizedGroup = groupDao.getAllGroupsForDomain(domain);
 
 
-        if (StringUtils.isBlank(domainGroup)) {
+        if (isBlank(domainGroup)) {
             // if no group is provided, return the first group
             LOG.debug("No group is provided, can not determine the group, return al domain authorized groups");
             return authorizedGroup;
         }
 
-        if (authorizedGroup.stream().noneMatch(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup))) {
+        if (authorizedGroup.stream().noneMatch(entity -> Strings.CI.equals(entity.getGroupName(), domainGroup))) {
             throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, "error.domain.group.not.exists", Map.of("groupName", domainGroup));
         }
 
         DBGroup group = authorizedGroup.stream()
-                .filter(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup))
+                .filter(entity -> Strings.CI.equals(entity.getGroupName(), domainGroup))
                 .findFirst()
                 .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
                         "User [" + username + "] is not authorized for group ["
