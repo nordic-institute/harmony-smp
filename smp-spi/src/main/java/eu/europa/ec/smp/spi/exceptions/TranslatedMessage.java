@@ -31,4 +31,6 @@ public interface TranslatedMessage {
     String getMessageCode();
 
     Map<String, Object> getMessageArgs();
+
+    boolean getTranslateMessageArgs();
 }

@@ -106,7 +106,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         File rootFolder = getSecurityFolder();
         if (!PropertyUtils.isValidProperty(key, value, rootFolder)) {
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
-                    Map.of("error", key.getPropertyType().getErrorMessage(key.getProperty())));
+                    Map.of("error", key.getPropertyType().getErrorMessageCode(), "property", key.getProperty()));
         }
 
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);

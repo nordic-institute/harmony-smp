@@ -41,6 +41,8 @@ public class SMPExceptionLanguageService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPExceptionLanguageService.class);
 
+    public static final String PREFIX_MESSAGE_VALUE_TRANSLATION = "TRANSLATION_REQUIRED_";
+
     private final SMPLanguageResourceService smpLanguageResourceService;
 
     public SMPExceptionLanguageService(SMPLanguageResourceService smpLanguageResourceService) {
@@ -80,10 +82,23 @@ public class SMPExceptionLanguageService {
             return messageCode;
         }
         String property = uiProperties.getProperty(messageCode);
-        for (String placeholder : args.keySet()) {
-            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}",
-                    Matcher.quoteReplacement(Objects.toString(args.get(placeholder))));
+
+        Map<String, Object> arguments = new HashMap<>(args);
+        for (String placeholder: arguments.keySet()) {
+            Object value = args.get(placeholder);
+            if (value instanceof String && ((String) value).startsWith(PREFIX_MESSAGE_VALUE_TRANSLATION)) {
+                String innerProperty = ((String) value).replaceFirst(PREFIX_MESSAGE_VALUE_TRANSLATION, "");
+                arguments.put(placeholder, innerProperty);
+                value = getMessageTranslation(innerProperty, arguments);
+                arguments.put(placeholder, value.toString());
+            }
         }
+
+        for (String placeholder : arguments.keySet()) {
+            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}",
+                    Matcher.quoteReplacement(Objects.toString(arguments.get(placeholder))));
+        }
+
         return property;
     }
 

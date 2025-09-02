@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
  */
 public enum SMPDomainPropertyEnum {
 
-
     RESOURCE_SCH_VALIDATION_REGEXP(SMPPropertyEnum.RESOURCE_SCH_VALIDATION_REGEXP, false),
     RESOURCE_SCH_REGEXP_MSG(SMPPropertyEnum.RESOURCE_SCH_REGEXP_MSG, false),
     RESOURCE_SCH_MANDATORY(SMPPropertyEnum.RESOURCE_SCH_MANDATORY, false),
@@ -57,10 +56,6 @@ public enum SMPDomainPropertyEnum {
 
     public boolean isSystemAdminOnly() {
         return systemAdminOnly;
-    }
-
-    public boolean isNotSystemAdminOnly() {
-        return !systemAdminOnly;
     }
 
     public String getProperty() {
@@ -89,10 +84,6 @@ public enum SMPDomainPropertyEnum {
 
     public Pattern getValuePattern() {
         return propertyEnum.getValuePattern();
-    }
-
-    public String getErrorValueMessage() {
-        return propertyEnum.getErrorValueMessage();
     }
 
     public SMPPropertyEnum getPropertyEnum() {

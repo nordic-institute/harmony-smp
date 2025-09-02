@@ -17,6 +17,9 @@
  * #END_LICENSE#
  */
 package eu.europa.ec.edelivery.smp.config.enums;
+
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+
 /**
  * DomiSMP application properties types
  *
@@ -24,30 +27,29 @@ package eu.europa.ec.edelivery.smp.config.enums;
  * @since 4.2
  */
 public enum SMPPropertyTypeEnum {
-    STRING (".{0,2000}","Property value [%s] must be less than 2000 characters!"),
-    DATETIME (".{0,2000}","Property value [%s] must be less than 2000 characters!"),
-    LIST_STRING(".{0,2000}","Property [%s] is not valid LIST_STRING type!"),
-    MAP_STRING(".{0,2000}","Property [%s] is not valid MAP_STRING type!"),
-    INTEGER("\\d{0,12}","Property [%s] is not valid Integer!"),
-    BOOLEAN("true|false","Property [%s] is not valid Boolean type!"),
-    REGEXP(".{0,2000}", "Property [%s] is not valid Regular Expression type!"),
-    CRON_EXPRESSION(".{0,2000}","Property [%s] is not valid Cron Expression type!"),
-    EMAIL(".{0,2000}","Property [%s] is not valid Email address type!"),
-    FILENAME(".{0,2000}","Property [%s] is not valid Filename type or it does not exists!"),
-    PATH(".{0,2000}","Property [%s] is not valid Path type or it does not exists!"),
-    URL(".{0,2000}","Property [%s] is not valid URL!"),
+    STRING (".{0,2000}","error.invalid.property.string"),
+    DATETIME (".{0,2000}","error.invalid.property.datetime"),
+    LIST_STRING(".{0,2000}","error.invalid.property.list.string"),
+    MAP_STRING(".{0,2000}","error.invalid.property.map.string"),
+    INTEGER("\\d{0,12}","error.invalid.property.integer"),
+    BOOLEAN("true|false","error.invalid.property.boolean"),
+    REGEXP(".{0,2000}","error.invalid.property.regexp"),
+    CRON_EXPRESSION(".{0,2000}","error.invalid.property.cron.expression"),
+    EMAIL(".{0,2000}","error.invalid.property.email"),
+    FILENAME(".{0,2000}","error.invalid.property.filename"),
+    PATH(".{0,2000}","error.invalid.property.path"),
+    URL(".{0,2000}","error.invalid.property.url"),
     ;
 
-    String errorTemplate;
     String defValidationRegExp;
+    String errorMessageCode;
 
-    SMPPropertyTypeEnum(String defValidationRegExp, String errorTemplate ) {
+    SMPPropertyTypeEnum(String defValidationRegExp, String errorMessageCode) {
         this.defValidationRegExp = defValidationRegExp;
-        this.errorTemplate =errorTemplate;
-
+        this.errorMessageCode = errorMessageCode;
     }
 
-    public String getErrorMessage(String property) {
-        return String.format(errorTemplate, property);
+    public String getErrorMessageCode() {
+        return errorMessageCode;
     }
 }
