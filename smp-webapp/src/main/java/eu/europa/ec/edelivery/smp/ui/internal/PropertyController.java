@@ -23,7 +23,6 @@ import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -54,6 +53,16 @@ public class PropertyController {
         this.configurationService = configurationService;
     }
 
+    /**
+     * Get paginated property list
+     *
+     * @param page       - page number (0..N)
+     * @param pageSize   - page size default 10
+     * @param orderBy    - order by field
+     * @param orderType  - order type (asc, desc)
+     * @param filterValue - filter value (searches in property name and value)
+     * @return - paginated property list
+     */
     @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public ServiceResult<PropertyRO> getPropertyList(
@@ -61,9 +70,9 @@ public class PropertyController {
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
             @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = PARAM_QUERY_PROPERTY, required = false) @Filter String filterValue
+            @RequestParam(value = PARAM_QUERY_PROPERTY, required = false) String filterValue
     ) {
-        LOG.info("Search for page: {}, page size: {}", page, pageSize);
+        LOG.info("Search for page: [{}], page size: [{}] with filter: [{}]", page, pageSize, filterValue);
         return uiPropertyService.getTableList(page, pageSize, orderBy, orderType, filterValue);
     }
 
