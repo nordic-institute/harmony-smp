@@ -138,4 +138,12 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
         <vulnerabilityName>CVE-2024-38816</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: cxf-core-3.5.11.jar
+   CVE-2025-48913 - DomiSMP does not use JMS and it does not allow user to configure JMS
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf-core@.*$</packageUrl>
+        <cve>CVE-2025-48913</cve>
+    </suppress>
 </suppressions>
