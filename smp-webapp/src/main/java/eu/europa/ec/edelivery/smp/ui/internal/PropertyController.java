@@ -78,7 +78,7 @@ public class PropertyController {
 
     @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public void updateUserList(@RequestBody PropertyRO[] updateEntities) {
+    public void updatePropertyList(@RequestBody PropertyRO[] updateEntities) {
         LOG.info("Update property list, count: {}", updateEntities.length);
         // Pass the users and mark the passwords of the ones being updated as expired by passing the passwordChange as null
         uiPropertyService.updatePropertyList(Arrays.asList(updateEntities));
