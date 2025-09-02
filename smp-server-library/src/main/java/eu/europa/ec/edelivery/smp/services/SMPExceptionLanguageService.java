@@ -70,13 +70,21 @@ public class SMPExceptionLanguageService {
         }
         String property = uiProperties.getProperty(messageCode);
 
-        for (String placeholder : args.keySet()) {
+        Map<String, Object> arguments = new HashMap<>(args);
+        for (String placeholder: arguments.keySet()) {
             Object value = args.get(placeholder);
             if (value instanceof String && ((String) value).startsWith(PREFIX_MESSAGE_VALUE_TRANSLATION)) {
-                value = getMessageTranslation(((String) value).replaceFirst(PREFIX_MESSAGE_VALUE_TRANSLATION, ""), args);
+                String innerProperty = ((String) value).replaceFirst(PREFIX_MESSAGE_VALUE_TRANSLATION, "");
+                arguments.put(placeholder, innerProperty);
+                value = getMessageTranslation(innerProperty, arguments);
+                arguments.put(placeholder, value.toString());
             }
-            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}", value.toString());
         }
+
+        for (String placeholder : arguments.keySet()) {
+            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}", arguments.get(placeholder).toString());
+        }
+
         return property;
     }
 

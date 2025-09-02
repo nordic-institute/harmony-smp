@@ -50,6 +50,6 @@ public enum SMPPropertyTypeEnum {
     }
 
     public String getErrorMessageCode() {
-        return SMPExceptionLanguageService.PREFIX_MESSAGE_VALUE_TRANSLATION + errorMessageCode;
+        return errorMessageCode;
     }
 }
