@@ -63,7 +63,8 @@ public class IdentifierFormatterService {
 
     public IdentifierFormatterService(DomainDao domainDao,
                                       DomainConfigurationDao domainConfigurationDao,
-                                      ConfigurationService configurationService, SMPExceptionLanguageService smpExceptionLanguageService) {
+                                      ConfigurationService configurationService,
+                                      SMPExceptionLanguageService smpExceptionLanguageService) {
         this.domainDao = domainDao;
         this.domainConfigurationDao = domainConfigurationDao;
         this.configurationService = configurationService;
