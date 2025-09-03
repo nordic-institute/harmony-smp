@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -23,15 +23,13 @@ import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.logging.SMPLogger;
-import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -43,6 +41,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * @author Joze Rihtarsic
@@ -77,7 +77,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
 
         public static KeyType getKeyTypeByOid(String oid) {
             for (KeyType kt : KeyType.values()) {
-                if (StringUtils.equals(kt.getKeyOid(), oid)) {
+                if (Strings.CI.equals(kt.getKeyOid(), oid)) {
                     return kt;
                 }
             }
@@ -85,12 +85,10 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         }
     }
 
-
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(X509CertificateToCertificateROConverter.class);
     private static final String S_CLIENT_CERT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
     // the GMT date format for the Client-Cert header generation!
     private static final ThreadLocal<DateFormat> dateFormatGMT = ThreadLocal.withInitial(() -> {
-                SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT);
+                SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT, java.util.Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
                 return sdf;
             }
@@ -105,7 +103,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         String issuer = data.getIssuerOriginalDN();
         String serial = data.getCertSerial();
         String certId = data.getName();
-        List<String> certPolicyIdentifiers = null;
+        List<String> certPolicyIdentifiers;
 
         try {
             certPolicyIdentifiers = X509CertificateUtils.getCertificatePolicyIdentifiers(cert);
@@ -123,7 +121,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         cro.setIssuer(issuer);
         cro.setPublicKeyType(getKeyAlgorithm(cert.getPublicKey()));
         cro.setCrlUrl(url);
-        if (certPolicyIdentifiers!=null && !certPolicyIdentifiers.isEmpty()) {
+        if (certPolicyIdentifiers != null && !certPolicyIdentifiers.isEmpty()) {
             cro.getCertificatePolicies().addAll(certPolicyIdentifiers);
         }
         // set serial as HEX
@@ -159,23 +157,17 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
     }
 
     private String urlEncodeString(String val) {
-        if (StringUtils.isBlank(val)) {
+        if (isBlank(val)) {
             return "";
-        } else {
-            try {
-                return URLEncoder.encode(val, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                LOG.error("Error occurred while url encoding the certificate string:" + val, e);
-            }
         }
-        return "";
+        return URLEncoder.encode(val, StandardCharsets.UTF_8);
     }
 
     /**
      * Get key algorithm from key. Some JCE providers return OID instead of SunJCE key name.
      * This method tries to map OID to key name.
      *
-     * @param key
+     * @param key the key to get algorithm from
      * @return JCE key algorithm name
      */
     public String getKeyAlgorithm(Key key) {
