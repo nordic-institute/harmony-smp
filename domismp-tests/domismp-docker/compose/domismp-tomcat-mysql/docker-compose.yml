@@ -39,7 +39,7 @@ services:
 #      - "5005:5005"
 
   eulogin-service:
-    image: edelivery-docker.devops.tech.ec.europa.eu/eulogin/mockserver:6.2.7
+    image: edelivery-docker.devops.tech.ec.europa.eu/eulogin/mockserver:9.11.3
     hostname: eulogin-mock-server
     volumes:
         - ./eulogin/init-data:/resources/ecas-mock-server
