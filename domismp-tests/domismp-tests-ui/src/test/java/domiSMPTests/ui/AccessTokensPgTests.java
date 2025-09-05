@@ -13,6 +13,8 @@ import rest.models.UserModel;
 import utils.Generator;
 import utils.Utils;
 
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.util.HashMap;
 
 
@@ -150,6 +152,26 @@ public class AccessTokensPgTests extends SeleniumTest {
         soft.assertEquals(alertMessage, "Access token \"" + tokenID + "\" has been updated!", "Access Token ID is not correct");
         accessTokenInfo = accessTokensPage.getAccessTokenInfo(tokenID);
         soft.assertEquals(accessTokenInfo.get("Active"), "false", "Access Token active status is not correct");
+
+        soft.assertAll();
+    }
+
+
+    @Test(description = "ACCTOK-07 User is able to press on Copy access token value after generating a new token")
+    public void userIsAbleToPressOnCopyTokenValueAfterGeneratingANewToken() throws Exception {
+        String currentDate = Utils.getCurrentDate("MM/dd/yyyy");
+        String description = Generator.randomAlphaNumericValue(10);
+        //Create new token
+        CreateNewAccessTokenDialog createNewAccessTokenDialog = accessTokensPage.clickCreateAccessTokenBtn();
+        createNewAccessTokenDialog.getDescriptionInput().fill(description);
+        createNewAccessTokenDialog.getStartDateInput().fill(currentDate, true);
+        createNewAccessTokenDialog.getEndDateInput().fill(currentDate, true);
+        createNewAccessTokenDialog.getCreateNewTokenBtn().click();
+        createNewAccessTokenDialog.getCopyAccessTokenValueBtn().click();
+        String tokenID = createNewAccessTokenDialog.getTokenValueAndCloseDialog();
+        //Get token value from clipboard
+        String accessTokenClipboardValue = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+        soft.assertEquals(accessTokenClipboardValue, tokenID, "Token value from clipboard is different than the token value from UI!");
 
         soft.assertAll();
     }

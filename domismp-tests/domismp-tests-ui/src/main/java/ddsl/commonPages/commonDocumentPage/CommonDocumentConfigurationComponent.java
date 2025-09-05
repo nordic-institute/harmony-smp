@@ -15,11 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonDocumentConfigurationComponent extends DComponent {
     private final static Logger LOG = LoggerFactory.getLogger(CommonDocumentConfigurationComponent.class);
-
-    @FindBy(id = "name_id")
-    private WebElement documentNameInput;
-    @FindBy(id = "mimeType_id")
-    private WebElement mimeType;
     @FindBy(id = "publishedVersion_id")
     private WebElement publishVersion;
     @FindBy(id = "sharingEnabled_id")
@@ -39,11 +34,13 @@ public class CommonDocumentConfigurationComponent extends DComponent {
     }
 
     public void enableSharing() throws Exception {
+        wait.forElementToBeClickable(sharingEnableCheckBox);
         weToDChecked(sharingEnableCheckBox).check();
         LOG.debug("Sharing document was enabled");
     }
 
     public void disableSharing() throws Exception {
+        wait.forElementToBeClickable(sharingEnableCheckBox);
         weToDChecked(sharingEnableCheckBox).uncheck();
         LOG.debug("Sharing document was disabled");
 

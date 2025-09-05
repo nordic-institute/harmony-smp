@@ -2,7 +2,7 @@ package pages.systemSettings.domainsPage;
 
 import ddsl.commonPages.CommonPageWithTabsAndGrid;
 import ddsl.dcomponents.ConfirmationDialog;
-import ddsl.dcomponents.Grid.SmallGrid;
+import ddsl.dcomponents.Grid.MatSmallGrid;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,8 +35,8 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
     }
 
     @Override
-    public SmallGrid getLeftSideGrid() {
-        return new SmallGrid(driver, rightPanel);
+    public MatSmallGrid getLeftSideGrid() {
+        return new MatSmallGrid(driver, rightPanel);
     }
 
     public ResourceTypesTab getResourceTypesTab() {

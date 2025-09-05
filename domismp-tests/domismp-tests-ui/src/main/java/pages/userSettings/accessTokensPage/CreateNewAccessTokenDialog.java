@@ -25,6 +25,8 @@ public class CreateNewAccessTokenDialog extends DComponent {
     private WebElement generateTokenBtn;
     @FindBy(id = "alertmessage_id")
     private WebElement accesstokenGeneratedMessage;
+    @FindBy(id = "copyButton")
+    private WebElement copyAccessTokenValueBtn;
     @FindBy(id = "closeDialogButton")
     private WebElement closeBtn;
 
@@ -52,6 +54,11 @@ public class CreateNewAccessTokenDialog extends DComponent {
         return new DButton(driver, generateTokenBtn);
     }
 
+    public DButton getCopyAccessTokenValueBtn() {
+        return new DButton(driver, copyAccessTokenValueBtn);
+    }
+
+
     public String getTokenIdAndCloseDialog() {
         String message = accesstokenGeneratedMessage.getText();
         String pattern = "ID: \"([^\"]+)\"";
@@ -67,6 +74,25 @@ public class CreateNewAccessTokenDialog extends DComponent {
 
         return null;
     }
+
+
+    public String getTokenValueAndCloseDialog() {
+        String message = accesstokenGeneratedMessage.getText();
+        String pattern = "value: \"([^\"]+)\"";
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(message);
+        if (matcher.find()) {
+            String tokenId = matcher.group(1);
+            if (!tokenId.isEmpty()) {
+                weToDButton(closeBtn).click();
+                return tokenId;
+            }
+        }
+
+        return null;
+    }
+
+
 
 
 }

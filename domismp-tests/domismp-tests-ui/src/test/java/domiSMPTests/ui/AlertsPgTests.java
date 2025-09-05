@@ -4,6 +4,7 @@ import ddsl.DomiSMPPage;
 import ddsl.commonPages.commonAlertPage.CommonAlertDetailDialog;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
+import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -93,4 +94,30 @@ public class AlertsPgTests extends SeleniumTest {
 
         soft.assertAll();
     }
+
+    @Test(description = "ALR-13 - Login failure alerts are generated based on property smp.alert.user.login_failure.enabled")
+    public void loginFailureAlertsAreGeneratedBasedOnProperty() throws Exception {
+        UserModel userToTest = UserModel.generateUserWithADMINrole();
+        rest.users().createUser(userToTest);
+        //Disable property and alerts are not generating
+        JSONObject propertyRegex = rest.propertiesClient().getProperty("smp.alert.user.login");
+        propertyRegex.put("value", "false");
+        rest.propertiesClient().setPropertyValue(propertyRegex);
+        loginPage.login(userToTest.getUsername(), "123123123");
+
+        //Enable property and alerts are generating
+        propertyRegex.put("value", "true");
+        rest.propertiesClient().setPropertyValue(propertyRegex);
+        loginPage.login(userToTest.getUsername(), "123123123");
+
+        loginPage.login(adminUser.getUsername(), data.getNewPassword());
+
+        alertsPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_ALERS);
+
+        List<AlertModel> alertList = alertsPage.getAlertGrid().getAllAlertsByUsername(userToTest.getUsername());
+        soft.assertEquals(alertList.stream().filter(alert -> alert.getAlertType().equals("CREDENTIAL_VERIFICATION_FAILED")).count(), 1, "Credential verification failed alert is not present or wrong number of events are created!");
+
+        soft.assertAll();
+    }
 }
+
