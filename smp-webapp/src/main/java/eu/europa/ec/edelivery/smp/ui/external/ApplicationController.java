@@ -19,6 +19,8 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
 
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
@@ -29,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,6 +52,9 @@ public class ApplicationController {
 
     @Autowired
     ConfigurationService configurationService;
+
+    @Autowired
+    SMPAuthorizationService authorizationService;
 
     @Value("${smp.artifact.name:eDelivery SMP}")
     String artifactName;
@@ -97,7 +103,7 @@ public class ApplicationController {
                 "]";
     }
 
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_USER})
+    @PreAuthorize("@smpAuthorizationService.isSMPUserMatchingAnyAuthority({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_USER})")
     @GetMapping(path = "config")
     public SmpConfigRO getApplicationConfig() {
         SmpConfigRO info = new SmpConfigRO();
