@@ -27,6 +27,12 @@ services:
         ||smp.alert.certificate.imminent_expiration.enabled=true
         ||smp.alert.certificate.expired.enabled=true
         ||smp.alert.accessToken.expired.enabled=true
+        ||smp.authorization.jwt.enabled=true
+        ||smp.authorization.jwt.audience=oots-audience-custom
+        ||smp.authorization.jwt.issuer=https://authorization-server:8143/realms/OOTS
+        ||smp.authorization.jwt.key=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuOBK4kDLk2OY+wh0ezvF2O+34g6vT2vwtjFMBw/nz/m3QOrU3Kg25itVAyS7kaszbHtdGAxP4xsT9Alq/Z+/GSIbbvCrMTpDgajQ/fC0Vj6UzytVkomWhGLgzG3BxT9CDLCTGWSc28Z909ZdDc/f4X0mYE8GRvHjcLmybP2Q24beC6LGSOGrVtZacbajFX67cbtcG/DJuX5iodAV2r2AmEzgT3Z7SXVBd9qmzk6hKRFgm06h2gMIaPJofd/iWlhyI/r/iCE7G7puJB13eiDkGUcWG270Zh71HtdImCl8SWGmsZjWwKXdR52FDniwDHKwp19RUuLMjY2oFWqVNow+5QIDAQAB
+        ||smp.authorization.jwt.algorithm=RS256
+        ||smp.automation.authentication.types=BASIC_TOKEN|CERTIFICATE|JWT
 
     volumes:
       - ./properties/db-scripts:/tmp/custom-data/
@@ -53,3 +59,22 @@ services:
     hostname: mail-server.smp.local
 #    ports:
 #      - "9005:9000"
+
+  authorization-server:
+    image: keycloak/keycloak:26.3
+    hostname: authorization-server
+    command: -v start-dev --hostname authorization-server --import-realm
+#    ports:
+#      - "8143:8443"
+#      - "8180:8080"
+    volumes:
+      - ./keycloak/imports:/opt/keycloak/data/import
+      - ./keycloak/certs:/certs
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTPS_KEY_STORE_FILE: /certs/keycloak-keystore.p12
+      KC_HTTPS_KEY_STORE_PASSWORD: test123
+      KC_HTTPS_CLIENT_AUTH: request
+      KC_HTTPS_TRUST_STORE_FILE: /certs/keycloak-truststore.p12
+      KC_HTTPS_TRUST_STORE_PASSWORD: test123

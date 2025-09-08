@@ -19,20 +19,18 @@
 package eu.europa.ec.edelivery.smp.auth.jwt;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.auth.jwt.validators.CertificateBindValidator;
+import eu.europa.ec.edelivery.smp.auth.jwt.validators.NotEmptyClaimValidator;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
-import org.springframework.security.oauth2.core.OAuth2Error;
-import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -45,6 +43,8 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * \
@@ -74,8 +74,8 @@ public class SMPJwtConfig {
             return null; // No JWT authentication configured
         }
         String jwtSignatureKey = configurationService.getJWTSignatureKey();
-        RSAPublicKey publicKey = loadRSAPublicKey(jwtSignatureKey);
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.from(configurationService.getJWTSignatureAlgorithm());
+        RSAPublicKey publicKey = loadRSAPublicKey(jwtSignatureKey);
 
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(publicKey)
                 .signatureAlgorithm(signatureAlgorithm)
@@ -83,13 +83,22 @@ public class SMPJwtConfig {
                 .build();
         // Combine validators: default + your custom validator
         JwtValidators.AtJwtBuilder atJwtBuilder = JwtValidators.createAtJwtValidator();
-        if (StringUtils.isNotBlank(configurationService.getJWTIssuer())) {
+        if (isNotBlank(configurationService.getJWTIssuer())) {
             atJwtBuilder.issuer(configurationService.getJWTIssuer());
         }
-        if (StringUtils.isNotBlank(configurationService.getJWTAudience())) {
+        if (isNotBlank(configurationService.getJWTAudience())) {
             atJwtBuilder.audience(configurationService.getJWTAudience());
         }
-        atJwtBuilder.validators((v) -> v.put("client_id", new NotNullClaimValidator("client_id")));
+        if (configurationService.isJwtMTLSCertificateBoundRequired()) {
+            LOG.info("SMP JWT MTLS Certificate bound is required.");
+            // Add custom validator to check for the presence of the "cnf" claim - validate that claim is present
+            atJwtBuilder.validators((v) -> v.put("cnf", new CertificateBindValidator()));
+        }
+
+        // Add custom validator to check for the presence of the "client_id" claim - validate that claim is present
+        atJwtBuilder.validators((v)
+                -> v.put("client_id", new NotEmptyClaimValidator("client_id")));
+
         OAuth2TokenValidator<Jwt> validator = atJwtBuilder.build();
         decoder.setJwtValidator(validator);
 
@@ -100,10 +109,10 @@ public class SMPJwtConfig {
      * Configures the SMPBearerTokenAuthenticationConverter bean if JWT authentication is enabled.
      * This converter is responsible for converting bearer tokens into SMPAuthenticationToken.
      *
-     * @param jwtDecoder                        the JwtDecoder bean, or null if JWT authentication is not enabled
-     * @param credentialService                 the service to access credentials for the authenticated user by client_id in the JWT token
-     * @param domainDao                         the DAO for domain operations
-     * @param smpExceptionLanguageService       the SMP exception translator
+     * @param jwtDecoder                  the JwtDecoder bean, or null if JWT authentication is not enabled
+     * @param credentialService           the service to access credentials for the authenticated user by client_id in the JWT token
+     * @param domainDao                   the DAO for domain operations
+     * @param smpExceptionLanguageService the SMP exception translator
      * @return a configured SMPBearerTokenAuthenticationConverter or null if JWT authentication is not enabled
      */
     @Bean
@@ -131,29 +140,5 @@ public class SMPJwtConfig {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
         return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(keySpec);
 
-    }
-
-
-    /**
-     * A custom OAuth2TokenValidator that checks if a specific claim is present in the JWT.
-     * If the claim is not present, it returns an error indicating that the claim must have a value.
-     */
-    protected static final class NotNullClaimValidator implements OAuth2TokenValidator<Jwt> {
-
-        private final String claimName;
-
-        NotNullClaimValidator(String claimName) {
-            this.claimName = claimName;
-        }
-
-        @Override
-        public OAuth2TokenValidatorResult validate(Jwt token) {
-            if (StringUtils.isBlank(token.getClaim(this.claimName))) {
-                return OAuth2TokenValidatorResult
-                        .failure(new OAuth2Error(OAuth2ErrorCodes.INVALID_TOKEN, this.claimName + " must have a value",
-                                "https://datatracker.ietf.org/doc/html/rfc9068#name-data-structure"));
-            }
-            return OAuth2TokenValidatorResult.success();
-        }
     }
 }

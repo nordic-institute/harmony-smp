@@ -81,4 +81,54 @@ Users: (For details see the CAS configuration: [userDataBase.xml](eulogin%2Finit
 
 Mock mail server for monitoring send alert mails. 
 url: http://localhost:9005/monitor 
-    
+
+## Authorization server
+DomiSMP 2.x supports OAuth2 / OpenID Connect authorization. In the compose plan Keycloak server is used as the authorization server for generating the JWT tokens. 
+
+
+When started login to authorization server with browser (username/password: admin/admin)
+http://authorization-server:8180/admin/master/console/
+(User OOTS realm to see the test configuration)
+
+
+test generate jwt token
+
+> curl -k --cert ddc-client.crt.pem --key ddc-client.key.pem \
+-d "grant_type=client_credentials&client_id=oots-ddc-client" \
+https://authorization-server:8143/realms/OOTS/protocol/openid-connect/token
+
+
+Expected response example
+{"access_token":"eyJhbGciOiJSUzI1Ni....TxsxP8GAwkJXI949FRE8Wx3kUgP6AfJ5YAjKuJ2wNzw","expires_in":300,"refresh_expires_in":0,"token_type":"Bearer","not-before-policy":0,"scope":"oots-smp-group-be oots-smp-domain"}
+
+
+
+> curl -X GET http://localhost:8280/smp/privateDomain/smp-1/urn%3Aoasis%3Anames%3Atc%3Aebcore%3Apartyid-type%3Aiso6523%3A0088%3A%3Atest%3Ajwt%3A001
+- Response: http error 401
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ErrorResponse xmlns="ec:services:SMP:1.0"><BusinessCode>UNAUTHORIZED</BusinessCode><ErrorDescription>User is not authorized for the domain!</ErrorDescription><ErrorUniqueId>2025-08-11T08:28:19.712299141Z:9c4cdf7c-8ea7-4a58-87da-6cd3adb98082</ErrorUniqueId></ErrorResponse>
+
+
+With the JWT token  (Please make sure it is not expired!)
+
+
+> curl -X GET -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiYXQrand0Iiwia2lkIiA6ICJEU2dEdFc2bnFmTWVuUUdhcmc0SjRsVWtWMEp5RE1CaHdZUjlqTWF5aVI4In0.eyJleHAiOjE3NTQ5MDUwMjQsImlhdCI6MTc1NDkwNDcyNCwianRpIjoidHJydGNjOjViMzdlYTZhLTM1NGQtYjBmNy1hMzMwLTRjNGE0ZGI2NGVhOSIsImlzcyI6Imh0dHBzOi8vYXV0aG9yaXphdGlvbi1zZXJ2ZXI6ODE0My9yZWFsbXMvT09UUyIsImF1ZCI6Im9vdHMtYXVkaWVuY2UtY3VzdG9tIiwic3ViIjoiZjdiNWM2YzktNzJiYS00MDlmLTkzYjAtN2Q3ZTBkYTU5YmEyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoib290cy1kZGMtY2xpZW50Iiwic2NvcGUiOiJvb3RzLXNtcC1ncm91cC1iZSBvb3RzLXNtcC1kb21haW4iLCJjbGllbnRIb3N0IjoiMTcyLjIxLjAuMSIsImNsaWVudEFkZHJlc3MiOiIxNzIuMjEuMC4xIiwiY2xpZW50X2lkIjoib290cy1kZGMtY2xpZW50In0.EdLl3ODYrv-k1PhAIZAMgg5dKMf7bO2Svw6nvP07WVb4Mn6MF_D5nMRNzge4gJs-3qHGi8FFHJ3A0VOIWCZKOvU3jPlYEOvSoCBW_DZ1NvFBjyaFR3Y2tEfd-OIY2ecBo9ejj3SJKG71fIZ3DtiJ7YwfGaveFffZWKWLTNuuygi3yAUI1Z2McB7nd5bP9YRo6jH0gPNDR2fA4kIOUMcWqDfU_ZTLKtdg4tYk1k31oXArY4xN7LGlDSN9NGbkRQftyDBTJgK69G7SPx8j3MCokhxR_AhcpyEAIs1HFyMALetTxsxP8GAwkJXI949FRE8Wx3kUgP6AfJ5YAjKuJ2wNzw" http://localhost:8280/smp/oots-smp-domain/smp-1/urn%3Aoasis%3Anames%3Atc%3Aebcore%3Apartyid-type%3Aiso6523%3A0088%3A%3Atest%3Ajwt%3A001
+
+
+== Example with dynamic discovery client
+
+> java -jar ddc-3.1-SNAPSHOT.jar -get \
+-rs urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088 -ri test:jwt:001 \
+-smp http://localhost:8280/smp/oots-smp-domain/  \
+-kf /cef/test/OAuth0/keycloak/ddc-client.p12 \
+-kp test123 -kt PKCS12 -kkp test123 \
+-tf /cef/test/OAuth0/keycloak/certs/keycloak-truststore.p12 \
+-tp test123 -tt PKCS12 \
+-jwta https://localhost:8143/realms/OOTS/protocol/openid-connect/token \
+-jwts oots-smp-domain oots-smp-group-be \
+-jwtc oots-ddc-client
+
+
+
+To enable X5t#S256 go to OOTS realm -> Clients -> oots-ddc-client -> Advanced Settings -> and enable OAuth 2.0 Mutual TLS Certificate Bound Access Tokens Enabled 
+Or make sure that the following attribute is set in keycloak/imports/realm-smp.json
+/clients/["clientId"="oots-ddc-client"]/attributes/tls.client.certificate.bound.access.tokens=true

@@ -18,3 +18,8 @@ services:
   mail-service:
     ports:
       - "9005:9000"
+
+  authorization-server:
+    ports:
+      - "8143:8443"
+      - "8180:8080"
