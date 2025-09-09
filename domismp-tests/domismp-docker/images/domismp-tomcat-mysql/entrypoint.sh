@@ -89,27 +89,34 @@ init_tomcat() {
 
 function configureServerHttps() {
   echo "Create Tomcat HTTPS..."
-
-  cp /tmp/artefacts/shared-artefacts/server* ${TOMCAT_HOME}/
-  # Because tomcat-native.tar.gz is installed we can use APR connector
-  sed -i.bak -e "s#</Service>#<Connector port=\"8443\" protocol=\"org.apache.coyote.http11.Http11AprProtocol\"  \
-		maxThreads=\"200\" maxParameterCount=\"1000\"  \
-	  scheme=\"https\" secure=\"true\" SSLEnabled=\"true\" \
-		clientAuth=\"true\" sslProtocol=\"TLS\" \
-  	keystoreType=\"PKCS12\" \
-		keystoreFile=\"/tmp/artefacts/shared-artefacts/server-keystore.p12\" \
-    keyAlias=\"${TOMCAT_TLS_KEY_ALIAS}\" \
-  	keystorePass=\"test123\" \
-  	keyPass=\"test123\"   \
-    truststoreType=\"PKCS12\" \
-  	truststoreFile=\"/tmp/artefacts/shared-artefacts/server-truststore.p12\"  \
-  	truststorePass=\"test123\"  \
-  	/> \
+  # import truststore for eulogin
+  if [ -e /tmp/keystores/smp-trusted-mtls.p12 ]; then
+    echo "add trustStore: /tmp/keystores/smp-trusted-mtls.p12"
+    ${JAVA_HOME}/bin/keytool -importkeystore -srckeystore /tmp/keystores/smp-trusted-mtls.p12 -destkeystore /tmp/artefacts/shared-artefacts/server-truststore.p12 -srcstorepass test123 -deststorepass test123
+    #JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/tmp/keystores/smp-eulogin-mock.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=test123"
+  fi
+  sed -i.bak -e "s#</Service>#<Connector port=\"8443\" protocol=\"org.apache.coyote.http11.Http11NioProtocol\" \
+  maxThreads=\"150\" SSLEnabled=\"true\" scheme=\"https\" secure=\"true\" \
+  sslProtocol=\"TLS\"> \
+    <SSLHostConfig \
+                truststoreFile=\"/tmp/artefacts/shared-artefacts/server-truststore.p12\" \
+                truststorePassword=\"test123\" \
+                truststoreType=\"PKCS12\" \
+                certificateVerification=\"required\">  \
+           <Certificate certificateKeystoreFile=\"/tmp/artefacts/shared-artefacts/server-keystore.p12\" \
+                certificateKeystorePassword=\"test123\" \
+                certificateKeystoreType=\"PKCS12\" \
+                type=\"RSA\" certificateKeyAlias=\"${TOMCAT_TLS_KEY_ALIAS}\"/> \
+    </SSLHostConfig> \
+   </Connector> \
 	</Service>#g" "${TOMCAT_HOME}/conf/server.xml"
-	# Aet encodedSolidusHandling to passthrough request paths containing a %2f
-	# sequence will be processed with the %2f sequence unchanged.
-	sed -i.bak -e 's#<Connector #<Connector encodedSolidusHandling="passthrough" #g' "${TOMCAT_HOME}/conf/server.xml"
+
+		# Add encodedSolidusHandling to passthrough request paths containing a %2f
+  	# sequence will be processed with the %2f sequence unchanged.
+  	sed -i.bak -e 's#<Connector #<Connector encodedSolidusHandling="passthrough" #g' "${TOMCAT_HOME}/conf/server.xml"
 }
+
+
 init_mysql() {
   echo "[INFO] init database:"
   if [ ! -d "/run/mysqld" ]; then

@@ -117,15 +117,15 @@ With the JWT token  (Please make sure it is not expired!)
 == Example with dynamic discovery client
 
 > java -jar ddc-3.1-SNAPSHOT.jar -get \
--rs urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088 -ri test:jwt:001 \
--smp http://localhost:8280/smp/oots-smp-domain/  \
--kf /cef/test/OAuth0/keycloak/ddc-client.p12 \
--kp test123 -kt PKCS12 -kkp test123 \
--tf /cef/test/OAuth0/keycloak/certs/keycloak-truststore.p12 \
--tp test123 -tt PKCS12 \
--jwta https://localhost:8143/realms/OOTS/protocol/openid-connect/token \
--jwts oots-smp-domain oots-smp-group-be \
--jwtc oots-ddc-client
+ -rs ehealth-actorid-qns -ri 0088:7770010100777:test:smp001 \
+ -smp https://eulogin.protected.smp.local:8943/smp/oots-smp-domain/  \
+ -kf domismp-tests/domismp-docker/compose/domismp-tomcat-mysql/keycloak/ddc/ddc-client.p12 \
+ -kp test123 -kt PKCS12 -kkp test123 \
+ -tf domismp-tests/domismp-docker/compose/domismp-tomcat-mysql/keycloak/ddc/ddc-truststore.p12 \
+ -tp test123 -tt PKCS12 \
+ -jwta https://authorization-server:8143/realms/OOTS/protocol/openid-connect/token  \
+ -jwts oots-smp-domain oots-smp-group-be \
+ -jwtc oots-ddc-client -nthv
 
 
 
