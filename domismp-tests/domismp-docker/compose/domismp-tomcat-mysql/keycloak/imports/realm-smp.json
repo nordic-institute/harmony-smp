@@ -4,7 +4,7 @@
   "displayName": "OOTS test realm",
   "displayNameHtml": "",
   "notBefore": 0,
-  "defaultSignatureAlgorithm": "RS256",
+  "defaultSignatureAlgorithm": "EdDSA",
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
   "accessTokenLifespan": 300,
@@ -373,7 +373,7 @@
         "request.object.encryption.alg": "any",
         "client.introspection.response.allow.jwt.claim.enabled": "false",
         "standard.token.exchange.enabled": "true",
-        "access.token.signed.response.alg": "RS256",
+        "access.token.signed.response.alg": "EdDSA",
         "client.use.lightweight.access.token.enabled": "false",
         "request.object.required": "not required",
         "access.token.header.type.rfc9068": "true",
@@ -1437,7 +1437,7 @@
             "test123"
           ],
           "keyAlias": [
-            "authorization-server-smp"
+            "ed25519-jwt-signature"
           ],
           "keystoreType": [
             "PKCS12"
@@ -1461,7 +1461,7 @@
             "true"
           ],
           "algorithm": [
-            "RS256"
+            "EdDSA"
           ]
         }
       },

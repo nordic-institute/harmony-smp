@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.auth.jwt;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.auth.jwt.validators.CertificateBindValidator;
 import eu.europa.ec.edelivery.smp.auth.jwt.validators.NotEmptyClaimValidator;
@@ -31,7 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
@@ -39,12 +39,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.EdECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * \
@@ -74,13 +77,14 @@ public class SMPJwtConfig {
             return null; // No JWT authentication configured
         }
         String jwtSignatureKey = configurationService.getJWTSignatureKey();
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.from(configurationService.getJWTSignatureAlgorithm());
-        RSAPublicKey publicKey = loadRSAPublicKey(jwtSignatureKey);
+        String sigJWTAlg = configurationService.getJWTSignatureAlgorithm();
+        JWSAlgorithm signatureAlgorithm = JWSAlgorithm.parse(sigJWTAlg);
+        PublicKey publicKey = loadPublicKey(jwtSignatureKey, sigJWTAlg);
 
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(publicKey)
-                .signatureAlgorithm(signatureAlgorithm)
+        NimbusJwtDecoder decoder = new SMPPublicKeyJwtDecoderBuilder(publicKey, signatureAlgorithm)
                 .validateType(false) // Disable type validation to allow custom claims at-jwt from  rfc9068
                 .build();
+
         // Combine validators: default + your custom validator
         JwtValidators.AtJwtBuilder atJwtBuilder = JwtValidators.createAtJwtValidator();
         if (isNotBlank(configurationService.getJWTIssuer())) {
@@ -127,6 +131,54 @@ public class SMPJwtConfig {
         return new SMPBearerTokenAuthenticationConverter(jwtDecoder, credentialService, domainDao, smpExceptionLanguageService);
     }
 
+
+    public static PublicKey loadPublicKey(String pemKey, String signatureAlgorithm) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        switch (lowerCase(trim(signatureAlgorithm))) {
+            case "rs256", "rs384", "rs512", "ps256", "ps384", "ps512" -> {
+                return loadRSAPublicKey(pemKey);
+            }
+            case "es256", "es384", "es512" -> {
+                return loadECPublicKey(pemKey);
+            }
+            case "eddsa", "ed25519", "ed448" -> {
+                return loadEdPublicKey(pemKey, signatureAlgorithm);
+            }
+            default ->
+                    throw new IllegalArgumentException("Unsupported signature algorithm: [" + signatureAlgorithm + "]");
+
+        }
+    }
+
+    /**
+     * Loads an Ed25519  or Ed448 public key from a PEM formatted string.
+     *
+     * @param pemKey       the PEM formatted Ed25519/Ed448 public key
+     * @param keyAlgorithm the key algorithm
+     * @return the PublicKey object
+     * @throws NoSuchAlgorithmException if the Ed25519 algorithm is not available
+     * @throws InvalidKeySpecException  if the key specification is invalid
+     */
+    protected static EdECPublicKey loadEdPublicKey(String pemKey, String keyAlgorithm) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        // Decode the hex  string to get the binary DER representation
+        byte[] encoded = Base64.getDecoder().decode(pemKey);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
+        return (EdECPublicKey) KeyFactory.getInstance(keyAlgorithm).generatePublic(keySpec);
+    }
+
+    /**
+     * Loads an EC public key from a PEM formatted string.
+     *
+     * @param pemKey the PEM formatted EC public key
+     * @return the ECPublicKey object
+     * @throws NoSuchAlgorithmException if the EC algorithm is not available
+     * @throws InvalidKeySpecException  if the key specification is invalid
+     */
+    protected static ECPublicKey loadECPublicKey(String pemKey) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        byte[] encoded = Base64.getDecoder().decode(pemKey);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
+        return (ECPublicKey) KeyFactory.getInstance("EC").generatePublic(keySpec);
+    }
+
     /**
      * Loads an RSA public key from a PEM formatted string.
      *
@@ -135,7 +187,7 @@ public class SMPJwtConfig {
      * @throws NoSuchAlgorithmException if the RSA algorithm is not available
      * @throws InvalidKeySpecException  if the key specification is invalid
      */
-    public static RSAPublicKey loadRSAPublicKey(String pemKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    protected static RSAPublicKey loadRSAPublicKey(String pemKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] encoded = Base64.getDecoder().decode(pemKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
         return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(keySpec);
