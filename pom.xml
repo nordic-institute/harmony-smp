@@ -110,6 +110,7 @@ See the Licence for the specific language governing permissions and limitations 
         <junitparams.version>1.1.1</junitparams.version>
         <logback.version>1.5.18</logback.version>
         <metro.version>2.2.1-1</metro.version>
+
         <mockito.version>5.19.0</mockito.version>
         <mysql.jdbc.version>9.4.0</mysql.jdbc.version>
         <org.glassfish.jaxb.jaxb-runtime.version>4.0.5</org.glassfish.jaxb.jaxb-runtime.version>
@@ -119,7 +120,8 @@ See the Licence for the specific language governing permissions and limitations 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring.security.version>6.5.3</spring.security.version>
         <!--When upgrading  spring.security the nimbus version is provided to avoid detected vulnerability issues  -->
-        <nimbus-jose-jwt.version>10.4.2</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>10.5</nimbus-jose-jwt.version>
+        <com.google.crypto.tink.version>1.18.0</com.google.crypto.tink.version>
         <spring.version>6.2.10</spring.version>
         <xmlunit.version>2.10.3</xmlunit.version>
 
@@ -399,6 +401,12 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
                 <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+            <!-- Dependant lib of imbus-jose-jwt to validate EdDSA -->
+            <dependency>
+                <groupId>com.google.crypto.tink</groupId>
+                <artifactId>tink</artifactId>
+                <version>${com.google.crypto.tink.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>

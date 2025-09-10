@@ -19,7 +19,6 @@
 package eu.europa.ec.edelivery.smp.config.enums;
 
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnumConstants.*;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum.*;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 /**
  * DomiSMP application properties
@@ -210,6 +210,10 @@ public enum SMPPropertyEnum {
             "Validate issuer of the JWT token. If empty, no validation is done. If set, the issuer must match the value of the JWT token's 'iss' claim.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
     ),
+    AUTOMATION_AUTHORIZATION_JWT_MTLS_CERT_BOUND("smp.authorization.jwt.tls.client.certificate.bound", "false",
+            "Validate OAuth 2.0 Mutual TLS Certificate Bound to Access Token cnf.x5t#S256.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN
+    ),
     AUTOMATION_AUTHORIZATION_JWT_AUDIENCE("smp.authorization.jwt.audience", "",
             "Validate audience of the JWT token. If empty, no validation is done. If set, the audience must match the value of the JWT token's 'aud' claim.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
@@ -223,7 +227,6 @@ public enum SMPPropertyEnum {
             "The signature algorithm used to verify the JWT token e.g.: RS256, HS256, ES256, PS256.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
     ),
-
 
     EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
             "Authentication with external module as: reverse proxy. Authenticated data are send send to application using 'Client-Cert' HTTP header. Do not enable this feature " +
@@ -513,7 +516,7 @@ public enum SMPPropertyEnum {
     }
 
     public static Optional<SMPPropertyEnum> getByProperty(String key) {
-        String keyTrim = StringUtils.trimToNull(key);
+        String keyTrim = trimToNull(key);
         if (keyTrim == null) {
             return Optional.empty();
         }

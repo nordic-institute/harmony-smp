@@ -28,7 +28,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
 @Service
@@ -195,7 +196,7 @@ public class ConfigurationService {
 
     public boolean isProxyEnabled() {
         String proxyHost = configurationDAO.getCachedProperty(HTTP_PROXY_HOST);
-        return !StringUtils.isBlank(proxyHost);
+        return !isBlank(proxyHost);
     }
 
     public boolean isSMLIntegrationEnabled() {
@@ -336,7 +337,7 @@ public class ConfigurationService {
         boolean hasAdminRole = false;
         if (authorities != null) {
             hasAdminRole = authorities.stream().anyMatch(grantedAuthority ->
-                    StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()));
+                    Strings.CI.equals(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()));
         }
         LOG.debug("Has admin role [{}]", hasAdminRole);
         return hasAdminRole ? getSessionIdleTimeoutForAdmin(): getSessionIdleTimeoutForUser();
@@ -400,18 +401,19 @@ public class ConfigurationService {
             return null;
         }
         String path = configurationDAO.getCachedPropertyValue(SSO_CAS_SMP_USER_DATA_URL_PATH);
-        if (StringUtils.isBlank(path)) {
+        if (isBlank(path)) {
             LOG.warn("Invalid CAS configuration [{}]. Can not resolve user data URL!", SSO_CAS_SMP_USER_DATA_URL_PATH.getProperty());
             return null;
+        } else {
+            try {
+                return casUrl.toURI().resolve(path).toURL();
+            } catch (MalformedURLException | URISyntaxException e) {
+                LOG.warn("Invalid CAS configuration [{}]. Can not resolve user data URL! Error: [{}]",
+                        SSO_CAS_SMP_USER_DATA_URL_PATH.getProperty(),
+                        ExceptionUtils.getRootCauseMessage(e));
+            }
+            return null;
         }
-        try {
-            return casUrl.toURI().resolve(path).toURL();
-        } catch (MalformedURLException | URISyntaxException e) {
-            LOG.warn("Invalid CAS configuration [{}]. Can not resolve user data URL! Error: [{}]",
-                    SSO_CAS_SMP_USER_DATA_URL_PATH.getProperty(),
-                    ExceptionUtils.getRootCauseMessage(e));
-        }
-        return null;
     }
 
 
@@ -443,6 +445,11 @@ public class ConfigurationService {
 
     public String getJWTIssuer() {
         return configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHORIZATION_JWT_ISSUER);
+    }
+
+    public boolean isJwtMTLSCertificateBoundRequired() {
+        Boolean value = configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHORIZATION_JWT_MTLS_CERT_BOUND);
+        return value != null && value;
     }
 
     public String getJWTAudience() {
