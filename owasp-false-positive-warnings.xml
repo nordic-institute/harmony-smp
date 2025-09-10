@@ -143,7 +143,7 @@
    file name: cxf-core-3.5.11.jar
    CVE-2025-48913 - DomiSMP does not use JMS and it does not allow user to configure JMS
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf-*@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf-.*@.*$</packageUrl>
         <cve>CVE-2025-48913</cve>
     </suppress>
 </suppressions>
