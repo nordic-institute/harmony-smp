@@ -19,7 +19,6 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hamcrest.CoreMatchers;
@@ -47,7 +46,6 @@ class DomainDaoIntegrationTest extends AbstractBaseDao {
     public void prepareDatabase() {
         testUtilsDao.clearData();
     }
-
 
     @Test
     void persistDomain() {

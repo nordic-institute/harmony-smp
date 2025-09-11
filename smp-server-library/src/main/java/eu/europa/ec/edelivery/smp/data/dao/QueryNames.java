@@ -34,6 +34,7 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_ALL = "DBDomain.getAll";
     public static final String QUERY_DOMAIN_ALL_CODES = "DBDomain.getAllCodes";
     public static final String QUERY_DOMAIN_CODE = "DBDomain.getDomainByCode";
+    public static final String QUERY_DOMAIN_CODES_FILTER = "DBDomain.filterDomainCodes";
 
     public static final String QUERY_DOMAIN_SMP_SML_ID = "DBDomain.getDomainBySmlSmpId";
 
@@ -87,6 +88,7 @@ public class QueryNames {
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT = "DBResource.getResByDomainIdAndResourceDefCount";
 
     public static final String QUERY_DOMAIN_CONFIGURATION_ALL = "DBDomainConfiguration.getAllForDomain";
+    public static final String QUERY_DOMAIN_CONFIGURATION = "DBDomainConfiguration.getDomainProperty";
 
     public static final String QUERY_RESOURCE_ALL_FOR_USER = "DBResource.getPublicSearch";
 
@@ -213,7 +215,9 @@ public class QueryNames {
     public static final String PARAM_DOMAIN_ID = "domain_id";
     public static final String PARAM_DOMAIN_VISIBILITY = "domain_visibility";
     public static final String PARAM_DOMAIN_CODE = "domain_code";
+    public static final String PARAM_DOMAIN_CODES = "domain_codes";
     public static final String PARAM_DOMAIN_SML_SMP_ID = "sml_smp_id";
+    public static final String PARAM_PROPERTY = "property";
 
     public static final String PARAM_DOMAIN_IDS = "domain_ids";
     public static final String PARAM_DOMAIN_EXPIRED_CERTIFICATE_ALIASES = "expired_certificate_aliases";

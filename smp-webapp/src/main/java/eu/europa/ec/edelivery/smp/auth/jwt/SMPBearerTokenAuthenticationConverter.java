@@ -22,7 +22,6 @@ import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
@@ -32,7 +31,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.BadJwtException;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.util.Assert;
@@ -40,7 +42,6 @@ import org.springframework.util.Assert;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Converter that transforms a BearerTokenAuthenticationToken into an SMPAuthenticationToken.
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
  * with the user's details and authorities.
  * <p>
  * This class is used in the context of DomiSMP  authentication,
- *  for handling JWT bearer tokens.
+ * for handling JWT bearer tokens.
  *
  * @author Joze Rihtarsic
  * @since 5.2
@@ -148,31 +149,27 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         }
         List<String> scopes = Arrays.asList(scopeClaim.split(" "));
         LOG.info("JWT contains scopes: [{}]", String.join(", ", scopes));
-        List<String> domainScopes = getDomainScopes();
 
         // if any scope contains a domain scopes the request is authorized
-        if (scopes.stream().anyMatch(domainScopes::contains)) {
-            LOG.info("JWT contains valid domain scope");
-            return Collections.singletonList(SMPAuthority.S_AUTHORITY_WS_USER);
-        }
+        if (anyDomainCodeMatch(scopes)) {
+            String message = "JWT with scopes [" + scopeClaim +
+                    "] not contain valid domain scope.";
+            LOG.warn("Failed to authenticate since the JWT was invalid: [{}]", message);
+            throw new AuthenticationServiceException(message);
 
-        //
-        String message = "JWT with scopes [" + scopeClaim +
-                "] not contain valid domain scope. Valid scopes are: [" + String.join(", ", domainScopes + "]");
-        LOG.warn("Failed to authenticate since the JWT was invalid: [{}]", message);
-        throw new AuthenticationServiceException(message);
+        }
+        LOG.info("JWT contains valid domain scope");
+        return Collections.singletonList(SMPAuthority.S_AUTHORITY_WS_USER);
     }
 
     /**
-     * Retrieves all domain scopes from the database.
-     * It fetches all domains and maps them to their domain codes.
+     * Validates if any of the domain code exist in the provided scopes list.
      *
-     * @return A list of domain codes representing the valid domain scopes
+     * @param scopes List of scopes to check against existing domain codes
+     * @return true if any domain code matches, false otherwise
      */
-    public List<String> getDomainScopes() {
-        return domainDao.getAllDomains().stream()
-                .map(DBDomain::getDomainCode)
-                .collect(Collectors.toList());
+    public boolean anyDomainCodeMatch(List<String> scopes) {
+        return !domainDao.getExistingDomainCodes(scopes).isEmpty();
     }
 
     public String getPrincipalClaimName() {

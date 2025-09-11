@@ -50,8 +50,8 @@ See the Licence for the specific language governing permissions and limitations 
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>2.0</edelivery.ssl-auth.version>
-        <edelivery.dynamic-discovery-client.version>3.0</edelivery.dynamic-discovery-client.version>
+        <edelivery.ssl-auth.version>2.1-SNAPSHOT</edelivery.ssl-auth.version>
+        <edelivery.dynamic-discovery-client.version>3.1-SNAPSHOT</edelivery.dynamic-discovery-client.version>
         <bdmsl-api.version>5.0</bdmsl-api.version>
         <!-- plugin versions -->
         <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
@@ -154,6 +154,16 @@ See the Licence for the specific language governing permissions and limitations 
     </scm>
 
     <repositories>
+        <repository>
+            <id>Maven repository</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
         <repository>
             <id>cefdigital-releases</id>
             <url>https://ec.europa.eu/digital-building-blocks/artifact/content/repositories/eDelivery/</url>
@@ -805,6 +815,7 @@ See the Licence for the specific language governing permissions and limitations 
                         <id>default-integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>

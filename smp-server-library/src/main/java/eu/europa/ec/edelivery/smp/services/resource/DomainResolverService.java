@@ -157,7 +157,7 @@ public class DomainResolverService {
         optDomain = domainDao.getFirstDomain();
         if (optDomain.isPresent()) {
             DBDomain domain = optDomain.get();
-            LOG.info("Can not locate the domain, user the registered domain [{}]", domain.getDomainCode());
+            LOG.info("Can not locate the domain, use the first registered domain [{}]", domain.getDomainCode());
             return domain;
         }
         throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.no.domains");

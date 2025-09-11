@@ -18,26 +18,34 @@
  */
 package eu.europa.ec.edelivery.smp.security;
 
+import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
-import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
-import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
+import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.resource.DomainResolverService;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,17 +67,23 @@ public class DomainGroupGuard {
     final DomainMemberDao domainMemberDao;
     final GroupMemberDao groupMemberDao;
     final ResourceMemberDao resourceMemberDao;
+    private final UITruststoreService uITruststoreService;
+    private final ConfigurationService configurationService;
+    private final DomainConfigurationDao domainConfigurationDao;
 
     public DomainGroupGuard(DomainResolverService domainResolverService,
                             DomainMemberDao domainMemberDao,
                             GroupMemberDao groupMemberDao,
                             ResourceMemberDao resourceMemberDao,
-                            GroupDao groupDao) {
+                            GroupDao groupDao, UITruststoreService uITruststoreService, ConfigurationService configurationService, DomainConfigurationDao domainConfigurationDao) {
         this.domainResolverService = domainResolverService;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
         this.resourceMemberDao = resourceMemberDao;
         this.groupDao = groupDao;
+        this.uITruststoreService = uITruststoreService;
+        this.configurationService = configurationService;
+        this.domainConfigurationDao = domainConfigurationDao;
     }
 
 
@@ -85,13 +99,106 @@ public class DomainGroupGuard {
                 resourceRequest.getDomainHttpParameter(),
                 resourceRequest.getUrlPathParameter(0));
 
-        if (isUserIsAuthorizedForDomainResourceAction(domain, user, resourceRequest.getAction())) {
+        if (isRequestAuthorizedOnDomain(resourceRequest, domain, user)) {
             resourceRequest.setAuthorizedDomain(domain);
             return domain;
         }
 
         throw new AuthenticationServiceException("User is not authorized for the domain!");
     }
+
+    /**
+     * The purpose of the method is to guard domain resources and sub-resources. It validates if user
+     * credentials type are authorized to execute the action on the domain resources and sub-resources.
+     * @return true if user is authorized to execute the action on the domain, else it returns false
+     */
+    protected boolean isRequestAuthorizedOnDomain(ResourceRequest resourceRequest, DBDomain domain, SMPUserDetails user) {
+        ResourceAction action = resourceRequest.getAction();
+        Object principal = SessionSecurityUtils.getSessionAuthenticationPrincipal();
+        String principalClassName = principal != null ? principal.getClass().getSimpleName() : "anonymous";
+
+        if (domain.getVisibility() == VisibilityType.PUBLIC && action == ResourceAction.READ) {
+            LOG.debug(SMPLogger.SECURITY_MARKER, "Principal: [{}] is authorized to read public domain [{}]", principalClassName, domain);
+            return true;
+        }
+
+        if(!isPrincipalAuthorizedForDomain(domain, principal) ){
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Principal: [{}] is not authorized for domain [{}]", principalClassName, domain);
+            return false;
+        }
+
+
+        return isUserAuthorizedForDomainResourceAction(domain, user, action);
+    }
+
+    /**
+     *  Method validates if the principal type is authorized to be used on the domain.
+     */
+    public boolean isPrincipalAuthorizedForDomain(DBDomain domain, Object principal) {
+        if (principal == null) {
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Can not authorize [null] principal on domain [{}]", domain.getDomainCode());
+            return false;
+        }
+        DBDomainConfiguration domainAuthorization  =  domainConfigurationDao.getDomainConfigurationForName(domain, SMPDomainPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES);
+
+        List<SMPAutomationAuthenticationTypes> authorizationTypes = configurationService.getDomainConfigurationValue(domainAuthorization == null? Collections.emptyList(): List.of(domainAuthorization),
+                SMPDomainPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES);
+
+        if (principal instanceof PreAuthenticatedCertificatePrincipal certificatePrincipal) {
+            if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.CERTIFICATE)) {
+                LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
+                return false;
+            }
+
+            X509Certificate x509Certificate = certificatePrincipal.getCertificate();
+            if (x509Certificate == null) {
+                LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate is [null] for principal [{}] on domain [{}]", principal, domain.getDomainCode());
+                return false;
+            }
+            // check if certificate is in the domain truststore
+            if (!isCertificateAuthorizedForDomain(domain, x509Certificate)) {
+                LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate with subjectDN [{}] is not in the domain [{}] truststore", x509Certificate.getSubjectDN(), domain.getDomainCode());
+                return false;
+            }
+            return true;
+        } else if (principal instanceof Jwt) {
+            if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.JWT)) {
+                LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
+                return true;
+            }
+        } else  {            // principal is not certificate or JWT, it must be username/password or anonymous
+            if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.BASIC_TOKEN)) {
+                LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
+                return false;
+            }
+        }
+
+        return  true;
+    }
+
+    private boolean isCertificateAuthorizedForDomain(DBDomain domain, X509Certificate x509Certificate) {
+        // check if domain has its own truststore
+        List<DBDomainConfiguration> domainTruststoreConfig = domainConfigurationDao.getDomainConfiguration(domain);
+        DBDomainConfiguration truststorePathConfig = domainTruststoreConfig.stream()
+                .filter(conf -> conf.getProperty().equals(SMPDomainPropertyEnum.TRUSTSTORE_FILENAME.getProperty()))
+                .findAny()
+                .orElse(null);
+        if (truststorePathConfig == null || truststorePathConfig.isUseSystemDefault()) {
+            // domain does not have its own truststore, use system truststore which was already checked during the certificate authentication
+            return true;
+        }
+        try {
+            uITruststoreService.validateCertificateWithDomainTruststore(x509Certificate, domainTruststoreConfig);
+        } catch (CertificateException e) {
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate validation error for domain [{}] with truststore [{}]: [{}]",
+                    domain.getDomainCode(),
+                    truststorePathConfig.getValue(),
+                    e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Method resolves the domain and authorize the user for the action on the domain
@@ -125,22 +232,17 @@ public class DomainGroupGuard {
      * @param domain domain to be authorized
      * @return true if user is authorized to execute the action on the domain
      */
-    public boolean isUserIsAuthorizedForDomainResourceAction(DBDomain domain, SMPUserDetails user, ResourceAction action) {
+    public boolean isUserAuthorizedForDomainResourceAction(DBDomain domain, SMPUserDetails user, ResourceAction action) {
         String userInfo = user != null ? user.getUsername() : "anonymous";
         LOG.debug("Authorize check for user [{}], domain [{}] and action [{}]", userInfo, domain, action);
         if (action == null) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.is.user.authorized.for.resource");
         }
-        switch (action) {
-            case READ:
-                return canRead(user, domain);
-            case CREATE_UPDATE:
-                return canCreateUpdate(user, domain);
-            case DELETE:
-                return canDelete(user, domain);
-        }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.resource.action",
-                Map.of("user", userInfo, "action", action));
+        return switch (action) {
+            case READ -> canRead(user, domain);
+            case CREATE_UPDATE -> canCreateUpdate(user, domain);
+            case DELETE -> canDelete(user, domain);
+        };
     }
 
     /**
@@ -243,16 +345,11 @@ public class DomainGroupGuard {
         if (action == null) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.is.user.authorized.for.group");
         }
-        switch (action) {
-            case READ:
-                return canRead(user, groups);
-            case CREATE_UPDATE:
-                return canCreateUpdate(user, groups);
-            case DELETE:
-                return canDelete(user, groups);
-        }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.group.action",
-                Map.of("user", user, "action", action));
+        return switch (action) {
+            case READ -> canRead(user, groups);
+            case CREATE_UPDATE -> canCreateUpdate(user, groups);
+            case DELETE -> canDelete(user, groups);
+        };
     }
 
     protected boolean canRead(SMPUserDetails user, List<DBGroup> groups) {

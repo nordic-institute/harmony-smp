@@ -119,14 +119,6 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     }
 
     @Transactional
-    public List<DomainRO> getAllDomains() {
-        List<DBDomain> domains = domainDao.getAllDomains();
-        return domains.stream().map(domain -> conversionService.convert(domain, DomainRO.class))
-                .collect(Collectors.toList());
-    }
-
-
-    @Transactional
     public void createDomainData(DomainRO data) {
         if (StringUtils.isBlank(data.getDomainCode())) {
             throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "error.domain.domain.code.empty");

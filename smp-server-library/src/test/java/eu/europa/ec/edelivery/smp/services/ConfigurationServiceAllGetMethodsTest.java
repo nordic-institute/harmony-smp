@@ -90,7 +90,7 @@ public class ConfigurationServiceAllGetMethodsTest {
                 //{ENCRYPTION_FILENAME, TEST_STRING, "", true},
                 //{KEYSTORE_PASSWORD_DECRYPTED, TEST_STRING, "", true},
                 //{TRUSTSTORE_PASSWORD_DECRYPTED, TEST_STRING, "", true},
-                {CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS, TEST_STRING_LIST, "getAllowedCertificatePolicies", true},
+                {CERTIFICATE_ALLOWED_CERT_POLICY_OIDS, TEST_STRING_LIST, "getAllowedCertificatePolicies", true},
                 {CERTIFICATE_SUBJECT_REGULAR_EXPRESSION, TEST_REXEXP, "getCertificateSubjectRegularExpression", true},
                 //{SMP_PROPERTY_REFRESH_CRON, TEST_STRING, "", true},
                 {UI_COOKIE_SESSION_SECURE, Boolean.FALSE, "getSessionCookieSecure", true},
@@ -173,6 +173,7 @@ public class ConfigurationServiceAllGetMethodsTest {
         }
         Object result = MethodUtils.invokeExactMethod(testInstance, methodName);
         if (result instanceof Optional) {
+            assertTrue(((Optional<?>) result).isPresent());
             assertEquals(value, ((Optional<?>) result).get());
         } else {
             assertEquals(value, result);

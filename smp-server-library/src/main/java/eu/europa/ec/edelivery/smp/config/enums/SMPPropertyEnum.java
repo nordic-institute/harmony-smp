@@ -130,7 +130,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
-    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs", "", "List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension",
+    CERTIFICATE_ALLOWED_CERT_POLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs", "", "List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
     CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex", ".*", "Regular expression to validate subject of the certificate",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),

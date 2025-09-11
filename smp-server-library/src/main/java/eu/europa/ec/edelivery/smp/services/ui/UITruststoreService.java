@@ -20,7 +20,9 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateAlreadyRegisteredException;
@@ -137,7 +139,6 @@ public class UITruststoreService extends BasicKeystoreService {
                     + truststoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
         }
-
 
         // load keys for signature
         List<String> tmpList = new ArrayList<>();
@@ -272,16 +273,7 @@ public class UITruststoreService extends BasicKeystoreService {
         }
     }
 
-
-    public void validateCertificateWithTruststore(X509Certificate x509Certificate) throws CertificateException {
-
-        if (x509Certificate == null) {
-            throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
-        }
-        Pattern subjectRegExp = configurationService.getCertificateSubjectRegularExpression();
-        List<String> allowedCertificatePolicies = configurationService.getAllowedCertificatePolicies();
-        KeyStore truststore = getTrustStore();
-
+    protected void validateCertificateWithTruststore(X509Certificate x509Certificate, Pattern subjectRegExp, List<String> allowedCertificatePolicies, KeyStore truststore) throws CertificateException {
         try {
             if (truststore == null || truststore.size() == 0) {
                 LOG.warn("Truststore is empty! only basic validation is executed!");
@@ -298,6 +290,29 @@ public class UITruststoreService extends BasicKeystoreService {
                 allowedCertificatePolicies != null ? allowedCertificatePolicies : Collections.emptyList());
         LOG.debug("Validate certificate with truststore, subject regexp [{}] and allowed certificate policies [{}]", subjectRegExp, allowedCertificatePolicies);
         certificateValidator.validateCertificate(x509Certificate);
+    }
+
+    public void validateCertificateWithTruststore(X509Certificate x509Certificate) throws CertificateException {
+
+        if (x509Certificate == null) {
+            throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
+        }
+        Pattern subjectRegExp = configurationService.getCertificateSubjectRegularExpression();
+        List<String> allowedCertificatePolicies = configurationService.getAllowedCertificatePolicies();
+        KeyStore truststore = getTrustStore();
+
+        validateCertificateWithTruststore(x509Certificate, subjectRegExp, allowedCertificatePolicies, truststore);
+    }
+
+    public void validateCertificateWithDomainTruststore(X509Certificate x509Certificate, List<DBDomainConfiguration> domainConfigurations) throws CertificateException {
+
+        if (x509Certificate == null) {
+            throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
+        }
+        Pattern subjectRegExp = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_SUBJECT_REGULAR_EXPRESSION);
+        List<String> allowedCertificatePolicies = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_ALLOWED_CERT_POLICY_OIDS);
+        KeyStore truststore = getDomainTrustStore(domainConfigurations);
+        validateCertificateWithTruststore(x509Certificate, subjectRegExp, allowedCertificatePolicies, truststore);
     }
 
     /**
@@ -483,6 +498,36 @@ public class UITruststoreService extends BasicKeystoreService {
 
     public KeyStore getTrustStore() {
         return trustStore;
+    }
+
+    public KeyStore getDomainTrustStore(List<DBDomainConfiguration> domainConfigurations) {
+        File truststoreFile = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_FILENAME);
+        String truststoreType = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_TYPE);
+        String truststoreToken = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_PASSWORD);
+
+        if (truststoreFile == null) {
+            LOG.debug("Truststore file is not configured for the domain! Skip truststore validation!");
+            return null;
+        }
+        if (!truststoreFile.exists()) {
+            LOG.error("Truststore file [{}] does not exists!", truststoreFile.getAbsolutePath());
+            return null;
+        }
+        if (StringUtils.isEmpty(truststoreToken)) {
+            LOG.error("Truststore credentials are missing in configuration table for truststore: [{}] !", truststoreFile.getName());
+            return null;
+        }
+
+        try (InputStream truststoreInputStream = new FileInputStream(truststoreFile)) {
+            String type = StringUtils.defaultIfEmpty(truststoreType, "JKS");
+            LOG.info("Load domain truststore [{}] with type [{}].", truststoreFile, type);
+            KeyStore loadedTrustStore = KeyStore.getInstance(type);
+            loadedTrustStore.load(truststoreInputStream, truststoreToken.toCharArray());
+            return loadedTrustStore;
+        } catch (Exception exception) {
+            LOG.error("Could not load domain truststore: [{}] Error: [{}]", new Object[]{truststoreFile, ExceptionUtils.getRootCauseMessage(exception), exception});
+        }
+        return null;
     }
 
     public String createAliasFromCert(X509Certificate x509cert, KeyStore truststore) {
