@@ -55,10 +55,6 @@ public enum SMPDomainPropertyEnum {
     SML_LOGICAL_ADDRESS(SMPPropertyEnum.SML_LOGICAL_ADDRESS, true),
     SML_PHYSICAL_ADDRESS(SMPPropertyEnum.SML_PHYSICAL_ADDRESS, true),
     SML_CUSTOM_NAPTR_SERVICE_PARAMS(SMPPropertyEnum.SML_CUSTOM_NAPTR_SERVICE_PARAMS, true),
-
-
-
-
     ;
     // System equivalent property
     private final SMPPropertyEnum propertyEnum;
