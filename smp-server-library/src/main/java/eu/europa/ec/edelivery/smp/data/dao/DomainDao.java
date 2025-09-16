@@ -71,7 +71,7 @@ public class DomainDao extends BaseDao<DBDomain> {
         } catch (NonUniqueResultException e) {
             return Optional.empty();
         } catch (NoResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.domain.none"));
+            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.domain.none.configured"));
         }
     }
 
@@ -107,6 +107,15 @@ public class DomainDao extends BaseDao<DBDomain> {
      */
     public Optional<DBDomain> getDomainByCode(String domainCode) {
         return getDomainByQueryWithParam(domainCode, QUERY_DOMAIN_CODE, PARAM_DOMAIN_CODE);
+    }
+
+
+    public List<String> getExistingDomainCodes(List<String> domainCodes) {
+        TypedQuery<String> query = memEManager.createNamedQuery(QUERY_DOMAIN_CODES_FILTER, String.class);
+        // convert to lower case for case insensitive search
+        List<String> domainParameter = domainCodes.stream().map(String::toLowerCase).toList();
+        query.setParameter(PARAM_DOMAIN_CODES, domainParameter);
+        return query.getResultList();
     }
 
     public Optional<DBDomain> getDomainBySmlSmpId(String smlSmpId) {
@@ -238,9 +247,9 @@ public class DomainDao extends BaseDao<DBDomain> {
      *
      * @param user - user to search for
      *             if null only public domains are returned
+     * @param page - page number
+     * @param pageSize - page size
      * @return list of domains
-     * @Param page - page number
-     * @Param pageSize - page size
      */
     public List<DBDomain> getAllDomainsForUser(DBUser user, int page, int pageSize) {
         TypedQuery<DBDomain> query = createAllDomainsForUserQuery(DBDomain.class, user);

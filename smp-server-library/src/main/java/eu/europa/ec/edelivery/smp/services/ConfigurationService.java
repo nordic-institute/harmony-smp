@@ -22,12 +22,18 @@ import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.core.GrantedAuthority;
@@ -257,7 +263,7 @@ public class ConfigurationService {
     }
 
     public List<String> getAllowedCertificatePolicies() {
-        return configurationDAO.getCachedPropertyValue(CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS);
+        return configurationDAO.getCachedPropertyValue(CERTIFICATE_ALLOWED_CERT_POLICY_OIDS);
     }
 
     public List<String> getAllowedCertificateKeyTypes() {
@@ -687,5 +693,51 @@ public class ConfigurationService {
 
     public <T>  T getDefaultDomainConfigurationValue(SMPDomainPropertyEnum property) {
         return configurationDAO.getCachedPropertyValue(property.getPropertyEnum());
+    }
+
+    /**
+     * Method returns parsed value for property from  given domain properties. If property is not found or use system default is set,
+     * system default value is returned.
+     *
+     * @param domainProperties   domain to get configuration value
+     * @param property domain property type
+     * @param <T>      type of returned value
+     * @return parsed value for property
+     */
+    public <T> T getDomainConfigurationValue(List<DBDomainConfiguration> domainProperties, SMPDomainPropertyEnum property) {
+
+        DBDomainConfiguration domainConfiguration = domainProperties.stream()
+                .filter(dc -> dc.getProperty().equals(property.getProperty()))
+                .findFirst()
+                .orElse(null);
+
+        if (domainConfiguration == null || domainConfiguration.isUseSystemDefault()) {
+            LOG.debug("Domain configuration value for property [{}] not found or use system default. Using system default value!", property);
+            return getDefaultDomainConfigurationValue(property);
+        }
+
+        String value = domainConfiguration.getValue();
+        SMPPropertyEnum sysPropType = getSmpPropertyEnum(property);
+        return (T) PropertyUtils.parseProperty(sysPropType, value, null);
+
+    }
+
+    /**
+     * Method returns system property for given domain properties.
+     * @param property domain property type
+     * @return system property enum for given domain property
+     */
+    private static SMPPropertyEnum getSmpPropertyEnum(SMPDomainPropertyEnum property) {
+        SMPPropertyEnum sysPropType = property.getPropertyEnum();
+        if (sysPropType.isEncrypted()) {
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encrypted domain Properties are not supported!. Can not parse   ["
+                    + property + "]!");
+        }
+        if (sysPropType.getPropertyType() == SMPPropertyTypeEnum.PATH ||
+                sysPropType.getPropertyType() == SMPPropertyTypeEnum.FILENAME) {
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Path or filename domain properties are not supported!. Can not parse   ["
+                    + property + "]!");
+        }
+        return sysPropType;
     }
 }

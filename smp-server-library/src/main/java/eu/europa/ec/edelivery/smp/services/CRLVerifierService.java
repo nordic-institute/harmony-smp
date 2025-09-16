@@ -29,14 +29,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.helpers.IOUtils;
 import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.CredentialsProvider;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpHost;
 import org.springframework.stereotype.Service;
@@ -70,6 +68,7 @@ public class CRLVerifierService implements ICRLVerifierService {
 
     public CRLVerifierService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
+
     }
 
     @Override
@@ -195,7 +194,7 @@ public class CRLVerifierService implements ICRLVerifierService {
                     String decryptedPassword = configurationService.getProxyCredentialToken();
                     Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
                     inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(),
-                            proxyPort.isPresent() ? proxyPort.get() : DEF_PROXY_PORT,
+                            proxyPort.orElse(DEF_PROXY_PORT),
                             configurationService.getProxyUsername(), decryptedPassword);
                 } else {
                     inputStream = downloadURLDirect(crlURL);
@@ -211,10 +210,10 @@ public class CRLVerifierService implements ICRLVerifierService {
     public InputStream downloadURLViaProxy(String url, String proxyHost, Integer proxyPort, String proxyUser,
                                            String proxyPassword) throws IOException {
 
-        CredentialsProvider credentialsProvider = null;
+        BasicCredentialsProvider credentialsProvider = null;
         if (isValidParameter(proxyUser, proxyPassword)) {
             credentialsProvider = new BasicCredentialsProvider();
-            ((BasicCredentialsProvider)credentialsProvider).setCredentials(new AuthScope(proxyHost, proxyPort),
+            credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
                     new UsernamePasswordCredentials(proxyUser, proxyPassword.toCharArray()));
         }
 

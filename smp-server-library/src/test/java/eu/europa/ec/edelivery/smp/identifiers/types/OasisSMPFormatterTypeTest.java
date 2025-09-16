@@ -66,7 +66,7 @@ public class OasisSMPFormatterTypeTest {
         });
     }
 
-    OasisSMPFormatterType testInstance = new OasisSMPFormatterType();
+    OasisSMPFormatterType testInstance = new OasisSMPFormatterType.Builder().build();
 
 
     @ParameterizedTest

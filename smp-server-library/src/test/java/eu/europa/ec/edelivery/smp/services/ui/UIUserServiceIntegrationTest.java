@@ -76,7 +76,6 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     @Autowired
     protected CredentialDao credentialDao;
 
-
     protected void insertDataObjects(int size) {
         for (int i = 0; i < size; i++) {
             DBUser d = TestDBUtils.createDBUserByUsername("user" + i);
@@ -197,7 +196,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [PasswordChange]."));
+        assertEquals(result.getMessageCode(), "error.invalid.request.user.password.change");
+        //MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [PasswordChange]."));
     }
 
     @Test
@@ -211,7 +211,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
+        assertEquals(result.getMessageCode(), "error.invalid.request.user.not.exists");
+        //MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
     }
 
     @Test
@@ -266,7 +267,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Must not be same as existing password"));
+        assertEquals(result.getMessageCode(), "error.invalid.request.user.password.change");
+        //MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Must not be same as existing password"));
     }
 
     @Test
@@ -287,7 +289,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId,userToUpdateId, authorizedPassword, newPassword));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id to update"));
+        assertEquals(result.getMessageCode(), "error.invalid.request.create.user.credentials");
+        //MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id to update"));
     }
 
     @Test
@@ -344,7 +347,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.createAccessTokenForUser(-100L, credentialRO));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
+        assertEquals(result.getMessageCode(), "error.invalid.request.user.not.exists");
+        //MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
     }
 
     @Test
@@ -380,7 +384,8 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.storeCertificateCredentialForUser(-100L, credentialRO));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
+        assertEquals(result.getMessageCode(), "error.invalid.request.user.not.exists");
+        //MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
     }
 
     @Test

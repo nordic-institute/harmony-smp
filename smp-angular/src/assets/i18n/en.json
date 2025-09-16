@@ -1166,6 +1166,8 @@
   "error.invalid.property.filename": "Property [{{property}}] is not valid Filename type or it does not exists!",
   "error.invalid.property.path": "Property [{{property}}] is not valid Path type or it does not exists!",
   "error.invalid.property.url": "Property [{{property}}] is not valid URL!",
+  "error.invalid.property.missing": "Property [{{property}}] is mandatory and must not be NULL OR empty!",
+  "error.invalid.property.unknown": "Property [{{property}}] is not SMP property!",
 
   "error.certificate.crl.cannot.download": "Certificate error: cannot download CRL [{{crlURL}}]. Error: [{{error}}]!",
   "error.certificate.crl.not.supported": "Certificate error: CRL list is not supported [{{crlURL}}]. Error: [{{error}}]!",

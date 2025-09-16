@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -25,9 +25,7 @@ import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResultProperties;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
-import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -78,7 +76,7 @@ class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
         assertEquals(-1, res.getPage().intValue());
         assertEquals(-1, res.getPageSize().intValue());
         for (PropertyRO propertyRO : res.getServiceEntities()) {
-            assertTrue(StringUtils.containsIgnoreCase(propertyRO.getProperty(), filter));
+            assertTrue(Strings.CI.contains(propertyRO.getProperty(), filter));
         }
         assertEquals(filter, res.getFilter());
     }
@@ -132,7 +130,8 @@ class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
         assertEquals(propertyName, result.getProperty());
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
-        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Property [" + propertyName + "] is not SMP property!"));
+        assertEquals("error.invalid.property.unknown", result.getErrorMessageCode());
+        //MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Property [" + propertyName + "] is not SMP property!"));
     }
 
     @Test
@@ -146,7 +145,8 @@ class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
         assertEquals(propertyName, result.getProperty());
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
-        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Invalid integer: [" + propertyValue + "]. Error:NumberFormatException"));
+        assertEquals(result.getErrorMessageCode(), "error.configuration.invalid.integer");
+        //MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Invalid integer: [" + propertyValue + "]. Error:NumberFormatException"));
     }
 
     @Test

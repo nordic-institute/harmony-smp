@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
@@ -31,7 +32,7 @@ import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.TestROUtils;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,7 +80,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
                         .header("Content-Type", " application/json"))
                 .andExpect(status().isOk()).andReturn();
 
-        List<DomainRO> response = parseResponseArray(result, DomainRO.class);
+        List<DomainRO> response = parseResponse(result, DomainServiceResult.class).getServiceEntities();
         assertEquals(domain.size(), response.size());
     }
 
@@ -229,8 +230,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
         domainToUpdate.getResourceDefinitions().add(resourceDefID);
 
-        MvcResult result = mvc.perform(post(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_RESOURCE_TYPES,
-                         userRO.getUserId(),  domainToUpdate.getDomainId())
+        MvcResult result = mvc.perform(post(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_RESOURCE_TYPES,
+                        userRO.getUserId(), domainToUpdate.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -251,8 +252,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
 
-        MvcResult result = mvc.perform(get(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
-                        userRO.getUserId(),  domainToUpdate.getDomainId())
+        MvcResult result = mvc.perform(get(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
+                        userRO.getUserId(), domainToUpdate.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -279,7 +280,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
             "RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME,'${identifier}'",
             "RESOURCE_CASE_SENSITIVE_SCHEMES,sensitive-participant-sc1",
             "SUBRESOURCE_CASE_SENSITIVE_SCHEMES,'sensitive-doc-sc1'",
-            })
+    })
     void testUpdateDomainProperty(SMPDomainPropertyEnum property, String value) throws Exception {
         // set the webapp_integration_test_data.sql for resourceDefID
         String domainCode = "domainTwo";
@@ -287,8 +288,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
 
-        MvcResult result = mvc.perform(get(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
-                        userRO.getUserId(),  domainToUpdate.getDomainId())
+        MvcResult result = mvc.perform(get(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
+                        userRO.getUserId(), domainToUpdate.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -298,7 +299,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         // find property
         DomainPropertyRO domainPropertyRO = null;
         for (DomainPropertyRO propertyRO : resultObject) {
-            if (StringUtils.equals(property.getProperty(), propertyRO.getProperty())) {
+            if (Strings.CS.equals(property.getProperty(), propertyRO.getProperty())) {
                 domainPropertyRO = propertyRO;
                 break;
             }
@@ -310,8 +311,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         domainPropertyRO.setSystemDefault(false);
         domainPropertyRO.setValue(value);
         // submit updated property
-        MvcResult resultUpdate = mvc.perform(post(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
-                        userRO.getUserId(),  domainToUpdate.getDomainId())
+        MvcResult resultUpdate = mvc.perform(post(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
+                        userRO.getUserId(), domainToUpdate.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -324,7 +325,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         assertNotNull(resultUpdated);
 
         DomainPropertyRO domainPropertyROResult = resultUpdated.stream()
-                .filter(domainProperty -> StringUtils.equals(property.getProperty(), domainProperty.getProperty()))
+                .filter(domainProperty -> Strings.CS.equals(property.getProperty(), domainProperty.getProperty()))
                 .findFirst().orElse(null);
 
         assertNotNull(domainPropertyROResult);
@@ -339,21 +340,24 @@ class DomainAdminControllerIT extends AbstractControllerTest {
                         .with(csrf())
                         .header("Content-Type", " application/json"))
                 .andExpect(status().isOk()).andReturn();
-        return parseResponseArray(result, DomainRO.class);
+        return parseResponse(result, DomainServiceResult.class).getServiceEntities();
     }
 
     private DomainRO getDomain(String domainCode, UserRO userRO, MockHttpSession session) throws Exception {
         List<DomainRO> allDomains = getAllDomains(userRO, session);
 
         return allDomains.stream()
-                .filter(domainRO -> StringUtils.equals(domainCode, domainRO.getDomainCode()))
+                .filter(domainRO -> Strings.CS.equals(domainCode, domainRO.getDomainCode()))
                 .findFirst().orElse(null);
 
     }
 
     private String entitiToString(Object object) throws Exception {
         return serializeObject(object);
+    }
 
+
+    private static class DomainServiceResult extends ServiceResult<DomainRO> {
 
     }
 

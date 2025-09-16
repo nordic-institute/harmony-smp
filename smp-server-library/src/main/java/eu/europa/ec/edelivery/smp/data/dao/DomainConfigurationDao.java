@@ -42,8 +42,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.PARAM_DOMAIN_ID;
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOMAIN_CONFIGURATION_ALL;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 
 /**
@@ -159,7 +158,7 @@ public class DomainConfigurationDao extends BaseDao<DBDomainConfiguration> {
         propertyValidationRO.setValue(propertyRO.getValue());
 
         Optional<SMPDomainPropertyEnum> optPropertyEnum = SMPDomainPropertyEnum.getByProperty(propertyRO.getProperty());
-        if (!optPropertyEnum.isPresent()) {
+        if (optPropertyEnum.isEmpty()) {
             LOG.debug("Property: [{}] is not Domain SMP property!", propertyRO.getProperty());
             propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] is not SMP property!");
             propertyValidationRO.setPropertyValid(false);
@@ -205,6 +204,16 @@ public class DomainConfigurationDao extends BaseDao<DBDomainConfiguration> {
                 DBDomainConfiguration.class);
         query.setParameter(PARAM_DOMAIN_ID, domain.getId());
         return query.getResultList();
+    }
+
+    public DBDomainConfiguration getDomainConfigurationForName(DBDomain domain, SMPDomainPropertyEnum domainPropertyEnum) {
+        TypedQuery<DBDomainConfiguration> query = memEManager.createNamedQuery(QUERY_DOMAIN_CONFIGURATION,
+                DBDomainConfiguration.class);
+        query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+        query.setParameter(PARAM_PROPERTY, domainPropertyEnum.getProperty());
+
+        List<DBDomainConfiguration> result = query.getResultList();
+        return result.isEmpty() ? null : result.get(0);
     }
 
     /**

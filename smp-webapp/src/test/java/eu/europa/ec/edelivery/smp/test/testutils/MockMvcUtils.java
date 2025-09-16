@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.test.testutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -63,6 +64,7 @@ public class MockMvcUtils {
     public static Logger LOG = LoggerFactory.getLogger(MockMvcUtils.class);
     static ObjectMapper mapper = JsonMapper.builder()
             .findAndAddModules()
+            .configure(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true)
             .build();
     // The values match the values in the test data in webapp_integration_test_data.sql
     public static final String SYS_ADMIN_USERNAME = "sys_admin";

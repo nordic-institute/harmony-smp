@@ -31,7 +31,6 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -153,14 +152,15 @@ public class UIPropertyService {
 
         Optional<SMPPropertyEnum> optPropertyEnum = SMPPropertyEnum.getByProperty(propertyRO.getProperty());
         if (optPropertyEnum.isEmpty()) {
-            LOG.debug("Property: [{}] is not SMP property!", propertyRO.getProperty());
-            propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] is not SMP property!");
+            LOG.warn("Property: [{}] is not SMP property!", propertyRO.getProperty());
+            propertyValidationRO.setMessageCode("error.invalid.property.unknown");
             propertyValidationRO.setPropertyValid(false);
             return propertyValidationRO;
         }
         SMPPropertyEnum propertyEnum = optPropertyEnum.get();
         if (isBlank(propertyRO.getValue()) && propertyEnum.isMandatory()) {
-            propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] must not be NULL OR empty!");
+            LOG.warn("Mandatory Property: [{}] must not be blank!", propertyRO.getProperty());
+            propertyValidationRO.setMessageCode("error.invalid.property.missing");
             propertyValidationRO.setPropertyValid(false);
             return propertyValidationRO;
         }
@@ -172,6 +172,7 @@ public class UIPropertyService {
         } catch (SMPRuntimeException ex) {
             propertyValidationRO.setErrorMessage(ex.getMessage());
             propertyValidationRO.setPropertyValid(false);
+            propertyValidationRO.setMessageCode(ex.getMessageCode());
             return propertyValidationRO;
         }
 

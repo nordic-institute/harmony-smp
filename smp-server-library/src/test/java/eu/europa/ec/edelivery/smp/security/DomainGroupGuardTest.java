@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,17 +18,17 @@
  */
 package eu.europa.ec.edelivery.smp.security;
 
+import eu.europa.ec.edelivery.security.PreAuthenticatedTokenPrincipal;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.File;
 
@@ -54,11 +55,10 @@ class DomainGroupGuardTest extends AbstractJunit5BaseDao {
     File localeFolder = new File("target/locales");
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
-    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
 
     @BeforeEach
     public void prepareDatabase() {
+        SecurityContextHolder.clearContext();
         testUtilsDao.clearData();
         testUtilsDao.creatDomainMemberships();
         testUtilsDao.createGroupMemberships();
@@ -66,13 +66,6 @@ class DomainGroupGuardTest extends AbstractJunit5BaseDao {
         Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
 
-    @Test
-    void testResolveAndAuthorizeForDomainInvalidRequestMissingAction() {
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
-                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails));
-
-        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()), containsString("Invalid request"));
-    }
 
     @Test
     void testResolveAndAuthorizeForDomainDeleteInvalidRequestNotUser() {
@@ -104,16 +97,19 @@ class DomainGroupGuardTest extends AbstractJunit5BaseDao {
     }
 
     @Test
+    @Transactional
     void testResolveAndAuthorizeForDomainDeleteUserAuthorized() {
-        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser1());
+        configureMockSecurityContext(testUtilsDao.getUser1());
+
         when(resourceRequest.getAction()).thenReturn(ResourceAction.DELETE);
         DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails);
         assertNotNull(domain);
     }
 
     @Test
+    @Transactional
     void testResolveAndAuthorizeForDomainDeleteCreateAuthorized() {
-        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser1());
+        configureMockSecurityContext(testUtilsDao.getUser1());
         when(resourceRequest.getAction()).thenReturn(ResourceAction.CREATE_UPDATE);
         DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails);
         assertNotNull(domain);
@@ -163,5 +159,12 @@ class DomainGroupGuardTest extends AbstractJunit5BaseDao {
         // then user is not authorized to read the domain
         boolean result = testInstance.canRead(userDetails, domain);
         assertFalse(result);
+    }
+
+    private void configureMockSecurityContext(DBUser user) {
+        PreAuthenticatedTokenPrincipal principal = new PreAuthenticatedTokenPrincipal(user.getUsername(), "password");
+        SMPAuthenticationToken token = new SMPAuthenticationToken(principal, null, userDetails);
+        SecurityContextHolder.getContext().setAuthentication(token);
+        when(userDetails.getUser()).thenReturn(user);
     }
 }

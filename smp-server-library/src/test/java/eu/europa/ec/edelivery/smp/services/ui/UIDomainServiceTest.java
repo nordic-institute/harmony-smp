@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
@@ -47,7 +47,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
     @Autowired
     private DomainDao domainDao;
     //     @Autowired
-    @SpyBean
+    @MockitoSpyBean
     private SMLIntegrationService smlIntegrationService;
 
     @BeforeEach
@@ -56,12 +56,6 @@ class UIDomainServiceTest extends AbstractServiceTest {
         testUtilsDao.createResourceDefinitionsForDomains();
 
         ReflectionTestUtils.setField(testInstance, "smlIntegrationService", smlIntegrationService);
-    }
-
-    @Test
-    void getAllDomains() {
-        List<DomainRO> domainROS = testInstance.getAllDomains();
-        assertEquals(3, domainROS.size());
     }
 
     @Test

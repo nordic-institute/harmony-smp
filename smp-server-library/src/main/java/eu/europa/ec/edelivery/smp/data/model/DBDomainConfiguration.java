@@ -42,6 +42,8 @@ import java.util.Objects;
         })
 @NamedQuery(name = QueryNames.QUERY_DOMAIN_CONFIGURATION_ALL,
         query = "SELECT d FROM DBDomainConfiguration d where d.domain.id = :domain_id")
+@NamedQuery(name = QueryNames.QUERY_DOMAIN_CONFIGURATION,
+        query = "SELECT d FROM DBDomainConfiguration d where d.domain.id = :domain_id and d.property = :property")
 public class DBDomainConfiguration extends BaseEntity {
 
     @Id

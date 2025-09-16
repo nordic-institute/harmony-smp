@@ -24,8 +24,6 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +33,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_IDENTIFIERS;
 import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertDateEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,16 +51,13 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
     @Autowired
     CredentialDao credentialDao;
 
-    @Autowired
-    ResourceDao serviceGroupDao;
-
     @Test
     void persistUserWithoutIdentifier() {
         // set
         DBUser u = new DBUser();
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.persistFlushDetach(u));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid user: no identifiers!"));
+        assertEquals(result.getMessageCode(), "error.user.invalid.no.identifiers");
     }
 
     @Test
@@ -76,6 +70,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
+        assertTrue(ou.isPresent());
         assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
@@ -93,6 +88,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
+        assertTrue(ou.isPresent());
         assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getUsername(), ou.get().getUsername());
@@ -113,6 +109,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_2);
+        assertTrue(ou.isPresent());
         assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
@@ -136,6 +133,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByCertificateId(TestConstants.USER_CERT_1);
+        assertTrue(ou.isPresent());
         assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
@@ -164,6 +162,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USER_CERT_1);
+        assertTrue(ou.isPresent());
         assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
@@ -182,6 +181,7 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USERNAME_TOKEN_1);
+        assertTrue(ou.isPresent());
         assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
