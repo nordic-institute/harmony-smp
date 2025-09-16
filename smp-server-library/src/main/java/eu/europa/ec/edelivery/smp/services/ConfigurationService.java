@@ -24,6 +24,8 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
@@ -33,7 +35,6 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
-import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.core.GrantedAuthority;
@@ -59,9 +60,11 @@ public class ConfigurationService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationService.class);
 
     private final ConfigurationDao configurationDAO;
+    private final DomainConfigurationDao domainConfigurationDao;
 
-    public ConfigurationService(ConfigurationDao configurationDAO) {
+    public ConfigurationService(ConfigurationDao configurationDAO, DomainConfigurationDao domainConfigurationDao) {
         this.configurationDAO = configurationDAO;
+        this.domainConfigurationDao = domainConfigurationDao;
     }
 
 
@@ -157,8 +160,8 @@ public class ConfigurationService {
         return Optional.ofNullable(intVal);
     }
 
-    public java.net.URL getSMLIntegrationUrl() {
-        return configurationDAO.getCachedPropertyValue(SML_URL);
+    public java.net.URL getDomainSMLIntegrationUrl(DBDomain domain) {
+        return getDomainConfigurationValue(domain, SMPDomainPropertyEnum.SML_URL);
     }
 
     public String getProxyUsername() {
@@ -231,12 +234,12 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_CREDENTIALS_SERVER);
     }
 
-    public String getSMLIntegrationSMPLogicalAddress() {
-        return configurationDAO.getCachedProperty(SML_LOGICAL_ADDRESS);
+    public URL getDomainSMLIntegrationSMPLogicalAddress(DBDomain domain) {
+        return getDomainConfigurationValue(domain, SMPDomainPropertyEnum.SML_LOGICAL_ADDRESS);
     }
 
-    public String getSMLIntegrationSMPPhysicalAddress() {
-        return configurationDAO.getCachedProperty(SML_PHYSICAL_ADDRESS);
+    public String getDomainSMLIntegrationSMPPhysicalAddress(DBDomain domain) {
+        return getDomainConfigurationValue(domain, SMPDomainPropertyEnum.SML_PHYSICAL_ADDRESS);
     }
 
     public boolean forceCRLValidation() {
@@ -427,8 +430,8 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);
     }
 
-    public Map<String, String> getCustomNaptrServicesMap() {
-        return configurationDAO.getCachedPropertyValue(SML_CUSTOM_NAPTR_SERVICE_PARAMS);
+    public Map<String, String> getDomainCustomNaptrServicesMap(DBDomain domain) {
+        return getDomainConfigurationValue(domain, SMPDomainPropertyEnum.SML_CUSTOM_NAPTR_SERVICE_PARAMS);
     }
 
     public int getManageMaxSMLRecordCount() {
@@ -710,7 +713,38 @@ public class ConfigurationService {
                 .filter(dc -> dc.getProperty().equals(property.getProperty()))
                 .findFirst()
                 .orElse(null);
+        return getDomainConfigurationValue(domainConfiguration, property);
+    }
 
+    /**
+     * Method returns parsed value for property from given domain. If property is not found or use system default is returned
+     * @param domain the domain to get configuration value
+     * @param property domain property type
+     * @return parsed value for property
+     * @param <T> type of returned value
+     */
+    public <T> T getDomainConfigurationValue(DBDomain domain, SMPDomainPropertyEnum property) {
+        DBDomainConfiguration domainConfiguration  =  domainConfigurationDao.getDomainConfigurationForName(domain, property);
+        return getDomainConfigurationValue(domainConfiguration, property);
+    }
+
+    public boolean hasCustomDomainConfiguration(DBDomain domain, SMPDomainPropertyEnum property) {
+        DBDomainConfiguration domainConfiguration  =  domainConfigurationDao.getDomainConfigurationForName(domain, property);
+        return domainConfiguration != null && !domainConfiguration.isUseSystemDefault();
+    }
+
+    public List<DBDomainConfiguration> getDomainConfigurations(DBDomain domain) {
+        return domainConfigurationDao.getDomainConfiguration(domain);
+    }
+
+    /**
+     * Method returns parsed value for property from given domain configuration. If property is not found or use system default is returned
+     * @param domainConfiguration the domain configuration to get configuration value
+     * @param property domain property type
+     * @return parsed value for property
+     * @param <T> type of returned value
+     */
+    public <T> T getDomainConfigurationValue(DBDomainConfiguration domainConfiguration, SMPDomainPropertyEnum property) {
         if (domainConfiguration == null || domainConfiguration.isUseSystemDefault()) {
             LOG.debug("Domain configuration value for property [{}] not found or use system default. Using system default value!", property);
             return getDefaultDomainConfigurationValue(property);
@@ -721,6 +755,7 @@ public class ConfigurationService {
         return (T) PropertyUtils.parseProperty(sysPropType, value, null);
 
     }
+
 
     /**
      * Method returns system property for given domain properties.

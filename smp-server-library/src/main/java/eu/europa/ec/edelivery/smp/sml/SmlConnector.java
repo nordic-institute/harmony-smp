@@ -275,8 +275,9 @@ public class SmlConnector implements ApplicationContextAware {
     }
 
     protected ServiceMetadataPublisherServiceType createServiceMetadataPublisherServiceType(DBDomain domain) {
-        String smpLogicalAddress = configurationService.getSMLIntegrationSMPLogicalAddress();
-        String smpPhysicalAddress = configurationService.getSMLIntegrationSMPPhysicalAddress();
+        URL smpLogicalAddressURL = configurationService.getDomainSMLIntegrationSMPLogicalAddress(domain);
+        String smpLogicalAddress = smpLogicalAddressURL!=null ? smpLogicalAddressURL.toString() : null;
+        String smpPhysicalAddress = configurationService.getDomainSMLIntegrationSMPPhysicalAddress(domain);
 
         String smlSmpId = domain.getSmlSmpId();
         if (domain.isSmlAppendDomainCode()) {
@@ -430,19 +431,21 @@ public class SmlConnector implements ApplicationContextAware {
         String clientKeyAlias = getSmlClientKeyAliasForDomain(domain);
         boolean clientCertAuthentication = domain.isSmlClientCertAuth();
         Client client = ClientProxy.getClient(smlPort);
-        URL url = configurationService.getSMLIntegrationUrl();
+
+
+        URL url = configurationService.getDomainSMLIntegrationUrl(domain);
         if (url == null) {
             throw new IllegalArgumentException("Empty or null SML url. Check the configuration and set property: " + SMPPropertyEnum.SML_URL.getProperty());
         }
         URL urlSMPManagment;
         try {
-            urlSMPManagment = new URL(StringUtils.appendIfMissing(url.toString(), "/") + serviceEndpoint);
+            urlSMPManagment = new URL(Strings.CI.appendIfMissing(url.toString(), "/") + serviceEndpoint);
 
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Malformed SML URL: " + url, e);
         }
 
-        boolean useTLS = urlSMPManagment.getProtocol().equalsIgnoreCase("https");
+        boolean useTLS = Strings.CI.equals(urlSMPManagment.getProtocol(), "https");
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
 

@@ -34,6 +34,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -85,7 +86,7 @@ class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends Abstrac
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
         Mockito.doReturn(resourceDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
-        Mockito.doReturn(new URL("https://localhost/edelivery-sml")).when(configurationService).getSMLIntegrationUrl();
+        Mockito.doReturn(new URL("https://localhost/edelivery-sml")).when(configurationService).getDomainSMLIntegrationUrl(ArgumentMatchers.any(DBDomain.class));
         keystoreService.refreshData();
 
     }

@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -54,7 +55,8 @@ public class ConfigurationServiceAllGetMethodsTest {
     }
 
     ConfigurationDao configurationDaoMock = mock(ConfigurationDao.class);
-    ConfigurationService testInstance = new ConfigurationService(configurationDaoMock);
+    DomainConfigurationDao domainConfigurationDao = mock(DomainConfigurationDao.class);
+    ConfigurationService testInstance = new ConfigurationService(configurationDaoMock, domainConfigurationDao);
 
     public static Collection<Object[]> data() {
         // set property values for property, set value, method name, value or property, value (true) or property (false)
@@ -77,11 +79,8 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {RESOURCE_CASE_SENSITIVE_SCHEMES, TEST_STRING_LIST, "getCaseSensitiveParticipantScheme", true},
                 {SUBRESOURCE_CASE_SENSITIVE_SCHEMES, TEST_STRING_LIST, "getCaseSensitiveDocumentScheme", true},
                 {SML_ENABLED, Boolean.FALSE, "isSMLIntegrationEnabled", true},
-                {SML_URL, TEST_URL, "getSMLIntegrationUrl", true},
                 {SML_TLS_DISABLE_CN_CHECK, Boolean.FALSE, "smlDisableCNCheck", true},
                 {SML_TLS_SERVER_CERT_SUBJECT_REGEXP, TEST_REXEXP, "getSMLIntegrationServerCertSubjectRegExp", true},
-                {SML_LOGICAL_ADDRESS, TEST_STRING, "getSMLIntegrationSMPLogicalAddress", false},
-                {SML_PHYSICAL_ADDRESS, TEST_STRING, "getSMLIntegrationSMPPhysicalAddress", false},
                 {KEYSTORE_PASSWORD, TEST_STRING, "getKeystoreCredentialToken", true},
                 {KEYSTORE_FILENAME, TEST_FILE, "getKeystoreFile", true},
                 {TRUSTSTORE_PASSWORD, TEST_STRING, "getTruststoreCredentialToken", true},
