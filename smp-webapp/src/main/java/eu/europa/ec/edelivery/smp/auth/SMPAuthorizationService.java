@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -88,10 +89,7 @@ public class SMPAuthorizationService {
     }
 
     public boolean isSystemAdministrator() {
-        SMPUserDetails userDetails = getAndValidateUserDetails();
-        boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SYSTEM_ADMIN, userDetails);
-        LOG.debug("Logged user [{}] is system administrator role [{}]", userDetails.getUsername(), hasSystemRole);
-        return hasSystemRole;
+        return isSMPUserMatchingAnyAuthority(S_AUTHORITY_TOKEN_SYSTEM_ADMIN);
     }
 
     public boolean isDomainAdministrator(String domainEncId) {
@@ -169,10 +167,16 @@ public class SMPAuthorizationService {
         return domainMemberDao.isUserResourceAdministrator(userDetails.getUser().getId());
     }
 
-    public boolean isSMPAdministrator() {
+    public boolean isSMPUserMatchingAnyAuthority(String... authorities) {
+        if (authorities == null || authorities.length == 0) {
+            LOG.debug("No authorities provided for SMP authorization");
+            return false;
+        }
+
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails);
-        LOG.debug("Logged user [{}] is SMP administrator role [{}]", userDetails.getUsername(), hasRole);
+        boolean hasRole = Arrays.stream(authorities)
+                .anyMatch(authority -> hasSessionUserRole(authority, userDetails));
+        LOG.debug("User [{}] matching at least one of the provided SMP authorities {}: [{}]", userDetails.getUsername(), Arrays.toString(authorities), hasRole);
         return hasRole;
     }
 

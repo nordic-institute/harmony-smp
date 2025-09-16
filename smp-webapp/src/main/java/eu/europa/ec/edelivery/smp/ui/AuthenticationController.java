@@ -37,7 +37,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,8 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_USER;
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
 /**
@@ -201,7 +199,9 @@ public class AuthenticationController {
     }
 
     @GetMapping(value = "user")
-    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_USER})
+    @PreAuthorize("@smpAuthorizationService.isSMPUserMatchingAnyAuthority(" +
+            "T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SYSTEM_ADMIN," +
+            "T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_USER)")
     public UserRO getUser() {
         return authorizationService.getLoggedUserData();
     }

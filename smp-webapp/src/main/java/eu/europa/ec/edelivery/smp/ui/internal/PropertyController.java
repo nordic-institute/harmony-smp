@@ -22,12 +22,11 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIPropertyService;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,7 +63,7 @@ public class PropertyController {
      * @return - paginated property list
      */
     @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    @PreAuthorize("@smpAuthorizationService.isSystemAdministrator")
     public ServiceResult<PropertyRO> getPropertyList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
@@ -77,7 +76,7 @@ public class PropertyController {
     }
 
     @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    @PreAuthorize("@smpAuthorizationService.isSystemAdministrator")
     public void updatePropertyList(@RequestBody PropertyRO[] updateEntities) {
         LOG.info("Update property list, count: {}", updateEntities.length);
         // Pass the users and mark the passwords of the ones being updated as expired by passing the passwordChange as null
@@ -85,7 +84,7 @@ public class PropertyController {
     }
 
     @PostMapping(path = "/validate", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    @PreAuthorize("@smpAuthorizationService.isSystemAdministrator")
     public PropertyValidationRO validateProperty(@RequestBody PropertyRO propertyRO) {
         LOG.info("Validate property: [{}]", propertyRO.getProperty());
         return uiPropertyService.validateProperty(propertyRO);
