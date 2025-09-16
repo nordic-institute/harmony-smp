@@ -103,7 +103,9 @@ public class ApplicationController {
                 "]";
     }
 
-    @PreAuthorize("@smpAuthorizationService.isSMPUserMatchingAnyAuthority({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_USER})")
+    @PreAuthorize("@smpAuthorizationService.isSMPUserMatchingAnyAuthority(" +
+            "T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SYSTEM_ADMIN," +
+            "T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_USER)")
     @GetMapping(path = "config")
     public SmpConfigRO getApplicationConfig() {
         SmpConfigRO info = new SmpConfigRO();
