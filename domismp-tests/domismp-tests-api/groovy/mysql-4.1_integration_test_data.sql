@@ -43,7 +43,7 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, SUBJECT, ISSUER, SERIALNUMBER,V
 
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_CLIENT_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values
 (1, 'testdomain','PUBLIC', 'test-domain', 'DOMI-SMP-001','sample_key','smp_domain_01',1,1, NOW(),  NOW()),
-(2, 'oots-smp-domain','PRIVATE', 'private-domain', 'DOMI-SMP-001','sample_key','smp_domain_01',1,1, NOW(),  NOW());
+(2, 'oots-smp-domain','PRIVATE', 'private-domain', 'DOMI-SMP-002','sample_key','smp_domain_02',1,0, NOW(),  NOW());
 
 insert into SMP_EXTENSION ( ID, IDENTIFIER,  IMPLEMENTATION_NAME, NAME, VERSION, DESCRIPTION, CREATED_ON, LAST_UPDATED_ON) values
 (1, 'edelivery-oasis-smp-extension',  'OasisSMPExtension','Oasis SMP 1.0 and 2.0','1.0', 'Oasis SMP 1.0 and 2.0 extension',  NOW(),  NOW());

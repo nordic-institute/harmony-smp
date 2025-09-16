@@ -176,6 +176,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         domain.setSmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         domain.setSmlClientKeyAlias(data.getSmlClientKeyAlias());
         domain.setSmlClientCertAuth(data.isSmlClientCertAuth());
+        domain.setSmlAppendDomainCode(data.isSmlAppendDomainCode());
 
         // if registered, validate the updated domain to ensure its SML integration certificate is valid
         if (domain.isSmlRegistered() && !smlIntegrationService.isDomainValid(domain)) {

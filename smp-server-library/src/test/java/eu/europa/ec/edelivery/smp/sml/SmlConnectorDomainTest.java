@@ -29,11 +29,16 @@ import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -55,7 +60,7 @@ import static org.mockito.Mockito.verify;
  * since 4.1.
  */
 class SmlConnectorDomainTest extends AbstractServiceTest {
-
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SmlConnectorDomainTest.class);
     // Beans
     @SpyBean
     private ConfigurationService configurationService;
@@ -76,6 +81,31 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
 
         ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "Append domain code to SML URL, true",
+            "Do not append domain code to SML URL, false",
+            "Append domain code is null,,",
+    })
+    void testCreateServiceMetadataPublisherServiceType(String desc, Boolean appendDomainCode) {
+        LOG.info("Running test: [{}]", desc);
+        //given
+        DBDomain domain = testUtilsDao.getD1();
+        domain.setSmlAppendDomainCode(appendDomainCode);
+
+        //when
+        ServiceMetadataPublisherServiceType result = testInstance.createServiceMetadataPublisherServiceType(domain);
+
+        //then
+        assertNotNull(result);
+        assertNotNull(result.getPublisherEndpoint());
+        Matcher<String> validateUrl =  CoreMatchers.endsWith("/" + domain.getDomainCode());
+        assertThat(result.getPublisherEndpoint().getLogicalAddress(),
+                Boolean.TRUE.equals(appendDomainCode)
+                        ? validateUrl
+                        : CoreMatchers.not(validateUrl));
     }
 
     @Test
@@ -182,7 +212,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testUnregisterDomainFromDnsNotExists() throws Exception {
         //given
-        Mockito.doThrow(new BadRequestFault("[ERR-100] The SMP '" +testUtilsDao.getD1().getSmlSmpId()+ "' doesn't exist")).when(iManageServiceMetadataWS).delete(anyString());
+        Mockito.doThrow(new BadRequestFault("[ERR-100] The SMP '" + testUtilsDao.getD1().getSmlSmpId() + "' doesn't exist")).when(iManageServiceMetadataWS).delete(anyString());
 
         //when
         Assertions.assertDoesNotThrow(() -> testInstance.unregisterDomain(testUtilsDao.getD1()));

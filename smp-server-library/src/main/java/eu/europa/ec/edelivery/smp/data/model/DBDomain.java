@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
@@ -141,6 +142,10 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Future date when to update the certificate for SML integration")
     OffsetDateTime smlClientKeyChangeDate;
 
+    @Column(name = "SML_APPEND_DOMAIN_CODE")
+    @ColumnDescription(comment = "Append the domain code to SMP url when registering the SMP entry")
+    Boolean smlAppendDomainCode = true;
+
     @Column(name = "SIGNATURE_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Signature key alias used for SML integration")
     String signatureKeyAlias;
@@ -157,7 +162,7 @@ public class DBDomain extends BaseEntity {
 
     @Column(name = "SML_CLIENT_CERT_AUTH", nullable = false)
     @ColumnDescription(comment = "Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)")
-    private boolean smlClientCertAuth = false;
+    private Boolean smlClientCertAuth = false;
 
     @Column(name = "DEFAULT_RESOURCE_IDENTIFIER")
     @ColumnDescription(comment = "Default resourceType code")
@@ -225,6 +230,15 @@ public class DBDomain extends BaseEntity {
 
     public void setSmlSmpId(String smlSmpId) {
         this.smlSmpId = smlSmpId;
+    }
+
+    public Boolean isSmlAppendDomainCode() {
+        // return false if null
+        return Boolean.TRUE.equals(smlAppendDomainCode);
+    }
+
+    public void setSmlAppendDomainCode(Boolean smlAppendDomainCode) {
+        this.smlAppendDomainCode = smlAppendDomainCode;
     }
 
     public String getSmlClientKeyAlias() {
@@ -324,10 +338,18 @@ public class DBDomain extends BaseEntity {
 
     @Override
     public String toString() {
-        return "DBDomain{" +
-                "id=" + id +
-                ", domainCode='" + domainCode + '\'' +
-                '}';
+        return new ToStringBuilder(this)
+                .append("smlSmpId", smlSmpId)
+                .append("smlClientKeyAlias", smlClientKeyAlias)
+                .append("smlClientKeyChangeAlias", smlClientKeyChangeAlias)
+                .append("smlClientKeyChangeDate", smlClientKeyChangeDate)
+                .append("smlAppendDomainCode", smlAppendDomainCode)
+                .append("signatureKeyAlias", signatureKeyAlias)
+                .append("smlRegistered", smlRegistered)
+                .append("smlClientCertAuth", smlClientCertAuth)
+                .append("defaultResourceTypeIdentifier", defaultResourceTypeIdentifier)
+                .append("visibility", visibility)
+                .toString();
     }
 
     @Override
@@ -351,6 +373,7 @@ public class DBDomain extends BaseEntity {
                 .append(signatureAlgorithm, dbDomain.signatureAlgorithm)
                 .append(signatureDigestMethod, dbDomain.signatureDigestMethod)
                 .append(defaultResourceTypeIdentifier, dbDomain.defaultResourceTypeIdentifier)
+                .append(smlAppendDomainCode, dbDomain.smlAppendDomainCode)
                 .append(visibility, dbDomain.visibility).isEquals();
     }
 

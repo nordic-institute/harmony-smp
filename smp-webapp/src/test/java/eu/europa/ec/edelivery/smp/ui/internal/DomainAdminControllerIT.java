@@ -134,6 +134,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         UserRO userRO = (UserRO) session.getAttribute(MOCK_LOGGED_USER);
 
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
+        domainToUpdate.setSmlAppendDomainCode(!domainToUpdate.isSmlAppendDomainCode());
         assertTrue(domainToUpdate.getResourceDefinitions().isEmpty());
 
         MvcResult result = mvc.perform(post(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_RESOURCE_TYPES
@@ -148,6 +149,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         assertNotNull(resultObject);
         assertEquals(1, resultObject.getResourceDefinitions().size());
         assertEquals(documentType, resultObject.getResourceDefinitions().get(0));
+        assertEquals(!domainToUpdate.isSmlAppendDomainCode(), resultObject.isSmlAppendDomainCode());
     }
 
     @Test
