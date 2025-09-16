@@ -7,6 +7,8 @@ DomiSMP 5.2
         smp.authorization.jwt.audience: The JWT audience used for validating the token.
         smp.authorization.jwt.key: The JWT key used for signing the token.
         smp.authorization.jwt.algorithm: The JWT algorithm used for signing the token. Default is HS256.
+    - removed deprecated properties:
+        bdmsl.integration.dns.zone: property has just informative value and is not used anywhere in the code
 
 DomiSMP 5.1
 - change the default "smp.configuration.file" from "smp.conf.properties" to smp.config.properties

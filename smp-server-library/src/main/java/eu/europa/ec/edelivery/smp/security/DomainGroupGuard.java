@@ -22,11 +22,13 @@ import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
-import eu.europa.ec.edelivery.smp.data.dao.*;
+import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
+import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -45,17 +47,15 @@ import org.springframework.stereotype.Component;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * The class is responsible for guarding the domain groups, resources and sub-resources.
  * It validates if users have any "permission to" execute the http action on the domain and groups.
  *
- * @since 5.0
  * @author Joze RIHTARSIC
+ * @since 5.0
  */
 @Component
 public class DomainGroupGuard {
@@ -69,13 +69,12 @@ public class DomainGroupGuard {
     final ResourceMemberDao resourceMemberDao;
     private final UITruststoreService uITruststoreService;
     private final ConfigurationService configurationService;
-    private final DomainConfigurationDao domainConfigurationDao;
 
     public DomainGroupGuard(DomainResolverService domainResolverService,
                             DomainMemberDao domainMemberDao,
                             GroupMemberDao groupMemberDao,
                             ResourceMemberDao resourceMemberDao,
-                            GroupDao groupDao, UITruststoreService uITruststoreService, ConfigurationService configurationService, DomainConfigurationDao domainConfigurationDao) {
+                            GroupDao groupDao, UITruststoreService uITruststoreService, ConfigurationService configurationService) {
         this.domainResolverService = domainResolverService;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
@@ -83,7 +82,6 @@ public class DomainGroupGuard {
         this.groupDao = groupDao;
         this.uITruststoreService = uITruststoreService;
         this.configurationService = configurationService;
-        this.domainConfigurationDao = domainConfigurationDao;
     }
 
 
@@ -110,6 +108,7 @@ public class DomainGroupGuard {
     /**
      * The purpose of the method is to guard domain resources and sub-resources. It validates if user
      * credentials type are authorized to execute the action on the domain resources and sub-resources.
+     *
      * @return true if user is authorized to execute the action on the domain, else it returns false
      */
     protected boolean isRequestAuthorizedOnDomain(ResourceRequest resourceRequest, DBDomain domain, SMPUserDetails user) {
@@ -122,7 +121,7 @@ public class DomainGroupGuard {
             return true;
         }
 
-        if(!isPrincipalAuthorizedForDomain(domain, principal) ){
+        if (!isPrincipalAuthorizedForDomain(domain, principal)) {
             LOG.warn(SMPLogger.SECURITY_MARKER, "Principal: [{}] is not authorized for domain [{}]", principalClassName, domain);
             return false;
         }
@@ -132,17 +131,14 @@ public class DomainGroupGuard {
     }
 
     /**
-     *  Method validates if the principal type is authorized to be used on the domain.
+     * Method validates if the principal type is authorized to be used on the domain.
      */
     public boolean isPrincipalAuthorizedForDomain(DBDomain domain, Object principal) {
         if (principal == null) {
             LOG.warn(SMPLogger.SECURITY_MARKER, "Can not authorize [null] principal on domain [{}]", domain.getDomainCode());
             return false;
         }
-        DBDomainConfiguration domainAuthorization  =  domainConfigurationDao.getDomainConfigurationForName(domain, SMPDomainPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES);
-
-        List<SMPAutomationAuthenticationTypes> authorizationTypes = configurationService.getDomainConfigurationValue(domainAuthorization == null? Collections.emptyList(): List.of(domainAuthorization),
-                SMPDomainPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES);
+        List<SMPAutomationAuthenticationTypes> authorizationTypes = configurationService.getDomainConfigurationValue(domain, SMPDomainPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES);
 
         if (principal instanceof PreAuthenticatedCertificatePrincipal certificatePrincipal) {
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.CERTIFICATE)) {
@@ -166,33 +162,29 @@ public class DomainGroupGuard {
                 LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
                 return true;
             }
-        } else  {            // principal is not certificate or JWT, it must be username/password or anonymous
+        } else {            // principal is not certificate or JWT, it must be username/password or anonymous
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.BASIC_TOKEN)) {
                 LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
                 return false;
             }
         }
 
-        return  true;
+        return true;
     }
 
     private boolean isCertificateAuthorizedForDomain(DBDomain domain, X509Certificate x509Certificate) {
         // check if domain has its own truststore
-        List<DBDomainConfiguration> domainTruststoreConfig = domainConfigurationDao.getDomainConfiguration(domain);
-        DBDomainConfiguration truststorePathConfig = domainTruststoreConfig.stream()
-                .filter(conf -> conf.getProperty().equals(SMPDomainPropertyEnum.TRUSTSTORE_FILENAME.getProperty()))
-                .findAny()
-                .orElse(null);
-        if (truststorePathConfig == null || truststorePathConfig.isUseSystemDefault()) {
-            // domain does not have its own truststore, use system truststore which was already checked during the certificate authentication
+        boolean hasDomainTruststoreConfig = configurationService.hasCustomDomainConfiguration(domain, SMPDomainPropertyEnum.TRUSTSTORE_FILENAME);
+        if (!hasDomainTruststoreConfig) {
+            // domain does not have its own truststore, validation against system truststore is already done
+            LOG.debug("Domain [{}] does not have its own truststore configured. Skip domain specific truststore validation", domain.getDomainCode());
             return true;
         }
         try {
-            uITruststoreService.validateCertificateWithDomainTruststore(x509Certificate, domainTruststoreConfig);
+            uITruststoreService.validateCertificateWithDomainTruststore(domain, x509Certificate);
         } catch (CertificateException e) {
-            LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate validation error for domain [{}] with truststore [{}]: [{}]",
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate validation error for domain [{}]: [{}]",
                     domain.getDomainCode(),
-                    truststorePathConfig.getValue(),
                     e.getMessage());
             return false;
         }

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,11 +19,9 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
-import eu.europa.ec.edelivery.smp.conversion.DBCertificateToCertificateROConverter;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -75,7 +73,7 @@ public class SMLIntegrationService {
      * Checks whether the participant exists in SML or not.
      *
      * @param resource the resource entity
-     * @param domain the domain entity
+     * @param domain   the domain entity
      * @return {@code true} if the participant exists in SML; otherwise, {@code false} (also when SML integration is disabled).
      */
     public boolean participantExists(DBResource resource, DBDomain domain) {
@@ -105,7 +103,6 @@ public class SMLIntegrationService {
      * Checks whether the domain is valid by trying to read it from SML.
      *
      * @param domain the domain entity to verify whether it's valid or not.
-     *
      * @return {@code true} if the domain can be successfully read from SML; otherwise, {@code false} (also when SML integration is disabled).
      */
     public boolean isDomainValid(DBDomain domain) {
@@ -138,7 +135,7 @@ public class SMLIntegrationService {
      * If registration fails  - transaction is rolled back
      *
      * @param resource the resource entity to register
-     * @param domain the domain entity to for the resource
+     * @param domain   the domain entity to for the resource
      */
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -154,7 +151,7 @@ public class SMLIntegrationService {
         if (!resource.isSmlRegistered()) {
             // update value
             resource.setSmlRegistered(true);
-            String customNaptrService = getNaptrServiceForResource(resource);
+            String customNaptrService = getNaptrServiceForResource(resource, domain);
             smlConnector.registerInDns(resource.getIdentifierScheme(), resource.getIdentifierValue(), domain, customNaptrService);
             LOG.businessDebug(BUS_SML_REGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         } else {
@@ -162,7 +159,7 @@ public class SMLIntegrationService {
         }
     }
 
-    public String getNaptrServiceForResource(DBResource resource) {
+    public String getNaptrServiceForResource(DBResource resource, DBDomain domain) {
         LOG.info("Get naptr service for resource: [{}]", resource);
         if (resource == null
                 || resource.getDomainResourceDef() == null
@@ -173,7 +170,7 @@ public class SMLIntegrationService {
         }
         String resDefIdentifier = resource.getDomainResourceDef().getResourceDef().getIdentifier();
         LOG.info("return null naptr service for resource: [{}] and document type [{}]", resource, resDefIdentifier);
-        Map<String, String> map = configurationService.getCustomNaptrServicesMap();
+        Map<String, String> map = configurationService.getDomainCustomNaptrServicesMap(domain);
 
         if (map != null && map.containsKey(resDefIdentifier)) {
             return map.get(resDefIdentifier);
@@ -189,7 +186,7 @@ public class SMLIntegrationService {
      * If registration fails  - transaction is rolled back
      *
      * @param resource resourceIdentifier to unregister from SML
-     * @param domain for which resource belongs to
+     * @param domain   for which resource belongs to
      */
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -243,7 +240,7 @@ public class SMLIntegrationService {
     }
 
     private String getEncodedCertificate(X509Certificate certificate) {
-        String encoded = "";
+        String encoded;
         try {
             encoded = Base64.getEncoder().encodeToString(certificate.getEncoded());
         } catch (CertificateEncodingException e) {
