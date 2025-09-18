@@ -23,24 +23,24 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.NonUniqueResultException;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType.toList;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 
 /**
  * @author gutowpa
@@ -61,7 +61,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      * Returns Optional.empty() if there is more than 1 record present.
      *
      * @return the only single record from smp_domain table
-     * @throws IllegalStateException if no domain is configured
+     * @throws SMPRuntimeException if no domain is configured
      */
     public Optional<DBDomain> getTheOnlyDomain() {
         try {
@@ -69,9 +69,10 @@ public class DomainDao extends BaseDao<DBDomain> {
             TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
+            LOG.warn("More than one domain is configured in the system. Can not return it as default domain.");
             return Optional.empty();
         } catch (NoResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.domain.none.configured"));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NONE_CONFIGURED);
         }
     }
 
@@ -125,24 +126,24 @@ public class DomainDao extends BaseDao<DBDomain> {
     /**
      * Returns the Optional DBDomain from database. The domain is searched by domain parameter and queryDomainCode.
      *
-     * @param domainParameter - parameter value to search for
+     * @param domainCode - parameter value to search for
      * @param queryName       - The named DBDomain query
      * @param queryParamName  the parameter name in the query
      * @return Optional DBDomain
      */
-    private Optional<DBDomain> getDomainByQueryWithParam(String domainParameter, String queryName, String queryParamName) {
-        if (StringUtils.isEmpty(domainParameter)) {
+    private Optional<DBDomain> getDomainByQueryWithParam(String domainCode, String queryName, String queryParamName) {
+        if (StringUtils.isEmpty(domainCode)) {
             return Optional.empty();
         }
         try {
             TypedQuery<DBDomain> query = memEManager.createNamedQuery(queryName, DBDomain.class);
-            query.setParameter(queryParamName, domainParameter);
+            query.setParameter(queryParamName, domainCode);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation(
-                    "error.domain.illegal.state.multiple.entries", Map.of("domain", domainParameter)));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
     }
 
@@ -216,9 +217,8 @@ public class DomainDao extends BaseDao<DBDomain> {
             if (od.isPresent()) {
                 domain = od.get();
             } else {
-                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS,
-                        smpExceptionLanguageService.getMessageTranslation("error.domain.not.exists",
-                                Map.of("domainCode", domainCode)));
+                throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
             }
         }
         return domain;

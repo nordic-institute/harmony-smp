@@ -22,6 +22,8 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -40,8 +42,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CERTIFICATE_ERROR;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.*;
 
 
@@ -78,7 +78,7 @@ public class SMLIntegrationService {
      */
     public boolean participantExists(DBResource resource, DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_DOMISML_INTEGRATION_DISABLED);
         }
         return smlConnector.participantExists(resource.getIdentifierScheme(), resource.getIdentifierValue(), domain);
     }
@@ -92,7 +92,7 @@ public class SMLIntegrationService {
     @Transactional
     public void registerDomain(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_DOMISML_INTEGRATION_DISABLED);
         }
         domain.setSmlRegistered(true);
         domainDao.update(domain);
@@ -107,7 +107,7 @@ public class SMLIntegrationService {
      */
     public boolean isDomainValid(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_DOMISML_INTEGRATION_DISABLED);
         }
         return smlConnector.isDomainValid(domain);
     }
@@ -121,7 +121,7 @@ public class SMLIntegrationService {
     @Transactional
     public void unRegisterDomain(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.domisml.integration.disabled");
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_DOMISML_INTEGRATION_DISABLED);
         }
 
         domain.setSmlRegistered(false);
@@ -244,8 +244,9 @@ public class SMLIntegrationService {
         try {
             encoded = Base64.getEncoder().encodeToString(certificate.getEncoded());
         } catch (CertificateEncodingException e) {
-            throw new SMPRuntimeException(CERTIFICATE_ERROR, "error.certificate.cannot.encode", e,
-                    Map.of("certificate", certificate, "error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CANNOT_ENCODE, e)
+                    .addParam(ErrorMessageArgument.CERTIFICATE, certificate)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         return encoded;
     }

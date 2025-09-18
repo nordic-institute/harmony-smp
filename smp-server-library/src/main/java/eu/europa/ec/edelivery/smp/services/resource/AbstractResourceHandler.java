@@ -23,7 +23,8 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -38,6 +39,7 @@ import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -63,14 +65,14 @@ public class AbstractResourceHandler {
     public ResourceDefinitionSpi getResourceDefinition(DBResourceDef resourceDef) {
         LOG.debug("Get resource definition for the [{}]", resourceDef);
         Optional<ResourceDefinitionSpi> definitionSpi = resourceDefinitionSpiList.stream()
-                .filter(rdspi -> StringUtils.equals(resourceDef.getIdentifier(), rdspi.identifier()))
+                .filter(rdspi -> Strings.CI.equals(resourceDef.getIdentifier(), rdspi.identifier()))
                 .findFirst();
 
-        return definitionSpi.orElseThrow(() -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.cannot.find.resource.definition.for.identifier",
-                Map.of("identifier", resourceDef.getIdentifier(),
-                        "identifiers", resourceDefinitionSpiList.stream()
+        return definitionSpi.orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INTERNAL_CANNOT_FIND_RESOURCE_DEFINITION_FOR_IDENTIFIER)
+                .addParam(ErrorMessageArgument.IDENTIFIER, resourceDef.getIdentifier())
+                .addParam(ErrorMessageArgument.IDENTIFIERS, resourceDefinitionSpiList.stream()
                                                     .map(ResourceDefinitionSpi::identifier)
-                                                    .collect(Collectors.joining(",")))));
+                                                    .collect(Collectors.joining(","))));
     }
 
     public ResourceHandlerSpi getResourceHandler(DBResourceDef resourceDef) {
@@ -87,11 +89,11 @@ public class AbstractResourceHandler {
                 .filter(def -> StringUtils.equals(def.identifier(), subResourceId)).findFirst();
 
         return optSubresourceDefinitionSpi.orElseThrow(
-                () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.cannot.find.subresource.definition.for.identifier",
-                        Map.of("identifier", subResourceId,
-                                "identifiers", resourceDefinitionSpi.getSubresourceSpiList().stream()
+                () -> new SMPRuntimeException(ErrorMessageType.INTERNAL_CANNOT_FIND_SUBRESOURCE_DEFINITION_FOR_IDENTIFIER)
+                        .addParam(ErrorMessageArgument.IDENTIFIER,  subResourceId)
+                        .addParam(ErrorMessageArgument.IDENTIFIERS,  resourceDefinitionSpi.getSubresourceSpiList().stream()
                                                             .map(SubresourceDefinitionSpi::identifier)
-                                                            .collect(Collectors.joining(",")))));
+                                                            .collect(Collectors.joining(","))));
     }
 
     public ResourceHandlerSpi getSubresourceHandler(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
@@ -110,8 +112,9 @@ public class AbstractResourceHandler {
 
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
         if (content == null || content.length == 0) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, "error.resource.document.missing",
-                    Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_MISSING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
         }
         return buildRequestDataForResource(domain, resource, new ByteArrayInputStream(content));
     }
@@ -126,8 +129,9 @@ public class AbstractResourceHandler {
                     SPIUtils.toUrlIdentifier(resource),
                     new ByteArrayInputStream(baos.toByteArray()));
         } catch (IOException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, "error.resource.document.missing",
-                    Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_READING, e)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
         }
     }
 
@@ -143,9 +147,11 @@ public class AbstractResourceHandler {
                                                       DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
         if (content == null || content.length == 0) {
-            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING, "error.subresource.document.missing",
-                    Map.of("documentIdentifier", subresource.getIdentifierValue(), "documentScheme", subresource.getIdentifierScheme(),
-                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_DOCUMENT_MISSING)
+                        .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, subresource.getIdentifierValue())
+                        .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, subresource.getIdentifierScheme())
+                        .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                        .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
         }
         return buildRequestDataForSubResource(domain, resource, subresource, new ByteArrayInputStream(content));
     }
@@ -170,8 +176,11 @@ public class AbstractResourceHandler {
                     SPIUtils.toUrlIdentifier(subresource),
                     new ByteArrayInputStream(baos.toByteArray()));
         } catch (IOException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, "error.resource.document.missing",
-                    Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, subresource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, subresource.getIdentifierScheme())
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
         }
     }
 
@@ -184,7 +193,7 @@ public class AbstractResourceHandler {
             responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
 
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.cannot.read.subresource", e);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_RESPONSE_OUTPUT_STREAM, e);
         }
     }
 }

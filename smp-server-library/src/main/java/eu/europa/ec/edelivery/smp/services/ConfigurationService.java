@@ -30,7 +30,8 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -765,13 +766,13 @@ public class ConfigurationService {
     private static SMPPropertyEnum getSmpPropertyEnum(SMPDomainPropertyEnum property) {
         SMPPropertyEnum sysPropType = property.getPropertyEnum();
         if (sysPropType.isEncrypted()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encrypted domain Properties are not supported!. Can not parse   ["
-                    + property + "]!");
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_CONFIGURATION_ENCRYPTION_ERROR)
+                    .addParam(ErrorMessageArgument.PROPERTY_NAME, property.getProperty());
         }
         if (sysPropType.getPropertyType() == SMPPropertyTypeEnum.PATH ||
                 sysPropType.getPropertyType() == SMPPropertyTypeEnum.FILENAME) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Path or filename domain properties are not supported!. Can not parse   ["
-                    + property + "]!");
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_CONFIGURATION_PATH_ERROR)
+                    .addParam(ErrorMessageArgument.PROPERTY_NAME, property.getProperty());
         }
         return sysPropType;
     }

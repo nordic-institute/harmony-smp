@@ -31,10 +31,7 @@ import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPRole;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
@@ -43,7 +40,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -121,11 +121,12 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     @Transactional
     public void createDomainData(DomainRO data) {
         if (StringUtils.isBlank(data.getDomainCode())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "error.domain.domain.code.empty");
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_DOMAIN_CODE_EMPTY);
         }
 
         if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "error.domain.domain.code.already.exists", Map.of("domainCode", data.getDomainCode()));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_DOMAIN_CODE_ALREADY_EXISTS)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, data.getDomainCode());
         }
         DBDomain domain = new DBDomain();
         domain.setDomainCode(data.getDomainCode());

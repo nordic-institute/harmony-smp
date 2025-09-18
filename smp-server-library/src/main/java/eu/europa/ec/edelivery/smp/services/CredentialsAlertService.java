@@ -29,7 +29,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -404,7 +404,7 @@ public class CredentialsAlertService {
                 resetUrl = smpUrlBuilder.buildSMPUriForApplication().toURL();
                 LOG.warn("Reset URL is not set! Use default SMP URL [{}]", resetUrl);
             } catch (MalformedURLException e) {
-                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal", e);
+                throw new SMPRuntimeException(ErrorMessageType.INTERNAL, e);
             }
         }
         String resetUrlPath = StringUtils.appendIfMissing(resetUrl.toString(), "/", "/") + "ui/#/reset-credential/" + token;

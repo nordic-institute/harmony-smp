@@ -27,10 +27,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPRole;
-import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
@@ -39,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -168,8 +164,8 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
     public MemberRO addMemberToDomain(Long domainId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to domain [{}]", memberRO.getUsername(), domainId);
         DBUser user = userDao.findUserByUsername(memberRO.getUsername())
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.domain.membership.add.user.not.exists",
-                        Map.of("username", memberRO.getUsername())));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOMAIN_MEMBERSHIP_ADD_USER_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.USERNAME, memberRO.getUsername()));
 
         DBDomainMember domainMember;
         if (memberId != null) {
@@ -178,8 +174,8 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
         } else {
             DBDomain domain = domainDao.find(domainId);
             if (domainMemberDao.isUserDomainMember(user, domain)) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.domain.membership.add.user.already.member",
-                        Map.of("username", memberRO.getUsername()));
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOMAIN_MEMBERSHIP_ADD_USER_ALREADY_MEMBER)
+                        .addParam(ErrorMessageArgument.USERNAME, memberRO.getUsername());
             }
             domainMember = domainMemberDao.addMemberToDomain(domain, user, memberRO.getRoleType());
         }
@@ -191,10 +187,10 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
         LOG.info("Delete member [{}] from domain [{}]", memberId, domainId);
         DBDomainMember domainMember = domainMemberDao.find(memberId);
         if (domainMember == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.domain.membership.remove.user.not.member");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOMAIN_MEMBERSHIP_REMOVE_USER_NOT_MEMBER);
         }
         if (!Objects.equals(domainMember.getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.domain.membership.remove.user.not.part.of.domain");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOMAIN_MEMBERSHIP_REMOVE_USER_NOT_PART_OF_DOMAIN);
         }
 
         domainMemberDao.remove(domainMember);

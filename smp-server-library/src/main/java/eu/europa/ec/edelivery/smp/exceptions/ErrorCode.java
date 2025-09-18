@@ -48,11 +48,11 @@ public enum ErrorCode {
     INVALID_OWNER(400, "SMP:127", ErrorBusinessCode.NOT_FOUND),
 
     // service group error
-    SG_NOT_EXISTS(404,"SMP:131", ErrorBusinessCode.NOT_FOUND),
+    RESOURCE_NOT_EXISTS(404,"SMP:131", ErrorBusinessCode.NOT_FOUND),
     INVALID_EXTENSION_FOR_SG(400,"SMP:132", ErrorBusinessCode.XSD_INVALID),
 
     // service metadata error
-    METADATA_NOT_EXISTS(404,"SMP:141", ErrorBusinessCode.NOT_FOUND),
+    SUBRESOURCE_NOT_EXISTS(404,"SMP:141", ErrorBusinessCode.NOT_FOUND),
     INVALID_SMD_XML(400,"SMP:143", ErrorBusinessCode.XSD_INVALID),
 
     // SML integration
@@ -64,15 +64,17 @@ public enum ErrorCode {
     INTERNAL_ERROR(500,"SMP:514", ErrorBusinessCode.TECHNICAL),
     CERTIFICATE_ERROR(500,"SMP:515", ErrorBusinessCode.TECHNICAL),
     CONFIGURATION_ERROR(500,"SMP:516", ErrorBusinessCode.TECHNICAL),
+    PROPERTY_VALIDATION_ERROR(500,"SMP:517", ErrorBusinessCode.TECHNICAL),
 
     MAIL_SUBMISSION_ERROR(500,"SMP:550", ErrorBusinessCode.TECHNICAL),
-
     RESOURCE_DOCUMENT_MISSING(500,"SMP:180", ErrorBusinessCode.TECHNICAL),
     RESOURCE_DOCUMENT_ERROR(500,"SMP:181", ErrorBusinessCode.TECHNICAL),
     SUBRESOURCE_DOCUMENT_MISSING(500,"SMP:182", ErrorBusinessCode.TECHNICAL),
     SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183", ErrorBusinessCode.TECHNICAL),
-
     VALIDATION_ERROR(500,"SMP:184", ErrorBusinessCode.FORMAT_ERROR),
+    SPI_GENERIC_ERROR(500,"SMP:300", ErrorBusinessCode.TECHNICAL),
+
+
     ;
 
     private final int httpCode;

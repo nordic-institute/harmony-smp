@@ -27,7 +27,8 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.IdentifierFormatter;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -84,9 +84,8 @@ public class IdentifierFormatterService {
             return getDefaultResourceIdentifierFormatter();
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,
-                        smpExceptionLanguageService.getMessageTranslation("error.domain.not.exists",
-                                Map.of("domainCode", domainCode))));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode));
 
         IdentifierFormatter.Builder builder = IdentifierFormatter.Builder
                 .create()
@@ -167,14 +166,12 @@ public class IdentifierFormatterService {
     public IdentifierFormatter getSubresourceIdentifierFormatter(String domainCode) {
 
         if (StringUtils.isBlank(domainCode)) {
-            throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,
-                    smpExceptionLanguageService.getMessageTranslation("error.domain.not.exists",
-                            Map.of("domainCode", domainCode)));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS,
-                        smpExceptionLanguageService.getMessageTranslation("error.domain.not.exists",
-                                Map.of("domainCode", domainCode))));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode));
 
         List<DBDomainConfiguration> listDomainConf = domainConfigurationDao.getDomainConfiguration(domain);
         IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder

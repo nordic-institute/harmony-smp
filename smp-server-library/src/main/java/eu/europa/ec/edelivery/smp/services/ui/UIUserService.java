@@ -23,7 +23,6 @@ import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
@@ -32,10 +31,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -53,7 +49,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -119,8 +118,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.not.exists",
-                    Map.of("userId", userId));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.USER_ID, userId);
         }
 
         boolean testMode = SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode();
@@ -163,12 +162,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.not.exists",
-                    Map.of("userId", userId));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.USER_ID, userId);
         }
         CertificateRO certificate = credential.getCertificate();
         if (certificate == null || StringUtils.isBlank(certificate.getCertificateId())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.credentials.certificate.not.exists");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_CREDENTIALS_CERTIFICATE_NOT_EXISTS);
         }
 
 
@@ -211,13 +210,13 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
         if (pattern != null && !pattern.matcher(newPassword).matches()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.password.change",
-                    Map.of("error", configurationService.getPasswordPolicyValidationMessage())); // TODO: should we also translate database messages?
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_PASSWORD_CHANGE)
+                    .addParam(ErrorMessageArgument.ERROR, configurationService.getPasswordPolicyValidationMessage());
         }
         Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(authorizedUserId);
         DBCredential dbAuthorizedCredentials = dbCredential.orElseThrow(() ->
-                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.not.exists",
-                        Map.of("userId", authorizedUserId)));
+                new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.USER_ID,  authorizedUserId));
 
         DBUser authorizedUser = dbAuthorizedCredentials.getUser();
 
@@ -259,8 +258,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 && StringUtils.isNotBlank(dbCredential.getValue())
                 && BCrypt.checkpw(password, dbCredential.getValue())) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", userID);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.password.change",
-                    Map.of("error", configurationService.getPasswordPolicyValidationMessage()));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_PASSWORD_CHANGE)
+                    .addParam(ErrorMessageArgument.ERROR, configurationService.getPasswordPolicyValidationMessage());
         }
 
         dbCredential.setValue(BCryptPasswordHash.hashPassword(password));
@@ -310,8 +309,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.not.exists",
-                    Map.of("userId", userId));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.USER_ID, userId);
         }
         LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user profile data on managed db entity. (For now Just email, name and theme)
@@ -326,8 +325,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.not.exists",
-                    Map.of("userId", userId));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.USER_ID, userId);
         }
         LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user data by admin
@@ -345,8 +344,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         Optional<DBUser> testUser = userDao.findUserByUsername(user.getUsername());
         if (testUser.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.create.user.already.exists",
-                    Map.of("username", user.getUsername()));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_CREATE_USER_ALREADY_EXISTS)
+                    .addParam(ErrorMessageArgument.USERNAME, user.getUsername());
         }
         DBUser dbUser = new DBUser();
         // update user data by admin
@@ -385,8 +384,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not delete user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.not.exists",
-                    Map.of("userId", userId));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.USER_ID, userId);
         }
         userDao.remove(dbUser);
         return conversionService.convert(dbUser, UserRO.class);
@@ -401,12 +400,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      */
     @Transactional(readOnly = true)
     public DBUser findUser(Long userId) {
-        return userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS, "error.user.not.exists"));
+        return userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.USER_NOT_EXISTS));
     }
 
     @Transactional(readOnly = true)
     public UserRO getUserById(Long userId) {
-        DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS, "error.user.not.exists"));
+        DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.USER_NOT_EXISTS));
         return convertToRo(user);
     }
 
@@ -443,8 +442,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     public CredentialRO getUserCertificateCredential(Long userId, Long certificateCredentialId) {
         // Update the user and mark the password as changed at this very instant of time
         DBCredential credential = credentialDao.findCredential(certificateCredentialId).orElseThrow(
-                () -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.user.credentials.not.exists",
-                        Map.of("certificateCredentialId", certificateCredentialId)));
+                () -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_CREDENTIALS_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.CERTIFICATE_CREDENTIAL_ID, certificateCredentialId));
         validateCredentials(credential, userId, CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
         if (credential.getCertificate() != null) {
@@ -531,7 +530,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         result.setCount(count);
         List<DBUser> users = userDao.getFilteredUserList(page, pageSize, filter);
-        List<SearchUserRO> userList = users.stream().map(usr -> conversionService.convert(usr, SearchUserRO.class)).collect(Collectors.toList());
+        List<SearchUserRO> userList = users.stream().map(usr -> conversionService.convert(usr, SearchUserRO.class)).toList();
 
         result.getServiceEntities().addAll(userList);
         return result;
@@ -540,7 +539,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     @Transactional(readOnly = true)
     public DBUser findUserByUsername(String userName) {
-        return userDao.findUserByUsername(userName).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS, "error.user.not.exists"));
+        return userDao.findUserByUsername(userName).orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.USER_NOT_EXISTS));
     }
 
     @Override

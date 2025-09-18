@@ -23,7 +23,8 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -35,8 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -98,8 +97,8 @@ public class ResourceEditController {
             return uiResourceService.getResourcesForUserAndGroup(userId, MembershipRoleType.ADMIN, groupId, page, pageSize, filter);
         }
 
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.get.group.resources",
-                Map.of("userRole", forRole));
+        throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GET_GROUP_RESOURCES)
+                .addParam(ErrorMessageArgument.USER_ROLE, forRole);
     }
 
     /**

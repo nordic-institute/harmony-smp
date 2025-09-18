@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -75,7 +75,7 @@ public class PayloadValidatorService {
             }
         } catch (PayloadValidatorSpiException e) {
             LOG.error(SECURITY_MARKER, "Content validation failed: [" + smpExceptionLanguageService.getMessageTranslation(e) + "]", smpExceptionLanguageService.getTranslated(e));
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.validate.payload");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_VALIDATE_PAYLOAD);
         }
     }
 }

@@ -20,7 +20,8 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -245,8 +246,9 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (keystoreKeys.isEmpty() || keyManagers == null || keyManagers.length < 1) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.empty.keystore",
-                    Map.of("alias", keyAlias, "keystoreFile", configurationService.getKeystoreFile()));
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_EMPTY_KEYSTORE)
+                    .addParam(ErrorMessageArgument.KEYSTORE_FILE, configurationService.getKeystoreFile() != null ? configurationService.getKeystoreFile().getAbsolutePath() : "null")
+                    .addParam(ErrorMessageArgument.ALIAS, keyAlias);
         }
 
         final String searchAlias = getKeyAlias(keyAlias);
@@ -256,8 +258,9 @@ public class UIKeystoreService extends BasicKeystoreService {
                 .map(X509KeyManager.class::cast)
                 .map(km -> km.getPrivateKey(searchAlias))
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.empty.keystore",
-                        Map.of("alias", keyAlias, "keystoreFile", configurationService.getKeystoreFile())));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.CONFIGURATION_EMPTY_KEYSTORE)
+                        .addParam(ErrorMessageArgument.KEYSTORE_FILE, configurationService.getKeystoreFile() != null ? configurationService.getKeystoreFile().getAbsolutePath() : "null")
+                        .addParam(ErrorMessageArgument.ALIAS, keyAlias));
     }
 
     /**
@@ -275,8 +278,8 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (isBlank(trimAlias) || !keystoreKeys.contains(trimAlias)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.missing.keypair.or.wrong.alias",
-                    Map.of("alias", keyAlias));
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_MISSING_KEYPAIR_OR_WRONG_ALIAS)
+                    .addParam(ErrorMessageArgument.ALIAS, keyAlias);
         }
         return trimAlias;
     }
@@ -295,8 +298,8 @@ public class UIKeystoreService extends BasicKeystoreService {
             return keystoreCertificates.values().iterator().next();
         }
         if (isBlank(certAlias) || !keystoreCertificates.containsKey(certAlias)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.missing.keypair.or.wrong.alias",
-                    Map.of("alias", certAlias));
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_MISSING_KEYPAIR_OR_WRONG_ALIAS)
+                    .addParam(ErrorMessageArgument.ALIAS, certAlias);
         }
         return keystoreCertificates.get(certAlias);
     }

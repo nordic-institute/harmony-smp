@@ -18,8 +18,6 @@
  */
 package eu.europa.ec.edelivery.smp.config.enums;
 
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -530,7 +528,7 @@ public enum SMPPropertyEnum {
     }
 
     public String getErrorMessageCode() {
-        return SMPExceptionLanguageService.PREFIX_MESSAGE_VALUE_TRANSLATION + this.errorMessageCode;
+        return this.errorMessageCode;
     }
 }
 

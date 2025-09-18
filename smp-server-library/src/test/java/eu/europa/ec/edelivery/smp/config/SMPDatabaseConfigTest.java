@@ -80,7 +80,7 @@ public class SMPDatabaseConfigTest {
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
 
-        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+        MatcherAssert.assertThat(result.getMessage(),
                 CoreMatchers.containsString("invalid JNDI datasource: [jdbc/eDeliverySmpDs]"));
     }
 

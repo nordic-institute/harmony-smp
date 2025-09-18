@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,7 @@ class SMPExceptionLanguageServiceTest {
 
     @BeforeEach
     public void setup() {
-        Mockito.when(smpLanguageResourceService.getUiProperties(anyString())).thenReturn(messageCodes);
+        Mockito.when(smpLanguageResourceService.getErroProperties(anyString())).thenReturn(messageCodes);
     }
 
     @AfterEach
@@ -78,12 +79,12 @@ class SMPExceptionLanguageServiceTest {
 
     @Test
     public void translateInnerMessageCode() {
-        messageCodes.put("message.code.outer", "Outer message [{{inner}}]"); // inner
-        messageCodes.put("message.code.inner", "Inner message [{{property}}]");
-        String enforcedInnerMessageCodeTranslation = SMPExceptionLanguageService.PREFIX_MESSAGE_VALUE_TRANSLATION + "message.code.inner";
-
-        String translation = smpExceptionLanguageService.getMessageTranslation("message.code.outer",
-                Map.of("inner", enforcedInnerMessageCodeTranslation,
+        String outerMessageCode = "message.code.outer";
+        String innerMessageCode = "message.code.inner";
+        messageCodes.put(outerMessageCode, "Outer message [{{errorMessageCode}}]"); // inner
+        messageCodes.put(innerMessageCode, "Inner message [{{property}}]");
+        String translation = smpExceptionLanguageService.getMessageTranslation(outerMessageCode,
+                Map.of(ErrorMessageArgument.ERROR_MESSAGE_CODE.getArgumentName(), innerMessageCode,
                         "property", "value"));
         Assertions.assertEquals("Outer message [Inner message [value]]", translation);
     }

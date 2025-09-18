@@ -29,7 +29,8 @@ import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -37,7 +38,6 @@ import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Service implements logic if user can activate action on the resource
@@ -80,8 +80,9 @@ public class ResourceGuard {
             case DELETE:
                 return canDelete(user, resource, domain);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.resource.action",
-                Map.of("user", userInfo, "action", action));
+        throw new SMPRuntimeException(ErrorMessageType.INTERNAL_USER_UNAUTHORIZED_FOR_INVALID_RESOURCE_ACTION)
+                .addParam(ErrorMessageArgument.USER, userInfo)
+                .addParam(ErrorMessageArgument.ACTION, action);
     }
 
     public boolean userIsAuthorizedForAction(SMPUserDetails user, ResourceAction action, DBSubresource subresource) {
@@ -94,8 +95,9 @@ public class ResourceGuard {
             case DELETE:
                 return canDelete(user, subresource);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.user.unauthorized.for.resource.action",
-                Map.of("user", userInfo, "action", action));
+        throw new SMPRuntimeException(ErrorMessageType.INTERNAL_USER_UNAUTHORIZED_FOR_INVALID_RESOURCE_ACTION)
+                .addParam(ErrorMessageArgument.USER, userInfo)
+                .addParam(ErrorMessageArgument.ACTION, action);
     }
 
 

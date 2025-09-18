@@ -84,7 +84,7 @@ class DomainResolverServiceTest extends AbstractJunit5BaseDao {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.resolveDomain(headerParameter, pathParameter));
         // Assert that the exception is thrown with the expected error code
         assertEquals(ErrorCode.DOMAIN_NOT_EXISTS, result.getErrorCode());
-        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()), containsString(expectedException));
+        assertThat(result.getMessage(), containsString(expectedException));
     }
 
     @ParameterizedTest

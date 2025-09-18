@@ -18,13 +18,12 @@
  */
 package eu.europa.ec.edelivery.smp.servlet;
 
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 
 public class ResourceResponse {
 
@@ -62,7 +61,7 @@ public class ResourceResponse {
         try {
             return response.getOutputStream();
         } catch (IOException e) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.response.output.stream", e);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_RESPONSE_OUTPUT_STREAM, e);
         }
     }
 

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -22,7 +22,8 @@ import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -40,6 +41,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType.*;
 import static org.apache.commons.lang3.StringUtils.*;
 
 public class PropertyUtils {
@@ -58,21 +61,23 @@ public class PropertyUtils {
         if (StringUtils.isBlank(value)) {
             // empty/ null value is invalid
             if (prop.isMandatory()) {
-                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.mandatory.property",
-                        Map.of("propertyName", prop.getProperty()));
+                throw new SMPRuntimeException(CONFIGURATION_MANDATORY_PROPERTY
+                ).addParam(PROPERTY_NAME, prop.getProperty());
             }
             return null;
         }
         if (!prop.getValuePattern().matcher(value).find()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
-                    Map.of("error", prop.getErrorMessageCode(), "property", prop.getProperty()));
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_PROPERTY)
+                    .addParam(ERROR_MESSAGE_CODE, prop.getErrorMessageCode())
+                    .addParam(PROPERTY_NAME, prop.getProperty());
         }
 
         SMPPropertyTypeEnum type = prop.getPropertyType();
-        Object result =  parsePropertyType(type, value, rootFolder);
+        Object result = parsePropertyType(type, value, rootFolder);
         return switch (prop) {
-            case AUTOMATION_AUTHENTICATION_TYPES, UI_AUTHENTICATION_TYPES -> parseEnumListPropertyType(prop, (List<String>) result);
+            case AUTOMATION_AUTHENTICATION_TYPES, UI_AUTHENTICATION_TYPES ->
+                    parseEnumListPropertyType(prop, (List<String>) result);
             default -> result;
         };
     }
@@ -85,8 +90,9 @@ public class PropertyUtils {
 
         if (!prop.getValuePattern().matcher(value).matches()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
-                    Map.of("error", prop.getErrorMessageCode(), "property", prop.getProperty()));
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_PROPERTY)
+                    .addParam(ErrorMessageArgument.ERROR_MESSAGE_CODE, prop.getErrorMessageCode())
+                    .addParam(PROPERTY_NAME, prop.getProperty());
         }
         SMPPropertyTypeEnum type = prop.getPropertyType();
         return isValidPropertyType(type, value, confFolder);
@@ -111,7 +117,7 @@ public class PropertyUtils {
         }
 
         if (StringUtils.length(value) > 2000) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.length");
+            throw new SMPRuntimeException(CONFIGURATION_INVALID_LENGTH);
         }
 
         switch (type) {
@@ -119,29 +125,31 @@ public class PropertyUtils {
                 if (StringUtils.equalsAnyIgnoreCase(trim(value), "true", "false")) {
                     return Boolean.valueOf(value.trim());
                 }
-                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.boolean",
-                        Map.of("propertyValue", value));
+                throw new SMPRuntimeException(CONFIGURATION_INVALID_BOOLEAN)
+                        .addParam(PROPERTY_VALUE, value);
             case REGEXP:
                 try {
                     return Pattern.compile(value);
                 } catch (PatternSyntaxException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.regular.expression", ex,
-                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_REGULAR_EXPRESSION, ex)
+                            .addParam(PROPERTY_VALUE, value)
+                            .addParam(ERROR, ExceptionUtils.getRootCauseMessage(ex));
                 }
             case INTEGER:
                 try {
                     return Integer.parseInt(value);
                 } catch (NumberFormatException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.integer", ex,
-                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_INTEGER, ex)
+                            .addParam(PROPERTY_VALUE, value)
+                            .addParam(ERROR, ExceptionUtils.getRootCauseMessage(ex));
                 }
             case LIST_STRING: {
                 return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR));
             }
             case MAP_STRING: {
                 if (!value.contains(":")) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.map",
-                            Map.of("propertyValue", value));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_MAP)
+                            .addParam(PROPERTY_VALUE, value);
                 }
                 return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR)).stream().collect(Collectors.toMap(
                         val -> trim(substringBefore(val, REG_EXP_MAP_SEPARATOR)), val -> trim(substringAfter(val, REG_EXP_MAP_SEPARATOR))));
@@ -149,12 +157,12 @@ public class PropertyUtils {
             case PATH: {
                 File file = new File(rootFolder, value);
                 if (!file.exists() && !file.mkdirs()) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.folder",
-                            Map.of("propertyValue", value));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_FOLDER)
+                            .addParam(PROPERTY_VALUE, value);
                 }
                 if (!file.isDirectory()) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.folder.not.directory",
-                            Map.of("propertyValue", value));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_FOLDER_NOT_DIRECTORY)
+                            .addParam(PROPERTY_VALUE, value);
                 }
                 return new File(value);
             }
@@ -170,15 +178,16 @@ public class PropertyUtils {
                 if (EmailValidator.getInstance().isValid(trimVal)) {
                     return trimVal;
                 } else {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.email",
-                            Map.of("propertyValue", value));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_EMAIL)
+                            .addParam(PROPERTY_VALUE, value);
                 }
             case URL:
                 try {
                     return new URL(value.trim());
                 } catch (MalformedURLException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.url", ex,
-                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_URL, ex)
+                            .addParam(PROPERTY_VALUE, value)
+                            .addParam(ERROR, ExceptionUtils.getRootCauseMessage(ex));
                 }
             case STRING:
                 return value;
@@ -186,14 +195,16 @@ public class PropertyUtils {
                 try {
                     return CronExpression.parse(value);
                 } catch (IllegalArgumentException ex) {
-                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.invalid.cron.expression", ex,
-                            Map.of("propertyValue", value, "error", ExceptionUtils.getRootCauseMessage(ex)));
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_CRON_EXPRESSION, ex)
+                            .addParam(PROPERTY_VALUE, value)
+                            .addParam(ERROR, ExceptionUtils.getRootCauseMessage(ex));
                 }
         }
         return null;
     }
 
-    /** Parse the property value for the given type.
+    /**
+     * Parse the property value for the given type.
      *
      * @param type  - property type
      * @param value - property value
@@ -237,7 +248,7 @@ public class PropertyUtils {
      * Method returns 'masked' value for sensitive property data
      *
      * @param property - property name
-     * @param value   - property value
+     * @param value    - property value
      * @return masked value for sensitive properties. Else it returns value!
      */
     public static String getMaskedData(String property, String value) {
@@ -248,7 +259,7 @@ public class PropertyUtils {
         return isNotBlank(value) ? MASKED_VALUE : "Null/Empty/Blank";
     }
 
-    public static  void printProperties(Properties properties, Level loggingLevel) {
+    public static void printProperties(Properties properties, Level loggingLevel) {
         if (properties != null) {
             LOG.debug("------ Print properties ------");
             properties.entrySet().stream().forEach(e ->

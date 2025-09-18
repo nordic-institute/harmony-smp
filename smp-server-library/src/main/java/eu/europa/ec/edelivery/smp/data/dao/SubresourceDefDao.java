@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,15 +20,16 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -39,12 +40,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Repository
 public class SubresourceDefDao extends BaseDao<DBSubresourceDef> {
-
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
-
-    public SubresourceDefDao(SMPExceptionLanguageService smpExceptionLanguageService) {
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
-    }
 
     /**
      * Returns DBSubresourceDef records from the database.
@@ -62,7 +57,7 @@ public class SubresourceDefDao extends BaseDao<DBSubresourceDef> {
      * Returns the DBSubresourceDef or Optional.empty() if there is no SubresourceDef.
      *
      * @return the optional record for DBSubresourceDef
-     * @throws IllegalStateException if more than one DBSubresourceDef is returned
+     * @throws SMPRuntimeException if more than one DBSubresourceDef is returned
      */
     public Optional<DBSubresourceDef> getSubresourceDefByIdentifier(String resourceDeftIdentifier) {
         try {
@@ -72,8 +67,8 @@ public class SubresourceDefDao extends BaseDao<DBSubresourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.subresource.lookup.by.identifier.illegal.state.multiple.entries",
-                    Map.of("identifier", resourceDeftIdentifier)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_SUBRESOURCEDEF_LOOKUP_BY_IDENTIFIER_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceDeftIdentifier);
         }
     }
 
@@ -92,8 +87,8 @@ public class SubresourceDefDao extends BaseDao<DBSubresourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.subresource.lookup.by.url.illegal.state.multiple.entries",
-                    Map.of("urlSegment", resourceDeftUrlSegment)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_SUBRESOURCEDEF_LOOKUP_BY_URL_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.URL_SEGMENT, resourceDeftUrlSegment);
         }
     }
 

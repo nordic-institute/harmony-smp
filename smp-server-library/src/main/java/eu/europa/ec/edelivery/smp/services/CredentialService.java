@@ -34,7 +34,8 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -390,16 +391,14 @@ public class CredentialService {
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
         if (pattern != null && !pattern.matcher(newPassword).matches()) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because it does not match password policy!: [{}]", username);
-            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL,
-                    smpExceptionLanguageService.getMessageTranslation("error.unauthorized.user.change.invalid.new.credential",
-                            Map.of("validationMessage", configurationService.getPasswordPolicyValidationMessage())));
+            throw new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER_CHANGE_INVALID_NEW_CREDENTIAL)
+                    .addParam(ErrorMessageArgument.VALIDATION_MESSAGE, configurationService.getPasswordPolicyValidationMessage());
         }
 
         if (StringUtils.isNotBlank(dbCredential.getValue()) && BCrypt.checkpw(newPassword, dbCredential.getValue())) {
             LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", username);
-            throw new SMPRuntimeException(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL,
-                    smpExceptionLanguageService.getMessageTranslation("error.unauthorized.user.change.invalid.new.credential",
-                            Map.of("validationMessage", configurationService.getPasswordPolicyValidationMessage())));
+            throw new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER_CHANGE_INVALID_NEW_CREDENTIAL)
+                    .addParam(ErrorMessageArgument.VALIDATION_MESSAGE, configurationService.getPasswordPolicyValidationMessage());
         }
 
         OffsetDateTime now = OffsetDateTime.now();
@@ -481,7 +480,7 @@ public class CredentialService {
         DBUser dbUserToUpdate = userDao.find(userID);
         if (dbUserToUpdate == null) {
             LOG.error("Can not create user password credentials, because user [{}] does not exist!", userID);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.create.user.credentials");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_CREATE_USER_CREDENTIALS);
         }
         DBCredential credential = new DBCredential();
         credential.setUser(dbUserToUpdate);

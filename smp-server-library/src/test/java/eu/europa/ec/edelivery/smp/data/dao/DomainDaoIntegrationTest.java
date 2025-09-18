@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hamcrest.CoreMatchers;
@@ -79,7 +80,7 @@ class DomainDaoIntegrationTest extends AbstractBaseDao {
     @Test
     void getTheOnlyDomainNoDomain() {
         // execute
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testInstance.getTheOnlyDomain());
+        SMPRuntimeException exception = assertThrows(SMPRuntimeException.class, () -> testInstance.getTheOnlyDomain());
         assertEquals("No domain configured on SMP, at least one domain is mandatory!", exception.getMessage());
     }
 

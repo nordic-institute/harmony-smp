@@ -30,7 +30,7 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -228,7 +228,7 @@ public class DomainGroupGuard {
         String userInfo = user != null ? user.getUsername() : "anonymous";
         LOG.debug("Authorize check for user [{}], domain [{}] and action [{}]", userInfo, domain, action);
         if (action == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.is.user.authorized.for.resource");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_MISSING_ACTION);
         }
         return switch (action) {
             case READ -> canRead(user, domain);
@@ -335,7 +335,7 @@ public class DomainGroupGuard {
         String userInfo = EntityLoggingUtils.userDetailToString(user);
         LOG.debug("Authorize check for user [{}], group size [{}] and action [{}]", userInfo, groups.size(), action);
         if (action == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.is.user.authorized.for.group");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_MISSING_ACTION);
         }
         return switch (action) {
             case READ -> canRead(user, groups);

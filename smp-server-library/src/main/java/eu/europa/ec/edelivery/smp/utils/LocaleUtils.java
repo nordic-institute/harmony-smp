@@ -19,14 +19,12 @@
 package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Map;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.VALIDATION_ERROR;
 
 /**
  * Utility class for locale operations.
@@ -54,7 +52,8 @@ public class LocaleUtils {
             return DEFAULT_LOCALE;
         }
         if (locale.length() != 2) {
-            throw new SMPRuntimeException(VALIDATION_ERROR, "error.validation.locale", Map.of("locale", locale));
+            throw new SMPRuntimeException(ErrorMessageType.UI_VALIDATION_LOCALE)
+                    .addParam(ErrorMessageArgument.LOCALE, locale);
         }
         return locale;
     }

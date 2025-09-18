@@ -205,7 +205,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
 
         //then
         assertEquals("SML integration error! Error: [InternalErrorFault: something unexpected]",
-                smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode(), smpRuntimeException.getMessageArgs()));
+                smpRuntimeException.getMessage());
         verify(iManageServiceMetadataWS, times(1)).delete(anyString());
     }
 

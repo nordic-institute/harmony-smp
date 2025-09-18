@@ -31,7 +31,8 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.ui.SubresourceRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
@@ -43,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -92,14 +92,14 @@ public class UISubresourceService {
     public SubresourceRO deleteSubresourceFromResource(Long subResourceId, Long resourceId) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.delete.resource.not.exists");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_DELETE_RESOURCE_NOT_EXISTS);
         }
         DBSubresource subresource = subresourceDao.find(subResourceId);
         if (subresource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.delete.subresource.not.exists");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_DELETE_SUBRESOURCE_NOT_EXISTS);
         }
         if (!Objects.equals(subresource.getResource().getId(), resourceId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.delete.subresource.not.part.of.resource");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_DELETE_SUBRESOURCE_NOT_PART_OF_RESOURCE);
         }
         resource.getSubresources().remove(subresource);
         documentDao.unlinkDocument(subresource.getDocument());
@@ -112,13 +112,13 @@ public class UISubresourceService {
 
         DBResource resParent = resourceDao.find(resourceId);
         if (resParent == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.create.resource.not.exists");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_CREATE_RESOURCE_NOT_EXISTS);
         }
 
         Optional<DBSubresourceDef> optRedef = subresourceDefDao.getSubresourceDefByIdentifier(subResourceRO.getSubresourceTypeIdentifier());
-        if (!optRedef.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.create.subresource.not.exists",
-                    Map.of("identifier", subResourceRO.getSubresourceTypeIdentifier()));
+        if (optRedef.isEmpty()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_CREATE_SUBRESOURCE_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, subResourceRO.getSubresourceTypeIdentifier());
         }
         DBDomain domain = resParent.getDomainResourceDef().getDomain();
 
@@ -126,8 +126,9 @@ public class UISubresourceService {
                 subResourceRO.getIdentifierValue());
         Optional<DBSubresource> exists = subresourceDao.getSubResourcesForResource(docId, resParent);
         if (exists.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.subresource.create.subresource.already.exists",
-                    Map.of("identifier", docId.getValue(), "scheme", docId.getScheme()));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_CREATE_SUBRESOURCE_ALREADY_EXISTS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, docId.getValue())
+                    .addParam(ErrorMessageArgument.SCHEME, docId.getScheme());
         }
 
         DBSubresource subresource = new DBSubresource();

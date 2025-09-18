@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.services.spi;
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -153,7 +153,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
             // Marshal, generate, and sign the enveloped signature
             signature.sign(domSignContext);
         } catch (Exception e) {
-            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, "error.domisml.integration.xml.signing.response", e);
+            throw new SMPRuntimeException(ErrorMessageType.XML_RESPONSE_SIGNING, e);
         }
     }
 
@@ -166,7 +166,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
                     null,
                     null);
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, "error.domisml.integration.xml.signing.response", e);
+            throw new SMPRuntimeException(ErrorMessageType.XML_RESPONSE_SIGNING, e);
         }
     }
 

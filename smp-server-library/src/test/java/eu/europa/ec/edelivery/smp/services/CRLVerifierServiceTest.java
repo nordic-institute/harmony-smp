@@ -18,7 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.*;
-import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertThrowsContainingMessages;
 import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertThrowsMatchingRegexExpressions;
@@ -137,9 +137,10 @@ class CRLVerifierServiceTest {
     void verifyCertificateCRLsRevokedSerialTestThrowIOExceptionHttps() {
         String crlURL = "https://localhost/crl";
 
-        doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.download.issue",
-                Map.of("crlURL", crlURL, "error", "IOException: Cannot access URL")))
-            .when(testInstance).getCRLByURL("https://localhost/crl");
+        doThrow(new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_DOWNLOAD_ISSUE)
+                .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                .addParam(ErrorMessageArgument.ERROR, "IOException: Cannot access URL"))
+                .when(testInstance).getCRLByURL("https://localhost/crl");
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.verifyCertificateCRLs("11", "https://localhost/crl"));
         // then

@@ -23,7 +23,8 @@ import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.*;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -33,7 +34,6 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -66,8 +66,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_RESOURCE_ID, dbResource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
-                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme()));
+            LOG.error("Non unique document for resource with id [{}] ", dbResource.getId());
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -90,8 +92,13 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_SUBRESOURCE_ID, dbSubresource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
-                    Map.of("identifier", dbSubresource.getIdentifierValue(), "scheme", dbSubresource.getIdentifierScheme()));
+            LOG.error("Non unique document for subresource with id [{}] ", dbSubresource.getId());
+            DBResource dbResource = dbSubresource.getResource();
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource == null ? "" : dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource == null ? "" : dbResource.getIdentifierScheme())
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, dbSubresource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, dbSubresource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -105,8 +112,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_RESOURCE_ID, dbResource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, "error.resource.document.reading",
-                    Map.of("identifier", dbResource.getIdentifierValue(), "scheme", dbResource.getIdentifierScheme()));
+            LOG.error("Non unique current document version for resource with id [{}] ", dbResource.getId());
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -124,17 +133,20 @@ public class DocumentDao extends BaseDao<DBDocument> {
     }
 
 
-    public Optional<DBDocumentVersion> getCurrentDocumentVersionForSubresource(DBSubresource subresource) {
+    public Optional<DBDocumentVersion> getCurrentDocumentVersionForSubresource(DBSubresource dbSubresource) {
         try {
             // expected is only one domain,
             TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE, DBDocumentVersion.class);
-            query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
+            query.setParameter(PARAM_SUBRESOURCE_ID, dbSubresource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            DBResource resource = subresource.getResource();
-            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_ERROR, "error.subresource.document.reading",
-                    Map.of("documentIdentifier", subresource.getIdentifierValue(), "documentScheme", subresource.getIdentifierScheme(),
-                            "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme()));
+            LOG.error("Non unique current document version for subresource with id [{}] ", dbSubresource.getId());
+            DBResource dbResource = dbSubresource.getResource();
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource == null ? "" : dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource == null ? "" : dbResource.getIdentifierScheme())
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, dbSubresource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, dbSubresource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }

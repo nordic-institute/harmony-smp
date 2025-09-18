@@ -29,7 +29,8 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -47,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
@@ -117,8 +117,8 @@ public class ResourceResolverService {
         // if domain code matches first parameter skip it!
         if (Strings.CS.equals(currentParameter, domain.getDomainCode())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.first.match",
-                        Map.of("pathParams", join(pathParameters, ",")));
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_FIRST_MATCH)
+                        .addParam(ErrorMessageArgument.PATH_PARAMS, join(pathParameters, ","));
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
@@ -127,8 +127,8 @@ public class ResourceResolverService {
         locationVector.setResourceDef(resourceDef);
         if (Strings.CS.equals(currentParameter, resourceDef.getUrlSegment())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.first.two.matches")
-                        .addParam("pathParams", join(pathParameters, ","));
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_FIRST_MATCH)
+                        .addParam(ErrorMessageArgument.PATH_PARAMS,  join(pathParameters, ","));
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
@@ -141,9 +141,9 @@ public class ResourceResolverService {
             // the resource must be found because if action is not "create" action nor the last parameter to be resolved
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE
                     || pathParameters.size() > iParameterIndex + 1) {
-                throw new SMPRuntimeException(ErrorCode.SG_NOT_EXISTS, "error.service.group.not.exists")
-                        .addParam("identifier", resourceId.getValue())
-                        .addParam("scheme", resourceId.getScheme());
+                throw new SMPRuntimeException(ErrorMessageType.RESOURCE_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.IDENTIFIER, resourceId.getValue())
+                        .addParam(ErrorMessageArgument.SCHEME, resourceId.getScheme());
             }
 
             resource = createNewResource(resourceId, resourceDef, domain);
@@ -162,7 +162,7 @@ public class ResourceResolverService {
                         resourceRequest.getAction(),
                         getUsername(user),
                         resource.getGroup().getGroupName(), domain.getDomainCode());
-                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user");
+                throw new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER);
             }
         }
 
@@ -176,15 +176,15 @@ public class ResourceResolverService {
             if (resourceGuard.userIsNotAuthorizedForAction(user, resourceRequest.getAction(), resource, domain)) {
                 LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]",
                         getUsername(user), resourceRequest.getAction(), resource);
-                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user");
+                throw new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER);
             }
             return locationVector;
         }
 
         // resolve subresource - expected exactly two parameters
         if (pathParameters.size() != iParameterIndex + 2) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.first.remaining.matches")
-                    .addParam("pathParams", join(pathParameters, ","));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_FIRST_REMAINING_MATCHES)
+                    .addParam(ErrorMessageArgument.PATH_PARAMS, join(pathParameters, ","));
 
         }
         String subResourceDefUrl = pathParameters.get(iParameterIndex);
@@ -199,11 +199,11 @@ public class ResourceResolverService {
         LOG.debug("Got subresource [{}]", subresource);
         if (subresource == null) {
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
-                    throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, "error.service.metadata.not.exists")
-                        .addParam("identifier", resource.getIdentifierValue())
-                        .addParam("scheme", resource.getIdentifierScheme())
-                        .addParam("documentIdentifier", null)
-                        .addParam("documentScheme", null);
+                    throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                        .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme())
+                        .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, null)
+                        .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, null);
             }
             subresource = createNewSubResource(subResourceId, resource, subresourceDef);
         }
@@ -211,7 +211,7 @@ public class ResourceResolverService {
         if (!resourceGuard.userIsAuthorizedForAction(user, resourceRequest.getAction(), subresource)) {
             LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the subresource resource [{}]",
                     getUsername(user), resourceRequest.getAction(), subresource);
-            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user");
+            throw new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER);
         }
         locationVector.setSubresource(subresource);
         locationVector.setSubResourceDef(subresourceDef);
@@ -228,15 +228,15 @@ public class ResourceResolverService {
     public void validateRequestData(ResourceRequest resourceRequest) {
         List<String> pathParameters = resourceRequest.getUrlPathParameters();
         if (pathParameters == null || pathParameters.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.no.matches");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_NO_MATCHES);
         }
 
         if (pathParameters.size() > MAX_COUNT_COORDINATES) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.too.many.matches")
-                    .addParam("pathParams", join(pathParameters, ","));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_TOO_MANY_MATCHES)
+                    .addParam(ErrorMessageArgument.PATH_PARAMS, join(pathParameters, ","));
         }
         if (resourceRequest.getAuthorizedDomain() == null) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.resource.reading.unknown.domain");
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCE_READING_UNKNOWN_DOMAIN);
         }
     }
 
@@ -268,7 +268,7 @@ public class ResourceResolverService {
         // get single domain
         List<DBResourceDef> resourceDefs = resourceDefinitionDao.getAllResourceDefForDomain(domain);
         if (resourceDefs.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.no.resources");
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_NO_RESOURCES);
         }
 
         if (resourceDefs.size() == 1) {
@@ -283,9 +283,9 @@ public class ResourceResolverService {
                 LOG.debug("Located ResourceDef for domain [{}] by the http header [{}]", domain.getDomainCode(), headerParameter);
                 return optResDef.get();
             } else {
-                throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.no.resource.definition.for.domain")
-                        .addParam("headerParameter", headerParameter)
-                        .addParam("domainCode", domain.getDomainCode());
+                throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_NO_RESOURCE_DEFINITION_FOR_DOMAIN)
+                        .addParam(ErrorMessageArgument.HEADER_PARAMETER, headerParameter)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domain.getDomainCode());
             }
         }
         // find by path parameter
@@ -337,9 +337,9 @@ public class ResourceResolverService {
         List<DBGroup> adminListGroup =
                 groupDao.getGroupsByDomainUserIdAndGroupRoles(domain.getId(), user.getId(), MembershipRoleType.ADMIN);
         if (adminListGroup.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user.not.admin")
-                    .addParam("username", user.getUsername())
-                    .addParam("domainCode", domain.getDomainCode());
+            throw new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER_NOT_ADMIN)
+                    .addParam(ErrorMessageArgument.USERNAME, user.getUsername())
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain.getDomainCode());
         }
         if (domainGroup == null) {
             LOG.debug("Set first/default group [{}] for domain [{}]", adminListGroup.get(0).getGroupName(),
@@ -350,10 +350,10 @@ public class ResourceResolverService {
                 .stream()
                 .filter(group -> Strings.CI.equals(group.getGroupName(), domainGroup))
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED, "error.unauthorized.user.for.group")
-                        .addParam("username", user.getUsername())
-                        .addParam("domainGroup", domainGroup)
-                        .addParam("domainCode", domain.getDomainCode()));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER_FOR_GROUP)
+                        .addParam(ErrorMessageArgument.USERNAME, user.getUsername())
+                        .addParam(ErrorMessageArgument.DOMAIN_GROUP, domainGroup)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domain.getDomainCode()));
     }
 
     /**
@@ -399,8 +399,9 @@ public class ResourceResolverService {
         return resourceDef.getSubresources()
                 .stream()
                 .filter(subresourceDef -> Strings.CS.equals(subresourceDef.getUrlSegment(), urlPathSegment))
-                .findFirst().orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.http.request.uri.variables.resource.subresource.match")
-                        .addParam("urlSegment", urlPathSegment).addParam("resource", resourceDef.getName()));
+                .findFirst().orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_SUBRESOURCE_MATCH)
+                        .addParam(ErrorMessageArgument.URL_SEGMENT, urlPathSegment)
+                        .addParam(ErrorMessageArgument.RESOURCE, resourceDef.getName()));
     }
 
     public String getUsername(UserDetails user) {

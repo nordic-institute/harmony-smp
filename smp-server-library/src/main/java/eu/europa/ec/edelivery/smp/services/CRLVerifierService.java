@@ -20,7 +20,8 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -157,14 +158,17 @@ public class CRLVerifierService implements ICRLVerifierService {
                 crl = (X509CRL) cf.generateCRL(crlStream);
             }
         } catch (IOException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.cannot.download", e,
-                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(e)));
+            exception = new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_CANNOT_DOWNLOAD, e)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         } catch (CertificateException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.not.supported", e,
-                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(e)));
+            exception = new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_NOT_SUPPORTED, e)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         } catch (CRLException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.cannot.read", e,
-                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(e)));
+            exception = new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_CANNOT_READ, e)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         } catch (SMPRuntimeException exc) {
             exception = exc;
         }
@@ -202,8 +206,9 @@ public class CRLVerifierService implements ICRLVerifierService {
             }
             return inputStream;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.crl.download.issue",
-                    Map.of("crlURL", crlURL, "error", ExceptionUtils.getRootCauseMessage(exc)));
+            throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_DOWNLOAD_ISSUE, exc)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(exc));
         }
     }
 

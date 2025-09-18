@@ -24,6 +24,8 @@ import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -35,11 +37,9 @@ import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SML_MANAGE_MAX_COUNT;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SML_INTEGRATION_EXCEPTION;
 
 
 /**
@@ -162,13 +162,14 @@ public class DomainSMLIntegrationService {
         DBDomain dbDomain = domainDao.find(domainId);
 
         if (dbDomain.getSmlClientKeyChangeAlias() != null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certificate.already.prepared.for.change",
-                    Map.of("smlClientKeyChangeAlias", dbDomain.getSmlClientKeyChangeAlias(), "domainCode", dbDomain.getDomainCode()));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION_CERTIFICATE_ALREADY_PREPARED_FOR_CHANGE)
+                    .addParam(ErrorMessageArgument.SML_CLIENT_KEY_CHANGE_ALIAS, dbDomain.getSmlClientKeyChangeAlias())
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, dbDomain.getDomainCode());
         }
 
         if (migrationDateTime.isBefore(OffsetDateTime.now())) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certificate.migration.date.not.future",
-                    Map.of("migrationDate", migrationDateTime));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION_CERTIFICATE_MIGRATION_DATE_NOT_FUTURE)
+                    .addParam(ErrorMessageArgument.MIGRATION_DATE, migrationDateTime);
         }
 
         dbDomain.setSmlClientKeyChangeAlias(certificateAlias);
@@ -184,13 +185,13 @@ public class DomainSMLIntegrationService {
         DBDomain dbDomain = domainDao.find(domainId);
 
         if (dbDomain.getSmlClientKeyChangeAlias() == null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certificate.change.not.prepared",
-                    Map.of("domainCode", dbDomain.getDomainCode()));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION_CERTIFICATE_CHANGE_NOT_PREPARED)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, dbDomain.getDomainCode());
         }
 
         if (dbDomain.getSmlClientKeyChangeDate() == null) {
-            throw new SMPRuntimeException(SML_INTEGRATION_EXCEPTION, "error.domisml.integration.certoificate.migration.date.undefined",
-                    Map.of("domainCode", dbDomain.getDomainCode()));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION_CERTOIFICATE_MIGRATION_DATE_UNDEFINED)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, dbDomain.getDomainCode());
         }
 
         String preparedCertificateAlias = dbDomain.getSmlClientKeyChangeAlias();

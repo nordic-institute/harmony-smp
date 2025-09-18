@@ -22,16 +22,18 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -100,8 +102,9 @@ public class GroupDao extends BaseDao<DBGroup> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation(
-                    "error.domain.illegal.state.multiple.group.entries", Map.of("groupName", name, "domainId", domainId)));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_ILLEGAL_STATE_MULTIPLE_GROUP_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOMAIN_ID, domainId)
+                    .addParam(ErrorMessageArgument.GROUP_NAME, name);
         }
     }
 
@@ -123,8 +126,8 @@ public class GroupDao extends BaseDao<DBGroup> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation(
-                    "error.domain.illegal.state.multiple.entries", Map.of("domain", domainCode)));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
     }
 
