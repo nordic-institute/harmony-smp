@@ -58,8 +58,9 @@ public class DBDomainToDomainROConverter implements Converter<DBDomain, DomainRO
             BeanUtils.copyProperties(target, source);
             Long memberCount = domainMemberDao.getDomainMemberCount(source.getId(), null, MembershipRoleType.ADMIN);
             target.setAdminMemberCount(memberCount);
+            target.setSmlAppendDomainCode(source.isSmlAppendDomainCode());
 
-            List<String> domainDocuments = source.getDomainResourceDefs().stream().map(dbDomainResourceDef -> dbDomainResourceDef.getResourceDef().getIdentifier()).collect(Collectors.toList());
+            List<String> domainDocuments = source.getDomainResourceDefs().stream().map(dbDomainResourceDef -> dbDomainResourceDef.getResourceDef().getIdentifier()).toList();
             target.getResourceDefinitions().addAll(domainDocuments);
             target.setDomainId(SessionSecurityUtils.encryptedEntityId(source.getId()));
         } catch (IllegalAccessException | InvocationTargetException e) {

@@ -63,6 +63,11 @@
         {{ "domain.sml.integration.panel.label.smp.id.already.exists" | translate }}
       </div>
     </mat-form-field>
+    <mat-slide-toggle style="width:100%"
+                      formControlName="smlAppendDomainCode"
+                      id="smlAppendDomainCode_id">
+      {{ "domain.sml.integration.panel.label.append.domain.code.to.smp.url" | translate }}
+    </mat-slide-toggle>
 
     <mat-form-field style="width:100%"
                     matTooltip="{{ 'domain.sml.integration.panel.tooltip.smp.client.certificate.alias' | translate }}">
@@ -77,9 +82,7 @@
 
       </select>
     </mat-form-field>
-
     <mat-slide-toggle style="width:100%"
-                      mat-no-ink class="mat-primary"
                       formControlName="smlClientCertAuth"
                       id="smlClientCertHeaderAuth_id">
       {{ "domain.sml.integration.panel.label.sml.client.certificate.toggle" | translate }}

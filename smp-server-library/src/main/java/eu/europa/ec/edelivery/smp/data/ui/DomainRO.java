@@ -37,6 +37,7 @@ public class DomainRO extends BaseRO {
     private String domainCode;
     private String smlSubdomain;
     private String smlSmpId;
+    boolean smlAppendDomainCode;
     private String smlClientKeyAlias;
     private String signatureKeyAlias;
     private boolean smlClientCertAuth;
@@ -77,6 +78,14 @@ public class DomainRO extends BaseRO {
 
     public void setSmlSmpId(String smlSmpId) {
         this.smlSmpId = smlSmpId;
+    }
+
+    public boolean isSmlAppendDomainCode() {
+        return smlAppendDomainCode;
+    }
+
+    public void setSmlAppendDomainCode(boolean smlAppendDomainCode) {
+        this.smlAppendDomainCode = smlAppendDomainCode;
     }
 
     public String getSmlClientKeyAlias() {

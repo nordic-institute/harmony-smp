@@ -425,6 +425,7 @@
         SIGNATURE_ALGORITHM varchar2(256 char),
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
+        SML_APPEND_DOMAIN_CODE number(1,0) check (SML_APPEND_DOMAIN_CODE in (0,1)),
         SML_CLIENT_CERT_AUTH number(1,0) not null check (SML_CLIENT_CERT_AUTH in (0,1)),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
@@ -453,6 +454,9 @@
 
     comment on column SMP_DOMAIN.SIGNATURE_KEY_ALIAS is
         'Signature key alias used for SML integration';
+
+    comment on column SMP_DOMAIN.SML_APPEND_DOMAIN_CODE is
+        'Append the domain code to SMP url when registering the SMP entry';
 
     comment on column SMP_DOMAIN.SML_CLIENT_CERT_AUTH is
         'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)';
@@ -489,6 +493,7 @@
         SIGNATURE_ALGORITHM varchar2(256 char),
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
+        SML_APPEND_DOMAIN_CODE number(1,0) check (SML_APPEND_DOMAIN_CODE in (0,1)),
         SML_CLIENT_CERT_AUTH number(1,0) check (SML_CLIENT_CERT_AUTH in (0,1)),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),

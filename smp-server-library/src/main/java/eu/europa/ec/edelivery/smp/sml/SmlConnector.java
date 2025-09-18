@@ -36,6 +36,7 @@ import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.configuration.security.CertificateConstraintsType;
@@ -230,17 +231,17 @@ public class SmlConnector implements ApplicationContextAware {
      */
     public boolean registerDomain(DBDomain domain) {
         if (!configurationService.isSMLIntegrationEnabled()) {
+            LOG.info("Can not registering new Domain [{}] to SML because integration is disabled!", domain);
             return false;
         }
-        String smlSmpId = domain.getSmlSmpId();
-        LOG.info("Registering new Domain to SML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), smlSmpId);
+        LOG.info("Registering new Domain [{}] to SML", domain);
         try {
-            ServiceMetadataPublisherServiceType smlSmpRequest = getServiceMetadataPublisherServiceType(smlSmpId);
+            ServiceMetadataPublisherServiceType smlSmpRequest = createServiceMetadataPublisherServiceType(domain);
             getSMPManagerWSClient(domain).create(smlSmpRequest);
         } catch (BadRequestFault e) {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
-            LOG.error(e.getClass().getName() + e.getMessage(), e);
+            LOG.error("Domain registration failed with Error class type [{}] and message [{}]", e.getClass().getName(), ExceptionUtils.getRootCauseMessage(e));
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, "error.domisml.integration", e,
                     Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
         }
@@ -258,10 +259,9 @@ public class SmlConnector implements ApplicationContextAware {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
-        String smlSmpId = domain.getSmlSmpId();
-        LOG.info("Validating Domain to SML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), smlSmpId);
+        LOG.info("Validating Domain [{}] on SML", domain);
         try {
-            ServiceMetadataPublisherServiceType smlSmpRequest = getServiceMetadataPublisherServiceType(smlSmpId);
+            ServiceMetadataPublisherServiceType smlSmpRequest = createServiceMetadataPublisherServiceType(domain);
             getSMPManagerWSClient(domain).read(smlSmpRequest);
         } catch (BadRequestFault | NotFoundFault e) {
             processSMLErrorMessage(e, domain);
@@ -274,9 +274,14 @@ public class SmlConnector implements ApplicationContextAware {
         return true;
     }
 
-    private ServiceMetadataPublisherServiceType getServiceMetadataPublisherServiceType(String smlSmpId) {
+    protected ServiceMetadataPublisherServiceType createServiceMetadataPublisherServiceType(DBDomain domain) {
         String smpLogicalAddress = configurationService.getSMLIntegrationSMPLogicalAddress();
         String smpPhysicalAddress = configurationService.getSMLIntegrationSMPPhysicalAddress();
+
+        String smlSmpId = domain.getSmlSmpId();
+        if (domain.isSmlAppendDomainCode()) {
+            smpLogicalAddress =  Strings.CS.appendIfMissing(smpLogicalAddress , "/") + domain.getDomainCode();
+        }
 
         ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
         smlSmpRequest.setPublisherEndpoint(new PublisherEndpointType());

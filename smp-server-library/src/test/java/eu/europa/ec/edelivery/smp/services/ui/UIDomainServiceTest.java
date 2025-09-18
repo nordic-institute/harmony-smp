@@ -26,10 +26,13 @@ import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -75,23 +78,34 @@ class UIDomainServiceTest extends AbstractServiceTest {
         assertEquals(domainRO.getDefaultResourceTypeIdentifier(), result.getDefaultResourceTypeIdentifier());
     }
 
-    @Test
-    void updateSMLDomainData() {
+    @ParameterizedTest
+    @CsvSource({
+            "'Subdomain1', 'SmpId1', 'Alias1', true, true",
+            "'Subdomain2', 'SmpId2', 'Alias2', false, false",
+            "'Subdomain3', 'SmpId3', 'Alias3', true, false",
+            "'Subdomain4', 'SmpId4', 'Alias4', false, true"
+    })
+    void updateSMLDomainData(String smlSubdomain, String smlSmpId, String clientKeyAlias, boolean clientCertAuth, boolean appendDomainCode) {
+
         DomainRO domainRO = new DomainRO();
-        domainRO.setSmlSubdomain("New SmlSubdomain");
-        domainRO.setSmlSmpId("NewSmlSmpId");
-        domainRO.setSmlClientKeyAlias("NewClientKeyAlias");
-        domainRO.setSmlClientCertAuth(false);
+        domainRO.setSmlSubdomain(smlSubdomain);
+        domainRO.setSmlSmpId(smlSmpId);
+        domainRO.setSmlClientKeyAlias(clientKeyAlias);
+        domainRO.setSmlClientCertAuth(clientCertAuth);
+        domainRO.setSmlAppendDomainCode(appendDomainCode);
         DBDomain domain = testUtilsDao.getD1();
 
         testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO);
 
         DBDomain result = domainDao.find(domain.getId());
-        assertEquals(domainRO.getSmlSubdomain(), result.getSmlSubdomain());
-        assertEquals(domainRO.getSmlSmpId(), result.getSmlSmpId());
-        assertEquals(domainRO.getSmlClientKeyAlias(), result.getSmlClientKeyAlias());
-        assertEquals(domainRO.isSmlClientCertAuth(), result.isSmlClientCertAuth());
+        assertEquals(smlSubdomain, result.getSmlSubdomain());
+        assertEquals(smlSmpId, result.getSmlSmpId());
+        assertEquals(clientKeyAlias, result.getSmlClientKeyAlias());
+        assertEquals(clientCertAuth, result.isSmlClientCertAuth());
+        assertEquals(appendDomainCode, result.isSmlAppendDomainCode());
     }
+
+
 
     @Test
     void updateSMLDomainData_domainNotFound() {
@@ -125,6 +139,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
         domainRO.setSmlClientCertAuth(domain.isSmlClientCertAuth());
 
         Mockito.doReturn(false).when(smlIntegrationService).isDomainValid(domain);
+        Mockito.doReturn(true).when(smlIntegrationService).isSMLIntegrationEnabled();
 
         BadRequestException result = assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
@@ -182,9 +197,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
 
         List<DomainPropertyRO> domainROListUpdated2 = testInstance.getDomainProperties(domain.getId());
         assertEquals(SMPDomainPropertyEnum.values().length, domainROListUpdated2.size());
-        domainROListUpdated.forEach(dpr -> {
-            assertEquals(newValue, dpr.getValue());
-        });
+        domainROListUpdated.forEach(dpr -> assertEquals(newValue, dpr.getValue()));
     }
 
     @Test

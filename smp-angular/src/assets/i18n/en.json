@@ -682,6 +682,7 @@
   "domain.sml.integration.panel.label.sml.domain.mandatory": "SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit nor a hyphen and should not end with a hyphen.",
   "domain.sml.integration.panel.label.sml.subdomain.already.exists": "The SML subdomain is already defined!",
   "domain.sml.integration.panel.label.sml.domain.change.date.not.future": "The SML certificate migration date should be in the future!",
+  "domain.sml.integration.panel.label.append.domain.code.to.smp.url": "Append domain code to SMP URL",
   "domain.sml.integration.panel.register.confirmation.dialog.description": "Action will register domain: [{{domainCode}}] and all its resources to SML.<br/><br/>Do you wish to continue?",
   "domain.sml.integration.panel.register.confirmation.dialog.title": "Register domain to SML",
   "domain.sml.integration.panel.error.register": "Error occurred while registering domain: {{domainCode}}",
