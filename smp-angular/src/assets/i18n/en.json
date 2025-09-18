@@ -1212,8 +1212,8 @@
   "error.configuration.empty.keystore": "Configuration error: could not retrieve key [{{alias}}] from empty keystore: [{{keystoreFile}}]!",
   "error.configuration.missing.keypair.or.wrong.alias": "Configuration error: wrong configuration, missing key pair from keystore or wrong alias [{{alias}}]!",
 
-  "error.validation.payload.payload.starts.with.e": "This is invalid payload starting with E",
-  "error.validation.payload.cannot.read.payload": "Cannot read payload",
+  "error.validation.payload.starts.with.e": "This is invalid payload starting with E",
+  "error.validation.payload.cannot.read": "Cannot read payload",
   "error.validation.locale": "Invalid locale [{{locale}}]",
 
   "error.ui.smp.runtime.exception": "Unexpected runtime error occurred.",
