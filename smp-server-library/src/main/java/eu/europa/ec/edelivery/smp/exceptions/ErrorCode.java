@@ -71,6 +71,8 @@ public enum ErrorCode {
     RESOURCE_DOCUMENT_ERROR(500,"SMP:181", ErrorBusinessCode.TECHNICAL),
     SUBRESOURCE_DOCUMENT_MISSING(500,"SMP:182", ErrorBusinessCode.TECHNICAL),
     SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183", ErrorBusinessCode.TECHNICAL),
+
+    VALIDATION_ERROR(500,"SMP:184", ErrorBusinessCode.FORMAT_ERROR),
     ;
 
     private final int httpCode;

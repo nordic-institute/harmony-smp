@@ -52,11 +52,11 @@ public class ExamplePayloadValidatorSpiImpl implements PayloadValidatorSpi {
                 int firstChar = payload.read();
                 // For the test if payload starts with an E throws and error
                 if (firstChar == (int)'E') {
-                    throw new PayloadValidatorSpiException("error.payload.validation.payload.starts.with.e");
+                    throw new PayloadValidatorSpiException("error.validation.payload.starts.with.e");
                 }
             }
         } catch (IOException e) {
-            throw new PayloadValidatorSpiException("error.payload.validation.cannot.read.payload", e);
+            throw new PayloadValidatorSpiException("error.validation.payload.cannot.read", e);
         }
     }
 }

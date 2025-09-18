@@ -18,7 +18,6 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
@@ -33,10 +32,12 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -57,7 +58,6 @@ import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertDateEq
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-
 /**
  * Purpose of class is to test ServiceGroupService base methods
  *
@@ -75,6 +75,9 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
     @Autowired
     protected CredentialDao credentialDao;
+
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     protected void insertDataObjects(int size) {
         for (int i = 0; i < size; i++) {
@@ -388,6 +391,7 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         //MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
     }
 
+
     @Test
     void testUpdateUserProfile() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
@@ -399,7 +403,6 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         userRO.setEmailAddress(UUID.randomUUID().toString());
         userRO.setFullName(UUID.randomUUID().toString());
         userRO.setSmpTheme(UUID.randomUUID().toString());
-        userRO.setSmpLocale(UUID.randomUUID().toString());
 
         testInstance.updateUserProfile(user.getId(), userRO);
 
@@ -415,6 +418,23 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         assertEquals(userRO.getEmailAddress(), changedUser.getEmailAddress());
         assertEquals(userRO.getFullName(), changedUser.getFullName());
     }
+
+    @Test
+    void testUpdateUserProfile_throwsExceptionForInvalidLocale() {
+        String locale =UUID.randomUUID().toString();
+
+        DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
+        userDao.persistFlushDetach(user);
+
+        UserRO userRO = new UserRO();
+        userRO.setSmpLocale(locale);
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.updateUserProfile(user.getId(), userRO));
+
+        Assertions.assertEquals("Invalid locale [" + locale + "]",
+                smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()));
+    }
+
 
     @Test
     void testGetUserCredentials() {
