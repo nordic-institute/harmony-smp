@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- the soap ui specific dependencies -->
-        <plugin.soapui-maven-plugin.version>5.9.0</plugin.soapui-maven-plugin.version>
+        <plugin.soapui-maven-plugin.version>5.9.1</plugin.soapui-maven-plugin.version>
         <plugin.maven-compiler-plugin.version>3.14.0</plugin.maven-compiler-plugin.version>
         <plugin.dependency-check-maven.version>9.2.0</plugin.dependency-check-maven.version>
 

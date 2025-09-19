@@ -28,6 +28,7 @@
    CVE-2016-1000027 - The data serialized by the application are from authenticated users and trusted
    CVE-2025-41234 - The application does not set a “Content-Disposition” response header and filenames are not derived from user-supplied input.
    CVE-2025-41242 - SMP does not server static resources with Spring resource handling.
+   CVE-2024-38820: see below the spring-*-5.3.39.jar for the same issue explanation
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
@@ -35,6 +36,7 @@
         <cve>CVE-2024-38828</cve>
         <vulnerabilityName>CVE-2025-41234</vulnerabilityName>
         <vulnerabilityName>CVE-2025-41242</vulnerabilityName>
+        <vulnerabilityName>CVE-2025-41249</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -42,10 +44,10 @@
    The data serialized by the application are from authenticated users and trusted
    NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
    - CVE-2024-38820: see below the spring-*-5.3.39.jar for the same issue explanation
+   - CVE-2025-41249 - The application does not use volnerable functionality @EnableMethodSecurity .
    ]]></notes>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2024-38820</cve>
-
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -145,5 +147,14 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf-.*@.*$</packageUrl>
         <cve>CVE-2025-48913</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: @angular/platform-server:18.2.9
+
+   ]]></notes>
+        <packageUrl regex="true">^pkg:npm/%40angular%2Fplatform-server@.*$</packageUrl>
+        <vulnerabilityName>GHSA-68x2-mx4q-78m7</vulnerabilityName>
     </suppress>
 </suppressions>
