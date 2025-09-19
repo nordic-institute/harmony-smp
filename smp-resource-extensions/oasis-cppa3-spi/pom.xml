@@ -24,7 +24,7 @@
         <sonar.skip>true</sonar.skip>
         <maven.deploy.skip>false</maven.deploy.skip>
         <org.glassfish.jaxb.jaxb-runtime.version>4.0.5</org.glassfish.jaxb.jaxb-runtime.version>
-        <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
+        <jakarta.xml.bind-api.version>4.0.4</jakarta.xml.bind-api.version>
     </properties>
     <artifactId>oasis-cppa3-spi</artifactId>
     <name>oasis-cppa3-spi</name>
