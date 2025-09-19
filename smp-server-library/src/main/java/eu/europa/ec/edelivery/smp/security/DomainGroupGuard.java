@@ -148,8 +148,9 @@ public class DomainGroupGuard {
 
             X509Certificate x509Certificate = certificatePrincipal.getCertificate();
             if (x509Certificate == null) {
-                LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate is [null] for principal [{}] on domain [{}]", principal, domain.getDomainCode());
-                return false;
+                LOG.warn(SMPLogger.SECURITY_MARKER, "Using Client-Cert [{}] authentication can not validate if Client-Cert is authrorized on domain [{}]",
+                        certificatePrincipal.getSubjectOriginalDN(), domain.getDomainCode());
+                return true;
             }
             // check if certificate is in the domain truststore
             if (!isCertificateAuthorizedForDomain(domain, x509Certificate)) {
