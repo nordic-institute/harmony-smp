@@ -24,6 +24,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.mail.prop.DocumentActionProperties;
 import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
@@ -40,6 +41,8 @@ import java.util.Map;
 
 
 /**
+ * Service for sending document related mails notificastions on Create, delete, review actions etc.
+ *
  * @author Joze Rihtarsic
  * @since 5.2
  */
@@ -58,6 +61,9 @@ public class DocumentMailService {
     }
 
     public void sendDocumentActionNotification(DBResource resource, DBSubresource dbSubresource, MailDocumentActionType actionType, int version, String documentName, SMPUserDetails user) {
+        if (!configurationService.isMailSendingConfigurationComplete()) {
+            LOG.warn("Sending mail notification for document action [{}] for resource [{}]  and subresource [{}] is suppressed. SMTP is not configured", actionType, resource, dbSubresource);
+        }
 
         List<DBUser> recipients;
         if (resource.isReviewEnabled()) {
@@ -72,6 +78,10 @@ public class DocumentMailService {
     }
 
     public void sendDocumentActionNotification(DBResource resource, DBSubresource dbSubresource, MailDocumentActionType actionType, int version, String documentName, SMPUserDetails user, List<DBUser> recipients) {
+        if (!configurationService.isMailSendingConfigurationComplete()) {
+            LOG.warn("Sending mail notification for document action [{}] for resource [{}]  and subresource [{}] is suppressed. SMTP is not configured", actionType, resource, dbSubresource);
+        }
+
         if (user == null || user.getUser() == null) {
             LOG.warn("Unknown user, cannot send resource publish notification for resource [{}]", resource);
             return;
@@ -98,13 +108,24 @@ public class DocumentMailService {
         OffsetDateTime now = OffsetDateTime.now();
         AlertTypeEnum alertType = getAlertType(dbSubresource != null, actionType);
         for (DBUser mailRecipients : recipients) {
+            String mailTo = mailRecipients.getEmailAddress();
+            if (StringUtils.isBlank(mailTo)) {
+                LOG.warn("Can not send mail (empty mail) for document action [{}] to user [{}]!", actionType, mailRecipients.getUsername());
+                continue;
+            }
+
             data.put(MailDataModel.CommonProperties.CURRENT_DATETIME.name(), DateTimeUtils.formatOffsetDateTimeWithLocal(now, mailRecipients.getSmpLocale()));
             MailDataModel mailDataModel = new MailDataModel(mailRecipients.getSmpLocale(),
                     alertType,
                     data);
 
             // send mails to all resource admins
-            mailService.sendMail(mailDataModel, configurationService.getAlertEmailFrom(), mailRecipients.getEmailAddress());
+            try {
+                mailService.sendMail(mailDataModel, configurationService.getAlertEmailFrom(), mailTo);
+            } catch (SMPRuntimeException ex) {
+                LOG.error("Cannot send mail for document action [{}] to user [{}]!", actionType, mailRecipients.getUsername(), ex);
+            }
+
         }
     }
 
