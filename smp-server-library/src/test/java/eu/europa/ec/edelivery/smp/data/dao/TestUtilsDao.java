@@ -314,7 +314,7 @@ public class TestUtilsDao {
     @Transactional
     public void deactivateUser(String username) {
         Optional<DBUser> userOpt = userDao.findUserByUsername(username);
-        if (!userOpt.isPresent()) {
+        if (userOpt.isEmpty()) {
             LOG.warn("User [{}] not found and cannot be deactivated!", username);
             return;
         }
@@ -363,7 +363,7 @@ public class TestUtilsDao {
         createUsers();
         createResources();
         resourceMemberU1R1_D2G1RD1_Admin = createResourceMembership(MembershipRoleType.ADMIN, user1, resourceD1G1RD1);
-        resourceMemberU1R2_D2G1RD1_Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceD2G1RD1);
+        resourceMemberU1R2_D2G1RD1_Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceD2G1RD1, true);
     }
 
     @Transactional
@@ -504,6 +504,7 @@ public class TestUtilsDao {
 
         resourceD2G1RD1.setGroup(groupD2G1);
         resourceD2G1RD1.setDomainResourceDef(domainResourceDefD2R1);
+        resourceD2G1RD1.setReviewEnabled(true);
 
         persistFlushDetach(resourceD1G1RD1);
         persistFlushDetach(resourceD2G1RD1);

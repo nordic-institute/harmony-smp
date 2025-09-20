@@ -36,7 +36,10 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
+import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
+import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -64,12 +67,14 @@ public class UISubresourceService {
     private final DocumentVersionService documentVersionService;
     private final UIDocumentService uiDocumentService;
     private final ConversionService conversionService;
+    private final DocumentMailService documentMailService;
 
     public UISubresourceService(SubresourceDao subresourceDao, ResourceDao resourceDao, SubresourceDefDao subresourceDefDao, IdentifierService identifierService,
                                 DocumentDao documentDao,
                                 ConversionService conversionService,
                                 DocumentVersionService documentVersionService,
-                                UIDocumentService uiDocumentService
+                                UIDocumentService uiDocumentService,
+                                DocumentMailService documentMailService
     ) {
         this.subresourceDao = subresourceDao;
         this.resourceDao = resourceDao;
@@ -79,6 +84,7 @@ public class UISubresourceService {
         this.conversionService = conversionService;
         this.documentVersionService = documentVersionService;
         this.uiDocumentService = uiDocumentService;
+        this.documentMailService = documentMailService;
     }
 
 
@@ -104,6 +110,10 @@ public class UISubresourceService {
         resource.getSubresources().remove(subresource);
         documentDao.unlinkDocument(subresource.getDocument());
         subresourceDao.remove(subresource);
+        documentMailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.DELETED,
+                subresource.getDocument().getCurrentVersion(),
+                subresource.getDocument().getName(), SessionSecurityUtils.getSessionUserDetails());
+
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
@@ -140,6 +150,11 @@ public class UISubresourceService {
         subresource.setDocument(document);
         subresourceDao.persist(subresource);
         // create first member as admin user
+
+        documentMailService.sendDocumentActionNotification(resParent, subresource, MailDocumentActionType.CREATED,
+                document.getCurrentVersion(),
+                document.getName(), SessionSecurityUtils.getSessionUserDetails());
+
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 

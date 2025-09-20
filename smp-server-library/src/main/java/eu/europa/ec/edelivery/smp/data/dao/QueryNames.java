@@ -153,11 +153,11 @@ public class QueryNames {
     public static final String QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_COUNT = "DBGroupMember.getByUserAndDomainGroupsCount";
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS = "DBGroupMember.getByUserAndGroups";
 
-    public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCES = "DBResourceMember.getByUserAndResources";
     public static final String QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT = "DBGroupMember.getByUserAndDomainGroupsAndRoleCount";
 
     public static final String QUERY_USER_BY_CI_USERNAME = "DBUser.getUserByUsernameInsensitive";
     public static final String QUERY_USER_BY_APPLICATION_ROLES = "DBUser.getUserByApplicationRoles";
+    public static final String QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION = "DBUser.getUserByResourceAmdRoleOrReviewPermission";
 
     public static final String QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCredentialNameTypeTarget";
     public static final String QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCaseInsensitiveCredentialNameTypeTarget";

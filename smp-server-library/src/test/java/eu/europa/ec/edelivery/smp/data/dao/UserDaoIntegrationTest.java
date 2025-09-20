@@ -168,6 +168,8 @@ class UserDaoIntegrationTest extends AbstractBaseDao {
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
     }
 
+
+
     @Test
     @Transactional
     void findUsernameUserByIdentifier() {

@@ -43,7 +43,10 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
+import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
+import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -79,6 +82,7 @@ public class UIResourceService {
     private final SMLIntegrationService smlIntegrationService;
     private final UIDocumentService uiDocumentService;
     private final DocumentVersionService documentVersionService;
+    private final DocumentMailService documentMailService;
 
 
     public UIResourceService(ResourceDao resourceDao,
@@ -89,7 +93,9 @@ public class UIResourceService {
                              IdentifierService identifierService,
                              ConversionService conversionService,
                              SMLIntegrationService smlIntegrationService,
-                             UIDocumentService uiDocumentService, DocumentVersionService documentVersionService) {
+                             UIDocumentService uiDocumentService,
+                             DocumentVersionService documentVersionService,
+                             DocumentMailService documentMailService) {
         this.resourceDao = resourceDao;
         this.resourceMemberDao = resourceMemberDao;
         this.resourceDefDao = resourceDefDao;
@@ -102,6 +108,7 @@ public class UIResourceService {
         this.smlIntegrationService = smlIntegrationService;
         this.uiDocumentService = uiDocumentService;
         this.documentVersionService = documentVersionService;
+        this.documentMailService = documentMailService;
     }
 
 
@@ -193,7 +200,11 @@ public class UIResourceService {
         // remove all documents where resource is used as reference
         documentDao.unlinkDocument(resource.getDocument());
 
+        List<DBUser> resourceAdmins = userDao.getResourceAdminUsers(resource);
         resourceDao.remove(resource);
+        documentMailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.DELETED,
+                resource.getDocument().getCurrentVersion(),
+                resource.getDocument().getName(), SessionSecurityUtils.getSessionUserDetails(), resourceAdmins);
         return conversionService.convert(resource, ResourceRO.class);
     }
 
@@ -263,6 +274,10 @@ public class UIResourceService {
                 resourceDomain.isSmlRegistered()) {
             smlIntegrationService.registerParticipant(resource, resourceDomain);
         }
+
+        documentMailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.CREATED,
+                document.getCurrentVersion(),
+                document.getName(), SessionSecurityUtils.getSessionUserDetails());
 
         return conversionService.convert(resource, ResourceRO.class);
     }

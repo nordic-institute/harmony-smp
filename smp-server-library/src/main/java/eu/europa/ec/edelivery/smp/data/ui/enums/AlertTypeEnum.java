@@ -38,6 +38,12 @@ public enum AlertTypeEnum {
     USER_CREATED("user_created"),
     USER_UPDATED("user_updated"),
     USER_CREATED_EU_LOGIN("user_created_eu_login"),
+
+    RESOURCE_DOCUMENT_ACTION("resource_document_action"),
+    SUBRESOURCE_DOCUMENT_ACTION("subresource_document_action"),
+
+    RESOURCE_DOCUMENT_REVIEW_ACTION("resource_document_review_action"),
+    SUBRESOURCE_DOCUMENT_REVIEW_ACTION("subresource_document_review_action"),
     ;
 
     private final String template;

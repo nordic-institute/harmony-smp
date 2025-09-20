@@ -35,6 +35,8 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
+import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiResponseData;
@@ -76,19 +78,22 @@ public class UIDocumentService {
     final ResourceHandlerService resourceHandlerService;
     final DocumentVersionService documentVersionService;
     final ConversionService conversionService;
+    final DocumentMailService mailService;
 
     public UIDocumentService(ResourceDao resourceDao,
                              SubresourceDao subresourceDao,
                              DocumentDao documentDao,
                              ResourceHandlerService resourceHandlerService,
                              DocumentVersionService documentVersionService,
-                             ConversionService conversionService) {
+                             ConversionService conversionService,
+                             DocumentMailService mailService) {
         this.resourceDao = resourceDao;
         this.subresourceDao = subresourceDao;
         this.documentDao = documentDao;
         this.resourceHandlerService = resourceHandlerService;
         this.documentVersionService = documentVersionService;
         this.conversionService = conversionService;
+        this.mailService = mailService;
     }
 
     @Transactional
@@ -128,7 +133,12 @@ public class UIDocumentService {
             LOG.warn("Document id [{}] does not match the resource document id [{}]", documentId, document.getId());
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
         }
-        return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+        DocumentRO doc = publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.PUBLISHED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
+
     }
 
     @Transactional
@@ -141,7 +151,11 @@ public class UIDocumentService {
         if (!Objects.equals(document.getId(), documentId)) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
         }
-        return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        DocumentRO doc = publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.PUBLISHED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
     }
 
 
@@ -180,7 +194,12 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_RESOURCE_VALIDATION)
                     .addParam(ErrorMessageArgument.ERROR, "Document id does not match the resource document id");
         }
-        return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+
+        DocumentRO documentRO = requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+
+        mailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.REVIEW_REQUESTED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return documentRO;
     }
 
     @Transactional
@@ -193,7 +212,10 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_SUBRESOURCE_VALIDATION)
                     .addParam(ErrorMessageArgument.ERROR, "Document id does not match the subresource document id");
         }
-        return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        DocumentRO documentRO = requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        mailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.REVIEW_REQUESTED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return documentRO;
     }
 
 
@@ -233,7 +255,16 @@ public class UIDocumentService {
         if (!Objects.equals(document.getId(), documentId)) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
         }
-        return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(resource));
+        DocumentRO documentRO = reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(resource));
+        // send email notification that document is published
+        if (action == DocumentVersionEventType.APPROVE || action == DocumentVersionEventType.REJECT) {
+            // if the approved version is not current version then it is published
+            MailDocumentActionType actionType = action == DocumentVersionEventType.APPROVE ? MailDocumentActionType.REVIEW_APPROVED :
+                    MailDocumentActionType.REVIEW_REJECTED;
+            mailService.sendDocumentActionNotification(resource, null, actionType, version, document.getName(),
+                    SessionSecurityUtils.getSessionUserDetails());
+        }
+        return documentRO;
     }
 
     @Transactional
@@ -245,7 +276,16 @@ public class UIDocumentService {
         if (!Objects.equals(document.getId(), documentId)) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
         }
-        return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(subresource));
+        DocumentRO documentRO = reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(subresource));
+        // send email notification that document is published
+        if (action == DocumentVersionEventType.APPROVE || action == DocumentVersionEventType.REJECT) {
+            // if the approved version is not current version then it is published
+            MailDocumentActionType actionType = action == DocumentVersionEventType.APPROVE ? MailDocumentActionType.REVIEW_APPROVED :
+                    MailDocumentActionType.REVIEW_REJECTED;
+            mailService.sendDocumentActionNotification(resource, subresource, actionType, version, document.getName(),
+                    SessionSecurityUtils.getSessionUserDetails());
+        }
+        return documentRO;
     }
 
 
@@ -358,7 +398,7 @@ public class UIDocumentService {
      * created.
      *
      * @param documentPropertyRO Document Property RO to persist
-     * @DBDocument db document to which the property belongs
+     * @param dbDocument db document to which the property belongs
      */
     private void persistDocumentProperty(DocumentPropertyRO documentPropertyRO, DBDocument dbDocument) {
 
@@ -481,7 +521,7 @@ public class UIDocumentService {
             resourceHandler.storeResource(data, responseData);
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_SUBRESOURCE_VALIDATION)
-            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         // create new version to document or update existing version
         return documentRo.getPayloadVersion() == null ?
@@ -682,7 +722,7 @@ public class UIDocumentService {
         ServiceResult<SearchReferenceDocumentRO> result = new ServiceResult<>();
         result.setPage(page);
         result.setPageSize(pageSize);
-        Long count = documentDao.getSearchReferenceDocumentResourcesCount(targetResource, searchResourceIdentifier, searchResourceScheme);
+        long count = documentDao.getSearchReferenceDocumentResourcesCount(targetResource, searchResourceIdentifier, searchResourceScheme);
         if (count < 1) {
             result.setCount(0L);
             return result;
@@ -691,7 +731,7 @@ public class UIDocumentService {
         List<SearchReferenceDocumentRO> refList = documentDao.getSearchReferenceDocumentResources(targetResource,
                         searchResourceIdentifier, searchResourceScheme, page, pageSize).stream()
                 .map(doc -> conversionService.convert(doc, SearchReferenceDocumentRO.class))
-                .collect(Collectors.toList());
+                .toList();
         result.getServiceEntities().addAll(refList);
         return result;
     }
@@ -730,7 +770,7 @@ public class UIDocumentService {
         List<SearchReferenceDocumentRO> refList = documentDao.getSearchReferenceDocumentSubresource(targetResource,
                         searchResourceIdentifier, searchResourceScheme, searchSubresourceIdentifier, searchSubresourceScheme, page, pageSize).stream()
                 .map(doc -> conversionService.convert(doc, SearchReferenceDocumentRO.class))
-                .collect(Collectors.toList());
+                .toList();
         result.getServiceEntities().addAll(refList);
         return result;
     }
@@ -815,7 +855,7 @@ public class UIDocumentService {
         docConfigRo.setName(document.getName());
         // set list of versions
         document.getDocumentVersions().forEach(dv ->
-            docConfigRo.getAllVersions().add(dv.getVersion()));
+                docConfigRo.getAllVersions().add(dv.getVersion()));
         documentRo.setDocumentConfiguration(docConfigRo);
 
         document.getDocumentVersions().forEach(dv -> {
@@ -826,7 +866,7 @@ public class UIDocumentService {
         documentRo.setName(document.getName());
         documentRo.setCurrentResourceVersion(document.getCurrentVersion());
         // set list of versions
-        document.getDocumentProperties().stream()
+        document.getDocumentProperties()
                 .forEach(p -> {
                     documentRo.addProperty(p.getProperty(),
                             p.getValue(),
@@ -843,7 +883,7 @@ public class UIDocumentService {
             documentRo.setPayload(new String(version.getContent()));
             documentRo.setDocumentVersionStatus(version.getStatus());
             // set ven
-            version.getDocumentVersionEvents().stream().forEach(e ->
+            version.getDocumentVersionEvents().forEach(e ->
                     documentRo.addDocumentVersionEvent(
                             conversionService.convert(e, DocumentVersionEventRO.class))
             );
@@ -855,7 +895,7 @@ public class UIDocumentService {
      * Method validates all document versions and updates version in review process
      * to NON REVIEW status. The change is logged as new event on version list.
      *
-     * @param document
+     * @param document document to update
      */
     public void updateToNonReviewStatuses(DBDocument document) {
         updateDocumentVersionStatus(document, DocumentVersionEventType.SETTINGS_CHANGE,
