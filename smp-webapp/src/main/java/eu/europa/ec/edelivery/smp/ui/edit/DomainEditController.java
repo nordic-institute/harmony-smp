@@ -21,7 +21,8 @@ package eu.europa.ec.edelivery.smp.ui.edit;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.*;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -34,7 +35,6 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -80,8 +80,8 @@ public class DomainEditController {
         if (StringUtils.isBlank(forRole) || StringUtils.equals(forRole, "domain-admin")) {
             return uiDomainEditService.getAllDomainsForDomainAdminUser(userId);
         }
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.get.user.domains",
-                Map.of("userRole", forRole));
+        throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GET_USER_DOMAINS)
+                .addParam(ErrorMessageArgument.USER_ROLE, forRole);
     }
 
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -203,7 +203,7 @@ public class DomainEditController {
         LOG.info("Validate Domain property: [{}]", propertyRO);
 
         if (propertyRO == null || StringUtils.isBlank(propertyRO.getProperty())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.validate.property");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_VALIDATE_PROPERTY);
         }
         return uiDomainEditService.validateDomainProperty(propertyRO);
     }

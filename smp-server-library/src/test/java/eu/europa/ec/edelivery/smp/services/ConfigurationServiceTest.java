@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,8 @@ import static org.mockito.Mockito.*;
 class ConfigurationServiceTest {
 
     ConfigurationDao configurationDaoMock = mock(ConfigurationDao.class);
-    ConfigurationService testInstance = spy(new ConfigurationService(configurationDaoMock));
+    DomainConfigurationDao domainConfigurationDao = mock(DomainConfigurationDao.class);
+    ConfigurationService testInstance = spy(new ConfigurationService(configurationDaoMock, domainConfigurationDao));
 
     @BeforeEach
     public void setUp() {

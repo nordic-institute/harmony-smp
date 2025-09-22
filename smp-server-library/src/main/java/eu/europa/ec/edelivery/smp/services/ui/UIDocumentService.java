@@ -30,7 +30,8 @@ import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -99,8 +100,8 @@ public class UIDocumentService {
         try {
             resourceHandler.validateResource(data);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.resource",
-                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_RESOURCE)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -113,8 +114,8 @@ public class UIDocumentService {
         try {
             resourceHandler.validateResource(data);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.resource",
-                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_SUBRESOURCE)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -125,7 +126,7 @@ public class UIDocumentService {
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
             LOG.warn("Document id [{}] does not match the resource document id [{}]", documentId, document.getId());
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.id.mismatch.resource.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
         }
         return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
     }
@@ -138,7 +139,7 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.id.mismatch.resource.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
         }
         return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
     }
@@ -150,10 +151,10 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.version.not.found.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG);
         }
         if (isReviewEnabled && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.version.already.published");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_ALREADY_PUBLISHED);
         }
         if (document.getDocumentVersions() != null && document.getCurrentVersion() == version) {
             LOG.warn("Document version [{}] is already current version for the document [{}]", version, document.getId());
@@ -176,8 +177,8 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.id.mismatch.resource.tag",
-                    Map.of("error", "Document id does not match the resource document id"));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_RESOURCE_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, "Document id does not match the resource document id");
         }
         return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
     }
@@ -189,7 +190,8 @@ public class UIDocumentService {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.id.mismatch.resource.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_SUBRESOURCE_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, "Document id does not match the subresource document id");
         }
         return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
     }
@@ -200,16 +202,16 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.version.not.found.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG);
         }
 
         if (!isReviewEnabled) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.review.not.enabled");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_NOT_ENABLED);
         }
 
         if (documentVersion.getStatus() == DocumentVersionStatusType.PUBLISHED) {
             LOG.warn("Document version [{}] request review action for document [{}] is not allowed. Wrong status", version, document.getId());
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.review.not.allowed");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_NOT_ALLOWED);
         }
 
         if (documentVersion.getStatus() == DocumentVersionStatusType.UNDER_REVIEW) {
@@ -229,7 +231,7 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.id.mismatch.resource.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
         }
         return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(resource));
     }
@@ -241,7 +243,7 @@ public class UIDocumentService {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.id.mismatch.subresource.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
         }
         return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(subresource));
     }
@@ -257,16 +259,16 @@ public class UIDocumentService {
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.version.not.found.tag"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG));
 
         if (!reviewEnabled) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.review.not.enabled");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_NOT_ENABLED);
         }
 
         if (documentVersion.getStatus() != DocumentVersionStatusType.UNDER_REVIEW
                 && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
             LOG.warn("Document version [{}]  action for document [{}] not allowed. Wrong status", version, initialProperties);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.review.action.not.allowed");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_ACTION_NOT_ALLOWED);
         }
 
         if (action == DocumentVersionEventType.APPROVE) {
@@ -274,7 +276,7 @@ public class UIDocumentService {
         } else if (action == DocumentVersionEventType.REJECT) {
             documentVersionService.rejectDocumentVersion(documentVersion, EventSourceType.UI, message);
         } else {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.review.action.not.allowed");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_ACTION_NOT_ALLOWED);
         }
         // return the document with the new version
         return convertWithVersion(document, version, initialProperties);
@@ -344,8 +346,8 @@ public class UIDocumentService {
         try {
             resourceHandler.generateResource(data, responseData, Collections.emptyList());
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.generation.validation",
-                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_GENERATION_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -455,8 +457,8 @@ public class UIDocumentService {
         try {
             resourceHandler.storeResource(data, responseData);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.store.resource.validation",
-                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_RESOURCE_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
 
         // create new version to document or update existing version
@@ -478,8 +480,8 @@ public class UIDocumentService {
         try {
             resourceHandler.storeResource(data, responseData);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.store.subresource.validation",
-                    Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_SUBRESOURCE_VALIDATION)
+            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         // create new version to document or update existing version
         return documentRo.getPayloadVersion() == null ?
@@ -500,7 +502,7 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.version.not.found.tag");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG);
         }
         documentVersion.setContent(payload);
 
@@ -576,7 +578,7 @@ public class UIDocumentService {
         if (docConfig != null) {
 
             if (Boolean.TRUE.equals(docConfig.getSharingEnabled()) && StringUtils.isNotBlank(docConfig.getReferenceDocumentId())) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.sharing.not.allowed");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_SHARING_NOT_ALLOWED);
             }
             document.setSharingEnabled(docConfig.getSharingEnabled());
             document.setName(docConfig.getName());
@@ -607,20 +609,20 @@ public class UIDocumentService {
 
         if (documentReferenceId != null) {
             if (Objects.equals(documentReferenceId, document.getId())) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.reference.not.allowed");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_NOT_ALLOWED);
             }
             DBDocument documentReferenceEntity = documentDao.find(documentReferenceId);
             if (documentReferenceEntity == null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.reference.not.found");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_NOT_FOUND);
             }
 
             // compare Boolean.TRUE to catch null values
             if (!Boolean.TRUE.equals(documentReferenceEntity.getSharingEnabled())) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.reference.having.no.sharing");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_HAVING_NO_SHARING);
             }
 
             if (documentReferenceEntity.getReferenceDocument() != null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.validation.document.reference.already.referenced");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_ALREADY_REFERENCED);
             }
             document.setReferenceDocument(documentReferenceEntity);
             LOG.info("Document [{}] is referencing to document [{}] and reference url [{}]", document.getId(), documentReferenceEntity.getId(), documentConfigurationRO.getReferenceDocumentUrl());
@@ -713,7 +715,7 @@ public class UIDocumentService {
                                                                                                  String searchSubresourceIdentifier, String searchSubresourceScheme) {
         DBSubresource targetResource = subresourceDao.find(targetSubresourceId);
         if (!Objects.equals(targetResource.getResource().getId(), resourceId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.document.search.identifiers.mismatch");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_SEARCH_IDENTIFIERS_MISMATCH);
         }
         ServiceResult<SearchReferenceDocumentRO> result = new ServiceResult<>();
         result.setPage(page);

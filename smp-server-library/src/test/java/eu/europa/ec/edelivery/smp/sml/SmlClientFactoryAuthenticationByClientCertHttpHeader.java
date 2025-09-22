@@ -31,6 +31,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -64,7 +65,7 @@ class SmlClientFactoryAuthenticationByClientCertHttpHeader extends AbstractServi
     public void before() throws MalformedURLException {
 
         ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
-        Mockito.doReturn(new URL("http://sml.someUrl.local/edelivery-sml")).when(configurationService).getSMLIntegrationUrl();
+        Mockito.doReturn(new URL("http://sml.someUrl.local/edelivery-sml")).when(configurationService).getDomainSMLIntegrationUrl(ArgumentMatchers.any(DBDomain.class));
 
     }
 

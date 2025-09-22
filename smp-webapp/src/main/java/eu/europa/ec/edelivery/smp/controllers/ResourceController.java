@@ -19,6 +19,8 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -28,19 +30,19 @@ import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,8 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.*;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
@@ -182,12 +182,12 @@ public class ResourceController {
     protected ResourceRequest fromServletRequest(HttpServletRequest httpReq, List<String> pathParameters) {
         ResourceAction resourceAction = ResourceAction.resolveForHeader(httpReq.getMethod());
         if (resourceAction == null) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.request.method",
-                    Map.of("httpMethod", httpReq.getMethod()));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_METHOD)
+                    .addParam(ErrorMessageArgument.HTTP_METHOD,  httpReq.getMethod());
         }
 
         if (pathParameters.isEmpty()) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.request.uri.variable");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLE);
         }
         InputStream inputStream = getInputStreamFromRequest(httpReq, resourceAction);
 
@@ -203,8 +203,9 @@ public class ResourceController {
         try {
             return header == null ? null : URLDecoder.decode(header, UTF_8);
         } catch (UnsupportedEncodingException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, "error.internal.detailed",
-                    Map.of("scope", "DecodeHeader", "error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_DETAILED)
+                    .addParam(ErrorMessageArgument.SCOPE, "DecodeHeader")
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -229,7 +230,7 @@ public class ResourceController {
         try {
             return new BufferedInputStream(httpReq.getInputStream());
         } catch (IOException e) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "error.invalid.request.http.request.input.stream", e);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_INPUT_STREAM, e);
         }
     }
 }

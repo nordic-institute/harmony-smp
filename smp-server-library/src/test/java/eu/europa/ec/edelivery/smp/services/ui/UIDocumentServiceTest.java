@@ -125,8 +125,8 @@ class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc));
 
-        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
-                CoreMatchers.containsString("Invalid request [ResourceValidation]"));
+        MatcherAssert.assertThat(result.getMessage(),
+                CoreMatchers.containsString("Invalid request [SubresourceValidation]"));
     }
 
     @Test

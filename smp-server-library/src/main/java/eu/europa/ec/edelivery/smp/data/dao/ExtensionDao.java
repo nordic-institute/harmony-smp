@@ -20,16 +20,17 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.springframework.stereotype.Repository;
-
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -44,13 +45,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 public class ExtensionDao extends BaseDao<DBExtension> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ExtensionDao.class);
-
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
-
-    public ExtensionDao(SMPExceptionLanguageService smpExceptionLanguageService) {
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
-    }
-
 
     /**
      * Returns extension records from the database.
@@ -68,10 +62,10 @@ public class ExtensionDao extends BaseDao<DBExtension> {
      * Returns the extension or Optional.empty() if there is no extension.
      *
      * @return Returns the extension or Optional.empty() if there is no extension.
-     * @throws IllegalStateException if no domain is not configured
+     * @throws SMPRuntimeException if no domain is not configured
      */
     public Optional<DBExtension> getExtensionByIdentifier(String identifier) {
-        LOG.debug("Get extension [{}] all extension", identifier);
+        LOG.debug("Get extension for identifier [{}]", identifier);
         try {
             TypedQuery<DBExtension> query = memEManager.createNamedQuery(QUERY_EXTENSION_BY_IDENTIFIER, DBExtension.class);
             query.setParameter(PARAM_IDENTIFIER, identifier);
@@ -79,10 +73,11 @@ public class ExtensionDao extends BaseDao<DBExtension> {
             extension.getResourceDefs();
             return Optional.of(extension);
         } catch (NoResultException e) {
+            LOG.warn("No extension found for identifier [{}]", identifier);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation(
-                    "error.domain.illegal.state.multiple.entries", Map.of("domain", identifier)));
+            throw new SMPRuntimeException(ErrorMessageType.EXTENSION_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, identifier);
         }
     }
 }

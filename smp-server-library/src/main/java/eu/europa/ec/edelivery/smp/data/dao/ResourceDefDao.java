@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -24,20 +24,19 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.slf4j.Logger;
-import org.springframework.stereotype.Repository;
-
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
 
 /**
  * @author Joze Rihtarsic
@@ -46,12 +45,6 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
 @Repository
 public class ResourceDefDao extends BaseDao<DBResourceDef> {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(ResourceDefDao.class);
-
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
-
-    public ResourceDefDao(SMPExceptionLanguageService smpExceptionLanguageService) {
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
-    }
 
     /**
      * Returns DBResourceDef records from the database.
@@ -81,7 +74,7 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
      *
      * @param resourceDeftUrlSegment the URL segment
      * @return the only single record for ResourceDef url segment or empty value
-     * @throws IllegalStateException if more than one ResourceDef is found
+     * @throws SMPRuntimeException if more than one ResourceDef is found
      */
     public Optional<DBResourceDef> getResourceDefByURLSegment(String resourceDeftUrlSegment) {
         try {
@@ -91,8 +84,8 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.resource.lookup.by.url.illegal.state.multiple.entries",
-                    Map.of("urlSegment", resourceDeftUrlSegment)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_URL_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.URL_SEGMENT, resourceDeftUrlSegment);
         }
     }
 
@@ -101,7 +94,7 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
      * Returns the ResourceDef or Optional.empty() if there is no ResourceDef.
      *
      * @return the only single record for ResourceDef url segment or empty value
-     * @throws IllegalStateException if more than one ResourceDef is found
+     * @throws SMPRuntimeException if more than one ResourceDef is found
      */
     public Optional<DBResourceDef> getResourceDefByIdentifier(String resourceIdentifier) {
         try {
@@ -111,8 +104,8 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.resource.lookup.by.identifier.illegal.state.multiple.entries",
-                    Map.of("identifier", resourceIdentifier)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_IDENTIFIER_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceIdentifier);
         }
     }
 
@@ -143,7 +136,7 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.resource.multiple.entries");
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_RESOURCEDEF_MULTIPLE_ENTRIES);
         }
     }
 

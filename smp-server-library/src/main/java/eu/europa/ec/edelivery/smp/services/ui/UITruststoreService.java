@@ -22,18 +22,17 @@ import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.exceptions.CertificateAlreadyRegisteredException;
-import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -41,7 +40,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.BasicAttribute;
@@ -304,11 +302,12 @@ public class UITruststoreService extends BasicKeystoreService {
         validateCertificateWithTruststore(x509Certificate, subjectRegExp, allowedCertificatePolicies, truststore);
     }
 
-    public void validateCertificateWithDomainTruststore(X509Certificate x509Certificate, List<DBDomainConfiguration> domainConfigurations) throws CertificateException {
+    public void validateCertificateWithDomainTruststore(DBDomain domain,  X509Certificate x509Certificate) throws CertificateException {
 
         if (x509Certificate == null) {
             throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
         }
+        List<DBDomainConfiguration> domainConfigurations = configurationService.getDomainConfigurations(domain);
         Pattern subjectRegExp = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_SUBJECT_REGULAR_EXPRESSION);
         List<String> allowedCertificatePolicies = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_ALLOWED_CERT_POLICY_OIDS);
         KeyStore truststore = getDomainTrustStore(domainConfigurations);
@@ -473,8 +472,8 @@ public class UITruststoreService extends BasicKeystoreService {
 
             String certificateAlias = truststore.getCertificateAlias(certificate);
             if (certificateAlias != null) {
-                throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "error.certificate.cannot.upload.duplicate",
-                        Map.of("alias", certificateAlias));
+                throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CANNOT_UPLOAD_DUPLICATE)
+                        .addParam(ErrorMessageArgument.ALIAS, certificateAlias);
             }
 
             String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();

@@ -117,10 +117,11 @@ class SMPLanguageResourceServiceTest {
         assertTrue(localeFolder.exists());
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
-        assertEquals(2, files.length);
-        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName());
+        assertEquals(3, files.length);
+        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName(), files[2].getName());
         assertTrue(fileNames.contains(LANGUAGE_FILENAME_UI_PREFIX + "en.json"));
         assertTrue(fileNames.contains(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_ERROR_PREFIX + "en.json"));
     }
 
     @Test
@@ -145,10 +146,11 @@ class SMPLanguageResourceServiceTest {
         assertTrue(localeFolder.exists());
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
-        assertEquals(2, files.length);
-        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName());
+        assertEquals(3, files.length);
+        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName(), files[2].getName());
         assertTrue(fileNames.contains(LANGUAGE_FILENAME_UI_PREFIX + "en.json"));
         assertTrue(fileNames.contains(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_ERROR_PREFIX + "en.json"));
 
         JsonNode result = objectMapper.readTree(pathToFile.toFile());
         assertEquals(testText, result.get(testKey).asText());

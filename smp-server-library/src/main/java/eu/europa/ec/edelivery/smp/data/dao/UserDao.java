@@ -24,6 +24,8 @@ import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -34,11 +36,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_IDENTIFIERS;
 
 /**
  * @author gutowpa
@@ -59,7 +62,7 @@ public class UserDao extends BaseDao<DBUser> {
     public void persistFlushDetach(DBUser user) {
         // update username to lower caps
         if (StringUtils.isBlank(user.getUsername())) {
-            throw new SMPRuntimeException(INVALID_USER_NO_IDENTIFIERS, "error.user.invalid.no.identifiers");
+            throw new SMPRuntimeException(ErrorMessageType.USER_INVALID_NO_IDENTIFIERS);
         }
         user.setUsername(user.getUsername().toLowerCase());
         super.persistFlushDetach(user);
@@ -175,7 +178,8 @@ public class UserDao extends BaseDao<DBUser> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entries", Map.of("identifier", credentialName));
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, credentialName);
         }
     }
 
@@ -198,7 +202,8 @@ public class UserDao extends BaseDao<DBUser> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entries", Map.of("identifier", username));
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, username);
         }
     }
 

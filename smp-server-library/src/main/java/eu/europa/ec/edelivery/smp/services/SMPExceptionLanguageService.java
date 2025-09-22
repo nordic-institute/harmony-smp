@@ -18,19 +18,18 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.smp.spi.exceptions.TranslatedMessage;
-import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.regex.Matcher;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -40,8 +39,6 @@ import java.util.regex.Matcher;
 public class SMPExceptionLanguageService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPExceptionLanguageService.class);
-
-    public static final String PREFIX_MESSAGE_VALUE_TRANSLATION = "TRANSLATION_REQUIRED_";
 
     private final SMPLanguageResourceService smpLanguageResourceService;
 
@@ -75,31 +72,29 @@ public class SMPExceptionLanguageService {
     public String getMessageTranslation(String messageCode, Map<String, Object> args, String localeCode) {
         localeCode = LocaleUtils.validateLocale(localeCode);
 
-        Properties uiProperties = smpLanguageResourceService.getUiProperties(localeCode);
-
+        Properties uiProperties = smpLanguageResourceService.getErroProperties(localeCode);
+        String messageTemplate;
         if (!uiProperties.containsKey(messageCode)) {
-            LOG.debug("The [{}] message code is missing the default English translation so returning the message code as the actual translation.", messageCode);
-            return messageCode;
-        }
-        String property = uiProperties.getProperty(messageCode);
-
-        Map<String, Object> arguments = new HashMap<>(args);
-        for (String placeholder: arguments.keySet()) {
-            Object value = args.get(placeholder);
-            if (value instanceof String && ((String) value).startsWith(PREFIX_MESSAGE_VALUE_TRANSLATION)) {
-                String innerProperty = ((String) value).replaceFirst(PREFIX_MESSAGE_VALUE_TRANSLATION, "");
-                arguments.put(placeholder, innerProperty);
-                value = getMessageTranslation(innerProperty, arguments);
-                arguments.put(placeholder, value.toString());
+            ErrorMessageType msgType = ErrorMessageType.getErrorMessageTypeByCode(messageCode);
+            if (msgType == null) {
+                LOG.debug("The error message code [{}] is not recognized. Returning the message code as the actual translation.", messageCode);
+                return messageCode;
             }
+            LOG.debug("The error message code [{}]  missing for local [{}]. Use the default English translation.", messageCode, localeCode);
+            messageTemplate = msgType.getTemplate();
+        } else {
+            messageTemplate = uiProperties.getProperty(messageCode);
         }
 
-        for (String placeholder : arguments.keySet()) {
-            property = RegExUtils.replaceAll(property, "\\{\\{" + placeholder + "\\}\\}",
-                    Matcher.quoteReplacement(Objects.toString(arguments.get(placeholder))));
+        // Check if there is a  message argument that requires translation
+        Map<String, Object>  arguments = new HashMap<>(args);
+        if (args.containsKey(ErrorMessageArgument.ERROR_MESSAGE_CODE.getArgumentName())) {
+            Map<String, Object>  innerArg = new HashMap<>(args);
+            Object value =  innerArg.remove(ErrorMessageArgument.ERROR_MESSAGE_CODE.getArgumentName());
+            value = getMessageTranslation(value.toString(), innerArg);
+            arguments.put(ErrorMessageArgument.ERROR_MESSAGE_CODE.getArgumentName(), value);
         }
-
-        return property;
+        return ErrorMessageType.replacePlaceholder(messageTemplate, arguments);
     }
 
 }

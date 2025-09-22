@@ -20,7 +20,6 @@ package eu.europa.ec.edelivery.smp.services.resource;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -30,10 +29,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
@@ -52,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_CREATED;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_UPDATED;
@@ -150,10 +145,12 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                 case INVALID_PARAMETERS:
                     throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, e.getMessage());
                 case INVALID_RESOURCE:
-                    throw new SMPRuntimeException(ErrorCode.INVALID_EXTENSION_FOR_SG, "error.service.group.invalid.extension",
-                            Map.of("identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme(),"error", e.getMessage()));
+                    throw new SMPRuntimeException(ErrorMessageType.RESOURCE_INVALID_EXTENSION)
+                        .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                        .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme())
+                            .addParam(ErrorMessageArgument.ERROR, e.getMessage());
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.resource.reading", e);
+                    throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCE_READING, e);
             }
         }
         // set headers to response
@@ -220,10 +217,10 @@ public class ResourceHandlerService extends AbstractResourceHandler {
                 case INVALID_PARAMETERS:
                     throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, ExceptionUtils.getRootCauseMessage(e));
                 case INVALID_RESOURCE:
-                    throw new SMPRuntimeException(ErrorCode.INVALID_SMD_XML, "error.service.metadata.invalid.xml",
-                            Map.of("error", ExceptionUtils.getRootCauseMessage(e)));
+                    throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_INVALID_XML)
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.subresource.reading", e);
+                    throw new SMPRuntimeException(ErrorMessageType.INTERNAL_SUBRESOURCE_READING, e);
             }
         }
         // set headers to response

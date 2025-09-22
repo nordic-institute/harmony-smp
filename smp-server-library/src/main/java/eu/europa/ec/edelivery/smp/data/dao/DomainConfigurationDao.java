@@ -150,7 +150,6 @@ public class DomainConfigurationDao extends BaseDao<DBDomainConfiguration> {
         return listOfDomainConfiguration;
     }
 
-
     public PropertyValidationRO validateDomainProperty(PropertyRO propertyRO) {
         LOG.info("Validate property: [{}]", propertyRO.getProperty());
         PropertyValidationRO propertyValidationRO = new PropertyValidationRO();

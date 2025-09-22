@@ -22,14 +22,15 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.springframework.stereotype.Repository;
-
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -40,12 +41,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Repository
 public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
-
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
-
-    public DomainResourceDefDao(SMPExceptionLanguageService smpExceptionLanguageService) {
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
-    }
 
     /**
      * Returns the ResourceDef configuration for domain
@@ -63,32 +58,10 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
     /**
      * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
      *
-     * @param domainId             domain ide
-     * @param resourceIdentifier resource definition identifier
-     * @return the only single record for DBDomainResourceDef
-     * @throws IllegalStateException if more than one ResourceDef is found
-     */
-    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainIdAndResourceDefIdentifier(Long domainId, String resourceIdentifier) {
-        try {
-            TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER, DBDomainResourceDef.class);
-            query.setParameter(PARAM_DOMAIN_ID, domainId);
-            query.setParameter(PARAM_RESOURCE_DEF_IDENTIFIER, resourceIdentifier);
-            return Optional.of(query.getSingleResult());
-        } catch (NoResultException e) {
-            return Optional.empty();
-        } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.resource.lookup.by.url.and.domain.id.illegal.state.multiple.entries",
-                    Map.of("identifier", resourceIdentifier, "domainId", domainId)));
-        }
-    }
-
-    /**
-     * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
-     *
      * @param domainCode             domain code
      * @param resourceDefUrlSegment resourceDefUrlSegment
      * @return the only single record for DBDomainResourceDef
-     * @throws IllegalStateException if more than one ResourceDef is found
+     * @throws SMPRuntimeException if more than one ResourceDef is found
      */
     public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainCodeAndResourceDefCtx(String domainCode, String resourceDefUrlSegment) {
         try {
@@ -99,8 +72,9 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.resource.lookup.by.url.and.domain.code.illegal.state.multiple.entries",
-                    Map.of("urlSegment", resourceDefUrlSegment, "domainCode", domainCode)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_URL_AND_DOMAIN_CODE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.URL_SEGMENT, resourceDefUrlSegment)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
     }
 
@@ -121,8 +95,9 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(smpExceptionLanguageService.getMessageTranslation("error.internal.resource.lookup.by.url.and.domain.code.illegal.state.multiple.entries",
-                    Map.of("urlSegment", resourceDef, "domainCode", domain)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_URL_AND_DOMAIN_CODE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.URL_SEGMENT, resourceDef)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain);
         }
     }
 
@@ -132,6 +107,4 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         domainResourceDef.setResourceDef(resourceDef);
         return merge(domainResourceDef);
     }
-
-
 }

@@ -27,6 +27,8 @@ import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResultProperties;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -153,15 +155,19 @@ public class UIPropertyService {
         Optional<SMPPropertyEnum> optPropertyEnum = SMPPropertyEnum.getByProperty(propertyRO.getProperty());
         if (optPropertyEnum.isEmpty()) {
             LOG.warn("Property: [{}] is not SMP property!", propertyRO.getProperty());
-            propertyValidationRO.setMessageCode("error.invalid.property.unknown");
+            ErrorMessageType msg =  ErrorMessageType.INVALID_PROPERTY_UNKNOWN;
+            propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
+            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY, propertyRO.getProperty())));
             return propertyValidationRO;
         }
         SMPPropertyEnum propertyEnum = optPropertyEnum.get();
         if (isBlank(propertyRO.getValue()) && propertyEnum.isMandatory()) {
             LOG.warn("Mandatory Property: [{}] must not be blank!", propertyRO.getProperty());
-            propertyValidationRO.setMessageCode("error.invalid.property.missing");
+            ErrorMessageType msg =  ErrorMessageType.INVALID_PROPERTY_MISSING;
+            propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
+            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY, propertyRO.getProperty())));
             return propertyValidationRO;
         }
 

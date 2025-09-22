@@ -28,6 +28,8 @@ import eu.europa.ec.edelivery.smp.data.ui.CredentialRequestResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.CredentialResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -120,6 +122,7 @@ public class AuthenticationController {
      * Request reset of the credentials. The method generates a reset token and sends an email to the user.
      *
      * @param requestResetRO - the request object containing the credential name and type
+     * @throws SMPRuntimeException in case of invalid credential type
      */
     @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL_REQUEST)
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -130,7 +133,7 @@ public class AuthenticationController {
         } else {
             LOG.warn("Invalid or null credential type [{}] not supported for reset!",
                     requestResetRO.getCredentialType());
-            throw new IllegalArgumentException(smpExceptionLanguageService.getMessageTranslation("error.invalid.request"));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GENERIC);
 
         }
     }
@@ -139,6 +142,7 @@ public class AuthenticationController {
      * Reset the credentials. The method validates the reset token and updates the credentials.
      *
      * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
+     * @throws SMPRuntimeException in case of invalid/incomplete request
      */
     @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL)
     public void resetCredentials(@RequestBody CredentialResetRO resetRO) {
@@ -149,7 +153,7 @@ public class AuthenticationController {
                 || StringUtils.isBlank(resetRO.getCredentialName())
                 || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
             LOG.warn("Invalid or incomplete reset token!");
-            throw new IllegalArgumentException(smpExceptionLanguageService.getMessageTranslation("error.invalid.request"));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GENERIC);
         }
         authenticationService.resetUsernamePassword(resetRO.getCredentialName(),
                 resetRO.getResetToken(),
@@ -171,7 +175,7 @@ public class AuthenticationController {
                 || StringUtils.isBlank(resetRO.getResetToken())
                 || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
             LOG.warn("Invalid or null reset token or invalid reset token type!");
-            throw new IllegalArgumentException(smpExceptionLanguageService.getMessageTranslation("error.invalid.request"));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GENERIC);
         }
 
         authenticationService.validateUsernamePasswordResetToken(resetRO.getResetToken());

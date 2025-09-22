@@ -431,7 +431,7 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.updateUserProfile(user.getId(), userRO));
 
-        Assertions.assertEquals("Invalid locale [" + locale + "]",
+        Assertions.assertEquals("Invalid locale [" + locale + "].",
                 smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()));
     }
 

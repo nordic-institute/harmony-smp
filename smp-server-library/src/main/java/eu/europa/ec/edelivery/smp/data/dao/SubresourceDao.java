@@ -21,18 +21,19 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -46,11 +47,6 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SubresourceDao.class);
 
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
-
-    public SubresourceDao(SMPExceptionLanguageService smpExceptionLanguageService) {
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
-    }
 
     /**
      * Method returns DBSubresource for the resource object with given subresource identifier resource type.
@@ -76,10 +72,11 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(
-                    smpExceptionLanguageService.getMessageTranslation("error.service.metadata.illegal.state.multiple.entries",
-                            Map.of("documentIdentifier", subresourceId.getValue(), "documentScheme", subresourceId.getScheme(),
-                                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme())));
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, subresourceId.getValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, subresourceId.getScheme())
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
         }
     }
 
@@ -109,10 +106,11 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(
-                    smpExceptionLanguageService.getMessageTranslation("error.service.metadata.illegal.state.multiple.entries",
-                            Map.of("documentIdentifier", subresourceId.getValue(), "documentScheme", subresourceId.getScheme(),
-                                    "identifier", resource.getIdentifierValue(), "scheme", resource.getIdentifierScheme())));
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, subresourceId.getValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, subresourceId.getScheme())
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
         }
     }
 

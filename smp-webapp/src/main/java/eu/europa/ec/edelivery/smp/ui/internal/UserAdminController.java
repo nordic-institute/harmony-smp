@@ -100,7 +100,7 @@ public class UserAdminController {
     }
 
     @PostMapping(path = "/{user-id}/{managed-user-id}/update",  produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
+    @PreAuthorize("@smpAuthorizationService.isSystemAdministrator or @smpAuthorizationService.isSMPAdministrator")
     public UserRO updateUser(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                            @PathVariable("managed-user-id") String managedUserEncId,
                             @RequestBody UserRO user) {
@@ -146,14 +146,14 @@ public class UserAdminController {
     @PreAuthorize("@smpAuthorizationService.isSystemAdministrator")
     public DeleteEntityValidation validateDeleteUsers(@RequestBody List<String> queryEncIds) {
         SMPUserDetails userDetails = getLoggedUserData();
-        List<Long> query = queryEncIds.stream().map(SessionSecurityUtils::decryptEntityId).collect(Collectors.toList());
+        List<Long> query = queryEncIds.stream().map(SessionSecurityUtils::decryptEntityId).toList();
         DeleteEntityValidation dres = new DeleteEntityValidation();
         if (query.contains(userDetails.getUser().getId())) {
             dres.setValidOperation(false);
             dres.setStringMessage("Could not delete logged user!");
             return dres;
         }
-        dres.getListIds().addAll(query.stream().map(SessionSecurityUtils::encryptedEntityId).collect(Collectors.toList()));
+        dres.getListIds().addAll(query.stream().map(SessionSecurityUtils::encryptedEntityId).toList());
         return uiUserService.validateDeleteRequest(dres);
     }
 

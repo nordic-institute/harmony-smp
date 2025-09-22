@@ -22,7 +22,8 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -35,7 +36,6 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -100,8 +100,8 @@ public class GroupEditController {
         if (StringUtils.equalsIgnoreCase("all-roles", forRole)) {
             return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, null);
         }
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "error.invalid.request.get.domain.groups",
-                Map.of("userRole", forRole));
+        throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GET_DOMAIN_GROUPS)
+                .addParam(ErrorMessageArgument.USER_ROLE,  forRole);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_CREATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)

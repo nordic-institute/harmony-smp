@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,11 +28,11 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.config.init.SMPConfigurationInitializer;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.ApplicationContext;
@@ -42,7 +42,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.TypedQuery;
 import java.io.File;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
@@ -50,7 +49,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType.*;
 
 /**
  * @author Joze Rihtarsic
@@ -105,8 +105,10 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
         File rootFolder = getSecurityFolder();
         if (!PropertyUtils.isValidProperty(key, value, rootFolder)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration",
-                    Map.of("error", key.getPropertyType().getErrorMessageCode(), "property", key.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_PROPERTY)
+                    .addParam(PROPERTY_NAME, key.getProperty())
+                    .addParam(ERROR_MESSAGE_CODE, key.getPropertyType().getErrorMessageCode());
+
         }
 
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
@@ -400,40 +402,45 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         // because they are important for 'parsing and validating' other parameters
         String encryptionKeyFilename = getProperty(properties, ENCRYPTION_FILENAME);
         if (StringUtils.isBlank(encryptionKeyFilename)) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.mandatory.encryption.file.name",
-                    Map.of("propertyName", ENCRYPTION_FILENAME.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_MANDATORY_ENCRYPTION_FILE_NAME)
+                    .addParam(PROPERTY_NAME, ENCRYPTION_FILENAME.getProperty());
         }
 
         File configFolder = getSecurityFolder();
         if (!configFolder.exists()) {
             LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", configFolder.getPath(), configFolder.getAbsolutePath());
             if (!configFolder.mkdirs()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.configuration.folder.creation",
-                        Map.of("path", configFolder.getPath(), "absolutePath", configFolder.getAbsolutePath()));
+                throw new SMPRuntimeException(CONFIGURATION_FOLDER_CREATION)
+                        .addParam(PATH, configFolder.getPath())
+                        .addParam(ABSOLUTE_PATH, configFolder.getAbsolutePath());
             }
         }
         if (!configFolder.isDirectory()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.configuration.folder.not.directory",
-                    Map.of("path", configFolder.getPath(), "absolutePath", configFolder.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_FOLDER_NOT_DIRECTORY)
+                    .addParam(PATH, configFolder.getPath())
+                    .addParam(ABSOLUTE_PATH, configFolder.getAbsolutePath());
+
         }
 
         File encryptionKeyFile = new File(configFolder, encryptionKeyFilename);
         if (!encryptionKeyFile.exists() || !encryptionKeyFile.isFile()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.encryption.file.not.file",
-                    Map.of("absolutePath", encryptionKeyFile.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_ENCRYPTION_FILE_NOT_FILE)
+                    .addParam(ABSOLUTE_PATH, encryptionKeyFile.getAbsolutePath());
         }
 
         File localeFolder = getLocaleFolder();
         if (!localeFolder.exists()) {
             LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", localeFolder.getPath(), localeFolder.getAbsolutePath());
             if (!localeFolder.mkdirs()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.locale.folder.creation",
-                        Map.of("path", localeFolder.getPath(), "absolutePath", localeFolder.getAbsolutePath()));
+                throw new SMPRuntimeException(CONFIGURATION_LOCALE_FOLDER_CREATION)
+                        .addParam(PATH, localeFolder.getPath())
+                        .addParam(ABSOLUTE_PATH, localeFolder.getAbsolutePath());
             }
         }
         if (!localeFolder.isDirectory()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.locale.folder.not.directory",
-                    Map.of("path", localeFolder.getPath(), "absolutePath", localeFolder.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_LOCALE_FOLDER_NOT_DIRECTORY)
+                    .addParam(PATH, localeFolder.getPath())
+                    .addParam(ABSOLUTE_PATH, localeFolder.getAbsolutePath());
         }
     }
 
@@ -499,8 +506,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     private static void validateIfExists(Map<String, Object> propertyValues, SMPPropertyEnum key) {
         Object value = propertyValues.get(key.getProperty());
         if (value == null) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.missing.property",
-                    Map.of("propertyName", key.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_MISSING_PROPERTY)
+                    .addParam(PROPERTY_NAME, key.getProperty());
         }
     }
 
@@ -513,12 +520,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
      */
     private static void checkFileExist(File file) {
         if (file == null || !file.exists()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.file.not.exists",
-                    Map.of("absolutePath", file == null ? "null" : file.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_FILE_NOT_EXISTS)
+                    .addParam(ABSOLUTE_PATH, file == null ? "null" : file.getAbsolutePath());
         } else {
             if (!file.isFile()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, "error.configuration.file.not.file",
-                        Map.of("absolutePath", file.getAbsolutePath()));
+                throw new SMPRuntimeException(CONFIGURATION_FILE_NOT_FILE)
+                        .addParam(ABSOLUTE_PATH, file == null ? "null" : file.getAbsolutePath());
             }
         }
     }
@@ -532,8 +539,9 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         try {
             return SecurityUtils.decrypt(encryptionKey, value);
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.property.decryption",
-                    Map.of("propertyName", key.getProperty(), "error", ExceptionUtils.getRootCause(exc)));
+            throw new SMPRuntimeException(CONFIGURATION_PROPERTY_DECRYPTION)
+                    .addParam(PROPERTY_VALUE, key.getProperty())
+                    .addParam(ERROR, ExceptionUtils.getRootCause(exc));
         }
     }
 
@@ -541,8 +549,9 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         try {
             return SecurityUtils.encrypt(encryptionKey, value);
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "error.configuration.property.encryption",
-                    Map.of("propertyName", key.getProperty(), "error", ExceptionUtils.getRootCause(exc)));
+            throw new SMPRuntimeException(CONFIGURATION_PROPERTY_ENCRYPTION)
+                    .addParam(PROPERTY_VALUE, key.getProperty())
+                    .addParam(ERROR, ExceptionUtils.getRootCause(exc));
         }
     }
 

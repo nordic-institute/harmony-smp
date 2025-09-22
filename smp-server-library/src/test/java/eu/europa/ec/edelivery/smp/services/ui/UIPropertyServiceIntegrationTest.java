@@ -26,6 +26,8 @@ import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResultProperties;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import org.apache.commons.lang3.Strings;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -131,7 +133,7 @@ class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
         assertEquals("error.invalid.property.unknown", result.getErrorMessageCode());
-        //MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Property [" + propertyName + "] is not SMP property!"));
+        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Property [" + propertyName + "] is not SMP property!"));
     }
 
     @Test
@@ -146,7 +148,7 @@ class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
         assertEquals(result.getErrorMessageCode(), "error.configuration.invalid.integer");
-        //MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Invalid integer: [" + propertyValue + "]. Error:NumberFormatException"));
+        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("invalid integer [" + propertyValue + "]"));
     }
 
     @Test

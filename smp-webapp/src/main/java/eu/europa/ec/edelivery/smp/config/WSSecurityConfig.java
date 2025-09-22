@@ -26,7 +26,8 @@ import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
@@ -55,8 +56,6 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN;
 import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_SECURITY_PATH_AUTHENTICATE;
@@ -289,8 +288,9 @@ public class WSSecurityConfig {
         try {
             getClientCertAuthenticationFilter().setClientCertAuthenticationEnabled(clientCertEnabled);
         } catch (Exception e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.setting.client.cert.feature.enabled",
-                    Map.of("clientCertEnabled", clientCertEnabled, "error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_SETTING_CLIENT_CERT_FEATURE_ENABLED)
+                    .addParam(ErrorMessageArgument.CLIENT_CERT_ENABLED, clientCertEnabled)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -298,8 +298,9 @@ public class WSSecurityConfig {
         try {
             getEDeliveryX509AuthenticationFilter().setHttpHeaderAuthenticationEnabled(sslClientCertEnabled);
         } catch (Exception e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "error.internal.setting.client.cert.feature.enabled",
-                    Map.of("clientCertEnabled", sslClientCertEnabled, "error", ExceptionUtils.getRootCauseMessage(e)));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_SETTING_SSLCLIENTCERT_FEATURE_ENABLED)
+                    .addParam(ErrorMessageArgument.CLIENT_CERT_ENABLED, sslClientCertEnabled)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 }
