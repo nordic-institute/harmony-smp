@@ -22,7 +22,9 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
@@ -66,6 +68,65 @@ public class UserDao extends BaseDao<DBUser> {
         }
         user.setUsername(user.getUsername().toLowerCase());
         super.persistFlushDetach(user);
+    }
+
+    /**
+     * Returns all users that have resource admin role Or they have Review permission.
+     *
+     * @param resource the resource for which to find the resource member users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceAdminAndReviewUsers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, MembershipRoleType.ADMIN);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        query.setParameter(PARAM_PERMISSION_CAN_REVIEW, true);
+        return query.getResultList();
+    }
+
+    /**
+     * Returns all users that have resource admin role for the provided resource.
+     *
+     * @param resource the resource for which to find the resource admin users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceReviewUsers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, null);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        query.setParameter(PARAM_PERMISSION_CAN_REVIEW, true);
+        return query.getResultList();
+    }
+
+    /**
+     * Returns all users that have resource admin role for the provided resource.
+     *
+     * @param resource the resource for which to find the resource admin users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceAdminUsers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, MembershipRoleType.ADMIN);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        query.setParameter(PARAM_PERMISSION_CAN_REVIEW, null);
+        return query.getResultList();
+    }
+
+    /**
+     * Returns all users that have resource admin role for the provided resource.
+     *
+     * @param resource the resource for which to find the resource admin users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceReviewers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, MembershipRoleType.ADMIN);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        return query.getResultList();
     }
 
     /**

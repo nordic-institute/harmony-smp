@@ -87,7 +87,7 @@ public class MailService {
 
             javaMailSender.send(message);
         } catch (MessagingException | MailException e) {
-            LOG.error("Exception while sending mail from [{}] to [{}]", from, to, e);
+            LOG.error("Exception while sending mail from [{}] to [{}], root cause [{}]", from, to, ExceptionUtils.getRootCauseMessage(e));
             throw new SMPRuntimeException(ErrorMessageType.MAIL_SUBMISSION, e)
                     .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }

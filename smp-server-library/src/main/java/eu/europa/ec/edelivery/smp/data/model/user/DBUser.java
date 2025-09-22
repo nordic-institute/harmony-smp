@@ -48,7 +48,12 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND c.credentialType = :credential_type " +
         " AND c.credentialTarget = :credential_target")
 @NamedQuery(name = QueryNames.QUERY_USER_BY_APPLICATION_ROLES, query = "SELECT u FROM DBUser u WHERE u.applicationRole IN :application_roles")
-
+@NamedQuery(name = QueryNames.QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, query = "SELECT u FROM DBUser u " +
+        "  JOIN  DBResourceMember rm ON (rm.user.id = u.id )  " +
+        "    WHERE ((:membership_role IS NOT NULL AND rm.role = :membership_role)" +
+        "            OR (:permission_can_review IS NOT NULL AND rm.hasPermissionToReview = :permission_can_review) ) " +
+        "      AND rm.resource.id = :resource_id "
+        )
 @NamedQuery(name = QUERY_USER_COUNT, query = "SELECT count(c) FROM DBUser c")
 @NamedQuery(name = QUERY_USERS, query = "SELECT c FROM DBUser c  order by c.username")
 @NamedQuery(name = QUERY_USER_FILTER_COUNT, query = "SELECT count(c) FROM DBUser c " +

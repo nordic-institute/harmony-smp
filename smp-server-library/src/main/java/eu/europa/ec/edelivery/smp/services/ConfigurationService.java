@@ -181,6 +181,11 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(RESOURCE_CASE_SENSITIVE_SCHEMES);
     }
 
+    public boolean isMailSendingConfigurationComplete() {
+        String host = configurationDAO.getCachedProperty(MAIL_SERVER_HOST);
+        String from = configurationDAO.getCachedProperty(SMP_ALERT_MAIL_FROM);
+        return !isBlank(host) && !isBlank(from);
+    }
 
     public boolean getParticipantSchemeMandatory() {
         // not mandatory by default
