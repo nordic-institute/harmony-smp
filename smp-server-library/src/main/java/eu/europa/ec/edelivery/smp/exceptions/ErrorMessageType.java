@@ -260,6 +260,8 @@ public enum ErrorMessageType {
     UI_MALFORMED_IDENTIFIER_EXCEPTION(INVALID_REQUEST, "error.ui.malformed.identifier.exception", "Unexpected malformed identifier error occurred."),
     UI_SMP_RUNTIME_EXCEPTION(INTERNAL_ERROR, "error.ui.smp.runtime.exception", "Unexpected runtime error occurred."),
     UI_VALIDATION_LOCALE(INTERNAL_ERROR, "error.ui.validation.locale", "Invalid locale [{{locale}}].",LOCALE),
+    UI_RESOURCE_INVALID_REFERENCE(VALIDATION_ERROR, "error.ui.resource.invalid.reference", "Resource has invalid reference. The referenced document is not accessible anymore and the reference own document is shown instead. Fix error in document editor"),
+    UI_SUBRESOURCE_INVALID_REFERENCE(VALIDATION_ERROR, "error.ui.subresource.invalid.reference", "Subesource has invalid reference. The referenced document is not accessible anymore and the reference own document is shown instead. Fix error in document editor "),
     UNAUTHORIZED_CREDENTIAL_SUSPENDED(UNAUTHORIZED, "error.unauthorized.credential.suspended", "The user credential is suspended. Please try again later or contact your administrator."),
     UNAUTHORIZED_INVALID_BEARER_TOKEN(UNAUTHORIZED, "error.unauthorized.invalid.bearer.token", "The bearer token is invalid or not active any more. Please try to regenerate your token."),
     UNAUTHORIZED_INVALID_RESET_TOKEN(UNAUTHORIZED, "error.unauthorized.invalid.reset.token", "The reset token it is invalid or not active any more. Please try to reset your password again."),

@@ -6,7 +6,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {
   AlertMessageService
@@ -30,10 +30,15 @@ import {
 import {
   DomainPropertyRo
 } from "../../../../common/model/domain-property-ro.model";
-import {Subscription} from "rxjs";
+import {lastValueFrom, Subscription} from "rxjs";
 import {
   EditResourceController
 } from "../../../edit-resources/edit-resource.controller";
+import {
+  ConfirmationDialogComponent
+} from "../../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {TranslateService} from "@ngx-translate/core";
+import StringUtils from "../../../../common/utils/string-utils";
 
 
 @Component({
@@ -75,7 +80,9 @@ export class ResourceDialogComponent implements OnInit {
               private alertService: AlertMessageService,
               private httpErrorHandlerService: HttpErrorHandlerService,
               private editDomainService: EditDomainService,
-              private formBuilder: FormBuilder
+              private formBuilder: FormBuilder,
+              private dialog: MatDialog,
+              private translateService: TranslateService
   ) {
 
     if (this.lookups.cachedApplicationConfig) {
@@ -207,6 +214,37 @@ export class ResourceDialogComponent implements OnInit {
 
   closeDialog() {
     this.dialogRef.close()
+  }
+
+  async onVisibilityChanged(event: any) {
+    let showWarning: boolean = this._resource?.visibility === VisibilityEnum.Public && event.target.value === VisibilityEnum.Private;
+
+    if (showWarning) {
+
+      let confirmationDescriptionKey:string = "resource.details.panel.visibility.change.confirmation.dialog.description";
+      let confirmationDescriptionParameters: any = {};
+
+      // check if resource is referenced by document references
+      if (this._resource.documentReferenceInfo &&
+        this._resource.documentReferenceInfo.sharingEnabled
+        && this._resource.documentReferenceInfo.referencedByCount > 0) {
+        confirmationDescriptionKey = "resource.details.panel.visibility.change.confirmation.dialog.description.referenced";
+        confirmationDescriptionParameters["referenceCount"] = this._resource.documentReferenceInfo.referencedByCount;
+      }
+
+      this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: await lastValueFrom(this.translateService.get("resource.details.panel.visibility.change.confirmation.dialog.title")),
+          description: await lastValueFrom(this.translateService.get(confirmationDescriptionKey, confirmationDescriptionParameters))
+        }
+      }).afterClosed().subscribe(result => {
+        if (!result) {
+          // prevent default does not work in case of "async"
+          this.resourceForm.controls['visibility'].setValue(VisibilityEnum.Public);
+          this.resourceForm.controls['visibility'].markAsPristine();
+        }
+      });
+    }
   }
 
   get submitButtonEnabled(): boolean {

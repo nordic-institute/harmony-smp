@@ -20,12 +20,14 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DocumentVersionRO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 9008583888835630039L;
 
     private int version;

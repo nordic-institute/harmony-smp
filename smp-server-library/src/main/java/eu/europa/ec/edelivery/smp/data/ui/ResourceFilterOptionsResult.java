@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
 
@@ -27,13 +28,14 @@ import java.util.*;
  */
 public class ResourceFilterOptionsResult implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 6677275164291128366L;
 
     // The set of all the available domain codes
-    private Set<String> availableDomains = new LinkedHashSet<>();
+    private final Set<String> availableDomains = new LinkedHashSet<>();
 
     // The set of all the available document types
-    private Set<String> availableDocumentTypes = new LinkedHashSet<>();
+    private final Set<String> availableDocumentTypes = new LinkedHashSet<>();
 
     public ResourceFilterOptionsResult(List<String> domainCodes, List<String> documentTypes) {
         this.availableDomains.addAll(new TreeSet<>(domainCodes));

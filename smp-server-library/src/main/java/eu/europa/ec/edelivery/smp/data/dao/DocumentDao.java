@@ -235,6 +235,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
         });
     }
 
+
     /**
      * Method creates query for searching reference document resources
      *
@@ -247,7 +248,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
      */
     private <T> TypedQuery<T> createSearchReferenceDocumentResourcesQuery(Class<T> resultClass, DBResource dbTargetResource, String searchResourceIdentifier, String searchResourceScheme) {
 
-        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT : QUERY_SEARCH_DOCUMENT_REFERENCES;
+        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_TEMPLATES_COUNT : QUERY_SEARCH_DOCUMENT_TEMPLATES;
         LOG.debug("Create search query [{}] for resource references class [{}] with resource [{}] - [{}]", queryName, resultClass,
                 searchResourceIdentifier, searchResourceScheme);
 
@@ -275,8 +276,8 @@ public class DocumentDao extends BaseDao<DBDocument> {
                                                                              String searchSubresourceIdentifier,
                                                                              String searchSubresourceScheme) {
 
-        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT :
-                QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES;
+        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES_COUNT :
+                QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES;
         LOG.debug("Create search query [{}] for subresource references with class [{}] with resource [{}] - [{}], subresource [{}] - [{}]",
                 queryName, resultClass,
                 searchResourceIdentifier,

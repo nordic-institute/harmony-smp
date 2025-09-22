@@ -19,6 +19,7 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
@@ -118,6 +119,25 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
         TypedQuery<DBSubresource> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_BY_RESOURCE_ID, DBSubresource.class);
         query.setParameter(PARAM_RESOURCE_ID, resourceId);
         return query.getResultList();
+    }
+
+    /**
+     * Method returns DocumentReferenceData for the subresource. If there is no reference data it returns null.
+     * If more than one result returns fist and logs data inconsistency with WARN log level
+     * @param subresource the subresource to get the reference data for.
+     * @return DBDocumentReferenceData or null
+     */
+    public DBDocumentReferenceData getDocumentReferenceData(DBSubresource subresource) {
+        TypedQuery<DBDocumentReferenceData> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_REFERENCE_DATA, DBDocumentReferenceData.class);
+        query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
+        List<DBDocumentReferenceData> result = query.getResultList();
+        if (result.isEmpty()) {
+            return null;
+        }
+        if (result.size() > 1) {
+            LOG.warn("Found more than one document reference data for resource [{}]", subresource.getId());
+        }
+        return result.get(0);
     }
 
     @Transactional

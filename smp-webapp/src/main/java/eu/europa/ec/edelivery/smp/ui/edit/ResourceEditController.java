@@ -33,6 +33,7 @@ import eu.europa.ec.edelivery.smp.services.ui.UIResourceService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -85,15 +86,11 @@ public class ResourceEditController {
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
 
-        if (StringUtils.isBlank(forRole)) {
+        if (StringUtils.isBlank(forRole) || Strings.CI.equals("group-admin", forRole)) {
             return uiResourceService.getGroupResources(groupId, page, pageSize, filter);
         }
 
-        if (StringUtils.equalsIgnoreCase("group-admin", forRole)) {
-            return uiResourceService.getGroupResources(groupId, page, pageSize, filter);
-        }
-
-        if (StringUtils.equalsIgnoreCase("resource-admin", forRole)) {
+        if ( Strings.CI.equals("resource-admin", forRole)) {
             return uiResourceService.getResourcesForUserAndGroup(userId, MembershipRoleType.ADMIN, groupId, page, pageSize, filter);
         }
 

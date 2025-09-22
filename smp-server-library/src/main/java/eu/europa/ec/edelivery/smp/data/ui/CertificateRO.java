@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.List;
  */
 public class CertificateRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630004L;
 
     private String certificateId;

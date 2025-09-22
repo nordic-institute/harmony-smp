@@ -56,7 +56,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 
@@ -398,7 +397,7 @@ public class UIDocumentService {
      * created.
      *
      * @param documentPropertyRO Document Property RO to persist
-     * @param dbDocument db document to which the property belongs
+     * @param dbDocument         db document to which the property belongs
      */
     private void persistDocumentProperty(DocumentPropertyRO documentPropertyRO, DBDocument dbDocument) {
 
@@ -619,6 +618,13 @@ public class UIDocumentService {
 
             if (Boolean.TRUE.equals(docConfig.getSharingEnabled()) && StringUtils.isNotBlank(docConfig.getReferenceDocumentId())) {
                 throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_SHARING_NOT_ALLOWED);
+            }
+
+            if (document.getSharingEnabled() &&
+                    (docConfig.getSharingEnabled() == null || !docConfig.getSharingEnabled())) {
+                // if sharing is disabled then remove the document from all documents which are referencing to this document
+                LOG.info("Document sharing is disabled. Unlink the reference document for document [{}]", document.getId());
+                documentDao.unlinkDocument(document);
             }
             document.setSharingEnabled(docConfig.getSharingEnabled());
             document.setName(docConfig.getName());
@@ -847,6 +853,10 @@ public class UIDocumentService {
             // allways get default version for referenced document
             DBDocumentVersion referencedVersion = getDocumentVersionOrCurrentVersion(document.getReferenceDocument(), -1);
             documentRo.setReferencePayload(new String(referencedVersion.getContent()));
+        } else if (StringUtils.isNotBlank(document.getReferenceDocumentUrl())) {
+            // if the document has reference url but the referenced document is deleted
+            docConfigRo.setReferenceDocumentUrl(document.getReferenceDocumentUrl());
+            docConfigRo.setReferenceDocumentAccessible(false);
         }
 
         docConfigRo.setSharingEnabled(document.getSharingEnabled());

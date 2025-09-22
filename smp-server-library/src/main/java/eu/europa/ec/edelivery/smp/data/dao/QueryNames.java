@@ -93,6 +93,7 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_ALL_FOR_USER = "DBResource.getPublicSearch";
 
     public static final String QUERY_RESOURCE_ALL_FOR_USER_COUNT = "DBResource.getPublicSearchCount";
+    public static final String QUERY_RESOURCE_REFERENCE_DATA = "DBResource.getReferenceDataForResource";
 
     public static final String QUERY_RESOURCE_FILTER = "DBResource.getResourcesByFilter";
     public static final String QUERY_RESOURCE_FILTER_COUNT = "DBResource.getResourcesByFilterCount";
@@ -115,8 +116,9 @@ public class QueryNames {
 
     public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID = "DBSubresource.getByIdentifierAndResourceId";
     public static final String QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF = "DBSubresource.getAllForResourceAndTypeIdentifier";
-
     public static final String QUERY_SUBRESOURCE_BY_RESOURCE_ID = "DBSubresource.getAllForResourceId";
+    public static final String QUERY_SUBRESOURCE_REFERENCE_DATA = "DBSubresource.getReferenceDataForResource";
+
     public static final String QUERY_SUBRESOURCE_DEF_ALL = "DBSubresource.getAll";
     public static final String QUERY_SUBRESOURCE_DEF_BY_IDENTIFIER = "DBResourceDef.getAllByIdentifier";
     public static final String QUERY_SUBRESOURCE_DEF_URL_SEGMENT = "DBResourceDef.getAllByUrlSegment";
@@ -130,12 +132,12 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_FOR_USER_COUNT = "DBResourceDef.getAllForUserCount";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";
-    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES = "DBDocument.getDocumentReferences";
-    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT = "DBDocument.getDocumentReferencesCount";
+    public static final String QUERY_SEARCH_DOCUMENT_TEMPLATES = "DBDocument.getDocumentReferences";
+    public static final String QUERY_SEARCH_DOCUMENT_TEMPLATES_COUNT = "DBDocument.getDocumentReferencesCount";
     public static final String QUERY_DOCUMENT_FOR_SUBRESOURCE = "DBDocument.getForSubresource";
     public static final String QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT = "DBDocument.getAllDocumentsForTargetDocument";
-    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES = "DBDocument.getDocumentReferencesForSubresources";
-    public static final String QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT = "DBDocument.getDocumentReferencesForSubresourcesCount";
+    public static final String QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES = "DBDocument.getDocumentReferencesForSubresources";
+    public static final String QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES_COUNT = "DBDocument.getDocumentReferencesForSubresourcesCount";
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
 

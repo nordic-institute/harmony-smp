@@ -1,5 +1,6 @@
 import {SearchTableEntity} from "../search-table/search-table-entity.model";
 import {VisibilityEnum} from "../enums/visibility.enum";
+import {DocumentReferenceInfoRo} from "./document-reference-info-ro.model";
 
 /**
  * ResourceRo interface for resource data
@@ -18,4 +19,5 @@ export interface ResourceRo extends SearchTableEntity {
   reviewEnabled?: boolean;
   hasCurrentUserReviewPermission?: boolean;
   visibility?: VisibilityEnum;
+  documentReferenceInfo?: DocumentReferenceInfoRo;
 }

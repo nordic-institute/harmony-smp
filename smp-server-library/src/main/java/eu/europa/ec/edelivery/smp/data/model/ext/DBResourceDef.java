@@ -28,6 +28,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.*;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
         "   ) " )
 public class DBResourceDef extends BaseEntity {
+    @Serial
     private static final long serialVersionUID = 1008583888835630001L;
 
     @Id

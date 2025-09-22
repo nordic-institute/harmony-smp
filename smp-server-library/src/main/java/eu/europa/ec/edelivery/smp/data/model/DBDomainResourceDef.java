@@ -23,6 +23,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.*;
+
+import java.io.Serial;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -45,6 +47,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id=:domain_id AND d.resourceDef.id=:resource_def_id")
 @NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id=:domain_id AND d.resourceDef.identifier=:resource_def_identifier")
 public class DBDomainResourceDef extends BaseEntity {
+    @Serial
     private static final long serialVersionUID = 1008583888835630003L;
 
     @Id

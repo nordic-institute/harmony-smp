@@ -22,12 +22,15 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
 import java.io.Serializable;
 
-public class BaseRO  implements Serializable {
+public class BaseRO implements Serializable {
 
     private int status = EntityROStatus.PERSISTED.getStatusNumber();
     private int index;
     // action message
     private String actionMessage;
+    // the status message . E.g  message for error status
+    private String statusMessage;
+
 
     public int getStatus() {
         return status;
@@ -51,5 +54,13 @@ public class BaseRO  implements Serializable {
 
     public void setActionMessage(String actionMessage) {
         this.actionMessage = actionMessage;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 }

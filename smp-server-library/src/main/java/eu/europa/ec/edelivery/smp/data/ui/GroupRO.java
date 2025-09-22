@@ -23,6 +23,8 @@ import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
+
 /**
  * The group of resources with shared resource management rights. The user with group admin has rights to create/delete
  * resources for the group.
@@ -31,6 +33,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @since 5.0
  */
 public class GroupRO extends BaseRO {
+    @Serial
     private static final long serialVersionUID = 9008583888835630026L;
 
     private String groupId;

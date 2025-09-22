@@ -18,7 +18,12 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
-public class SMLIntegrationResult {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class SMLIntegrationResult implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9008583888835630050L;
 
     boolean success;
     String errorMessage;

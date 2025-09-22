@@ -9,6 +9,7 @@ import {
 import {MatTable, MatTableDataSource} from "@angular/material/table";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {SmpTableColDef} from "./smp-table-coldef.model";
+import {EntityStatus} from "../../enums/entity-status.enum";
 
 
 @Component({
@@ -136,4 +137,5 @@ export class SmpTableComponent implements AfterViewInit {
     return ( col?.style?col.style:'') + ' '  +( col?.headerStyle?col.headerStyle:'') ;
   }
 
+  protected readonly EntityStatus = EntityStatus;
 }
