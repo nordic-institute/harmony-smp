@@ -39,6 +39,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Purpose of the ResourceEditController is to provide edut methods to retrieve
@@ -54,6 +55,8 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 public class ResourceEditController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceEditController.class);
+    public static final String FILTER_TYPE_GROUP_ADMIN = "group-admin";
+    public static final String FILTER_TYPE_RESOURCE_ADMIN = "resource-admin";
     private final UIResourceService uiResourceService;
 
     public ResourceEditController(UIResourceService uiResourceService) {
@@ -86,11 +89,11 @@ public class ResourceEditController {
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
 
-        if (StringUtils.isBlank(forRole) || Strings.CI.equals("group-admin", forRole)) {
+        if (isBlank(forRole) || Strings.CI.equals(FILTER_TYPE_GROUP_ADMIN, forRole)) {
             return uiResourceService.getGroupResources(groupId, page, pageSize, filter);
         }
 
-        if ( Strings.CI.equals("resource-admin", forRole)) {
+        if ( Strings.CI.equals(FILTER_TYPE_RESOURCE_ADMIN, forRole)) {
             return uiResourceService.getResourcesForUserAndGroup(userId, MembershipRoleType.ADMIN, groupId, page, pageSize, filter);
         }
 
