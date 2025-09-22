@@ -63,7 +63,15 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 )
 
 @NamedQuery(name = QUERY_SUBRESOURCE_BY_RESOURCE_ID , query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id order by id asc")
-@NamedQuery(name = "DBSubresource.deleteById", query = "DELETE FROM DBSubresource d WHERE d.id = :id")
+@NamedQuery(name = QUERY_SUBRESOURCE_REFERENCE_DATA,
+        query = "SELECT  new eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData(" +
+                "    sr.document.id as documentId, " +
+                "    sr.document.sharingEnabled as sharingEnabled, " +
+                "    (SELECT COUNT(d2.id) FROM DBDocument d2 WHERE d2.referenceDocument = sr.document) as referencedByCount, " +
+                "    sr.document.referenceDocument.id as referencedDocumentId, " +
+                "    sr.document.referenceDocumentUrl as referenceUrlPath) " +
+                "  FROM DBSubresource sr WHERE sr.id = :subresource_id")
+
 public class DBSubresource extends BaseEntity {
 
     @Id

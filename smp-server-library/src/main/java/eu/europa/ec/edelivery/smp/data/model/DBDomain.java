@@ -28,6 +28,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.*;
+
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +114,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 "       OR d.signatureKeyAlias IN :expired_certificate_aliases")
 public class DBDomain extends BaseEntity {
 
+    @Serial
     private static final long serialVersionUID = 1008583888835630004L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_SEQ")

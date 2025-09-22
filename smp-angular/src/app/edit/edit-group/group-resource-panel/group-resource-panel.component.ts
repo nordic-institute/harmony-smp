@@ -207,13 +207,24 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
       return;
     }
 
+    let confirmationDescriptionKey:string = "group.resource.panel.delete.confirmation.dialog.description";
+    let confirmationDescriptionParameters: any = {
+      identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
+      identifierValue: this.selected.identifierValue,
+    };
+
+    // check if resource is referenced by document references
+    if (this.selected.documentReferenceInfo &&
+      this.selected.documentReferenceInfo.sharingEnabled
+      && this.selected.documentReferenceInfo.referencedByCount > 0) {
+      confirmationDescriptionKey = "group.resource.panel.delete.confirmation.dialog.description.referenced";
+      confirmationDescriptionParameters["referenceCount"] = this.selected.documentReferenceInfo.referencedByCount;
+    }
+
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.title")),
-        description: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.description", {
-          identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
-          identifierValue: this.selected.identifierValue
-        }))
+        description: await lastValueFrom(this.translateService.get(confirmationDescriptionKey, confirmationDescriptionParameters ))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

@@ -18,7 +18,12 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
-public class PropertyValidationRO {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class PropertyValidationRO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9008583888835630046L;
 
     String property;
     String value;

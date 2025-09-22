@@ -47,7 +47,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Table(name = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
 
 @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES, query =
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES, query =
         "SELECT new eu.europa.ec.edelivery.smp.data.model.doc.DBSearchReferenceDocumentMapping(" +
         "   d.id, " +
         "   r.id, " +
@@ -70,7 +70,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
         "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\') " +
         "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT, query = "SELECT count(d.id) " +
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES_COUNT, query = "SELECT count(d.id) " +
         " FROM DBResource r " +
         " INNER JOIN r.document d " +
         " INNER JOIN r.group gr" +
@@ -86,7 +86,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\')" +
         "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')")
 @NamedQuery(name = QUERY_DOCUMENT_FOR_SUBRESOURCE, query = "SELECT d FROM DBSubresource  sr JOIN sr.document d WHERE sr.id =:subresource_id")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES, query =
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES, query =
         "SELECT new eu.europa.ec.edelivery.smp.data.model.doc.DBSearchReferenceDocumentMapping(" +
                 "   d.id, " +
                 "   r.id, " +
@@ -118,7 +118,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')" +
                 "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier) ESCAPE '\\')" +
                 "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme) ESCAPE '\\')")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT, query = "SELECT count(d.id) " +
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES_COUNT, query = "SELECT count(d.id) " +
         " FROM DBSubresource sr " +
         " INNER JOIN sr.subresourceDef srdef " +
         " INNER JOIN sr.document d " +

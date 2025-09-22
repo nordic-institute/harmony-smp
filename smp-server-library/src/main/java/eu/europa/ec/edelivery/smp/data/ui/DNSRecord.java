@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.dynamicdiscovery.enums.DNSLookupType;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.StringJoiner;
 
@@ -31,6 +32,7 @@ import java.util.StringJoiner;
  */
 public class DNSRecord implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630033L;
 
     DNSLookupType dnsType;

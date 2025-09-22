@@ -18,6 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 /**
@@ -26,7 +28,9 @@ import java.time.OffsetDateTime;
  * @author Sebastian-Ion TINCU
  * @since 5.2
  */
-public class SMLChangeCertificate {
+public class SMLChangeCertificate implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9008583888835630049L;
 
     String certificateAlias;
 

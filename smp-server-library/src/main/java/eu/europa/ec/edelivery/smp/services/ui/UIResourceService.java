@@ -25,16 +25,15 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
+import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentReferenceInfoRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -43,9 +42,11 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
 import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
@@ -56,7 +57,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
@@ -83,7 +83,7 @@ public class UIResourceService {
     private final UIDocumentService uiDocumentService;
     private final DocumentVersionService documentVersionService;
     private final DocumentMailService documentMailService;
-
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
     public UIResourceService(ResourceDao resourceDao,
                              ResourceMemberDao resourceMemberDao,
@@ -95,7 +95,8 @@ public class UIResourceService {
                              SMLIntegrationService smlIntegrationService,
                              UIDocumentService uiDocumentService,
                              DocumentVersionService documentVersionService,
-                             DocumentMailService documentMailService) {
+                             DocumentMailService documentMailService,
+                             SMPExceptionLanguageService smpExceptionLanguageService) {
         this.resourceDao = resourceDao;
         this.resourceMemberDao = resourceMemberDao;
         this.resourceDefDao = resourceDefDao;
@@ -109,6 +110,7 @@ public class UIResourceService {
         this.uiDocumentService = uiDocumentService;
         this.documentVersionService = documentVersionService;
         this.documentMailService = documentMailService;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
 
@@ -136,7 +138,9 @@ public class UIResourceService {
         }
         result.setCount(count);
         List<DBResource> resources = resourceDao.getResourcesForFilter(page, pageSize, filter);
-        List<ResourceRO> resourceROS = resources.stream().map(resource -> conversionService.convert(resource, ResourceRO.class)).collect(Collectors.toList());
+        List<ResourceRO> resourceROS = resources.stream()
+                .map(this::convertResourceWithReferenceData)
+                .toList();
         resourceDao.getResourcesForFilter(page, pageSize, filter);
         result.getServiceEntities().addAll(resourceROS);
         return result;
@@ -173,8 +177,9 @@ public class UIResourceService {
         }
         result.setCount(count);
         List<DBResource> resources = resourceDao.getResourcesForFilter(page, pageSize, filter);
-        List<ResourceRO> resourceROS = resources.stream().map(resource -> conversionService.convert(resource, ResourceRO.class)).collect(Collectors.toList());
-        resourceDao.getResourcesForFilter(page, pageSize, filter);
+        List<ResourceRO> resourceROS = resources.stream()
+                .map(this::convertResourceWithReferenceData)
+                .toList();
         result.getServiceEntities().addAll(resourceROS);
         return result;
     }
@@ -285,11 +290,11 @@ public class UIResourceService {
     /**
      * Method allows Group admin and Resource admin to change resource visibility and enable/disable review flow.
      *
-     * @param resourceRO
-     * @param resourceId
-     * @param groupId
-     * @param domainId
-     * @return
+     * @param resourceRO  input resource data to update
+     * @param resourceId  resource id to update
+     * @param groupId   group id of the resource
+     * @param domainId domain id of the group
+     * @return updated resource RO
      */
     @Transactional
     public ResourceRO updateResourceForGroup(ResourceRO resourceRO, Long resourceId, Long groupId, Long domainId) {
@@ -459,5 +464,26 @@ public class UIResourceService {
         uiDocumentService.generateDocumentForResource(resource, baos);
         version.setContent(baos.toByteArray());
         return document;
+    }
+
+    private ResourceRO convertResourceWithReferenceData(DBResource resource) {
+        ResourceRO resourceRO = conversionService.convert(resource, ResourceRO.class);
+        DBDocumentReferenceData docRefData = resourceDao.getDocumentReferenceData(resource);
+        if (docRefData != null && resourceRO != null) {
+            DocumentReferenceInfoRO docRefInfo = new DocumentReferenceInfoRO();
+            docRefInfo.setReferencedByCount(docRefData.getReferencedByCount());
+            docRefInfo.setReferencedDocumentExists(docRefData.getReferencedDocumentId() != null);
+            docRefInfo.setReferenceUrlPath(docRefData.getReferenceUrlPath());
+            docRefInfo.setSharingEnabled(docRefData.isSharingEnabled());
+            resourceRO.setDocumentReferenceInfo(docRefInfo);
+            if (StringUtils.isNotBlank(docRefData.getReferenceUrlPath()) && docRefData.getReferencedDocumentId() == null) {
+                resourceRO.setStatus(EntityROStatus.ERROR.getStatusNumber());
+                String currentLocale = LocaleUtils.getCurrentLocale();
+                resourceRO.setStatusMessage(this.smpExceptionLanguageService
+                        .getMessageTranslation(ErrorMessageType.UI_RESOURCE_INVALID_REFERENCE.getMessageCode(), currentLocale)
+                );
+            }
+        }
+        return resourceRO;
     }
 }

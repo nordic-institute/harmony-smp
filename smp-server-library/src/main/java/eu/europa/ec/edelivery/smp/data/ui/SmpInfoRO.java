@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
  * @since 4.1
  */
 public class SmpInfoRO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 9008583888835630022L;
     private String version;
     private String ssoAuthenticationLabel;

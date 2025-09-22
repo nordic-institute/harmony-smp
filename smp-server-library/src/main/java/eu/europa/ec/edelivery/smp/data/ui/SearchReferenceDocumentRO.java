@@ -20,6 +20,8 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.enums.DocumentReferenceType;
 
+import java.io.Serial;
+
 /**
  *
  *
@@ -28,6 +30,7 @@ import eu.europa.ec.edelivery.smp.data.enums.DocumentReferenceType;
  */
 public class SearchReferenceDocumentRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630041L;
 
     private String documentId;

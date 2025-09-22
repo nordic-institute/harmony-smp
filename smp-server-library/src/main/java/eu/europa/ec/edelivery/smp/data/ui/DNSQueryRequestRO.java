@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.StringJoiner;
 
@@ -29,6 +30,7 @@ import java.util.StringJoiner;
  */
 public class DNSQueryRequestRO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630034L;
 
     String identifierValue;

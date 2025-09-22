@@ -1,41 +1,24 @@
 import {AfterViewInit, Component, Input, ViewChild,} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
-import {
-  BeforeLeaveGuard
-} from "../../../window/sidenav/navigation-on-leave-guard";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
 import {GroupRo} from "../../../common/model/group-ro.model";
 import {ResourceRo} from "../../../common/model/resource-ro.model";
-import {
-  AlertMessageService
-} from "../../../common/alert-message/alert-message.service";
+import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {finalize} from "rxjs/operators";
 import {DomainRo} from "../../../common/model/domain-ro.model";
-import {
-  ResourceDefinitionRo
-} from "../../../system-settings/admin-extension/resource-definition-ro.model";
+import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditResourceService} from "../edit-resource.service";
 import {SubresourceRo} from "../../../common/model/subresource-ro.model";
 import {MatTableDataSource} from "@angular/material/table";
-import {
-  ConfirmationDialogComponent
-} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {
-  SubresourceDialogComponent
-} from "./subresource-dialog/subresource-dialog.component";
-import {
-  SubresourceDefinitionRo
-} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
-import {
-  NavigationNode,
-  NavigationService
-} from "../../../window/sidenav/navigation-model.service";
+import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {SubresourceDialogComponent} from "./subresource-dialog/subresource-dialog.component";
+import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
+import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 import StringUtils from "../../../common/utils/string-utils";
-import {
-  SmpTableColDef
-} from "../../../common/components/smp-table/smp-table-coldef.model";
+import {SmpTableColDef} from "../../../common/components/smp-table/smp-table-coldef.model";
 
 
 @Component({
@@ -221,13 +204,24 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
       return;
     }
 
+    let confirmationDescriptionKey:string = "subresource.panel.delete.confirmation.dialog.description";
+    let confirmationDescriptionParameters: any = {
+      identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
+      identifierValue: this.selected.identifierValue
+    };
+
+    // check if resource is referenced by document references
+    if (this.selected.documentReferenceInfo &&
+      this.selected.documentReferenceInfo.sharingEnabled
+      && this.selected.documentReferenceInfo.referencedByCount > 0) {
+      confirmationDescriptionKey = "subresource.panel.delete.confirmation.dialog.description.referenced";
+      confirmationDescriptionParameters["referenceCount"] = this.selected.documentReferenceInfo.referencedByCount;
+    }
+
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.title")),
-        description: await lastValueFrom(this.translateService.get("subresource.panel.delete.confirmation.dialog.description", {
-          identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
-          identifierValue: this.selected.identifierValue
-        }))
+        description: await lastValueFrom(this.translateService.get(confirmationDescriptionKey, confirmationDescriptionParameters))
       }
     }).afterClosed().subscribe(result => {
       if (result) {

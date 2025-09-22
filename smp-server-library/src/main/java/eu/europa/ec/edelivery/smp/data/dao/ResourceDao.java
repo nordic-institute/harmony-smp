@@ -20,6 +20,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
@@ -258,6 +259,25 @@ public class ResourceDao extends BaseDao<DBResource> {
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         query.setParameter(PARAM_RESOURCE_DEF_ID, resourceDefId);
         return query.getSingleResult();
+    }
+
+    /**
+     * Method returns DocumentReferenceData for the resource. If there is no reference data it returns null.
+     * If more than one result returns fist and logs data inconsistency with WARN log level
+     * @param resource the resource to get the reference data for.
+     * @return DBDocumentReferenceData or null
+     */
+    public DBDocumentReferenceData getDocumentReferenceData(DBResource resource) {
+        TypedQuery<DBDocumentReferenceData> query = memEManager.createNamedQuery(QUERY_RESOURCE_REFERENCE_DATA, DBDocumentReferenceData.class);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        List<DBDocumentReferenceData> result = query.getResultList();
+        if (result.isEmpty()) {
+            return null;
+        }
+        if (result.size() > 1) {
+            LOG.warn("Found more than one document reference data for resource [{}]", resource.getId());
+        }
+        return result.get(0);
     }
 
     /**

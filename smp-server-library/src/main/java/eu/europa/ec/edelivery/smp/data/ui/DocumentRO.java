@@ -22,11 +22,13 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DocumentRO extends BaseRO {
+    @Serial
     private static final long serialVersionUID = 9008583888835630038L;
     private String documentId;
     private String mimeType;

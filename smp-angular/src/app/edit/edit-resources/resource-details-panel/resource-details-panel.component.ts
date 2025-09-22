@@ -183,10 +183,21 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
   async onVisibilityChanged(event: any) {
     let showWarning: boolean = this._resource?.visibility === VisibilityEnum.Public && event.target.value === VisibilityEnum.Private;
     if (showWarning) {
+      let confirmationDescriptionKey:string = "resource.details.panel.visibility.change.confirmation.dialog.description";
+      let confirmationDescriptionParameters: any = {};
+
+      // check if resource is referenced by document references
+      if (this._resource.documentReferenceInfo &&
+        this._resource.documentReferenceInfo.sharingEnabled
+        && this._resource.documentReferenceInfo.referencedByCount > 0) {
+        confirmationDescriptionKey = "resource.details.panel.visibility.change.confirmation.dialog.description.referenced";
+        confirmationDescriptionParameters["referenceCount"] = this._resource.documentReferenceInfo.referencedByCount;
+      }
+
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
           title: await lastValueFrom(this.translateService.get("resource.details.panel.visibility.change.confirmation.dialog.title")),
-          description: await lastValueFrom(this.translateService.get("resource.details.panel.visibility.change.confirmation.dialog.description"))
+          description: await lastValueFrom(this.translateService.get(confirmationDescriptionKey, confirmationDescriptionParameters))
         }
       }).afterClosed().subscribe(result => {
         if (!result) {

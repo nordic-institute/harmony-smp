@@ -18,11 +18,13 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 public class AccessTokenRO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630002L;
 
     private String identifier;

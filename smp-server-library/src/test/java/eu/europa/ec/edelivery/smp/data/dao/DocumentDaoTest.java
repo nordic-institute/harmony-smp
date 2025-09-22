@@ -200,4 +200,6 @@ class DocumentDaoTest extends AbstractBaseDao {
                 = testInstance.getDocumentReviewListForUser(testUtilsDao.getUser1().getId(), page, pageSize);
         assertEquals(expectedSize, dbDocumentVersions.size());
     }
+
+
 }

@@ -77,35 +77,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter)  ESCAPE '\\'" +
         "     OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter) ESCAPE '\\')" +
         " ) order by r.id asc")
-@NamedQuery(name = "DBResource.getServiceGroupByID", query = "SELECT d FROM DBResource d WHERE d.id = :id")
 @NamedQuery(name = "DBResource.getServiceGroupByIdentifier", query = "SELECT d FROM DBResource d WHERE d.identifierValue = :participantIdentifier " +
         " AND (:participantScheme IS NULL AND d.identifierScheme IS NULL " +
         " OR d.identifierScheme = :participantScheme)")
-@NamedQuery(name = "DBResource.deleteById", query = "DELETE FROM DBResource d WHERE d.id = :id")
-
-@NamedNativeQuery(name = "DBResource.deleteAllOwnerships", query = "DELETE FROM SMP_RESOURCE_MEMBER WHERE FK_SG_ID=:serviceGroupId")
-
-// get All public
-@NamedQuery(name = "DBResource.getPublicSearch2", query = "SELECT r FROM  DBResource r WHERE r.group.visibility='PUBLIC' " +
-        " AND (r.group.domain.visibility='PUBLIC' " +
-        "    OR :user_id IS NOT NULL " +
-        "     AND ( (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
-        "      OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
-        "      OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        "     ) " +
-        "  ) " +
-        " AND (r.group.visibility='PUBLIC' " +
-        "    OR  (:user_id IS NOT NULL " +
-        "     AND ( (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.id = r.group.id) > 0 " +
-        "      OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.id = r.group.id) > 0 " +
-        "     ) )" +
-        "  ) " +
-        " AND ( r.visibility = 'PUBLIC' " +
-        "   OR (:user_id IS NOT NULL " +
-        "     AND (select count(id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0 )) " +
-        " AND (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier  ESCAPE '\\')" +
-        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme  ESCAPE '\\') order by r.identifierScheme, r.identifierValue"
-)
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r, r.domainResourceDef.domain.domainCode as domainCode, " +
         "   r.domainResourceDef.resourceDef.urlSegment as urlSegment, r.domainResourceDef.resourceDef.name as documentType " +
         "FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
@@ -143,6 +117,14 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:domain_code IS NULL OR r.domainResourceDef.domain.domainCode = :domain_code) " +
         " AND (:document_type IS NULL OR r.domainResourceDef.resourceDef.name = :document_type) "
 )
+@NamedQuery(name = QUERY_RESOURCE_REFERENCE_DATA,
+        query = "SELECT  new eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData(" +
+                "    r.document.id as documentId, " +
+                "    r.document.sharingEnabled as sharingEnabled, " +
+                "    (SELECT COUNT(r) FROM DBDocument d2 WHERE d2.referenceDocument = r.document) as referencedByCount, " +
+                "    r.document.referenceDocument.id as referencedDocumentId, " +
+                "    r.document.referenceDocumentUrl as referenceUrlPath) " +
+                "  FROM DBResource r WHERE r.id = :resource_id")
 public class DBResource extends BaseEntity {
 
     @Id

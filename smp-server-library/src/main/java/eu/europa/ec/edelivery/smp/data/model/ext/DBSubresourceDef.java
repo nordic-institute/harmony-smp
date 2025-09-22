@@ -28,6 +28,8 @@ import org.hibernate.envers.Audited;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
+
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 /**
@@ -47,6 +49,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBSubresourceDef d WHERE d.urlSegment = :url_segment")
 
 public class DBSubresourceDef extends BaseEntity {
+    @Serial
     private static final long serialVersionUID = 1008583888835630002L;
 
     @Id
