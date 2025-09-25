@@ -16,7 +16,6 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
@@ -50,12 +49,6 @@ import static eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType.toList;
 public class DomainDao extends BaseDao<DBDomain> {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(DomainDao.class);
 
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
-
-    public DomainDao(SMPExceptionLanguageService smpExceptionLanguageService) {
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
-    }
-
     /**
      * Returns the only single record from smp_domain table.
      * Returns Optional.empty() if there is more than 1 record present.
@@ -80,11 +73,9 @@ public class DomainDao extends BaseDao<DBDomain> {
      * Returns domain records from smp_domain table.
      *
      * @return the list of domain records from smp_domain table
-     * @throws IllegalStateException if no domain is configured
      */
     public List<DBDomain> getAllDomains() {
         TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
-
         return query.getResultList();
     }
 
@@ -126,9 +117,9 @@ public class DomainDao extends BaseDao<DBDomain> {
     /**
      * Returns the Optional DBDomain from database. The domain is searched by domain parameter and queryDomainCode.
      *
-     * @param domainCode - parameter value to search for
-     * @param queryName       - The named DBDomain query
-     * @param queryParamName  the parameter name in the query
+     * @param domainCode     - parameter value to search for
+     * @param queryName      - The named DBDomain query
+     * @param queryParamName the parameter name in the query
      * @return Optional DBDomain
      */
     private Optional<DBDomain> getDomainByQueryWithParam(String domainCode, String queryName, String queryParamName) {
@@ -206,7 +197,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.
      * If code is null or blank - then null is returned.
      *
-     * @param domainCode  - domain code to be validated
+     * @param domainCode - domain code to be validated
      * @return DBDomain - domain if exists
      * @throws SMPRuntimeException if domain does not exist
      */
@@ -245,9 +236,9 @@ public class DomainDao extends BaseDao<DBDomain> {
      * and have some resources assigned. See the EDELIVERY-13793
      * If user is null then only public domains are returned.
      *
-     * @param user - user to search for
-     *             if null only public domains are returned
-     * @param page - page number
+     * @param user     - user to search for
+     *                 if null only public domains are returned
+     * @param page     - page number
      * @param pageSize - page size
      * @return list of domains
      */

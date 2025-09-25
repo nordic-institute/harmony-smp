@@ -108,6 +108,7 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
   async onShowButtonDocumentClicked() {
     // set selected resource
+    this.editResourceService.selectedDomain = this.domain;
     this.editResourceService.selectedResource = this.resource;
     // clear selected subresource
     this.editResourceService.selectedSubresource = null;

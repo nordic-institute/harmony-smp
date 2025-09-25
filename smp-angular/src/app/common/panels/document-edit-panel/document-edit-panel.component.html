@@ -159,7 +159,7 @@
         <document-versions-panel
           formControlName="documentVersions"
           [selectedVersion]="currentDocumentVersion"
-          (selectedVersionChange)="loadDocumentForVersion($event)"
+          (selectedVersionChange)="onSelectionDocumentVersionChanged()"
           ngDefaultControl></document-versions-panel>
       </expandable-item>
       <!-- The document version panels -->

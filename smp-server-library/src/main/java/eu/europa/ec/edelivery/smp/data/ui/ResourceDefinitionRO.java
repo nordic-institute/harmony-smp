@@ -32,7 +32,6 @@ public class ResourceDefinitionRO extends BaseRO {
     @Serial
     private static final long serialVersionUID = 9008583888835630013L;
 
-    String resourceId;
     private String identifier;
     private String name;
     private String description;
@@ -40,14 +39,6 @@ public class ResourceDefinitionRO extends BaseRO {
     private String urlSegment;
 
     private final List<SubresourceDefinitionRO> subresourceDefinitions = new ArrayList<>();
-
-    public String getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
-    }
 
     public String getIdentifier() {
         return identifier;

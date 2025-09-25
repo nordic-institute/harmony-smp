@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.model.doc;
 
-import eu.europa.ec.edelivery.smp.data.enums.DocumentReferenceType;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentLevelType;
 
 import java.util.StringJoiner;
 
@@ -32,7 +32,7 @@ public class DBSearchReferenceDocumentMapping {
     private Long resourceId;
     private Long subresourceId;
 
-    private DocumentReferenceType referenceType;
+    private DocumentLevelType referenceType;
 
     private String documentName;
     private String resourceValue;
@@ -51,7 +51,7 @@ public class DBSearchReferenceDocumentMapping {
                                             String resourceScheme,
                                             String domainCode,
                                             String resourceDefUrlSegment) {
-        referenceType = DocumentReferenceType.RESOURCE;
+        referenceType = DocumentLevelType.RESOURCE;
         this.documentId = documentId;
         this.resourceId = resourceId;
         this.documentName = documentName;
@@ -72,7 +72,7 @@ public class DBSearchReferenceDocumentMapping {
                                             String domainCode,
                                             String resourceDefUrlSegment,
                                             String subresourceDefUrlSegment) {
-        referenceType = DocumentReferenceType.SUBRESOURCE;
+        referenceType = DocumentLevelType.SUBRESOURCE;
         this.documentId = documentId;
         this.resourceId = resourceId;
         this.subresourceId = subresourceId;
@@ -111,11 +111,11 @@ public class DBSearchReferenceDocumentMapping {
         this.subresourceId = subresourceId;
     }
 
-    public DocumentReferenceType getReferenceType() {
+    public DocumentLevelType getReferenceType() {
         return referenceType;
     }
 
-    public void setReferenceType(DocumentReferenceType referenceType) {
+    public void setReferenceType(DocumentLevelType referenceType) {
         this.referenceType = referenceType;
     }
 

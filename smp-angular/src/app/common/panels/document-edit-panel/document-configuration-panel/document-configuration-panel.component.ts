@@ -32,7 +32,7 @@ import {DocumentConfigurationRo} from "../../../model/document-configuration-ro.
 import {
   ReferenceDocumentDialogComponent
 } from "../../../dialogs/reference-document-dialog/reference-document-dialog.component";
-import {DocumentReferenceType} from "../../../enums/documetn-reference-type.enum";
+import {DocumentLevelType} from "../../../enums/documetn-reference-type.enum";
 import {ResourceRo} from "../../../model/resource-ro.model";
 import {SubresourceRo} from "../../../model/subresource-ro.model";
 import {SearchReferenceDocument} from "../../../model/search-reference-document-ro.model";
@@ -200,7 +200,7 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
   onShowSearchDialogClicked() {
     this.dialog.open(ReferenceDocumentDialogComponent, {
       data: {
-        targetType: !this.subresource ? DocumentReferenceType.RESOURCE : DocumentReferenceType.SUBRESOURCE,
+        targetType: !this.subresource ? DocumentLevelType.RESOURCE : DocumentLevelType.SUBRESOURCE,
         targetResource: this.resource,
         targetSubresource: this.subresource,
       }

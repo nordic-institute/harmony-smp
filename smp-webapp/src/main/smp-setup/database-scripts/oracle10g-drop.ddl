@@ -44,6 +44,10 @@
 
     drop table SMP_DOMAIN_CONFIGURATION_AUD cascade constraints;
 
+    drop table SMP_DOMAIN_DOC_TMPL cascade constraints;
+
+    drop table SMP_DOMAIN_DOC_TMPL_AUD cascade constraints;
+
     drop table SMP_DOMAIN_MEMBER cascade constraints;
 
     drop table SMP_DOMAIN_MEMBER_AUD cascade constraints;
@@ -109,6 +113,8 @@
     drop sequence SMP_DOCVER_EVENT_SEQ;
 
     drop sequence SMP_DOMAIN_CONF_SEQ;
+
+    drop sequence SMP_DOMAIN_DOC_TMPL_SEQ;
 
     drop sequence SMP_DOMAIN_MEMBER_SEQ;
 

@@ -26,6 +26,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
 
   membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
+
   selected: DomainRo;
   domainList: DomainRo[] = [];
   currenTabIndex: number = 0;

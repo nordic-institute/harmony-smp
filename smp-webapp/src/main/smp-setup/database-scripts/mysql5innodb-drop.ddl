@@ -74,6 +74,22 @@
        drop 
        foreign key FKkelcga805bleh5x256hy5e1xb;
 
+    alter table SMP_DOMAIN_DOC_TMPL 
+       drop 
+       foreign key FKg4ci2nee5nvm2tbdbpkeom53m;
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       drop 
+       foreign key FK8dwm6w0x0rdiouvt74i07s9u5;
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       drop 
+       foreign key FK45eaf7nmo1dem40af2dw27jh5;
+
+    alter table SMP_DOMAIN_DOC_TMPL_AUD 
+       drop 
+       foreign key FKb1dw4r0rpj3jdtff4jc7gn046;
+
     alter table SMP_DOMAIN_MEMBER 
        drop 
        foreign key FK1tdwy9oiyrk6tl4mk0fakhkf5;
@@ -231,6 +247,10 @@
     drop table if exists SMP_DOMAIN_CONFIGURATION;
 
     drop table if exists SMP_DOMAIN_CONFIGURATION_AUD;
+
+    drop table if exists SMP_DOMAIN_DOC_TMPL;
+
+    drop table if exists SMP_DOMAIN_DOC_TMPL_AUD;
 
     drop table if exists SMP_DOMAIN_MEMBER;
 

@@ -41,10 +41,6 @@ public class SpiRequestData implements RequestData {
     InputStream resourceInputStream;
 
 
-    public SpiRequestData(String domainCode, ResourceIdentifier resourceIdentifier, InputStream inputStream) {
-        this(domainCode, resourceIdentifier, null, inputStream);
-    }
-
     public SpiRequestData(String domainCode, ResourceIdentifier resourceIdentifier, ResourceIdentifier subresourceIdentifier,InputStream inputStream) {
         this.domainCode = domainCode;
         this.resourceIdentifier = resourceIdentifier;

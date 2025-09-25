@@ -33,6 +33,7 @@ export class SmpConstants {
   public static readonly PATH_PARAM_ENC_DOMAIN_ID: string = '{domain-id}';
   public static readonly PATH_PARAM_ENC_MEMBER_ID: string = '{member-id}';
   public static readonly PATH_PARAM_ENC_GROUP_ID: string = '{group-id}';
+  public static readonly PATH_PARAM_ENC_TEMPLATE_ID: string = '{template-id}';
   public static readonly PATH_PARAM_ENC_RESOURCE_ID: string = '{resource-id}';
   public static readonly PATH_PARAM_ENC_SUBRESOURCE_ID: string = '{subresource-id}';
   public static readonly PATH_PARAM_CERT_ALIAS: string = '{cert-alias}';
@@ -46,6 +47,7 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_DOMAIN: string = 'domain';
   public static readonly PATH_RESOURCE_TYPE_MEMBER: string = 'member';
   public static readonly PATH_RESOURCE_TYPE_GROUP: string = 'group';
+  public static readonly PATH_RESOURCE_TYPE_TEMPLATE: string = 'template';
   public static readonly PATH_RESOURCE_TYPE_PROPERTY: string = 'property';
   public static readonly PATH_RESOURCE_TYPE_LOCALE: string = 'locale';
   public static readonly PATH_DNS_TOOLS: string = 'dns-tools';
@@ -126,6 +128,18 @@ export class SmpConstants {
     + '/' + SmpConstants.PATH_ACTION_DELETE;
   public static readonly REST_EDIT_DOMAIN_RESOURCE_DEFS = SmpConstants.REST_EDIT_DOMAIN_MANAGE + '/' + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE_DEF;
 
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE = SmpConstants.REST_EDIT_DOMAIN_MANAGE + '/' + SmpConstants.PATH_RESOURCE_TYPE_TEMPLATE;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_CREATE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_ACTION_CREATE;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_DELETE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
+    + '/' + SmpConstants.PATH_ACTION_DELETE;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_UPDATE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
+    + '/' + SmpConstants.PATH_ACTION_UPDATE;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_PUBLISH = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
+    + '/' + SmpConstants.PATH_ACTION_PUBLISH;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_DOCUMENT = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
+    + '/' + SmpConstants.PATH_RESOURCE_TYPE_DOCUMENT;
+
+  // resource endpoints
   public static readonly REST_EDIT_RESOURCE = SmpConstants.REST_EDIT_DOMAIN_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID
     + '/' + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE;
   public static readonly REST_EDIT_RESOURCE_CREATE = SmpConstants.REST_EDIT_RESOURCE + '/' + SmpConstants.PATH_ACTION_CREATE

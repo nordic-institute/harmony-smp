@@ -59,7 +59,7 @@ import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE
  * @since 5.0
  */
 @Service
-public class ResourceHandlerService extends AbstractResourceHandler {
+public class ResourceHandlerService extends ResourceHandler {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceHandlerService.class);
 
     final ResourceMemberDao resourceMemberDao;

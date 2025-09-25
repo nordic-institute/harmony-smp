@@ -1,4 +1,4 @@
-export enum DocumentReferenceType {
+export enum DocumentLevelType {
   RESOURCE = 'RESOURCE',
   SUBRESOURCE = 'SUBRESOURCE',
 }

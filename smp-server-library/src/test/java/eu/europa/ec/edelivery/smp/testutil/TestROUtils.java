@@ -19,11 +19,15 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
 import eu.europa.ec.edelivery.smp.conversion.X509CertificateToCertificateROConverter;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
@@ -42,6 +46,17 @@ public class TestROUtils {
         resourceRO.setVisibility(VisibilityType.PUBLIC);
         resourceRO.setResourceTypeIdentifier(resourceType);
         return resourceRO;
+    }
+
+    public static DocumentRO createDocument(DocumentVersionStatusType documentVersionStatus, EntityROStatus payloadStatus, String content) {
+        DocumentRO doc = new DocumentRO();
+        doc.setDocumentVersionStatus(documentVersionStatus);
+        doc.setPayloadStatus(payloadStatus.getStatusNumber());
+        doc.setStatus(payloadStatus.getStatusNumber());
+        doc.setPayload(content);
+        doc.setMimeType(MimeTypeUtils.APPLICATION_XML_VALUE);
+        doc.setName("testXMl");
+        return doc;
     }
 
     public static CertificateRO createCertificateRO(String certSubject, BigInteger serial) throws Exception {

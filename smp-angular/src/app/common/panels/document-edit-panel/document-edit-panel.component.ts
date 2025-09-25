@@ -1,50 +1,25 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  ViewChild,
-  ViewEncapsulation,
-} from '@angular/core';
+import {Component, Input, OnInit, ViewChild, ViewEncapsulation,} from '@angular/core';
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {
-  BeforeLeaveGuard
-} from "../../../window/sidenav/navigation-on-leave-guard";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {GroupRo} from "../../model/group-ro.model";
 import {ResourceRo} from "../../model/resource-ro.model";
-import {
-  AlertMessageService
-} from "../../alert-message/alert-message.service";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {DomainRo} from "../../model/domain-ro.model";
-import {
-  ResourceDefinitionRo
-} from "../../../system-settings/admin-extension/resource-definition-ro.model";
+import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {DocumentRo} from "../../model/document-ro.model";
-import {
-  NavigationService
-} from "../../../window/sidenav/navigation-model.service";
-
-import {
-  ConfirmationDialogComponent
-} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
-import {
-  SmpEditorComponent
-} from "../../components/smp-editor/smp-editor.component";
+import {NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {SmpEditorComponent} from "../../components/smp-editor/smp-editor.component";
 import {EntityStatus} from "../../enums/entity-status.enum";
 import {TranslateService} from "@ngx-translate/core";
-import {lastValueFrom, Observer} from "rxjs";
-import {
-  DocumentVersionsStatus
-} from "../../enums/document-versions-status.enum";
-import {
-  HttpErrorHandlerService
-} from "../../error/http-error-handler.service";
+import {lastValueFrom, Observable, Observer} from "rxjs";
+import {DocumentVersionsStatus} from "../../enums/document-versions-status.enum";
+import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
 import {
   DocumentWizardDialogComponent
 } from "../../../edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
-import {
-  EditResourceService
-} from "../../../edit/edit-resources/edit-resource.service";
+import {EditResourceService} from "../../../edit/edit-resources/edit-resource.service";
 import {SubresourceRo} from "../../model/subresource-ro.model";
 import {
   SubresourceWizardRo
@@ -52,21 +27,18 @@ import {
 import {
   SubresourceDocumentWizardComponent
 } from "../../../edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
-import {
-  ReviewDocumentVersionRo
-} from "../../model/review-document-version-ro.model";
+import {ReviewDocumentVersionRo} from "../../model/review-document-version-ro.model";
 import {DateTimeService} from "../../services/date-time.service";
+import {DomainDocumentTemplateRo} from "../../model/domain-document-template.ro";
+import {DocumentLevelType} from "../../enums/documetn-reference-type.enum";
 
 export enum SmpDocumentEditorType {
   RESOURCE_EDITOR = "RESOURCE_EDITOR",
   SUBRESOURCE_EDITOR = "SUBRESOURCE_EDITOR",
-  REVIEW_EDITOR = "REVIEW_EDITOR"
+  REVIEW_EDITOR = "REVIEW_EDITOR",
+  TEMPLATE_EDITOR = "TEMPLATE_EDITOR"
 }
 
-export enum SmpReviewDocumentTarget {
-  RESOURCE = "RESOURCE",
-  SUBRESOURCE = "SUBRESOURCE",
-}
 
 export enum SmpShowDocumentType {
   REFERENCE_DOCUMENT = "REFERENCE_DOCUMENT",
@@ -96,11 +68,11 @@ export enum SmpShowDocumentType {
  * </ul>
  */
 @Component({
-    selector: 'document-edit-panel',
-    templateUrl: './document-edit-panel.component.html',
-    styleUrls: ['./document-edit-panel.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: 'document-edit-panel',
+  templateUrl: './document-edit-panel.component.html',
+  styleUrls: ['./document-edit-panel.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   readonly reviewAllowedStatusList: DocumentVersionsStatus[] = [DocumentVersionsStatus.DRAFT, DocumentVersionsStatus.REJECTED, DocumentVersionsStatus.RETIRED];
@@ -109,7 +81,8 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
 
   protected resource: ResourceRo;
   protected subresource: SubresourceRo;
-  private reviewDocument: ReviewDocumentVersionRo;
+  protected reviewDocument: ReviewDocumentVersionRo;
+  protected domainDocumentTemplateRo: DomainDocumentTemplateRo;
 
   protected isResourceDocument: boolean = true;
   private isEditorReferencePayload: boolean = false;
@@ -240,8 +213,44 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     this.resource = editResourceService.selectedResource;
     this.subresource = editResourceService.selectedSubresource;
     this.reviewDocument = editResourceService.selectedReviewDocument;
+    this.domainDocumentTemplateRo = editResourceService.selectedDomainDocumentTemplate;
+    this.domain = editResourceService.selectedDomain;
+
+    this.documentForm.controls['mimeType'].setValue("")
+    this.documentForm.controls['name'].setValue("")
+    this.documentForm.controls['currentResourceVersion'].setValue("")
+    this.documentForm.controls['payloadVersion'].setValue("")
+    this.documentForm.controls['payloadCreatedOnFormatted'].setValue("")
     this.documentForm.controls['payload'].setValue("")
     this.documentForm.controls['editorText'].setValue("")
+  }
+
+  /**
+   * Methods created resource and subresource from documentReview object
+   */
+  initFromDomainDocumentTemplate() {
+    if (!this.domainDocumentTemplateRo) {
+      console.log("DocumentEditPanelComponent: No domain document template provided for template editor mode");
+      return
+    }
+    this.resource = {
+      resourceId: "testId",
+      identifierScheme: "IdentifierScheme",
+      identifierValue: "IdentifierValue",
+      reviewEnabled: false,
+      visibility: null,
+      resourceTypeIdentifier: null,
+    } as ResourceRo;
+
+    if (this.domainDocumentTemplateRo?.documentLevel === DocumentLevelType.SUBRESOURCE) {
+      this.subresource = {
+        subresourceId: "testId",
+        identifierScheme: "IdentifierScheme",
+        identifierValue: "IdentifierValue",
+        subresourceTypeIdentifier: null,
+      } as SubresourceRo;
+    }
+    this.isResourceDocument = this.domainDocumentTemplateRo?.documentLevel === DocumentLevelType.RESOURCE;
   }
 
   /**
@@ -268,28 +277,43 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
         subresourceTypeIdentifier: null,
       } as SubresourceRo;
     }
-    this.isResourceDocument = this.reviewDocument.target === "RESOURCE";
+    this.isResourceDocument = this.reviewDocument.documentLevel == DocumentLevelType.RESOURCE;
   }
 
   ngOnInit(): void {
-    if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
+    console.log("DocumentEditPanelComponent ngOnInit editorMode: " + this.editorMode)
+
+
+    // set the editor mode
+    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+      this.initFromDomainDocumentTemplate();
+    } else if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
       this.initFromDocumentReview();
     } else {
       this.isResourceDocument = this.editorMode === SmpDocumentEditorType.RESOURCE_EDITOR;
     }
+    /*
     if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR && !this.reviewDocument
       || this.editorMode !== SmpDocumentEditorType.REVIEW_EDITOR && !this.resource) {
       this.alertService.errorForTranslation("document.edit.panel.error.document.null");
       this.navigationService.navigateUp();
       return;
     }
-    if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
+     */
+    // load the document to show
+    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+      console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion " )
+      this.loadDomainDocumentTemplateForVersion();
+    } else if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
+      console.log("DocumentEditPanelComponent loadDocumentForVersion 1" )
       this.loadDocumentForVersion(this.reviewDocument.version);
     } else {
+      console.log("DocumentEditPanelComponent loadDocumentForVersion 2" )
       this.loadDocumentForVersion();
       // show reference by default
       this.documentForm.controls['selectDocumentSource'].setValue(SmpShowDocumentType.REFERENCE_DOCUMENT);
     }
+
     this.documentForm.controls['editorText'].valueChanges.subscribe(() => {
       // disable change back option
       if (this.documentEditable) {
@@ -313,7 +337,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
       this.documentForm.controls['payloadCreatedOnFormatted'].setValue(
         this.dateTimeService.formatDateTimeForUserLocal(
-        value.payloadCreatedOn));
+          value.payloadCreatedOn));
       this.documentForm.controls['payload'].setValue(value.payload);
       this.documentForm.controls['editorText'].setValue(value.payload);
       this.documentForm.controls['referencePayload'].setValue(value.referencePayload);
@@ -456,7 +480,10 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['payload'].setValue("");
       this.documentForm.markAsPristine();
       this.updateTextToEditor();
+    } else if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+      this.loadDomainDocumentTemplateForVersion(currentVersion);
     } else {
+      console.log("DocumentEditPanelComponent loadDocumentForVersion 3" )
       this.loadDocumentForVersion(currentVersion);
     }
   }
@@ -467,9 +494,15 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   onSaveButtonClicked(): void {
-    let onSaveObservable = this.isResourceDocument ?
-      this.editResourceService.saveResourceDocumentObservable(this.resource, this.document) :
-      this.editResourceService.saveSubresourceDocumentObservable(this.subresource, this.resource, this.document);
+    let onSaveObservable: Observable<DocumentRo>;
+    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+      onSaveObservable = this.editResourceService.saveDomainDocumentTemplateObservable(this.domain, this.domainDocumentTemplateRo, this.document);
+    } else {
+      onSaveObservable = this.isResourceDocument ?
+        this.editResourceService.saveResourceDocumentObservable(this.resource, this.document) :
+        this.editResourceService.saveSubresourceDocumentObservable(this.subresource, this.resource, this.document);
+
+    }
     onSaveObservable.subscribe(this.saveDocumentObserver);
   }
 
@@ -576,11 +609,15 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       payloadVersion: this._document.payloadVersion,
     } as DocumentRo;
 
-    let onReviewRequestObservable = this.isResourceDocument ?
-      this.editResourceService.publishResourceDocumentObservable(this.resource, docRequest) :
-      this.editResourceService.publishSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
-    // request review
-    onReviewRequestObservable.subscribe(this.loadDocumentObserver);
+    let onPublishObservable: Observable<DocumentRo>;
+    if(this.editorMode == SmpDocumentEditorType.TEMPLATE_EDITOR){
+      onPublishObservable = this.editResourceService.publishDomainDocumentTemplateObservable(this.domain, this.domainDocumentTemplateRo, docRequest);
+    } else {
+      onPublishObservable = this.isResourceDocument ?
+        this.editResourceService.publishResourceDocumentObservable(this.resource, docRequest) :
+        this.editResourceService.publishSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
+    }
+    onPublishObservable.subscribe(this.loadDocumentObserver);
   }
 
   onGenerateButtonClicked(): void {
@@ -667,6 +704,19 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   /**
+   * 'loadDomainDocumentTemplateForVersion' load the document for the given version
+   * @param version
+   */
+  loadDomainDocumentTemplateForVersion(version: number = null): void {
+    console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion ")
+    let loadObservable  =  this.editResourceService.getDomainDocumentTemplateObservable(
+      this.domain,
+      this.domainDocumentTemplateRo,
+      version) ;
+    loadObservable.subscribe(this.loadDocumentObserver);
+  }
+
+  /**
    * Submit the current document for validation to the server
    */
   validateCurrentDocument(): void {
@@ -712,7 +762,17 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   onSelectionDocumentVersionChanged(): void {
-    this.loadDocumentForVersion(this.documentForm.controls['payloadVersion'].value)
+    let selectedVersion = this.documentForm.controls['payloadVersion'].value;
+    if (selectedVersion === this.currentDocumentVersion) {
+      return;
+    }
+    // load the selected version
+    if (this.editorMode == SmpDocumentEditorType.TEMPLATE_EDITOR) {
+      this.loadDomainDocumentTemplateForVersion(selectedVersion)
+    } else {
+      console.log("DocumentEditPanelComponent loadDocumentForVersion 4" )
+      this.loadDocumentForVersion(selectedVersion)
+    }
   }
 
   public onEditPanelClick() {

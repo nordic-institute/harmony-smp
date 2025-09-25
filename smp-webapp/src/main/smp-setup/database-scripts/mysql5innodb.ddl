@@ -316,6 +316,30 @@
         primary key (REV, ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+    create table SMP_DOMAIN_DOC_TMPL (
+        ID bigint not null auto_increment comment 'Unique domain document template id',
+        CREATED_ON datetime(6) not null,
+        LAST_UPDATED_ON datetime(6) not null,
+        DOCUMENT_LEVEL enum ('RESOURCE','SUBRESOURCE') not null comment 'Document level type - resource or subresource',
+        FK_DOCUMENT_ID bigint not null,
+        FK_DOREDEF_ID bigint not null,
+        FK_SUREDEF_ID bigint,
+        primary key (ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_DOMAIN_DOC_TMPL_AUD (
+        ID bigint not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime(6),
+        LAST_UPDATED_ON datetime(6),
+        DOCUMENT_LEVEL enum ('RESOURCE','SUBRESOURCE'),
+        FK_DOCUMENT_ID bigint,
+        FK_DOREDEF_ID bigint,
+        FK_SUREDEF_ID bigint,
+        primary key (REV, ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
     create table SMP_DOMAIN_MEMBER (
         ID bigint not null auto_increment,
         CREATED_ON datetime(6) not null,
@@ -805,6 +829,26 @@
 
     alter table SMP_DOMAIN_CONFIGURATION_AUD 
        add constraint FKkelcga805bleh5x256hy5e1xb 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       add constraint FKg4ci2nee5nvm2tbdbpkeom53m 
+       foreign key (FK_DOCUMENT_ID) 
+       references SMP_DOCUMENT (ID);
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       add constraint FK8dwm6w0x0rdiouvt74i07s9u5 
+       foreign key (FK_DOREDEF_ID) 
+       references SMP_DOMAIN_RESOURCE_DEF (ID);
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       add constraint FK45eaf7nmo1dem40af2dw27jh5 
+       foreign key (FK_SUREDEF_ID) 
+       references SMP_SUBRESOURCE_DEF (ID);
+
+    alter table SMP_DOMAIN_DOC_TMPL_AUD 
+       add constraint FKb1dw4r0rpj3jdtff4jc7gn046 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

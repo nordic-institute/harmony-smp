@@ -70,11 +70,11 @@ public class DocumentRO extends BaseRO {
         this.mimeType = mimeType;
     }
 
-    public Integer getCurrentResourceVersion() {
+    public Integer getCurrentVersion() {
         return currentResourceVersion;
     }
 
-    public void setCurrentResourceVersion(Integer currentResourceVersion) {
+    public void setCurrentVersion(Integer currentResourceVersion) {
         this.currentResourceVersion = currentResourceVersion;
     }
 

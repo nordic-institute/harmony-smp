@@ -300,7 +300,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         // finally remove the domain
         domainDao.remove(domain);
         DomainRO domainRO = conversionService.convert(domain, DomainRO.class);
-        domainRO.setStatus(EntityROStatus.REMOVED.getStatusNumber());
+        Objects.requireNonNull(domainRO, "Convertion of the DBDomain returned null").setStatus(EntityROStatus.REMOVED.getStatusNumber());
         return domainRO;
     }
 

@@ -43,7 +43,6 @@ export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
 
 
   private _domain: DomainRo;
-  private _domainResourceDefinitions: ResourceDefinitionRo[];
   title: string = ""
 
   filter: any = {};
@@ -105,15 +104,6 @@ export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
         this.isLoadingResults = false;
       }
     })();
-  }
-
-  get domainResourceDefinitions(): ResourceDefinitionRo[] {
-    // no changes for the domain data
-    return this._domainResourceDefinitions;
-  }
-
-  @Input() set domainResourceDefinitions(value: ResourceDefinitionRo[]) {
-    this._domainResourceDefinitions = value;
   }
 
   public refresh() {

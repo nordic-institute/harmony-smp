@@ -100,7 +100,7 @@ public class UserAdminController {
     }
 
     @PostMapping(path = "/{user-id}/{managed-user-id}/update",  produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isSystemAdministrator or @smpAuthorizationService.isSMPAdministrator")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
     public UserRO updateUser(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                            @PathVariable("managed-user-id") String managedUserEncId,
                             @RequestBody UserRO user) {

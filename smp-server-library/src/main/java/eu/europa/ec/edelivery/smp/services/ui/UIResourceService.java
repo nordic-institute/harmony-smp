@@ -290,10 +290,10 @@ public class UIResourceService {
     /**
      * Method allows Group admin and Resource admin to change resource visibility and enable/disable review flow.
      *
-     * @param resourceRO  input resource data to update
-     * @param resourceId  resource id to update
-     * @param groupId   group id of the resource
-     * @param domainId domain id of the group
+     * @param resourceRO input resource data to update
+     * @param resourceId resource id to update
+     * @param groupId    group id of the resource
+     * @param domainId   domain id of the group
      * @return updated resource RO
      */
     @Transactional
@@ -309,13 +309,13 @@ public class UIResourceService {
         }
 
         Optional<DBResourceDef> optRedef = resourceDefDao.getResourceDefByIdentifier(resourceRO.getResourceTypeIdentifier());
-        if (!optRedef.isPresent()) {
+        if (optRedef.isEmpty()) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_UPDATE_GROUP_RESOURCE_NOT_EXISTS)
                     .addParam(ErrorMessageArgument.IDENTIFIER, resourceRO.getResourceTypeIdentifier());
         }
 
         Optional<DBDomainResourceDef> optDoredef = domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(group.getDomain(), optRedef.get());
-        if (!optDoredef.isPresent()) {
+        if (optDoredef.isEmpty()) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_UPDATE_GROUP_RESOURCE_NOT_PART_OF_DOMAIN)
                     .addParam(ErrorMessageArgument.IDENTIFIER, resourceRO.getResourceTypeIdentifier());
         }
@@ -340,7 +340,7 @@ public class UIResourceService {
             resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
         }
         ResourceRO resourceROResult = conversionService.convert(resource, ResourceRO.class);
-        if (StringUtils.isNotBlank(resourceRO.getResourceId())) {
+        if (StringUtils.isNotBlank(resourceRO.getResourceId()) && resourceROResult != null) {
             // return the same encrypted id so the UI can use update old resource
             resourceROResult.setResourceId(resourceRO.getResourceId());
         }
@@ -427,7 +427,7 @@ public class UIResourceService {
         return conversionService.convert(resourceMember, MemberRO.class);
     }
 
-    public DBResource validateGroupAndResource(Long resourceId, Long groupId, ErrorMessageType nonexistentResourceTranslationMessageCode, ErrorMessageType groupNotPartOfDomainTranslationMessageCode) {
+    public void validateGroupAndResource(Long resourceId, Long groupId, ErrorMessageType nonexistentResourceTranslationMessageCode, ErrorMessageType groupNotPartOfDomainTranslationMessageCode) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
             throw new SMPRuntimeException(nonexistentResourceTranslationMessageCode);
@@ -435,7 +435,6 @@ public class UIResourceService {
         if (!Objects.equals(groupId, resource.getGroup().getId())) {
             throw new SMPRuntimeException(groupNotPartOfDomainTranslationMessageCode);
         }
-        return resource;
     }
 
     /**

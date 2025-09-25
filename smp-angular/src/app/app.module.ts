@@ -360,6 +360,15 @@ import {
 } from "./common/dialogs/prepare-certificate-dialog/prepare-certificate-dialog.component";
 import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
 import {TimerComponent} from "./common/components/timer/timer.component";
+import {
+  DomainExtensionTemplateComponent
+} from "./edit/edit-domain/domain-extension-template-panel/domain-extension-template.component";
+import {
+  DomainDocumentTemplateDialog
+} from "./edit/edit-domain/domain-extension-template-panel/domain-document-template-dialog/domain-template-document-dialog.component";
+import {
+  DomainDocumentTemplateEditPanelComponent
+} from "./edit/edit-domain/domain-extension-template-panel/domain-document-template-edit-panel/domain-document-template-edit-panel.component";
 
 @NgModule({ declarations: [
         AccessTokenPanelComponent,
@@ -396,6 +405,9 @@ import {TimerComponent} from "./common/components/timer/timer.component";
         DocumentPropertyDialogComponent,
         DocumentVersionsPanelComponent,
         DomainGroupComponent,
+        DomainExtensionTemplateComponent,
+        DomainDocumentTemplateDialog,
+        DomainDocumentTemplateEditPanelComponent,
         DomainPanelComponent,
         DomainResourceTypePanelComponent,
         DomainSelectorComponent,

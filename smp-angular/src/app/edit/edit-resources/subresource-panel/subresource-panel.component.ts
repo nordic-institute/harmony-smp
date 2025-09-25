@@ -171,6 +171,7 @@ export class SubresourcePanelComponent implements AfterViewInit, BeforeLeaveGuar
       this.navigationService.select(null);
       return;
     }
+    this.editResourceService.selectedDomain = this.domain;
     this.editResourceService.selectedResource = this.resource;
     this.editResourceService.selectedSubresource = subresource;
 

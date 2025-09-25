@@ -81,7 +81,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
         assertNotNull(documentRo);
         assertEquals(1, documentRo.getAllVersions().size());
         assertEquals(1, documentRo.getAllVersions().get(0));
-        assertEquals(1, documentRo.getCurrentResourceVersion());
+        assertEquals(1, documentRo.getCurrentVersion());
         assertNotNull(documentRo.getPayload());
     }
 

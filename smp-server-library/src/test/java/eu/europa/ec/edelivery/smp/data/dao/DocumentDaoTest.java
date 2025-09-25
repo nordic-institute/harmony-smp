@@ -57,7 +57,7 @@ class DocumentDaoTest extends AbstractBaseDao {
         assertNotNull(document.getId());
         assertEquals(2, document.getDocumentVersions().size());
         // the current version is 1
-        assertEquals(1, document.getCurrentVersion());
+        assertEquals(2, document.getCurrentVersion());
     }
 
 
@@ -68,7 +68,7 @@ class DocumentDaoTest extends AbstractBaseDao {
         assertTrue(result.isPresent());
         assertEquals(testUtilsDao.getDocumentD1G1RD1(), result.get());
         // the default setup  createResources  sets two versions (0 and 1 ) with current version 1
-        assertEquals(1, result.get().getCurrentVersion());
+        assertEquals(2, result.get().getCurrentVersion());
     }
 
 
@@ -86,9 +86,9 @@ class DocumentDaoTest extends AbstractBaseDao {
 
         assertTrue(result.isPresent());
         // the default setup  createResources  sets two versions (0 and 1 ) with current version 1
-        assertEquals(1, result.get().getVersion());
+        assertEquals(2, result.get().getVersion());
         // note that the versions are ordered by version desc
-        assertEquals(testUtilsDao.getDocumentD1G1RD1().getDocumentVersions().get(1), result.get());
+        assertEquals(testUtilsDao.getDocumentD1G1RD1().getDocumentVersions().get(0), result.get());
     }
 
 

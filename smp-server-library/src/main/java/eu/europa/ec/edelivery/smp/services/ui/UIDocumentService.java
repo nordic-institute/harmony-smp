@@ -20,11 +20,14 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDocumentTemplateDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentLevelType;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainDocumentTemplate;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
@@ -39,9 +42,11 @@ import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
 import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
+import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiResponseData;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.smp.spi.api.model.RequestData;
+import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
@@ -54,6 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -73,6 +79,7 @@ public class UIDocumentService {
 
     final ResourceDao resourceDao;
     final SubresourceDao subresourceDao;
+    final DomainDocumentTemplateDao domainDocumentTemplateDao;
     final DocumentDao documentDao;
     final ResourceHandlerService resourceHandlerService;
     final DocumentVersionService documentVersionService;
@@ -81,6 +88,7 @@ public class UIDocumentService {
 
     public UIDocumentService(ResourceDao resourceDao,
                              SubresourceDao subresourceDao,
+                             DomainDocumentTemplateDao domainDocumentTemplateDao,
                              DocumentDao documentDao,
                              ResourceHandlerService resourceHandlerService,
                              DocumentVersionService documentVersionService,
@@ -88,6 +96,7 @@ public class UIDocumentService {
                              DocumentMailService mailService) {
         this.resourceDao = resourceDao;
         this.subresourceDao = subresourceDao;
+        this.domainDocumentTemplateDao = domainDocumentTemplateDao;
         this.documentDao = documentDao;
         this.resourceHandlerService = resourceHandlerService;
         this.documentVersionService = documentVersionService;
@@ -158,7 +167,7 @@ public class UIDocumentService {
     }
 
 
-    private DocumentRO publishDocumentVersion(DBDocument document, int version, boolean isReviewEnabled, List<DocumentPropertyRO> initialProperties) {
+    public DocumentRO publishDocumentVersion(DBDocument document, int version, boolean isReviewEnabled, List<DocumentPropertyRO> initialProperties) {
 
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
@@ -331,20 +340,137 @@ public class UIDocumentService {
 
         String genDoc = bos.toString();
         DocumentRO result = new DocumentRO();
+        result.setPayloadStatus(EntityROStatus.NEW.getStatusNumber());
         result.setDocumentConfiguration(new DocumentConfigurationRO());
         result.setPayload(genDoc);
         return result;
     }
 
+    /**
+     * Method generates template document for the given domain resource definition. If dbSubresourceDef is null it provides
+     * document for the resource level (esourceDef) otherwise for the subresource level. The method uses
+     * ResourceHandlerSpi to generate the document with dummy resource identifiers.
+     *
+     * @param domainResourceDef domain resource definition to generate the template document for.
+     * @param dbSubresourceDef  optional subresource definition to generate the template document for, can be null.
+     * @return generated document RO.
+     */
+    @Transactional
+    public DocumentRO generateTemplateDocument(DBDomainResourceDef domainResourceDef, DBSubresourceDef dbSubresourceDef) {
+        LOG.info("generate Document For DomainResourceDef");
+
+        // generate document and write to output stream
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            if (dbSubresourceDef == null) {
+                generateDocumentForDomainResourceDef(domainResourceDef,
+                        SPIUtils.createTemplateResourceIdentifier(),
+                        Collections.emptyMap(), bos);
+            } else {
+                generateDocumentForDomainSubresourceDef(domainResourceDef,
+                        dbSubresourceDef,
+                        SPIUtils.createTemplateResourceIdentifier(),
+                        SPIUtils.createTemplateSubresourceIdentifier(),
+                        Collections.emptyMap(), bos);
+            }
+
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_GENERATION)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
+        }
+
+        String genDoc = bos.toString();
+        DocumentRO result = new DocumentRO();
+        result.setDocumentConfiguration(new DocumentConfigurationRO());
+        result.setPayloadStatus(EntityROStatus.NEW.getStatusNumber());
+        result.setPayload(genDoc);
+        return result;
+    }
+
     public void generateDocumentForResource(DBResource resource, OutputStream outputStream) {
-        LOG.info("generate new Document For domainResourceDef");
+        LOG.info("generate new Document For resource");
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
 
-        ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
-        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
-                resource, null);
+        if (!generateDocumentFromTemplate(domainResourceDef, null, DocumentLevelType.RESOURCE, outputStream)) {
+            ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
+            RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
+                    resource, null);
 
+            generateDocumentWithHandler(resourceHandler, data, outputStream);
+        }
+    }
+
+
+    public void generateDocumentForDomainResourceDef(DBDomainResourceDef domainResourceDef,
+                                                     ResourceIdentifier identifier,
+                                                     Map<String, String> docProp,
+                                                     OutputStream outputStream) throws IOException {
+        LOG.info("generate new Document For domainResourceDef");
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
+        RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
+                identifier, null, docProp, null);
         generateDocumentWithHandler(resourceHandler, data, outputStream);
+    }
+
+    /**
+     * Generate document for the given domain resource definition and subresource definition. The method uses
+     * ResourceHandlerSpi to generate the document with dummy resource identifiers.
+     *
+     * @param domainResourceDef domain resource definition
+     * @param subresourceDef    subresource definition
+     * @param outputStream      output stream to write the generated document to
+     */
+    public void generateDocumentForDomainSubresourceDef(DBDomainResourceDef domainResourceDef,
+                                                        DBSubresourceDef subresourceDef,
+                                                        ResourceIdentifier resourceIdentifier,
+                                                        ResourceIdentifier subresourceIdentifier,
+                                                        Map<String, String> docProp,
+                                                        OutputStream outputStream) {
+        LOG.info("generate Document For Subresource");
+        if (!generateDocumentFromTemplate(domainResourceDef,
+                subresourceDef,
+                DocumentLevelType.SUBRESOURCE, outputStream)) {
+
+            ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
+            RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
+                    resourceIdentifier,
+                    subresourceIdentifier,
+                    docProp, null);
+
+            generateDocumentWithHandler(resourceHandler, data, outputStream);
+        }
+    }
+
+    /**
+     * Generate document from the template if it is configured for the given domain resource definition and
+     * optional subresource definition. If the template is not configured or there is an error writing the template
+     * content to the output stream the method returns false.
+     *
+     * @param domainResourceDef the domain resource definition
+     * @param subresourceDef    optional subresource definition, can be null for resource level document
+     * @param documentLevelType the document level type
+     * @param outputStream      output stream to write the document content to
+     * @return true if the document was generated from the template, false otherwise
+     */
+    private boolean generateDocumentFromTemplate(DBDomainResourceDef domainResourceDef,
+                                                 DBSubresourceDef subresourceDef,
+                                                 DocumentLevelType documentLevelType,
+                                                 OutputStream outputStream) {
+        List<DBDomainDocumentTemplate> domainTemplates
+                = domainDocumentTemplateDao.getDomainDocumentTemplate(domainResourceDef, subresourceDef, documentLevelType);
+
+        if (domainTemplates != null && !domainTemplates.isEmpty()) {
+            Optional<DBDocumentVersion> version = documentDao.getCurrentDocumentVersionForDocument(domainTemplates.get(0).getDocument());
+            if (version.isPresent()) {
+                try {
+                    outputStream.write(version.get().getContent());
+                    return true;
+                } catch (IOException e) {
+                    LOG.warn("Error writing template document content to output stream: [{}]. Fallback to default document generation", ExceptionUtils.getRootCauseMessage(e));
+                }
+            }
+        }
+        return false;
     }
 
     @Transactional
@@ -358,6 +484,7 @@ public class UIDocumentService {
 
         String genDoc = bos.toString();
         DocumentRO result = new DocumentRO();
+        result.setPayloadStatus(EntityROStatus.NEW.getStatusNumber());
         result.setPayload(genDoc);
         return result;
     }
@@ -366,12 +493,13 @@ public class UIDocumentService {
         LOG.info("generate Document For Subresource");
         DBSubresourceDef subresourceDef = entity.getSubresourceDef();
 
-        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
-        RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(),
-                parentEntity, entity, null);
-
-        generateDocumentWithHandler(resourceHandler, data, outputStream);
+        generateDocumentForDomainSubresourceDef(parentEntity.getDomainResourceDef(),
+                subresourceDef,
+                SPIUtils.toUrlIdentifier(parentEntity),
+                SPIUtils.toUrlIdentifier(entity),
+                Collections.emptyMap(), outputStream);
     }
+
 
     /**
      * Generate document with ResourceHandlerSpi. Method invokes the given handler to generate the document.
@@ -385,7 +513,7 @@ public class UIDocumentService {
         try {
             resourceHandler.generateResource(data, responseData, Collections.emptyList());
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_GENERATION_VALIDATION)
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_GENERATION)
                     .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -529,6 +657,23 @@ public class UIDocumentService {
     }
 
     /**
+     * Method stores the payload for the given resource. If the resource has status New then new document version is created
+     * else the existing document version is updated with the new payload.
+     * <p>
+     * The method invokes the ResourceHandlerSpi to update/validate the payload before storing it to database.
+     *
+     * @param document   the resource database document entity
+     * @param documentRo document RO the with new payload
+     */
+    private DBDocumentVersion storeResourcePayload(DBDocument document, DocumentRO documentRo) {
+        byte[] payload = documentRo.getPayload().getBytes();
+        // create new version to document or update existing version
+        return documentRo.getPayloadVersion() == null ?
+                createNewDocumentVersion(document, payload) :
+                updatedDocumentVersion(document, payload, documentRo.getPayloadVersion());
+    }
+
+    /**
      * Method sets new payload to the existing documentVersion with the given version and loges the event to documentVersion
      * event list. The method returns the updated document version.
      *
@@ -578,6 +723,15 @@ public class UIDocumentService {
 
     }
 
+    @Transactional
+    public DocumentRO saveDocumentForTemplate(Long templateId, DocumentRO documentRo) {
+
+        final DBDomainDocumentTemplate tmpl = domainDocumentTemplateDao.find(templateId);
+        final DBDocument document = tmpl.getDocument();
+        return saveDocument(tmpl, document, documentRo);
+
+    }
+
     /**
      * Method saves the document for resource or  subresource. if the subresource is null then it is resource document
      * otherwise it is subresource document.
@@ -606,6 +760,19 @@ public class UIDocumentService {
 
         }
 
+        saveDocumentPropertiesAndSettings(document, documentRo);
+
+        List<DocumentPropertyRO> initialProperties = subresource == null ? getInitialProperties(resource) : getInitialProperties(subresource);
+        return convertWithVersion(document, returnDocVersion, initialProperties);
+    }
+
+    /**
+     * Method updates the document properties amd settings: eg. name, referemce  from the document RO to the DBDocument entity
+     *
+     * @param document   database document entity
+     * @param documentRo document RO from the request
+     */
+    private void saveDocumentPropertiesAndSettings(DBDocument document, DocumentRO documentRo) {
         if (isDocumentPropertiesChanged(documentRo)) {
             // persist non-transient properties
             documentRo.getProperties().stream().filter(p ->
@@ -632,8 +799,36 @@ public class UIDocumentService {
             // update document reference
             updateDocumentReferenceToDocument(document, docConfig);
         }
+    }
 
-        List<DocumentPropertyRO> initialProperties = subresource == null ? getInitialProperties(resource) : getInitialProperties(subresource);
+    /**
+     * Method saves the document for template. If the subresource is null then it is saved as resource document
+     * otherwise it is subresource document.
+     *
+     * @param template
+     * @param document
+     * @param documentRo
+     * @return
+     */
+    public DocumentRO saveDocument(DBDomainDocumentTemplate template, DBDocument document, DocumentRO documentRo) {
+
+        // check if the document is new or existing document. If payload version is not null then
+        // return the current payload version otherwise return the current version
+        int returnDocVersion = documentRo.getPayloadVersion() != null ?
+                documentRo.getPayloadVersion() :
+                document.getCurrentVersion();
+
+        boolean isPayloadChanged = documentRo.getPayloadStatus() != EntityROStatus.PERSISTED.getStatusNumber();
+        if (isPayloadChanged) {
+            LOG.debug("Store (sub) resource payload for template [{}]", template);
+            DBDocumentVersion docVersion = storeResourcePayload(document, documentRo);
+            returnDocVersion = docVersion.getVersion();
+
+        }
+
+        saveDocumentPropertiesAndSettings(document, documentRo);
+
+        List<DocumentPropertyRO> initialProperties = Collections.emptyList();
         return convertWithVersion(document, returnDocVersion, initialProperties);
     }
 
@@ -710,6 +905,13 @@ public class UIDocumentService {
         return convertWithVersion(document, version, getInitialProperties(subresource));
     }
 
+    @Transactional
+    public DocumentRO getDocumentForTemplate(Long templateId, int version) {
+        DBDomainDocumentTemplate template = domainDocumentTemplateDao.find(templateId);
+        DBDocument document = template.getDocument();
+        return convertWithVersion(document, version, new ArrayList<>());
+    }
+
 
     /**
      * Method returns the list of reference documents for the given resource and filter paramters
@@ -766,7 +968,7 @@ public class UIDocumentService {
         ServiceResult<SearchReferenceDocumentRO> result = new ServiceResult<>();
         result.setPage(page);
         result.setPageSize(pageSize);
-        Long count = documentDao.getSearchReferenceDocumentSubresourceCount(targetResource, searchResourceIdentifier,
+        long count = documentDao.getSearchReferenceDocumentSubresourceCount(targetResource, searchResourceIdentifier,
                 searchResourceScheme, searchSubresourceIdentifier, searchSubresourceScheme);
         if (count < 1) {
             result.setCount(0L);
@@ -874,16 +1076,13 @@ public class UIDocumentService {
         });
         documentRo.setMimeType(document.getMimeType());
         documentRo.setName(document.getName());
-        documentRo.setCurrentResourceVersion(document.getCurrentVersion());
+        documentRo.setCurrentVersion(document.getCurrentVersion());
         // set list of versions
         document.getDocumentProperties()
-                .forEach(p -> {
-                    documentRo.addProperty(p.getProperty(),
-                            p.getValue(),
-                            p.getDescription(),
-                            p.getType(), false);
-                    LOG.info("Document property [{}] added to document [{}]", p);
-                });
+                .forEach(p -> documentRo.addProperty(p.getProperty(),
+                        p.getValue(),
+                        p.getDescription(),
+                        p.getType(), false));
 
         docConfigRo.setMimeType(document.getMimeType());
 

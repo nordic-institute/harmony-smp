@@ -298,7 +298,45 @@
   "domain.group.tooltip.edit": "Edit selected group",
   "domain.group.tooltip.filter": "Member filter",
   "domain.group.tooltip.group.members": "Group members",
+
+  "domain.extension.template.tooltip.create": "Create new default document template for extension on the domain",
+  "domain.extension.template.button.create": "Create",
+  "domain.extension.template.tooltip.edit": "Edit selected default document template for extension on the domain",
+  "domain.extension.template.button.edit": "Edit",
+  "domain.extension.template.tooltip.delete":"Delete selected default document template for extension on the domain",
+  "domain.extension.template.button.delete": "Delete",
+  "domain.extension.template.label.filter": "Default document template filter",
+  "domain.extension.template.label.no.data.found": "No templates documents found for the domain",
+  "domain.extension.template.label.no.filter.results": "No templates matching the filter \"{{filterValue}}\"",
+  "domain.extension.template.error.delete": "Cannot delete document template. Is document template selected?",
+  "domain.extension.template.delete.confirmation.dialog.title": "Delete Document template",
+  "domain.extension.template.delete.confirmation.dialog.description": "Action will permanently delete document template!<br/><br/>Do you wish to continue?",
+  "domain.extension.template.success.delete": "Document template deleted.",
+  "domain.extension.label.edit.document.template": "Edit Document Template",
+
+  "domain.extension.template.label.document.level": "Doc. level",
+  "domain.extension.template.label.resource.definition": "Resource Def.",
+  "domain.extension.template.label.subresource.definition": "Subresource Def.",
+
+  "domain.template.template.dialog.button.close": "Close",
+  "domain.template.template.dialog.button.save": "Save",
+  "domain.template.template.dialog.description": "To create a new document template, choose the document level type and specify the extension document identifier(s). Note that only one template can be assigned to an extension document.",
+
+  "domain.template.template.dialog.label.document.level": "Document level type",
+  "domain.template.template.dialog.placeholder.document.level": "Select document level type",
+  "domain.template.template.dialog.tooltip.document.level": "The document level determines whether it applies to a resource or a subresource.",
+
+  "domain.template.template.dialog.label.resourcedef.identifier": "Resource document type",
+  "domain.template.template.dialog.placeholder.resourcedef.identifier": "Select Resource document type",
+  "domain.template.template.dialog.tooltip.resourcedef.identifier": "The resource document type for the template.",
+
+  "domain.template.template.dialog.label.subresourcedef.identifier": "Subresource document type",
+  "domain.template.template.dialog.placeholder.subresourcedef.identifier": "Select Subresource document type",
+  "domain.template.template.dialog.tooltip.subresourcedef.identifier": "The Subresource document type for the template.",
+
+
   "edit.domain.label.configuration": "Configuration",
+  "edit.domain.label.extension.documents": "Def.extension documents",
   "edit.domain.label.domain.code": "Domain code",
   "edit.domain.label.domain.visibility": "Visibility",
   "edit.domain.label.domain.members": "Domain Members",
@@ -961,6 +999,7 @@
   "navigation.label.edit.groups": "Edit Groups",
   "navigation.label.edit.resources": "Edit Resources",
   "navigation.label.edit.document.review": "Review Document",
+  "navigation.label.edit.document.template": "Edit Domain Document template",
   "navigation.label.edit.resource.document": "Edit Resource Document",
   "navigation.label.edit.subresource.document": "Edit Subresource Document",
   "navigation.label.review.tasks": "Review Tasks",
