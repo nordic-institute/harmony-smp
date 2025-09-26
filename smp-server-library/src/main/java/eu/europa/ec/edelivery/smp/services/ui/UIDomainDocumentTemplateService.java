@@ -149,18 +149,26 @@ public class UIDomainDocumentTemplateService {
     }
 
     @Transactional
-    public DocumentRO updateTemplateForDomain(long domainId, long templateId, DocumentRO payload) {
+    public DocumentRO updateTemplateForDomainVersion(long domainId, long templateId, DocumentRO payload) {
         DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
         return uiDocumentService.saveDocumentForTemplate(template.getId(), payload);
     }
 
 
     @Transactional
-    public DocumentRO publishTemplateForDomain(long domainId, long templateId, int version) {
+    public DocumentRO publishTemplateForDomainVersion(long domainId, long templateId, int version) {
         LOG.info("Publish Document For Domain [{}], template [{}], version [{}]", domainId, templateId, version);
         DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
 
         return uiDocumentService.publishDocumentVersion(template.getDocument(), version, false, new ArrayList<>());
+    }
+
+    @Transactional
+    public DocumentRO deleteTemplateForDomainVersion(long domainId, long templateId, int version) {
+        LOG.info("Delete Document version For Domain [{}], template [{}], version [{}]", domainId, templateId, version);
+        DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
+
+        return uiDocumentService.deleteDocumentVersion(template.getDocument(), version,  new ArrayList<>());
     }
 
     private DBDomainDocumentTemplate getDomainDocumentTemplate(long domainId, long templateId) {

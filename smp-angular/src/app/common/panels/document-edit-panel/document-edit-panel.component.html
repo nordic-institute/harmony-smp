@@ -211,8 +211,17 @@
         <mat-icon>publish</mat-icon>
         <span>{{ "document.edit.panel.button.version.publish" | translate }}</span>
       </button>
-      <ng-container *ngIf="reviewEnabled">
+      <button  id="delete_id"
+               mat-raised-button
+               color="primary"
+               matTooltip="{{ 'document.edit.panel.tooltip.version.delete' | translate }}"
+               [disabled]="deleteButtonDisabled"
+               (click)="onDeleteButtonClicked()">
+        <mat-icon>delete</mat-icon>
         <tool-button-spacer></tool-button-spacer>
+        <span>{{ "document.edit.panel.button.delete" | translate }}</span>
+      </button>
+      <ng-container *ngIf="reviewEnabled">
         <button *ngIf="isNotReviewMode" id="reviewResource_id"
                 mat-raised-button
                 color="primary"

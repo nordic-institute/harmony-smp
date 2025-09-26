@@ -302,13 +302,13 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
      */
     // load the document to show
     if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
-      console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion " )
+      console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion ")
       this.loadDomainDocumentTemplateForVersion();
     } else if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
-      console.log("DocumentEditPanelComponent loadDocumentForVersion 1" )
+      console.log("DocumentEditPanelComponent loadDocumentForVersion 1")
       this.loadDocumentForVersion(this.reviewDocument.version);
     } else {
-      console.log("DocumentEditPanelComponent loadDocumentForVersion 2" )
+      console.log("DocumentEditPanelComponent loadDocumentForVersion 2")
       this.loadDocumentForVersion();
       // show reference by default
       this.documentForm.controls['selectDocumentSource'].setValue(SmpShowDocumentType.REFERENCE_DOCUMENT);
@@ -483,7 +483,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     } else if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
       this.loadDomainDocumentTemplateForVersion(currentVersion);
     } else {
-      console.log("DocumentEditPanelComponent loadDocumentForVersion 3" )
+      console.log("DocumentEditPanelComponent loadDocumentForVersion 3")
       this.loadDocumentForVersion(currentVersion);
     }
   }
@@ -504,6 +504,38 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
 
     }
     onSaveObservable.subscribe(this.saveDocumentObserver);
+  }
+
+  onDeleteButtonClicked(): void {
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: this.translateService.instant("document.edit.panel.delete.confirmation.dialog.title"),
+        description: this.translateService.instant("document.edit.panel.delete.confirmation.dialog.description")
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.submitDeleteAction()
+      }
+    });
+  }
+
+  private submitDeleteAction() {
+    // create lightweight document object
+    let docRequest: DocumentRo = {
+      documentId: this._document.documentId,
+      payloadVersion: this._document.payloadVersion,
+    } as DocumentRo;
+
+    let onDeleteObservable: Observable<DocumentRo>;
+    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+      onDeleteObservable = this.editResourceService.deleteDomainDocumentTemplateObservable(this.domain, this.domainDocumentTemplateRo, this.document);
+    } else {
+      onDeleteObservable = this.isResourceDocument ?
+        this.editResourceService.deleteResourceDocumentObservable(this.resource, docRequest) :
+        this.editResourceService.deleteSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
+    }
+    // request review
+    onDeleteObservable.subscribe(this.loadDocumentObserver);
   }
 
   onReviewRequestButtonClicked(): void {
@@ -610,7 +642,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     } as DocumentRo;
 
     let onPublishObservable: Observable<DocumentRo>;
-    if(this.editorMode == SmpDocumentEditorType.TEMPLATE_EDITOR){
+    if (this.editorMode == SmpDocumentEditorType.TEMPLATE_EDITOR) {
       onPublishObservable = this.editResourceService.publishDomainDocumentTemplateObservable(this.domain, this.domainDocumentTemplateRo, docRequest);
     } else {
       onPublishObservable = this.isResourceDocument ?
@@ -709,10 +741,10 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
    */
   loadDomainDocumentTemplateForVersion(version: number = null): void {
     console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion ")
-    let loadObservable  =  this.editResourceService.getDomainDocumentTemplateObservable(
+    let loadObservable = this.editResourceService.getDomainDocumentTemplateObservable(
       this.domain,
       this.domainDocumentTemplateRo,
-      version) ;
+      version);
     loadObservable.subscribe(this.loadDocumentObserver);
   }
 
@@ -762,15 +794,11 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   onSelectionDocumentVersionChanged(): void {
-    let selectedVersion = this.documentForm.controls['payloadVersion'].value;
-    if (selectedVersion === this.currentDocumentVersion) {
-      return;
-    }
+    let selectedVersion = this.currentDocumentVersion;
     // load the selected version
     if (this.editorMode == SmpDocumentEditorType.TEMPLATE_EDITOR) {
       this.loadDomainDocumentTemplateForVersion(selectedVersion)
     } else {
-      console.log("DocumentEditPanelComponent loadDocumentForVersion 4" )
       this.loadDocumentForVersion(selectedVersion)
     }
   }
@@ -835,6 +863,13 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     return this.reviewEnabled ?
       status !== DocumentVersionsStatus.APPROVED :
       !this.publishableDocStatusList.find(i => i === status)
+  }
+
+  get deleteButtonDisabled(): boolean {
+    let payloadStatus = this.documentForm.controls['documentVersionStatus']?.value
+    let payloadVersion = this.documentForm.controls['payloadVersion']?.value
+
+    return payloadStatus === DocumentVersionsStatus.PUBLISHED || !payloadVersion
   }
 
   get newVersionButtonDisabled(): boolean {
