@@ -23,3 +23,8 @@ services:
     ports:
       - "8143:8443"
       - "8180:8080"
+
+  # hashicorp vault service to test vault integration
+  vault-service:
+    ports:
+      - 8200:8200

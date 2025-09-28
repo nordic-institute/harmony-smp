@@ -29,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -74,7 +75,7 @@ public class SessionSecurityUtils {
             return idValue;
         }
         String valWithSeed = idValue + '#' + Calendar.getInstance().getTimeInMillis();
-        return SecurityUtils.encryptURLSafe(secret, valWithSeed);
+        return SecurityUtils.encryptToBase64URLSafe(secret, valWithSeed);
     }
 
 
@@ -87,9 +88,10 @@ public class SessionSecurityUtils {
             // try to convert to long value
             return Long.valueOf(id);
         }
-        String decVal = SecurityUtils.decryptUrlSafe(secret, id);
-        int indexOfSeparator = decVal.indexOf('#');
-        String value = indexOfSeparator > -1 ? decVal.substring(0, indexOfSeparator) : decVal;
+        byte[] decVal = SecurityUtils.decryptBase64UrlSafe(secret, id);
+        String decValStr = new String(decVal, Charset.defaultCharset());
+        int indexOfSeparator = decValStr.indexOf('#');
+        String value = indexOfSeparator > -1 ? decValStr.substring(0, indexOfSeparator) : decValStr;
         return Long.valueOf(value);
     }
 

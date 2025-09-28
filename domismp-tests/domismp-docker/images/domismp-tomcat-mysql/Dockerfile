@@ -30,6 +30,7 @@ ENV SMP_HOME=/opt/smp \
     SMP_INIT_PROPERTIES=""   \
     SMP_DB_USER_PASSWORD=smp  \
     MYSQL_ROOT_PASSWORD=root \
+    DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY=/eu/europa/ec/edelivery/vault/edelivery-vault-hashicorp/2.0/edelivery-vault-hashicorp-2.0-only-spring-vault.jar \
 # sml environment variables
     SML_VERSION=5.0 \
     SML_DISTRIBUTION_URL=https://ec.europa.eu/digital-building-blocks/artifact/repository/public/eu/europa/ec/bdmsl/bdmsl-webapp/ \

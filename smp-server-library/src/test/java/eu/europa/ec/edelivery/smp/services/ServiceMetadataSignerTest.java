@@ -71,7 +71,6 @@ class ServiceMetadataSignerTest extends AbstractJunit5BaseDao {
         // set keystore properties
         File keystoreFile = new File(resourceDirectory.toAbsolutePath().toFile(), "smp-keystore-all-keys.p12");
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
-        Mockito.doReturn(resourceDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         Mockito.doReturn("PKCS12").when(configurationService).getKeystoreType();
         uiKeystoreService.refreshData();

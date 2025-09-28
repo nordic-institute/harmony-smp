@@ -43,7 +43,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.KeyException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,13 +68,15 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
     boolean serverRestartNeeded = false;
+    private final VaultDao vaultDao;
 
     protected final SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
     protected final ApplicationContext applicationContext;
 
 
-    public ConfigurationDao(ApplicationContext applicationContext) {
+    public ConfigurationDao(ApplicationContext applicationContext, VaultDao vaultDao) {
         this.applicationContext = applicationContext;
+        this.vaultDao = vaultDao;
     }
 
     /**
@@ -98,6 +102,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             LOG.warn("Property: [{}] is not SMP property and it is ignored!", key);
             return null;
         }
+
         return setPropertyToDatabase(optionalSMPPropertyEnum.get(), value, null);
     }
 
@@ -108,7 +113,17 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             throw new SMPRuntimeException(CONFIGURATION_PROPERTY)
                     .addParam(PROPERTY_NAME, key.getProperty())
                     .addParam(ERROR_MESSAGE_CODE, key.getPropertyType().getErrorMessageCode());
+        }
 
+        // if is  vault secret store it to vault
+        if (isVaultManagedProperty(key)) {
+            if ( isVaultWriteEnabled()) {
+                return vaultDao.storeSecret(key.getProperty(), value.getBytes(),
+                        StringUtils.isBlank(description) ? key.getDesc() : description);
+            } else {
+                LOG.warn("Property [{}] is vault managed property but vault write permission is disabled! Property is ignored!", key.getProperty());
+                return null;
+            }
         }
 
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
@@ -145,7 +160,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
 
         if (prop.isEncrypted() && !StringUtils.isBlank(value)) {
-            return encryptString(prop, value);
+            return encryptStringToBase64(prop, value);
         }
         return value;
     }
@@ -175,10 +190,17 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     @Transactional
-    public <T> T getCachedPropertyValue(SMPPropertyEnum key) {
+    public <T> T getPropertyValue(SMPPropertyEnum key) {
         if (lastUpdate == null) {
             // init properties
             refreshProperties();
+        }
+        if (key.isEncrypted()) {
+            byte[] token = getSecurityToken(key);
+            if (token == null) {
+                return null;
+            }
+            return (T) (new String(token, StandardCharsets.UTF_8));
         }
         return (T) cachedPropertyValues.get(key.getProperty());
     }
@@ -293,13 +315,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
         LOG.debug("Update all property listeners");
         Map<String, PropertyUpdateListener> updateListenerList = getPropertyUpdateListener();
-        if (updateListenerList != null) {
-            for (Map.Entry<String, PropertyUpdateListener> entry : updateListenerList.entrySet()) {
-                String key = entry.getKey();
-                PropertyUpdateListener value = entry.getValue();
-                updateListener(key, value);
-            }
+        if (updateListenerList == null) {
+            LOG.debug("No property listeners found to be updated!");
+            return;
         }
+
+        updateListenerList.forEach(this::updateListener);
     }
 
     /**
@@ -326,6 +347,73 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             }
         }
         listener.updateProperties(mapProp);
+        //
+        if (listener instanceof VaultDao vaultListener) {
+            updateVaultManagedProperties(vaultListener);
+        }
+    }
+
+    private void updateVaultManagedProperties(VaultDao vaultListener) {
+        if (!isVaultEnabled() || !isVaultWriteEnabled()) {
+            LOG.debug("Vault is not enabled or write permission is disabled. Skip vault property update!");
+            return;
+        }
+        List<SMPPropertyEnum> vaultProperties = Arrays.stream(SMPPropertyEnum.values())
+                .filter(SMPPropertyEnum::isEncrypted)
+                .toList();
+        Map<SMPPropertyEnum, byte[]> vaultProp = new HashMap<>();
+        for (SMPPropertyEnum prop : vaultProperties) {
+            if (cachedProperties.containsKey(prop.getProperty())) {
+                String val = cachedProperties.getProperty(prop.getProperty());
+                byte[] decVal = null;
+                try {
+                    decVal = decryptString(prop, val);
+                } catch (KeyException e) {
+                    LOG.warn("Can not decrypt property [{}]. Error: [{}]", val, ExceptionUtils.getRootCauseMessage(e));
+                }
+                vaultProp.put(prop, decVal);
+            }
+        }
+        vaultListener.updateVaultOnMissingProperties(vaultProp);
+    }
+
+
+    public byte[] getSecurityToken(SMPPropertyEnum key) {
+        if (isVaultEnabled()) {
+            return vaultDao.getSecret(key.getProperty());
+        }
+
+        String value = cachedProperties.getProperty(key.getProperty());
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        try {
+            return decryptString(key, value);
+        } catch (KeyException e) {
+            LOG.error("Can not decrypt token [{}]! Error: [{}]", key, ExceptionUtils.getRootCauseMessage(e));
+        }
+        return null;
+    }
+
+    public boolean isVaultEnabled() {
+        return Boolean.parseBoolean(getCachedProperty(VAULT_ENABLED));
+    }
+
+    public boolean isVaultWriteEnabled() {
+        return Boolean.parseBoolean(getCachedProperty(VAULT_PERMISSION_WRITE_ENABLED));
+    }
+
+    /**
+     * Check if the property is a vault property and it should be stored or retrieved from the vault.
+     *
+     * @param key the property key
+     * @return true if the property is a vault property else false
+     */
+    boolean isVaultManagedProperty(SMPPropertyEnum key) {
+
+        return key != null
+                && isVaultEnabled()
+                && key.isEncrypted();
     }
 
     public OffsetDateTime getLastUpdate() {
@@ -535,9 +623,33 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return StringUtils.trimToNull(properties.getProperty(key.getProperty()));
     }
 
-    protected String decryptString(SMPPropertyEnum key, String value, File encryptionKey) {
+
+    public byte[] decryptString(SMPPropertyEnum key, String value) throws KeyException {
         try {
-            return SecurityUtils.decrypt(encryptionKey, value);
+            File location = getEncryptionKeyFilepath();
+            if (location == null) {
+                throw new KeyException("Bad configuration. Encryption key does not exist!");
+            }
+            return decryptString(key, value, location);
+        } catch (KeyException kexc) {
+            throw kexc;
+        } catch (Exception exc) {
+            throw new KeyException(exc.getMessage(), exc);
+        }
+    }
+
+    protected String decryptStringToString(SMPPropertyEnum key, String value, File encryptionKey) {
+        byte[] decValue = decryptString(key, value, encryptionKey);
+        return new String(decValue, StandardCharsets.UTF_8);
+    }
+
+    protected byte[] decryptString(SMPPropertyEnum key, String value, File encryptionKey) {
+        // check if value is not encrypted value e.g. starts with "DEC{....}"
+        if (SecurityUtils.isNonEncryptedValue(value)) {
+            return SecurityUtils.getNonEncryptedValue(value).getBytes(StandardCharsets.UTF_8);
+        }
+        try {
+            return SecurityUtils.decryptBase64(encryptionKey, value);
         } catch (Exception exc) {
             throw new SMPRuntimeException(CONFIGURATION_PROPERTY_DECRYPTION)
                     .addParam(PROPERTY_VALUE, key.getProperty())
@@ -545,9 +657,9 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
     }
 
-    public String encryptString(SMPPropertyEnum key, String value, File encryptionKey) {
+    public String encryptStringToBase64(SMPPropertyEnum key, String value, File encryptionKey) {
         try {
-            return SecurityUtils.encrypt(encryptionKey, value);
+            return SecurityUtils.encryptStringToBase64(encryptionKey, value);
         } catch (Exception exc) {
             throw new SMPRuntimeException(CONFIGURATION_PROPERTY_ENCRYPTION)
                     .addParam(PROPERTY_VALUE, key.getProperty())
@@ -555,9 +667,9 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
     }
 
-    public String encryptString(SMPPropertyEnum key, String value) {
+    public String encryptStringToBase64(SMPPropertyEnum key, String value) {
         File encryptionKey = (File) cachedPropertyValues.get(ENCRYPTION_FILENAME.getProperty());
-        return encryptString(key, value, encryptionKey);
+        return encryptStringToBase64(key, value, encryptionKey);
     }
 
     public List<DBConfiguration> getPendingRestartProperties() {
@@ -586,6 +698,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     public File getSecurityFolder() {
         return Paths.get(environmentProperties.getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
+    }
+
+    public File getEncryptionKeyFilepath() {
+        File configFolder = getSecurityFolder();
+        String encryptionKeyFilename = cachedProperties.getProperty(ENCRYPTION_FILENAME.getProperty());
+        return new File(configFolder, encryptionKeyFilename);
     }
 
     public File getLocaleFolder() {

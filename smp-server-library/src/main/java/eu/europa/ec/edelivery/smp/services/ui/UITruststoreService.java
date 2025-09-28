@@ -146,8 +146,7 @@ public class UITruststoreService extends BasicKeystoreService {
             List<String> aliases = list(trustStore.aliases());
             for (String alias : aliases) {
                 Certificate cert = trustStore.getCertificate(alias);
-                if (cert instanceof X509Certificate) {
-                    X509Certificate x509Certificate = (X509Certificate) cert;
+                if (cert instanceof X509Certificate x509Certificate) {
                     String subject = x509Certificate.getSubjectX500Principal().getName();
 
                     subject = DistinguishedNamesCodingUtil.normalizeDN(subject,
@@ -158,11 +157,10 @@ public class UITruststoreService extends BasicKeystoreService {
                 }
             }
         } catch (Exception exception) {
-            LOG.error("Could not load truststore certificates Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            LOG.error("Could not load truststore certificates Error: [{}]", ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
         }
-        truststoreCertificates.clear();
-        normalizedTrustedList.clear();
+        clearTruststoreCache();
 
         trustManagers = trustManagersTemp;
         normalizedTrustedList.addAll(tmpList);
@@ -170,7 +168,11 @@ public class UITruststoreService extends BasicKeystoreService {
 
         lastUpdateTrustStoreFileTime = truststoreFile.lastModified();
         lastUpdateTrustStoreFile = truststoreFile;
-        // clear list to reload RO when required
+    }
+
+    public void clearTruststoreCache(){
+        truststoreCertificates.clear();
+        normalizedTrustedList.clear();
         certificateROList.clear();
     }
 
@@ -398,29 +400,34 @@ public class UITruststoreService extends BasicKeystoreService {
 
         if (truststoreFile == null) {
             LOG.error("Truststore file is not configured! Update SMP configuration!");
+            clearTruststoreCache();
             return null;
         }
         // Load the KeyStore.
         if (!truststoreFile.exists()) {
-            LOG.error("Truststore file '{}' does not exists!", truststoreFile.getAbsolutePath());
+            clearTruststoreCache();
+            LOG.error("Truststore file [{}] does not exists!", truststoreFile.getAbsolutePath());
             return null;
         }
         String token = configurationService.getTruststoreCredentialToken();
         if (StringUtils.isEmpty(token)) {
-            LOG.error("Truststore credentials are missing in configuration table for truststore: '{}' !", truststoreFile.getName());
+            clearTruststoreCache();
+            LOG.error("Truststore credentials are missing in configuration table for truststore: [{}]!", truststoreFile.getName());
             return null;
         }
 
         try (InputStream truststoreInputStream = new FileInputStream(truststoreFile)) {
-            String type = StringUtils.defaultIfEmpty(configurationService.getTruststoreType(), "JKS");
+            String type = StringUtils.defaultIfEmpty(configurationService.getTruststoreType(), "PKCS12");
             LOG.info("Load truststore [{}] with type [{}].", truststoreFile, type);
             KeyStore loadedTrustStore = KeyStore.getInstance(type);
             loadedTrustStore.load(truststoreInputStream, token.toCharArray());
             return loadedTrustStore;
         } catch (Exception exception) {
-            LOG.error("Could not load truststore:" + truststoreFile + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            clearTruststoreCache();
+            LOG.error("Could not load truststore:[{}]. Error: [{}]", truststoreFile, ExceptionUtils.getRootCauseMessage(exception));
+            return null;
         }
-        return null;
+
     }
 
 
@@ -455,7 +462,10 @@ public class UITruststoreService extends BasicKeystoreService {
     public X509Certificate deleteCertificate(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
         KeyStore truststore = loadTruststore(getTruststoreFile());
-        if (truststore == null || !truststore.containsAlias(alias)) {
+        if (truststore == null) {
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_TRUSTSTORE_INVALID);
+        }
+        if (!truststore.containsAlias(alias)) {
             return null;
         }
         X509Certificate certificate = (X509Certificate) truststore.getCertificate(alias);
@@ -468,31 +478,32 @@ public class UITruststoreService extends BasicKeystoreService {
 
     public String addCertificate(String alias, X509Certificate certificate) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
         KeyStore truststore = loadTruststore(getTruststoreFile());
-        if (truststore != null) {
-
-            String certificateAlias = truststore.getCertificateAlias(certificate);
-            if (certificateAlias != null) {
-                throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CANNOT_UPLOAD_DUPLICATE)
-                        .addParam(ErrorMessageArgument.ALIAS, certificateAlias);
-            }
-
-            String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();
-
-            if (truststore.containsAlias(aliasPrivate)) {
-                int i = 1;
-                while (truststore.containsAlias(aliasPrivate + "_" + i)) {
-                    i++;
-                }
-                aliasPrivate = aliasPrivate + "_" + i;
-            }
-
-            truststore.setCertificateEntry(aliasPrivate, certificate);
-            // store truststore
-            storeTruststore(truststore);
-            refreshData();
-            return aliasPrivate;
+        if (truststore == null) {
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_TRUSTSTORE_INVALID);
         }
-        return null;
+
+        String certificateAlias = truststore.getCertificateAlias(certificate);
+        if (certificateAlias != null) {
+            throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CANNOT_UPLOAD_DUPLICATE)
+                    .addParam(ErrorMessageArgument.ALIAS, certificateAlias);
+        }
+
+        String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();
+
+        if (truststore.containsAlias(aliasPrivate)) {
+            int i = 1;
+            while (truststore.containsAlias(aliasPrivate + "_" + i)) {
+                i++;
+            }
+            aliasPrivate = aliasPrivate + "_" + i;
+        }
+
+        truststore.setCertificateEntry(aliasPrivate, certificate);
+        // store truststore
+        storeTruststore(truststore);
+        refreshData();
+        return aliasPrivate;
+
     }
 
     public KeyStore getTrustStore() {

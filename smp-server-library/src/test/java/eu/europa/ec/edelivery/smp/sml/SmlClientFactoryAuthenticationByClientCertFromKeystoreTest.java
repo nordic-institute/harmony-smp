@@ -84,7 +84,6 @@ class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends Abstrac
         // set keystore properties
         File keystoreFile = new File(resourceDirectory.toFile(), "smp-keystore_multiple_domains.jks");
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
-        Mockito.doReturn(resourceDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         Mockito.doReturn(new URL("https://localhost/edelivery-sml")).when(configurationService).getDomainSMLIntegrationUrl(ArgumentMatchers.any(DBDomain.class));
         keystoreService.refreshData();
@@ -215,7 +214,6 @@ class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends Abstrac
         //given
         File keystoreFile = new File(resourceDirectory.toFile(), "service_integration_signatures_single_domain.jks");
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
-        Mockito.doReturn(resourceDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         ReflectionTestUtils.setField(keystoreService, "configurationService", configurationService);
         keystoreService.refreshData();
