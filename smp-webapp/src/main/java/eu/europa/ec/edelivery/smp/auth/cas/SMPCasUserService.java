@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class SMPCasUserService implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
-    enum MappingData {
+    public enum MappingData {
         EMAIL("${email}"),
         FULL_NAME("${firstName} ${lastName}");
 

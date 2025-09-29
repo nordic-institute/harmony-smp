@@ -6,6 +6,7 @@ import {
   ReviewDocumentVersionRo
 } from "../model/review-document-version-ro.model";
 import {NavigationNode} from "../../window/sidenav/navigation-model.service";
+import {DomainDocumentTemplateRo} from "../model/domain-document-template.ro";
 
 /**
  * Service to handle local storage operations
@@ -24,6 +25,7 @@ export class LocalStorageService {
   private static readonly LOCAL_STORAGE_EDIT_RESOURCE_SELECTED = 'selected-edit-resource';
   private static readonly LOCAL_STORAGE_EDIT_SUBRESOURCE_SELECTED = 'selected-edit-subresource';
   private static readonly LOCAL_STORAGE_EDIT_REVIEW_VERSION_SELECTED = 'selected-edit-review-version';
+  private static readonly LOCAL_STORAGE_EDIT_TEMPLATE_VERSION_SELECTED = 'selected-edit-template-version';
   private static readonly LOCAL_STORAGE_EDIT_DOCUMENT_VERSION_SELECTED = 'selected-edit-document-version';
   private static readonly LOCAL_STORAGE_NAVIGATION_PATH = 'navigation-path';
 
@@ -117,6 +119,14 @@ export class LocalStorageService {
     return this.getJSONEntity(LocalStorageService.LOCAL_STORAGE_EDIT_REVIEW_VERSION_SELECTED);
   }
 
+  public storeSelectedDomainDocumentTemplateVersion(document: DomainDocumentTemplateRo): void {
+    this.storeJSONEntity(document, LocalStorageService.LOCAL_STORAGE_EDIT_TEMPLATE_VERSION_SELECTED);
+  }
+
+  public getSelectedDomainDocumentTemplateVersion(): DomainDocumentTemplateRo {
+    return this.getJSONEntity(LocalStorageService.LOCAL_STORAGE_EDIT_TEMPLATE_VERSION_SELECTED);
+  }
+
   public storeSelectedDocumentVersionNumber(documentVersion: number): void {
     if (documentVersion == null) {
       localStorage.removeItem(LocalStorageService.LOCAL_STORAGE_EDIT_DOCUMENT_VERSION_SELECTED);
@@ -153,7 +163,5 @@ export class LocalStorageService {
     localStorage.removeItem(LocalStorageService.LOCAL_STORAGE_EDIT_REVIEW_VERSION_SELECTED);
     localStorage.removeItem(LocalStorageService.LOCAL_STORAGE_EDIT_DOCUMENT_VERSION_SELECTED);
     localStorage.removeItem(LocalStorageService.LOCAL_STORAGE_NAVIGATION_PATH);
-
   }
-
 }

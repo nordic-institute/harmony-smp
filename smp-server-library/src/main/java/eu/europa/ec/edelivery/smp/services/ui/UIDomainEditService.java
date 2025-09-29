@@ -107,7 +107,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
         ServiceResult<DomainPublicRO> result = new ServiceResult<>();
         result.setPage(page);
         result.setPageSize(pageSize);
-        Long count = domainDao.getAllDomainsForUserCount(user);
+        long count = domainDao.getAllDomainsForUserCount(user);
         if (count < 1) {
             result.setCount(0L);
             return result;

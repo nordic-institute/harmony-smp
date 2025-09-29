@@ -18,6 +18,8 @@
 
     create sequence SMP_DOMAIN_CONF_SEQ start with 1 increment by 1;
 
+    create sequence SMP_DOMAIN_DOC_TMPL_SEQ start with 1 increment by 1;
+
     create sequence SMP_DOMAIN_MEMBER_SEQ start with 1 increment by 1;
 
     create sequence SMP_DOMAIN_RESOURCE_DEF_SEQ start with 1 increment by 1;
@@ -547,6 +549,36 @@
         primary key (REV, ID)
     );
 
+    create table SMP_DOMAIN_DOC_TMPL (
+        ID number(19,0) not null,
+        CREATED_ON timestamp(6) with time zone not null,
+        LAST_UPDATED_ON timestamp(6) with time zone not null,
+        DOCUMENT_LEVEL varchar2(255 char) not null check (DOCUMENT_LEVEL in ('RESOURCE','SUBRESOURCE')),
+        FK_DOCUMENT_ID number(19,0) not null,
+        FK_DOREDEF_ID number(19,0) not null,
+        FK_SUREDEF_ID number(19,0),
+        primary key (ID)
+    );
+
+    comment on column SMP_DOMAIN_DOC_TMPL.ID is
+        'Unique domain document template id';
+
+    comment on column SMP_DOMAIN_DOC_TMPL.DOCUMENT_LEVEL is
+        'Document level type - resource or subresource';
+
+    create table SMP_DOMAIN_DOC_TMPL_AUD (
+        ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp(6) with time zone,
+        LAST_UPDATED_ON timestamp(6) with time zone,
+        DOCUMENT_LEVEL varchar2(255 char) check (DOCUMENT_LEVEL in ('RESOURCE','SUBRESOURCE')),
+        FK_DOCUMENT_ID number(19,0),
+        FK_DOREDEF_ID number(19,0),
+        FK_SUREDEF_ID number(19,0),
+        primary key (REV, ID)
+    );
+
     create table SMP_DOMAIN_MEMBER (
         ID number(19,0) not null,
         CREATED_ON timestamp(6) with time zone not null,
@@ -1047,6 +1079,26 @@
 
     alter table SMP_DOMAIN_CONFIGURATION_AUD 
        add constraint FKkelcga805bleh5x256hy5e1xb 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       add constraint FKg4ci2nee5nvm2tbdbpkeom53m 
+       foreign key (FK_DOCUMENT_ID) 
+       references SMP_DOCUMENT;
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       add constraint FK8dwm6w0x0rdiouvt74i07s9u5 
+       foreign key (FK_DOREDEF_ID) 
+       references SMP_DOMAIN_RESOURCE_DEF;
+
+    alter table SMP_DOMAIN_DOC_TMPL 
+       add constraint FK45eaf7nmo1dem40af2dw27jh5 
+       foreign key (FK_SUREDEF_ID) 
+       references SMP_SUBRESOURCE_DEF;
+
+    alter table SMP_DOMAIN_DOC_TMPL_AUD 
+       add constraint FKb1dw4r0rpj3jdtff4jc7gn046 
        foreign key (REV) 
        references SMP_REV_INFO;
 

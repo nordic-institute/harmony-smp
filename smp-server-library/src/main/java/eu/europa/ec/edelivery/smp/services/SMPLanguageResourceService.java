@@ -196,9 +196,9 @@ public class SMPLanguageResourceService {
             mergedJson = mapper.readTree(target);
             // Merge the JSON nodes
             changed = mergeTranslationProperties(mergedJson, properties);
+            LOG.info("Local file [{}] changed [{}]",localFilePath.toFile(), changed);
         } catch (IOException e) {
             LOG.error("Error occurred while merging the translation files", e);
-            return;
         }
     }
 

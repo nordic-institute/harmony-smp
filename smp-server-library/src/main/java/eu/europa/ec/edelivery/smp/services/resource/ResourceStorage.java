@@ -74,7 +74,7 @@ public class ResourceStorage {
     public byte[] getDocumentContentForResource(DBResource dbResource) {
         LOG.debug("getDocumentContentForResource: [{}]", dbResource);
         Optional<DBDocument> document = documentDao.getDocumentForResource(dbResource);
-        return document.isPresent() ? getDocumentContent(document.get(), true) : null;
+        return document.map(dbDocument -> getDocumentContent(dbDocument, true)).orElse(null);
     }
 
     public byte[] getDocumentContent(DBDocument document, boolean followReference) {
@@ -99,13 +99,14 @@ public class ResourceStorage {
     public byte[] getDocumentContentForSubresource(DBSubresource subresource) {
         LOG.debug("getDocumentContentForSubresource: [{}]", subresource);
         Optional<DBDocument> document = documentDao.getDocumentForSubresource(subresource);
-        return document.isPresent() ? getDocumentContent(document.get(), true) : null;
+        return document.map(dbDocument -> getDocumentContent(dbDocument, true))
+                .orElse(null);
     }
     @Transactional
     public Map<String, String> getResourceProperties(DBResource resource) {
 
         Optional<DBDocument> optDocument = documentDao.getDocumentForResource(resource);
-        if (!optDocument.isPresent()) {
+        if (optDocument.isEmpty()) {
             LOG.debug("Document not found for resource [{}]", resource);
             return Collections.emptyMap();
         }
@@ -122,7 +123,7 @@ public class ResourceStorage {
     public Map<String, String> getSubresourceProperties(DBResource resource, DBSubresource subresource) {
 
         Optional<DBDocument> optDocument = documentDao.getDocumentForSubresource(subresource);
-        if (!optDocument.isPresent()) {
+        if (optDocument.isEmpty()) {
             LOG.debug("Document not found for subresource [{}]", resource);
             return Collections.emptyMap();
         }

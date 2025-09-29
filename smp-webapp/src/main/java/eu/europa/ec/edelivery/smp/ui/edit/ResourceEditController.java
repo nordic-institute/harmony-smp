@@ -32,7 +32,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;

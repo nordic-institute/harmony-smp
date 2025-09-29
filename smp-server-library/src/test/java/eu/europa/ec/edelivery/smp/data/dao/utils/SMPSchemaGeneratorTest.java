@@ -109,6 +109,6 @@ class SMPSchemaGeneratorTest {
         // given when
         List<Class<?>> result = testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
 
-        assertEquals(24, result.size());
+        assertEquals(25, result.size());
     }
 }

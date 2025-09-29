@@ -28,6 +28,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -97,6 +98,29 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_URL_AND_DOMAIN_CODE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
                     .addParam(ErrorMessageArgument.URL_SEGMENT, resourceDef)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain);
+        }
+    }
+
+    /**
+     * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
+     *
+     * @param domain the DBDomain
+     * @param resourceDefIdentifier the DBResourceDef
+     * @return the only single record for DBDomainResourceDef
+     * @throws IllegalStateException if more than one ResourceDef is found
+     */
+    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainAndResourceDefIdentifier(DBDomain domain, String resourceDefIdentifier) {
+        try {
+            TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER, DBDomainResourceDef.class);
+            query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+            query.setParameter(PARAM_RESOURCE_DEF_IDENTIFIER, StringUtils.trim(resourceDefIdentifier));
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_IDENTIFIER_AND_DOMAIN_CODE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceDefIdentifier)
                     .addParam(ErrorMessageArgument.DOMAIN_CODE, domain);
         }
     }

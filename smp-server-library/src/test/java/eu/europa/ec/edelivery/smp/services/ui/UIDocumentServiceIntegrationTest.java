@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainDocumentTemplate;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.ui.DocumentPropertyRO;
@@ -41,15 +42,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(classes = {UIDocumentService.class, ConversionTestConfig.class,
         OasisSMPResource10.class, OasisSMPResource10Handler.class, OasisSMPSubresource10.class, OasisSMPSubresource10Handler.class, Subresource10Validator.class,})
-class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
+class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIDocumentService testInstance;
@@ -62,6 +63,7 @@ class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         // setup initial data!
         testUtilsDao.clearData();
         testUtilsDao.createSubresources();
+        testUtilsDao.createDomainTemplates();
     }
 
     @Test
@@ -146,17 +148,50 @@ class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Test
     void testSaveDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
+        int docVersionCount =resource.getDocument().getDocumentVersions().size();
         DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId());
         assertNotNull(testDoc.getPayload());
         //when
         DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc);
         // then
         assertNotNull(result);
+        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
+    }
+
+    @Test
+    void testSaveDocumentForTemplate() throws IOException {
+        DBDomainDocumentTemplate template = testUtilsDao.getDomainDocumentTemplateD1T1();
+        int docVersionCount =template.getDocument().getDocumentVersions().size();
+
+        DocumentRO testDoc = testInstance.generateTemplateDocument(template.getDomainResourceDef(), null);
+        assertNotNull(testDoc.getPayload());
+
+        //when
+         DocumentRO result = testInstance.saveDocumentForTemplate(template.getId(), testDoc);
+        // then
+        assertNotNull(result);
+        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
+    }
+
+    @Test
+    void testSaveDocumentForSubresourceTemplate() throws IOException {
+        DBDomainDocumentTemplate template = testUtilsDao.getDomainDocumentTemplateD1T1Sub();
+        int docVersionCount =template.getDocument().getDocumentVersions().size();
+
+        DocumentRO testDoc = testInstance.generateTemplateDocument(template.getDomainResourceDef(), template.getSubresourceDef());
+        assertNotNull(testDoc.getPayload());
+
+        //when
+        DocumentRO result = testInstance.saveDocumentForTemplate(template.getId(), testDoc);
+        // then
+        assertNotNull(result);
+        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
     }
 
     @Test
     void testSaveDocumentForSubresource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
+        int docVersionCount =subresource.getDocument().getDocumentVersions().size();
         DocumentRO testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId());
         assertNotNull(testDoc.getPayload());
@@ -165,6 +200,7 @@ class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
         DocumentRO result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
         // then
         assertNotNull(result);
+        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
     }
 
     @Test

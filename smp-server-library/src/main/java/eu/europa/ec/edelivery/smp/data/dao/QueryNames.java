@@ -49,6 +49,10 @@ public class QueryNames {
 
     public static final String QUERY_DOMAIN_BY_USER_RESOURCE_ROLES_COUNT = "DBDomain.getByUserAndResourceRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_RESOURCE_ROLES = "DBDomain.getByUserAndResourceRoles";
+
+    public static final String QUERY_DOMAIN_DOC_TEMPLATES_BY_DOMAIN = "DBDomainDocumentTemplate.getByDomainId";
+    public static final String QUERY_DOMAIN_DOC_TEMPLATES_BY_DOMAIN_RESDEF_SUBRESDEF = "DBDomainDocumentTemplate.getByDomainIdAndResourceDefIdAndDocumentLevelType";
+
     public static final String QUERY_EXTENSION_ALL = "DBExtension.getAll";
     public static final String QUERY_EXTENSION_BY_IDENTIFIER = "DBExtension.getByIdentifier";
 
@@ -141,12 +145,15 @@ public class QueryNames {
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_RESOURCE = "DBDocumentVersion.forCurrentForResource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE = "DBDocumentVersion.getAllForResource";
 
+    public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOMAIN_TEMPLATE = "DBDocumentVersion.forCurrentForDomainTemplate";
+
 
 
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT = "DBDocumentVersion.forCurrentForDocument";
-
+    public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_DOCUMENT = "DBDocumentVersion.getAllForDocument";
     public static final String QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE = "DBDocumentVersion.forCurrentForSubresource";
     public static final String QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE = "DBDocumentVersion.getAllForSubresource";
+
     public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER = "DBDocumentVersion.getAllReviewTasksForUser";
     public static final String QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER_COUNT = "DBDocumentVersion.getAllReviewTasksForUserCount";
 
@@ -219,6 +226,8 @@ public class QueryNames {
     public static final String PARAM_DOMAIN_CODE = "domain_code";
     public static final String PARAM_DOMAIN_CODES = "domain_codes";
     public static final String PARAM_DOMAIN_SML_SMP_ID = "sml_smp_id";
+    public static final String PARAM_DOMAIN_RESDEF__ID = "domain_resource_def_id";
+
     public static final String PARAM_PROPERTY = "property";
 
     public static final String PARAM_DOMAIN_IDS = "domain_ids";
@@ -226,6 +235,7 @@ public class QueryNames {
 
     public static final String PARAM_DOCUMENT_ID = "document_id";
     public static final String PARAM_DOCUMENT_TYPE = "document_type";
+    public static final String PARAM_DOCUMENT_LEVEL_TYPE = "document_level_type";
     public static final String PARAM_SHARING_ENABLED = "sharing_enabled";
     public static final String PARAM_STATUS = "status";
 

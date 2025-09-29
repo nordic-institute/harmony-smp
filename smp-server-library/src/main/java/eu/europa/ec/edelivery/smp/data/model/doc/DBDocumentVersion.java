@@ -67,6 +67,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE, query = "SELECT dv FROM " +
         "   DBSubresource sr join sr.document.documentVersions dv " +
         " WHERE sr.id= :subresource_id order by dv.version desc")
+@NamedQuery(name = QUERY_DOCUMENT_VERSION_LIST_FOR_DOCUMENT, query = "SELECT dv FROM " +
+        "   DBDocument doc JOIN doc.documentVersions dv" +
+        " WHERE doc.id= :document_id order by dv.version desc")
 @NamedNativeQuery(name = QUERY_DOCUMENT_VERSION_UNDER_REVIEW_FOR_USER,
         query = "SELECT " +
                 "    dv.ID AS ID, " +

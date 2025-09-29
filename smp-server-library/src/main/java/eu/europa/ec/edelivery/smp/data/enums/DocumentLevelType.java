@@ -26,7 +26,7 @@ package eu.europa.ec.edelivery.smp.data.enums;
  * @author Joze Rihtarsic
  * @since 5.1
  */
-public enum DocumentReferenceType {
+public enum DocumentLevelType {
     RESOURCE,
     SUBRESOURCE
 }

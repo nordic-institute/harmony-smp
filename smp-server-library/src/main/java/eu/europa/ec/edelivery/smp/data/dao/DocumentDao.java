@@ -178,6 +178,19 @@ public class DocumentDao extends BaseDao<DBDocument> {
     }
 
     /**
+     * Method returns list of document versions for the document
+     *
+     * @param document which owns the document versions
+     * @return document version list
+     */
+    public List<DBDocumentVersion> getDocumentVersionsForDocument(DBDocument document) {
+        TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_LIST_FOR_DOCUMENT,
+                DBDocumentVersion.class);
+        query.setParameter(PARAM_DOCUMENT_ID, document.getId());
+        return query.getResultList();
+    }
+
+    /**
      * Method creates query for searching users review tasks
      *
      * @param resultClass class of the result, can be DBResource or Long

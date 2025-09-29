@@ -1,0 +1,42 @@
+<div id="domain-ext-doc-panel" class="mat-elevation-z2">
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button id="createButton" mat-raised-button (click)="onAddButtonClicked()" color="primary"
+              matTooltip="{{ 'domain.extension.template.tooltip.create' | translate }}"
+              [disabled]="isDomainNotSelected"
+      >
+        <mat-icon>add</mat-icon>
+        <span>{{ "domain.extension.template.button.create" | translate }}</span>
+      </button>
+      <button id="editButton" mat-raised-button (click)="onEditSelectedButtonClicked()" color="primary"
+              matTooltip="{{ 'domain.extension.template.tooltip.edit' | translate }}"
+              [disabled]="!isItemSelected">
+        <mat-icon>edit</mat-icon>
+        <span>{{ "domain.extension.template.button.edit" | translate }}</span>
+      </button>
+      <button id="deleteButton" mat-raised-button (click)="onDeleteSelectedButtonClicked()" color="primary"
+              matTooltip="{{ 'domain.extension.template.tooltip.delete' | translate }}"
+              [disabled]="!isItemSelected">
+        <mat-icon>delete</mat-icon>
+        <span>{{ "domain.extension.template.button.delete" | translate }}</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
+
+    <smp-table
+      filterLabel="domain.extension.template.label.filter"
+      filterPlaceholder="domain.extension.template.tooltip.filter"
+      noResultLabel="domain.extension.template.label.no.data.found"
+      noResultForFilterLabel="domain.extension.template.label.no.filter.results"
+      [dataSource]="dataSource"
+      [selectedRow]="selectedItem"
+      [columnDefList]="columns"
+      [disabledFilter]="isDomainNotSelected"
+      [displayedColumns]="displayedColumns"
+      (onFilterChanged)="applyDocumentFilter($event)"
+      (onRowClicked)="onItemSelected($event)"
+      (onRowDoubleClicked)="openDocumentEditor($event)"
+    >
+    </smp-table>
+</div>

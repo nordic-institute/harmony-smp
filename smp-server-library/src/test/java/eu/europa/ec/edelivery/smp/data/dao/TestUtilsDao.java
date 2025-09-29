@@ -20,11 +20,9 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.enums.*;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
-import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
@@ -59,9 +57,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @Repository
 public class TestUtilsDao {
-
-    @Autowired
-    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @Autowired
     UserDao userDao;
@@ -135,6 +130,11 @@ public class TestUtilsDao {
     DBSubresource searchPrivPrivPubSubRes = null;
     DBSubresource searchPrivPrivPrivSubRes = null;
 
+    DBDomainDocumentTemplate domainDocumentTemplateD1T1;
+    DBDocument documentTemplateD1RT1;
+
+    DBDomainDocumentTemplate domainDocumentTemplateD1T1Sub;
+    DBDocument documentTemplateD1RT1Sub;
 
     /**
      * Database can be cleaned by script before the next test; clean also the objects
@@ -196,7 +196,10 @@ public class TestUtilsDao {
         searchPrivPrivPubSubRes = null;
         searchPrivPrivPrivSubRes = null;
 
-
+        domainDocumentTemplateD1T1 = null;
+        documentTemplateD1RT1 = null;
+        domainDocumentTemplateD1T1Sub = null;
+        documentTemplateD1RT1Sub = null;
     }
 
 
@@ -245,8 +248,12 @@ public class TestUtilsDao {
         }
         resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10_ID, TEST_RESOURCE_DEF_SMP10_URL);
         subresourceDefSmp =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10_ID, TEST_SUBRESOURCE_DEF_SMP10_URL, resourceDefSmp);
+        resourceDefSmp.getSubresources().add(subresourceDefSmp);
 
         resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP, TEST_RESOURCE_DEF_CPP);
+
+        persistFlushDetach(resourceDefSmp);
+        persistFlushDetach(resourceDefCpp);
 
         assertNotNull(resourceDefSmp.getId());
         assertNotNull(resourceDefCpp.getId());
@@ -514,6 +521,36 @@ public class TestUtilsDao {
         assertNotNull(resourceD2G1RD1.getId());
     }
 
+
+    @Transactional
+    public void createDomainTemplates() {
+        if (domainDocumentTemplateD1T1 != null) {
+            LOG.trace("Domains templates are already initialized!");
+            return;
+        }
+        createGroups();
+        createResourceDefinitionsForDomains();
+        documentTemplateD1RT1 = createDocument(1,"${resource.identifier.value}", "${resource.identifier.scheme}");
+
+        domainDocumentTemplateD1T1 = new DBDomainDocumentTemplate();
+        domainDocumentTemplateD1T1.setDocumentLevelType( DocumentLevelType.RESOURCE);
+        domainDocumentTemplateD1T1.setDocument(documentTemplateD1RT1);
+        domainDocumentTemplateD1T1.setDomainResourceDef(domainResourceDefD1R1);
+        persistFlushDetach(domainDocumentTemplateD1T1);
+
+        documentTemplateD1RT1Sub = createDocument(1,"${resource.identifier.value}", "${resource.identifier.scheme}", "${subresource.identifier.value}", "${subresource.identifier.scheme}");
+
+        domainDocumentTemplateD1T1Sub = new DBDomainDocumentTemplate();
+        domainDocumentTemplateD1T1Sub.setDocumentLevelType( DocumentLevelType.SUBRESOURCE);
+        domainDocumentTemplateD1T1Sub.setDocument(documentTemplateD1RT1Sub);
+        domainDocumentTemplateD1T1Sub.setDomainResourceDef(domainResourceDefD1R1);
+        domainDocumentTemplateD1T1Sub.setSubresourceDef(domainResourceDefD1R1.getResourceDef().getSubresources().get(0));
+        persistFlushDetach(domainDocumentTemplateD1T1Sub);
+
+
+        assertNotNull(domainDocumentTemplateD1T1.getId());
+    }
+
     @Transactional
     public DBResource createResource(String identifier, String schema,
                                      VisibilityType visibilityType,
@@ -696,7 +733,7 @@ public class TestUtilsDao {
             assertNotNull(document.getDocumentVersions().get(i).getId());
         }
         // current version is first version all others are draft
-        assertEquals(1, document.getCurrentVersion());
+        assertEquals(2, document.getCurrentVersion());
 
         return document;
     }
@@ -705,8 +742,12 @@ public class TestUtilsDao {
         DBDocument document = createDBDocument();
         // add document versions to the document
         for (int i= 0; i< versions; i++ ) {
+            DBDocumentVersion dbDocumentVersion = createDBDocumentVersion(identifier, schema);
+            dbDocumentVersion.setVersion(i+1);
             document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema));
         }
+        document.getDocumentVersions().get(versions-1).setStatus(DocumentVersionStatusType.PUBLISHED);
+        document.setCurrentVersion(versions); // always set current version to first version
         return document;
     }
 
@@ -810,16 +851,13 @@ public class TestUtilsDao {
 
     @Transactional
     public DBResourceDef createResourceDefinition(String identifier, String urlContextDef) {
-        DBResourceDef d = TestDBUtils.createDBResourceDef(identifier, urlContextDef);
-        persistFlushDetach(d);
-        return d;
+        return TestDBUtils.createDBResourceDef(identifier, urlContextDef);
     }
 
     @Transactional
     public DBSubresourceDef createSubresourceDefinition(String identifier, String urlContextDef, DBResourceDef resourceDef) {
         DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(identifier, urlContextDef);
         d.setResourceDef(resourceDef);
-        persistFlushDetach(d);
         return d;
     }
 
@@ -943,6 +981,14 @@ public class TestUtilsDao {
 
     public DBSubresource getSubresourceD2G1RD1_S1() {
         return subresourceD2G1RD1_S1;
+    }
+
+    public DBDomainDocumentTemplate getDomainDocumentTemplateD1T1() {
+        return domainDocumentTemplateD1T1;
+    }
+
+    public DBDomainDocumentTemplate getDomainDocumentTemplateD1T1Sub() {
+        return domainDocumentTemplateD1T1Sub;
     }
 
     public DBResource getResourceD2G1RD1() {
