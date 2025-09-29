@@ -52,20 +52,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The resource request handler to build the request data for ResourceDefinitionSpi interaction.
- *  .
- *
+ * The resource request handler with method implementations which interacts with the SPI implementations.
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class ResourceHandler {
-    protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceHandler.class);
+public class ResourceSPIHandler {
+    protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceSPIHandler.class);
     private static final String EXPECTED_RESOURCE_CHARSET = "UTF-8";
     // the Spring beans for the resource definitions
     final List<ResourceDefinitionSpi> resourceDefinitionSpiList;
     final ResourceStorage resourceStorage;
 
-    protected ResourceHandler(List<ResourceDefinitionSpi> resourceDefinitionSpiList, ResourceStorage resourceStorage) {
+    protected ResourceSPIHandler(List<ResourceDefinitionSpi> resourceDefinitionSpiList, ResourceStorage resourceStorage) {
         this.resourceDefinitionSpiList = resourceDefinitionSpiList;
         this.resourceStorage = resourceStorage;
     }
@@ -116,19 +114,27 @@ public class ResourceHandler {
      * @param resource an entity
      * @return data handler request data
      */
-    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
+    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, Map<String, String> requestProperties) {
 
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
-        if (content == null || content.length == 0) {
+        InputStream inputStream = null;
+        if (content != null && content.length != 0) {
+            inputStream = new ByteArrayInputStream(content);
+        }
+        /*if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_MISSING)
                     .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
                     .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
-        }
-        return buildRequestDataForResource(domain, resource, new ByteArrayInputStream(content));
+        }*/
+        return buildRequestDataForResource(domain, resource,inputStream, requestProperties);
     }
 
-    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
+    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream, Map<String, String> requestProperties) {
         Map<String, String> docProp = resourceStorage.getResourceProperties(resource);
+        if (requestProperties!= null && !requestProperties.isEmpty()){
+            docProp.putAll(requestProperties);
+        }
+
         return buildRequestData(domain,
                 SPIUtils.toUrlIdentifier(resource),
                 null,
@@ -146,6 +152,7 @@ public class ResourceHandler {
                 StringNamedSubstitutor.resolve(inputStream, docProp, baos, EXPECTED_RESOURCE_CHARSET);
             }
             return new SpiRequestData(domain.getDomainCode(),
+                    docProp,
                     resourceIdentifier,
                     subresourceIdentifier,
                     new ByteArrayInputStream(baos.toByteArray()));
@@ -166,7 +173,7 @@ public class ResourceHandler {
      * Build handler RequestData and add resource from the database for the subresource
      * It reads the content of the subresource from the database and replaces the properties in the document.
      *
-     * @param domain
+     * @param domain    of the resource
      * @param resource
      * @param subresource
      * @return
@@ -194,7 +201,10 @@ public class ResourceHandler {
      * @param inputStream the input stream to replace the properties in the document
      * @return request data for the subresource
      */
-    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
+    public RequestData buildRequestDataForSubResource(DBDomain domain,
+                                                      DBResource resource,
+                                                      DBSubresource subresource,
+                                                      InputStream inputStream) {
         Map<String, String> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
         return buildRequestData(domain,
                 SPIUtils.toUrlIdentifier(resource),

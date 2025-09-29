@@ -38,6 +38,7 @@ import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
+import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
@@ -47,19 +48,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_CREATED;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_UPDATED;
 
 /**
- * The class handles the resource actions
+ * The service handles the resource operations by locating the correct resource handler and passing the request to it.
  *
  * @author Joze Rihtarsic
  * @since 5.0
  */
 @Service
-public class ResourceHandlerService extends ResourceHandler {
+public class ResourceHandlerService extends ResourceSPIHandler {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceHandlerService.class);
 
     final ResourceMemberDao resourceMemberDao;
@@ -87,13 +90,27 @@ public class ResourceHandlerService extends ResourceHandler {
         ResourceHandlerSpi handlerSpi = getResourceHandler(resolvedData.getResourceDef());
         // set default mimetype - it can be overwritten by handler
         resourceResponse.setContentType(resolvedData.getResourceDef().getMimeType());
-
-        RequestData requestData = buildRequestDataForResource(resolvedData.getDomain(), resolvedData.getResource());
+        Map<String, String> requestAttributes = getDocumentAttributes(resolvedData);
+        RequestData requestData = buildRequestDataForResource(resolvedData.getDomain(), resolvedData.getResource(), requestAttributes);
         ResponseData responseData = new SpiResponseData(resourceResponse.getOutputStream());
         // get resource byte array
 
         handleReadResource(handlerSpi, requestData, responseData, resourceResponse);
+    }
 
+    protected Map<String, String> getDocumentAttributes( ResolvedData resolvedData) {
+        Map<String, String> documentAttributes = new HashMap<>();
+        documentAttributes.put(TransientDocumentPropertyType.RESOURCE_URL_SEGMENT.getPropertyName(), resolvedData.getRequestResourceUrlSegment());
+        documentAttributes.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resolvedData.getResource().getIdentifierValue());
+        documentAttributes.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resolvedData.getResource().getIdentifierScheme());
+        if (resolvedData.getSubresource() != null) {
+            documentAttributes.put(TransientDocumentPropertyType.SUBRESOURCE_URL_SEGMENT.getPropertyName(), resolvedData.getRequestSubresourceUrlSegment());
+            documentAttributes.put(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(), resolvedData.getSubresource().getIdentifierValue());
+            documentAttributes.put(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resolvedData.getSubresource().getIdentifierScheme());
+        }
+
+
+        return documentAttributes;
     }
 
     @Transactional
@@ -127,9 +144,9 @@ public class ResourceHandlerService extends ResourceHandler {
         ResourceHandlerSpi handlerSpi = getResourceHandler(resolvedData.getResourceDef());
 
         boolean isNewResource = resource.getId() == null;
-
+        Map<String, String> requestAttributes = getDocumentAttributes(resolvedData);
         RequestData requestData = buildRequestDataForResource(resolvedData.getDomain(),
-                resource, resourceRequest.getInputStream());
+                resource, resourceRequest.getInputStream(), requestAttributes);
 
         // write to response data and save the request
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

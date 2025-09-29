@@ -49,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         OasisSMPResource10Handler.class,
         OasisSMPSubresource10Handler.class,
         Subresource10Validator.class})
-class ResourceHandlerServiceTest extends AbstractJunit5BaseDao {
+class ResourceSPIHandlerServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
     private ConfigurationDao configurationDao;

@@ -73,7 +73,6 @@ public class ResourceControllerSingleDomainTest extends AbstractControllerTest {
                 .content(SERVICE_GROUP_INPUT_BODY));
 
         // then
-        System.out.println(result.andReturn().getResponse().getContentAsString());
         result.andExpect(status().isCreated());
     }
 

@@ -27,6 +27,9 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 
 public class ResolvedData {
     boolean resolved;
+    String requestDomainCode;
+    String requestResourceUrlSegment;
+    String requestSubresourceUrlSegment;
     DBDomain domain;
     DBGroup group;
     DBResourceDef resourceDef;
@@ -88,5 +91,29 @@ public class ResolvedData {
 
     public void setGroup(DBGroup group) {
         this.group = group;
+    }
+
+    public String getRequestDomainCode() {
+        return requestDomainCode;
+    }
+
+    public void setRequestDomainCode(String requestDomainCode) {
+        this.requestDomainCode = requestDomainCode;
+    }
+
+    public String getRequestResourceUrlSegment() {
+        return requestResourceUrlSegment;
+    }
+
+    public void setRequestResourceUrlSegment(String requestResourceUrlSegment) {
+        this.requestResourceUrlSegment = requestResourceUrlSegment;
+    }
+
+    public String getRequestSubresourceUrlSegment() {
+        return requestSubresourceUrlSegment;
+    }
+
+    public void setRequestSubresourceUrlSegment(String requestSubresourceUrlSegment) {
+        this.requestSubresourceUrlSegment = requestSubresourceUrlSegment;
     }
 }

@@ -789,6 +789,7 @@
         IDENTIFIER varchar2(128 char) unique,
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
+        URL_SEGMENT_OPTIONAL varchar2(128 char) unique,
         URL_SEGMENT varchar2(128 char) unique,
         FK_EXTENSION_ID number(19,0),
         primary key (ID),
@@ -797,6 +798,9 @@
 
     comment on column SMP_RESOURCE_DEF.ID is
         'Unique id';
+
+    comment on column SMP_RESOURCE_DEF.URL_SEGMENT_OPTIONAL is
+        'Comma separated optional resources url_segment.';
 
     comment on column SMP_RESOURCE_DEF.URL_SEGMENT is
         'resources are published under url_segment.';
@@ -812,6 +816,7 @@
         IDENTIFIER varchar2(128 char),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
+        URL_SEGMENT_OPTIONAL varchar2(128 char),
         URL_SEGMENT varchar2(128 char),
         FK_EXTENSION_ID number(19,0),
         primary key (REV, ID)
@@ -892,6 +897,7 @@
         IDENTIFIER varchar2(128 char) unique,
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
+        URL_SEGMENT_OPTIONAL varchar2(128 char) unique,
         URL_SEGMENT varchar2(64 char),
         FK_RESOURCE_DEF_ID number(19,0),
         primary key (ID),
@@ -900,6 +906,9 @@
 
     comment on column SMP_SUBRESOURCE_DEF.ID is
         'Unique id';
+
+    comment on column SMP_SUBRESOURCE_DEF.URL_SEGMENT_OPTIONAL is
+        'Comma separated optional subresources url_segment.';
 
     comment on column SMP_SUBRESOURCE_DEF.URL_SEGMENT is
         'Subresources are published under url_segment. It must be unique for resource type';
@@ -915,6 +924,7 @@
         IDENTIFIER varchar2(128 char),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
+        URL_SEGMENT_OPTIONAL varchar2(128 char),
         URL_SEGMENT varchar2(64 char),
         FK_RESOURCE_DEF_ID number(19,0),
         primary key (REV, ID)

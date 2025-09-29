@@ -111,7 +111,8 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
-        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(), resource, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
+        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(), resource,
+                new ByteArrayInputStream(documentRo.getPayload().getBytes()), Map.of());
         try {
             resourceHandler.validateResource(data);
         } catch (ResourceException e) {
@@ -195,7 +196,7 @@ public class UIDocumentService {
         if (!Objects.equals(document.getId(), documentId)) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
         }
-        DocumentRO doc = deleteDocumentVersion(document, version,  getInitialProperties(subresource));
+        DocumentRO doc = deleteDocumentVersion(document, version, getInitialProperties(subresource));
         // send email notification that document is published
         mailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.DELETED, version, document.getName(),
                 SessionSecurityUtils.getSessionUserDetails());
@@ -449,21 +450,23 @@ public class UIDocumentService {
         LOG.info("generate new Document For resource");
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
 
-        if (!generateDocumentFromTemplate(domainResourceDef, null, DocumentLevelType.RESOURCE, outputStream)) {
-            ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
-            RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
-                    resource, null);
-
-            generateDocumentWithHandler(resourceHandler, data, outputStream);
+        if (generateDocumentFromTemplate(domainResourceDef, null, DocumentLevelType.RESOURCE, outputStream)) {
+            LOG.info("Document generated from template, skipping ResourceHandlerSpi generation");
+            return;
         }
-    }
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
+        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
+                resource, null);
 
+        generateDocumentWithHandler(resourceHandler, data, outputStream);
+
+    }
 
     public void generateDocumentForDomainResourceDef(DBDomainResourceDef domainResourceDef,
                                                      ResourceIdentifier identifier,
                                                      Map<String, String> docProp,
                                                      OutputStream outputStream) throws IOException {
-        LOG.info("generate new Document For domainResourceDef");
+        LOG.info("generate new Document For domainResourceDef: [{}]", domainResourceDef.getResourceDef().getIdentifier());
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
                 identifier, null, docProp, null);
@@ -484,19 +487,21 @@ public class UIDocumentService {
                                                         ResourceIdentifier subresourceIdentifier,
                                                         Map<String, String> docProp,
                                                         OutputStream outputStream) {
-        LOG.info("generate Document For Subresource");
-        if (!generateDocumentFromTemplate(domainResourceDef,
+        LOG.info("Generate document for subresource def [{}]", subresourceDef.getIdentifier());
+        if (generateDocumentFromTemplate(domainResourceDef,
                 subresourceDef,
                 DocumentLevelType.SUBRESOURCE, outputStream)) {
-
-            ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
-            RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
-                    resourceIdentifier,
-                    subresourceIdentifier,
-                    docProp, null);
-
-            generateDocumentWithHandler(resourceHandler, data, outputStream);
+            LOG.info("Document for subresource was generated from template, skipping ResourceHandlerSpi generation");
+            return;
         }
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
+        RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
+                resourceIdentifier,
+                subresourceIdentifier,
+                docProp, null);
+
+        generateDocumentWithHandler(resourceHandler, data, outputStream);
+
     }
 
     /**
@@ -676,7 +681,7 @@ public class UIDocumentService {
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(
                 domainResourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
-                resource, new ByteArrayInputStream(payload));
+                resource, new ByteArrayInputStream(payload), Map.of());
 
         ResponseData responseData = new SpiResponseData(baos);
         try {

@@ -27,5 +27,6 @@
     <modules>
         <module>smp-spi-payload-validation-example</module>
         <module>resource-spi-example</module>
+        <module>resource-peppol-spi</module>
     </modules>
 </project>

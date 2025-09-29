@@ -29,6 +29,9 @@ import org.hibernate.envers.Audited;
 import jakarta.persistence.*;
 
 import java.io.Serial;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -79,6 +82,10 @@ public class DBSubresourceDef extends BaseEntity {
     @Column(name = "URL_SEGMENT", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
     @ColumnDescription(comment = "Subresources are published under url_segment. It must be unique for resource type")
     private String urlSegment;
+
+    @Column(name = "URL_SEGMENT_OPTIONAL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128, unique = true)
+    @ColumnDescription(comment = "Comma separated optional subresources url_segment.")
+    String optionalUrlSegment;
 
     @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
     private String handlerImplementationName;
@@ -146,6 +153,17 @@ public class DBSubresourceDef extends BaseEntity {
 
     public void setHandlerImplementationName(String handlerImplementationName) {
         this.handlerImplementationName = handlerImplementationName;
+    }
+
+    @Transient
+    public List<String> getOptionalUrlSegments() {
+        return optionalUrlSegment == null ? Collections.emptyList() :
+                Arrays.stream(optionalUrlSegment.split(","))
+                .map(String::trim).toList();
+    }
+
+    public void setOptionalUrlSegments(List<String> segments) {
+        this.optionalUrlSegment = segments.isEmpty() ? null : String.join(",", segments);
     }
 
     @Override

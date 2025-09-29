@@ -1,0 +1,69 @@
+/*-
+ * #START_LICENSE#
+ * smp-webapp
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
+package eu.europa.ec.smp.peppol.converter;
+
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis10.OasisSMP10ServiceGroupReader;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.peppol.PeppolSMPServiceGroupReader;
+import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
+import eu.europa.ec.smp.peppol.testutils.XmlTestUtils;
+import gen.eu.europa.ec.ddc.api.peppol.ServiceGroup;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
+
+
+/**
+ * Test class for ResourceConverter
+ *
+ * @author Joze Rihtarsic
+ * @since 5.0
+ */
+class ResourceConverterTest {
+
+    PeppolSMPServiceGroupReader testInstance = new PeppolSMPServiceGroupReader();
+
+    private static final String RES_PATH = "/examples/peppol/";
+
+
+    @Test
+    void testUnmashallingResource() throws Exception {
+
+        //given
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ResourceOK.xml");
+
+        //when
+        ServiceGroup resource = testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+
+        //then
+        Assertions.assertNotNull(resource);
+    }
+
+
+    @Test
+    void testVulnerabilityParsingDTD() throws Exception {
+        //given
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ResourceWithDOCTYPE.xml");
+        //when then
+        TechnicalException result = Assertions.assertThrows(TechnicalException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
+        MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));
+    }
+}

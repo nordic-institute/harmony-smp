@@ -38,6 +38,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_EXTENSION_XML;
@@ -92,6 +93,7 @@ public class TestDBUtils {
         DBResourceDef entity = new DBResourceDef();
         entity.setIdentifier(identifier);
         entity.setUrlSegment(urlSegment);
+        entity.setOptionalUrlSegments(Arrays.asList(anyString(), anyString()));
         entity.setName(anyString());
         entity.setDescription(anyString());
         entity.setMimeType(anyString());
