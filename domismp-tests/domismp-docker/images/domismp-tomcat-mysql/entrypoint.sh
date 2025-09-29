@@ -45,6 +45,14 @@ init_tomcat() {
     [ -e "$extensionLibFile" ] && mv $extensionLibFile $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs || echo "Extensions do not exist"
   done
 
+  # if DEPLOY_VAULT_HASHICORP is set, download the latest snapshot artefact
+  echo "[INFO] Download vault library: $DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY"
+  if [ -n "$DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY" ]; then
+    echo "[INFO] Downloading vault $DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY to: $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
+    wget -O "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs/vault.jar" "https://ec.europa.eu/digital-building-blocks/artifact/repository/eDelivery/$DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY"
+
+  fi
+
   echo "[INFO] init tomcat JAVA_OPTS: $JAVA_OPTS"
   export JAVA_OPTS
 
@@ -85,6 +93,8 @@ init_tomcat() {
   sleep 5s
 
   configureServerHttps
+
+
 }
 
 function configureServerHttps() {

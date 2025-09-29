@@ -75,7 +75,6 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         // set keystore properties
         File keystoreFile = new File(targetDirectory.toFile(), "smp-keystore.jks");
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
-        Mockito.doReturn(targetDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         testInstance.refreshData();
     }

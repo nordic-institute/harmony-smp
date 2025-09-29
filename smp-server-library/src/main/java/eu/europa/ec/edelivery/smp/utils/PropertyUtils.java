@@ -48,7 +48,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 public class PropertyUtils {
 
 
-    private static final String MASKED_VALUE = "*******";
+    public static final String MASKED_VALUE = "*******";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyUtils.class);
     private static final String REG_EXP_VALUE_SEPARATOR = "\\|";
     private static final String REG_EXP_MAP_SEPARATOR = ":";
@@ -151,7 +151,7 @@ public class PropertyUtils {
                     throw new SMPRuntimeException(CONFIGURATION_INVALID_MAP)
                             .addParam(PROPERTY_VALUE, value);
                 }
-                return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR)).stream().collect(Collectors.toMap(
+                return Arrays.stream(value.split(REG_EXP_VALUE_SEPARATOR)).collect(Collectors.toMap(
                         val -> trim(substringBefore(val, REG_EXP_MAP_SEPARATOR)), val -> trim(substringAfter(val, REG_EXP_MAP_SEPARATOR))));
             }
             case PATH: {

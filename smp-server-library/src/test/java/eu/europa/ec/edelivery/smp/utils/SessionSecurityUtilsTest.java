@@ -55,7 +55,8 @@ class SessionSecurityUtilsTest {
         String result = SessionSecurityUtils.encryptedEntityId(value);
 
         assertNotNull(result);
-        String decResult = SecurityUtils.decryptUrlSafe(token.getSecret(), result);
+        String decResult = SecurityUtils.decryptBase64UrlSafeToString(token.getSecret(), result);
+
         assertEquals(value, Long.valueOf(decResult.substring(0, decResult.indexOf('#'))));
     }
 
@@ -63,7 +64,7 @@ class SessionSecurityUtilsTest {
     void decryptEntityId() {
         SMPAuthenticationToken token = setTestSMPAuthenticationToken();
         Long value = 12332L;
-        String encValue = SecurityUtils.encryptURLSafe(token.getSecret(), value.toString());
+        String encValue = SecurityUtils.encryptToBase64URLSafe(token.getSecret(), value.toString());
 
         Long result = SessionSecurityUtils.decryptEntityId(encValue);
 

@@ -445,6 +445,20 @@ public enum SMPPropertyEnum {
     CREDENTIALS_RESET_POLICY_VALID_DAYS("smp.credentials.reset_request.url.validMinutes", "90", "Number of minutes token is valid",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
 
+    VAULT_ENABLED("smp.vault.enabled", Boolean.FALSE.toString(),  "When using vault, encrypted data will be store in Vault instead of the database",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    VAULT_PERMISSION_WRITE_ENABLED("smp.vault.write.enabled", Boolean.TRUE.toString(), "If write enabled, the data can be updated in vault using the SMP. It also populates missing data from database when vault enabled. If disabled, the data can only be read from vault",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+
+    VAULT_IMPLEMENTATION_CLASSNAME("smp.vault.implementation.classname", "", "The full class name of the Vault implementation e.g. eu.europa.ec.edelivery.vault.MyVault",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+    VAULT_CONFIGURATION("smp.vault.configuration", "",  "The list of vault properties separated by ';' e.g.: hashicorp-vault.url:http://vault-service:8200/;hashicorp-vault.token:domisml-valut-test-token",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
+    VAULT_AUTHENTICATION_TYPE("smp.vault.authentication.type", "token",  "The authentication type. e.g. token, username. The value depends on the vault implementation",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+    VAULT_AUTHENTICATION_VALUE("smp.vault.authentication.value", "",  "The authentication value and format depends on the vault implementation",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+
     // deprecated properties
     // property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled
     CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled",

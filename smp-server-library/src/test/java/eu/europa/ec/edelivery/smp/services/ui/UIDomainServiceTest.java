@@ -26,7 +26,6 @@ import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,7 +103,6 @@ class UIDomainServiceTest extends AbstractServiceTest {
         assertEquals(clientCertAuth, result.isSmlClientCertAuth());
         assertEquals(appendDomainCode, result.isSmlAppendDomainCode());
     }
-
 
 
     @Test

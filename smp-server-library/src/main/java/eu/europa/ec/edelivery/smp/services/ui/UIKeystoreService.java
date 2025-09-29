@@ -89,12 +89,14 @@ public class UIKeystoreService extends BasicKeystoreService {
         // load keystore
         File keystoreFile = configurationService.getKeystoreFile();
         if (keystoreFile == null) {
+            clearTruststoreCache();
             LOG.error("KeystoreFile: is null! Check the keystore and the configuration!");
             return;
         }
 
         KeyStore keyStore = loadKeystore(keystoreFile, keystoreSecToken);
         if (keyStore == null) {
+            clearTruststoreCache();
             LOG.error("Keystore: [{}] is not loaded! Check the keystore and the configuration!", keystoreFile.getAbsolutePath());
             return;
         }
@@ -106,6 +108,7 @@ public class UIKeystoreService extends BasicKeystoreService {
             keyManagersTemp = kmf.getKeyManagers();
         } catch (KeyStoreException | NoSuchAlgorithmException |
                  UnrecoverableKeyException exception) {
+            clearTruststoreCache();
             LOG.error("Error occurred while initialize  keyManagers : "
                     + keystoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
@@ -120,7 +123,8 @@ public class UIKeystoreService extends BasicKeystoreService {
                 loadKeyAndCert(keyStore, alias, keyList, hmCertificates);
             }
         } catch (Exception exception) {
-            LOG.error("Could not load signing certificate amd private keys Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            LOG.error("Could not load signing certificate amd private keys Error: [{}]", ExceptionUtils.getRootCauseMessage(exception));
+            clearTruststoreCache();
             return;
         }
         LOG.debug("Set keystore certificates:");
@@ -128,15 +132,17 @@ public class UIKeystoreService extends BasicKeystoreService {
         // if got all data from keystore - update data
         keyManagers = keyManagersTemp;
 
-        keystoreKeys.clear();
-        keystoreCertificates.clear();
-
+        clearTruststoreCache();
         keystoreKeys.addAll(keyList);
         keystoreCertificates.putAll(hmCertificates);
         // add last file date
         lastUpdateKeystoreFileTime = keystoreFile.lastModified();
         lastUpdateKeystoreFile = keystoreFile;
-        // clear list to reload RO when required
+    }
+
+    public void clearTruststoreCache(){
+        keystoreKeys.clear();
+        keystoreCertificates.clear();
         certificateROList.clear();
     }
 
@@ -313,15 +319,16 @@ public class UIKeystoreService extends BasicKeystoreService {
     public List<CertificateRO> importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
-        if (keyStore != null) {
-            List<String> listAliases = KeystoreUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
-            // store keystore
-            storeKeystore(keyStore);
-            // refresh and return added list of certificates
-            List<CertificateRO> keystoreEntries = getKeystoreEntriesList();
-            return keystoreEntries.stream().filter(cert -> listAliases.contains(cert.getAlias())).collect(Collectors.toList());
+        if (keyStore == null ) {
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_KEYSTORE_INVALID);
         }
-        return Collections.emptyList();
+        List<String> listAliases = KeystoreUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
+        // store keystore
+        storeKeystore(keyStore);
+        // refresh and return added list of certificates
+        List<CertificateRO> keystoreEntries = getKeystoreEntriesList();
+        return keystoreEntries.stream().filter(cert -> listAliases.contains(cert.getAlias())).collect(Collectors.toList());
+
     }
 
     /**
@@ -348,7 +355,10 @@ public class UIKeystoreService extends BasicKeystoreService {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
 
-        if (keyStore == null || !keyStore.containsAlias(alias)) {
+        if (keyStore == null ) {
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_KEYSTORE_INVALID);
+        }
+        if (!keyStore.containsAlias(alias)) {
             return null;
         }
         X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);

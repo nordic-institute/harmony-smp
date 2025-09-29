@@ -52,8 +52,8 @@ class ConfigurationServiceTest {
     void testGetCasUserDataURL() throws MalformedURLException {
         String casUrl = "http://test:123/path";
         String casUserDataPath = "userdata/data.hsp";
-        doReturn(new URL(casUrl)).when(configurationDaoMock).getCachedPropertyValue(SSO_CAS_URL);
-        doReturn(casUserDataPath).when(configurationDaoMock).getCachedPropertyValue(SSO_CAS_SMP_USER_DATA_URL_PATH);
+        doReturn(new URL(casUrl)).when(configurationDaoMock).getPropertyValue(SSO_CAS_URL);
+        doReturn(casUserDataPath).when(configurationDaoMock).getPropertyValue(SSO_CAS_SMP_USER_DATA_URL_PATH);
 
         URL result = testInstance.getCasUserDataURL();
         assertNotNull(result);

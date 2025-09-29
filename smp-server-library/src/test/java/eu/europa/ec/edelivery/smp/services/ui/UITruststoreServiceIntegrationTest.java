@@ -92,7 +92,6 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         Mockito.doReturn("test123").when(configurationService).getTruststoreCredentialToken();
         Mockito.doReturn(truststoreFile).when(configurationService).getTruststoreFile();
         Mockito.doReturn("JKS").when(configurationService).getTruststoreType();
-        Mockito.doReturn(targetDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn(true).when(configurationService).forceCRLValidation();
         resetKeystore();
 

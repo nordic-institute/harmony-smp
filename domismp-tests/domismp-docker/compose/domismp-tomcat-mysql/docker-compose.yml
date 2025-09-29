@@ -35,6 +35,11 @@ services:
         ||smp.authorization.jwt.key=MCowBQYDK2VwAyEAJQUoAZs7F8INql8oKpyrfBntIamUqRBdutFuRB7zc1M=
         ||smp.authorization.jwt.algorithm=EdDSA
         ||smp.automation.authentication.types=BASIC_TOKEN|CERTIFICATE|JWT
+        ||smp.vault.enabled=false
+        ||smp.vault.implementation.classname=eu.europa.ec.edelivery.vault.hashicorp.HashicorpVault
+        ||smp.vault.configuration=hashicorp-vault.url:http://vault-service:8200|hashicorp-vault.mount.path:secret|hashicorp-vault.value.key.prefix:domismp/test-
+        ||smp.vault.authentication.type=token
+        ||smp.vault.authentication.value=domismp-valut-test-token
 
     volumes:
       - ./properties/db-scripts:/tmp/custom-data/
@@ -80,3 +85,17 @@ services:
       KC_HTTPS_CLIENT_AUTH: request
       KC_HTTPS_TRUST_STORE_FILE: /certs/keycloak-truststore.p12
       KC_HTTPS_TRUST_STORE_PASSWORD: test123
+
+
+  # hashicorp vault service to test vault integration
+  vault-service:
+    image: hashicorp/vault:1.18
+    #volumes:
+    #  - ./vault/config:/vault/config
+    #  - ./vault/logs:/vault/logs
+    environment:
+      - VAULT_CONFIG=/vault/config
+      - VAULT_DEV_ROOT_TOKEN_ID=domismp-valut-test-token
+      - VAULT_ADDR=http://0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK

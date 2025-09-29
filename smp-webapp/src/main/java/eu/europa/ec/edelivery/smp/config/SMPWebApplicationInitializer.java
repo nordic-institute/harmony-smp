@@ -42,6 +42,7 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.SMP_MOD
  * @author Joze Rihtarsic
  * @since 4.2
  */
+
 public class SMPWebApplicationInitializer implements WebApplicationInitializer {
 
     private static final String FILE_APPLICATION_PROPERTIES = "/application.properties";
@@ -55,6 +56,7 @@ public class SMPWebApplicationInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext servletContext) {
+
         System.setProperty("spring.security.strategy", "MODE_INHERITABLETHREADLOCAL");
         SMPEnvironmentProperties smpEnvironmentProperties = SMPEnvironmentProperties.getInstance();
         // print out the  application data
@@ -76,6 +78,7 @@ public class SMPWebApplicationInitializer implements WebApplicationInitializer {
             if (pluginClassLoader != null) {
                 LOG.debug("Add libraries from the folder: [{}]!", libraryFolderPath);
                 Thread.currentThread().setContextClassLoader(pluginClassLoader);
+                SMPClassLoaderProvider.setClassLoader(pluginClassLoader);
             }
         } else {
             LOG.info("Library folder is not set!  No libraries are loaded!");

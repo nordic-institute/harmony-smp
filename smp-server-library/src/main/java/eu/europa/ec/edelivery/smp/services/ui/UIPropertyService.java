@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -71,23 +71,27 @@ public class UIPropertyService {
     }
 
     /**
-     * Method returns Domain resource object list for page.
+     * Method returns system properties for the given page and filter. If vault is enabled, and vault write is disabled,
+     * skip secret properties as they can not be changed/managed via UI.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @param filterByProperty
-     * @return
+     * @param page   (page number, if -1 return all)
+     * @param pageSize  (page size, if -1 return all)
+     * @param sortField (sort field, can be null or empty)
+     * @param sortOrder (sort order ASC or DESC)
+     * @param filterByProperty filter by property name, case insensitive, can be null or empty
+     * @return ServiceResultProperties with list of PropertyRO for the givan page and filter
      */
     public ServiceResultProperties getTableList(int page, int pageSize,
                                                 String sortField,
                                                 String sortOrder, String filterByProperty) {
 
         LOG.debug("Get properties for page [{}], pageSize [{}] and filter [{}]", page, pageSize, filterByProperty);
+        // if vault is enabled, but write is disabled, skip vault properties as they can not be changed/managed via UI
+        boolean skipSecretProperty = configurationDao.isVaultEnabled() && !configurationDao.isVaultWriteEnabled();
         List<SMPPropertyEnum> filteredProperties = Arrays.stream(SMPPropertyEnum.values())
-                .filter(prop -> isBlank(filterByProperty)
-                        || Strings.CI.contains(prop.getProperty(), filterByProperty))
+                .filter(prop -> !(prop.isEncrypted() && skipSecretProperty)
+                        && (isBlank(filterByProperty) || Strings.CI.contains(prop.getProperty(), filterByProperty))
+                )
                 .toList();
         Map<String, DBConfiguration> changedProps = configurationDao.getPendingUpdateProperties().stream()
                 .collect(Collectors.toMap(DBConfiguration::getProperty, Function.identity()));
@@ -111,7 +115,7 @@ public class UIPropertyService {
     public PropertyRO createProperty(SMPPropertyEnum propertyType, Map<String, DBConfiguration> changedProps) {
 
         PropertyRO property = new PropertyRO(propertyType.getProperty(),
-                configurationDao.getCachedProperty(propertyType),
+                propertyType.isEncrypted()? PropertyUtils.MASKED_VALUE :configurationDao.getCachedProperty(propertyType),
                 propertyType.getPropertyType().name(),
                 propertyType.getDesc());
 
@@ -137,7 +141,7 @@ public class UIPropertyService {
         for (PropertyRO property : properties) {
             configurationDao.setPropertyToDatabase(property.getProperty(), property.getValue());
         }
-        Boolean isClusterEnabled = configurationDao.getCachedPropertyValue(SMP_CLUSTER_ENABLED);
+        Boolean isClusterEnabled = configurationDao.getPropertyValue(SMP_CLUSTER_ENABLED);
         if (isClusterEnabled) {
             LOG.info("Properties were updated in database. Changed properties will be activated to all cluster nodes at: [{}]!",
                     ISO_8601_EXTENDED_DATETIME_FORMAT.format(refreshPropertiesTrigger.getNextExecutionDate()));
@@ -155,7 +159,7 @@ public class UIPropertyService {
         Optional<SMPPropertyEnum> optPropertyEnum = SMPPropertyEnum.getByProperty(propertyRO.getProperty());
         if (optPropertyEnum.isEmpty()) {
             LOG.warn("Property: [{}] is not SMP property!", propertyRO.getProperty());
-            ErrorMessageType msg =  ErrorMessageType.INVALID_PROPERTY_UNKNOWN;
+            ErrorMessageType msg = ErrorMessageType.INVALID_PROPERTY_UNKNOWN;
             propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
             propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY, propertyRO.getProperty())));
@@ -164,7 +168,7 @@ public class UIPropertyService {
         SMPPropertyEnum propertyEnum = optPropertyEnum.get();
         if (isBlank(propertyRO.getValue()) && propertyEnum.isMandatory()) {
             LOG.warn("Mandatory Property: [{}] must not be blank!", propertyRO.getProperty());
-            ErrorMessageType msg =  ErrorMessageType.INVALID_PROPERTY_MISSING;
+            ErrorMessageType msg = ErrorMessageType.INVALID_PROPERTY_MISSING;
             propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
             propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY, propertyRO.getProperty())));
