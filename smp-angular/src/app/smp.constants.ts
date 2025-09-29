@@ -17,7 +17,7 @@ export class SmpConstants {
   public static readonly PATH_ACTION_REVIEW_APPROVE: string = 'review-approve';
   public static readonly PATH_ACTION_REVIEW_REJECT: string = 'review-reject';
   public static readonly PATH_ACTION_VALIDATE: string = 'validate';
-  public static readonly PATH_ACTION_SEARCH_REFERENCE_DOCUMENTS: string  = "reference-documents";
+  public static readonly PATH_ACTION_SEARCH_REFERENCE_DOCUMENTS: string = "reference-documents";
   public static readonly PATH_ACTION_PUT: string = 'put';
   public static readonly PATH_ACTION_RETRIEVE: string = 'retrieve';
   public static readonly PATH_ACTION_SEARCH: string = 'search';
@@ -48,6 +48,7 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_MEMBER: string = 'member';
   public static readonly PATH_RESOURCE_TYPE_GROUP: string = 'group';
   public static readonly PATH_RESOURCE_TYPE_TEMPLATE: string = 'template';
+  public static readonly PATH_RESOURCE_TYPE_VERSION: string = 'version';
   public static readonly PATH_RESOURCE_TYPE_PROPERTY: string = 'property';
   public static readonly PATH_RESOURCE_TYPE_LOCALE: string = 'locale';
   public static readonly PATH_DNS_TOOLS: string = 'dns-tools';
@@ -74,6 +75,7 @@ export class SmpConstants {
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_VALIDATE = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_VALIDATE;
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_GENERATE = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_GENERATE;
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_PUBLISH = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_PUBLISH;
+  public static readonly REST_EDIT_DOCUMENT_RESOURCE_DELETE = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_DELETE;
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_REVIEW_REQUEST = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REQUEST;
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_REVIEW_APPROVE = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_APPROVE;
   public static readonly REST_EDIT_DOCUMENT_RESOURCE_REVIEW_REJECT = SmpConstants.REST_EDIT_DOCUMENT_RESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REJECT;
@@ -84,6 +86,7 @@ export class SmpConstants {
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_VALIDATE = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_VALIDATE;
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_GENERATE = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_GENERATE;
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_PUBLISH = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_PUBLISH;
+  public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_DELETE = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_DELETE;
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_REVIEW_REQUEST = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REQUEST;
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_REVIEW_APPROVE = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_APPROVE;
   public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_REVIEW_REJECT = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_REVIEW_REJECT;
@@ -94,7 +97,7 @@ export class SmpConstants {
     + '/' + SmpConstants.PATH_ACTION_DELETE;
   public static readonly REST_EDIT_SUBRESOURCE_CREATE = SmpConstants.REST_EDIT_SUBRESOURCE + '/' + SmpConstants.PATH_ACTION_CREATE;
 
-  public static readonly REST_EDIT_REVIEW_TASK = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_REVIEW +  '/'
+  public static readonly REST_EDIT_REVIEW_TASK = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_REVIEW + '/'
 
   /* Public services */
   public static readonly REST_PUBLIC_SEARCH_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
@@ -132,12 +135,13 @@ export class SmpConstants {
   public static readonly REST_EDIT_DOMAIN_TEMPLATE_CREATE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_ACTION_CREATE;
   public static readonly REST_EDIT_DOMAIN_TEMPLATE_DELETE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
     + '/' + SmpConstants.PATH_ACTION_DELETE;
-  public static readonly REST_EDIT_DOMAIN_TEMPLATE_UPDATE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
-    + '/' + SmpConstants.PATH_ACTION_UPDATE;
-  public static readonly REST_EDIT_DOMAIN_TEMPLATE_PUBLISH = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
-    + '/' + SmpConstants.PATH_ACTION_PUBLISH;
-  public static readonly REST_EDIT_DOMAIN_TEMPLATE_DOCUMENT = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
-    + '/' + SmpConstants.PATH_RESOURCE_TYPE_DOCUMENT;
+
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
+    + '/' + SmpConstants.PATH_RESOURCE_TYPE_VERSION;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION_UPDATE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION + '/' + SmpConstants.PATH_ACTION_UPDATE;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION_PUBLISH = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION + '/' + SmpConstants.PATH_ACTION_PUBLISH;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION_DELETE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION + '/' + SmpConstants.PATH_ACTION_DELETE;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION_DOCUMENT = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION + '/' + SmpConstants.PATH_RESOURCE_TYPE_DOCUMENT;
 
   // resource endpoints
   public static readonly REST_EDIT_RESOURCE = SmpConstants.REST_EDIT_DOMAIN_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID
@@ -184,14 +188,14 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_USER = SmpConstants.REST_PUBLIC + 'user';
 
 
-  public static readonly REST_PUBLIC_USER_MANAGE = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID ;
+  public static readonly REST_PUBLIC_USER_MANAGE = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
   public static readonly REST_PUBLIC_USER_ALERT = SmpConstants.REST_PUBLIC_USER_MANAGE + '/alert';
   public static readonly REST_PUBLIC_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_PUBLIC_USER_MANAGE + '/generate-access-token';
   public static readonly REST_PUBLIC_USER_CHANGE_PASSWORD = SmpConstants.REST_PUBLIC_USER_MANAGE + '/change-password';
 
   public static readonly REST_PUBLIC_USER_SEARCH = SmpConstants.REST_PUBLIC_USER_MANAGE + '/' + SmpConstants.PATH_ACTION_SEARCH;
   // truststore public services
-  public static readonly REST_PUBLIC_TRUSTSTORE = SmpConstants.REST_PUBLIC + "truststore/" +  SmpConstants.PATH_PARAM_ENC_USER_ID ;
+  public static readonly REST_PUBLIC_TRUSTSTORE = SmpConstants.REST_PUBLIC + "truststore/" + SmpConstants.PATH_PARAM_ENC_USER_ID;
   public static readonly REST_PUBLIC_TRUSTSTORE_CERT_VALIDATE = SmpConstants.REST_PUBLIC_TRUSTSTORE + '/validate-certificate';
 
   // public authentication services
@@ -215,10 +219,10 @@ export class SmpConstants {
     + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN
 
   public static readonly REST_INTERNAL_DOMAIN_PROPERTIES_MANAGE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
-    + '/'  + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_RESOURCE_TYPE_PROPERTY
+    + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_RESOURCE_TYPE_PROPERTY
 
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_DELETE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
-    + '/' +  SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
+    + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
 
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
     + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE;

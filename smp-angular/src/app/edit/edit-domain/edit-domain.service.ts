@@ -163,13 +163,4 @@ export class EditDomainService {
         .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
       , template);
   }
-
-  public saveDocumentTemplateObservable(domainId: string, template: DomainDocumentTemplateRo): Observable<GroupRo> {
-    const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<GroupRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_UPDATE
-        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
-        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
-        .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template.templateId)
-      , template);
-  }
 }

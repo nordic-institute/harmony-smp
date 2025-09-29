@@ -159,7 +159,26 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    void testSaveDocumentForTemplate() throws IOException {
+    void testDeleteDocumentVersionForResource() {
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
+        int docVersionCount =resource.getDocument().getDocumentVersions().size();
+        DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId());
+        assertNotNull(testDoc.getPayload());
+        DocumentRO documentPayload = testInstance.saveDocumentForResource(resource.getId(), testDoc);
+        assertEquals(docVersionCount+1, documentPayload.getDocumentVersions().size());
+
+        //when
+        DocumentRO result = testInstance.deleteDocumentVersionForResource(resource.getId(),resource.getDocument().getId(), documentPayload.getPayloadVersion());
+        // then
+        assertNotNull(result);
+        assertEquals(docVersionCount, result.getDocumentVersions().size());
+        DocumentRO dbdoc =  testInstance.getDocumentForResource(resource.getId(), documentPayload.getPayloadVersion());
+        assertNotEquals(documentPayload.getPayloadVersion(), dbdoc.getPayloadVersion());
+
+    }
+
+    @Test
+    void testSaveDocumentForTemplate() {
         DBDomainDocumentTemplate template = testUtilsDao.getDomainDocumentTemplateD1T1();
         int docVersionCount =template.getDocument().getDocumentVersions().size();
 
@@ -174,7 +193,7 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    void testSaveDocumentForSubresourceTemplate() throws IOException {
+    void testSaveDocumentForSubresourceTemplate() {
         DBDomainDocumentTemplate template = testUtilsDao.getDomainDocumentTemplateD1T1Sub();
         int docVersionCount =template.getDocument().getDocumentVersions().size();
 

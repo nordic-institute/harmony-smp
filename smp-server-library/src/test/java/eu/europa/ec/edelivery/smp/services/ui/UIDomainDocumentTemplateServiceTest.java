@@ -60,7 +60,7 @@ class UIDomainDocumentTemplateServiceTest extends AbstractServiceTest {
     @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
-        testUtilsDao.createDomainTemplates();;
+        testUtilsDao.createDomainTemplates();
     }
 
     @Test
@@ -161,7 +161,7 @@ class UIDomainDocumentTemplateServiceTest extends AbstractServiceTest {
         assertEquals(1, documentRO.getDocumentVersions().size());
         DocumentRO update = TestROUtils.createDocument(DocumentVersionStatusType.DRAFT, EntityROStatus.NEW, "<test>updated</test>");
         // When
-        DocumentRO result = testInstance.updateTemplateForDomain(domainId, tmplId, update);
+        DocumentRO result = testInstance.updateTemplateForDomainVersion(domainId, tmplId, update);
         // Then
         assertNotNull(result);
         assertEquals(documentRO.getDocumentVersions().size()+1, result.getDocumentVersions().size());
@@ -175,7 +175,7 @@ class UIDomainDocumentTemplateServiceTest extends AbstractServiceTest {
         DBDomain d1 = testUtilsDao.getD1();
         String content = "<test>"+ UUID.randomUUID()+"</test>";
         DocumentRO documentRO = TestROUtils.createDocument(DocumentVersionStatusType.DRAFT, EntityROStatus.NEW, content);
-        testInstance.updateTemplateForDomain(d1.getId(), d1T1.getId(), documentRO);
+        testInstance.updateTemplateForDomainVersion(d1.getId(), d1T1.getId(), documentRO);
 
         // When get payload for last version
         DocumentRO result = testInstance.getDocumentTemplate(d1.getId(), d1T1.getId(), currentVersion+1);

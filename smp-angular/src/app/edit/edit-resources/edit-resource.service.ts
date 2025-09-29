@@ -212,7 +212,7 @@ export class EditResourceService {
     }
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.get<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_DOCUMENT
+    return this.http.get<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_DOCUMENT
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
       .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, domainDocumentTemplate?.templateId),{params});
@@ -258,7 +258,7 @@ export class EditResourceService {
    */
   public saveDomainDocumentTemplateObservable(domain:DomainRo, template: DomainDocumentTemplateRo, document: DocumentRo): Observable<DocumentRo> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.put<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_UPDATE
+    return this.http.put<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_UPDATE
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
       .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId), document);
@@ -318,10 +318,44 @@ export class EditResourceService {
    */
   public publishDomainDocumentTemplateObservable(domain: DomainRo, template: DomainDocumentTemplateRo, document: DocumentRo): Observable<DocumentRo> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_PUBLISH
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_PUBLISH
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
       .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId),
+      document);
+  }
+
+  /**
+   * Method returns observable for deleting the document for resource on the server.
+   * @param resource resource for which document belongs to.
+   * @param document document version to be deleted.
+   */
+  public deleteResourceDocumentObservable(resource: ResourceRo, document: DocumentRo): Observable<DocumentRo> {
+    return this.resourceDocumentActionObservable(resource, document, SmpConstants.REST_EDIT_DOCUMENT_RESOURCE_DELETE);
+  }
+
+  /**
+   * Method returns observable for deleting the document for subresource on the server.
+   * @param subresource subresource for which document belongs to.
+   * @param resource resource of the subresource.
+   * @param document document to be deleted.
+   */
+  public deleteSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo, document: DocumentRo): Observable<DocumentRo> {
+    return this.subresourceDocumentActionObservable(subresource, resource, document, SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE_DELETE);
+  }
+
+  /**
+   * Method returns observable for publishing the domain document templates for resource on the server.
+   * @param domain the domain.
+   * @param template the template.
+   * @param document document to be published.
+   */
+  public deleteDomainDocumentTemplateObservable(domain: DomainRo, template: DomainDocumentTemplateRo, document: DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_DELETE
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+        .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId),
       document);
   }
 
@@ -387,6 +421,7 @@ export class EditResourceService {
    * @param resource  resource for which document belongs to.
    * @param document document to be sent.
    * @param reviewUrlTemplate url template for document action.
+   * @param httpAction http action to be used - POST, PUT, DELETE (default POST)
    * @returns observable of DocumentRo
    */
   public resourceDocumentActionObservable(resource: ResourceRo, document: DocumentRo, reviewUrlTemplate: string): Observable<DocumentRo> {
@@ -403,6 +438,7 @@ export class EditResourceService {
    * @param resource  resource for which document belongs to.
    * @param document document to be sent.
    * @param reviewUrlTemplate url template for document action.
+   * @param httpAction http action to be used - POST, PUT, DELETE (default POST)
    * @returns observable of DocumentRo
    */
   public subresourceDocumentActionObservable(subresource: SubresourceRo, resource: ResourceRo, document: DocumentRo, reviewUrlTemplate: string): Observable<DocumentRo> {

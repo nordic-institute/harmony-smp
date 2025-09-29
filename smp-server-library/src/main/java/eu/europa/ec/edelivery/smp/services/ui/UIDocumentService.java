@@ -75,7 +75,9 @@ import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 public class UIDocumentService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDocumentService.class);
-    private static final List<DocumentVersionStatusType> REVIEW_STATUSES = Arrays.asList(DocumentVersionStatusType.UNDER_REVIEW, DocumentVersionStatusType.APPROVED, DocumentVersionStatusType.REJECTED);
+    private static final List<DocumentVersionStatusType> REVIEW_STATUSES = Arrays.asList(DocumentVersionStatusType.UNDER_REVIEW,
+            DocumentVersionStatusType.APPROVED,
+            DocumentVersionStatusType.REJECTED);
 
     final ResourceDao resourceDao;
     final SubresourceDao subresourceDao;
@@ -166,6 +168,40 @@ public class UIDocumentService {
         return doc;
     }
 
+    @Transactional
+    public DocumentRO deleteDocumentVersionForResource(Long resourceId, Long documentId, int version) {
+        LOG.info("Delete Document For Resource [{}], document [{}], version [{}]", resourceId, documentId, version);
+        DBResource resource = resourceDao.find(resourceId);
+        DBDocument document = resource.getDocument();
+        if (!Objects.equals(document.getId(), documentId)) {
+            LOG.warn("Document id [{}] does not match the resource document id [{}]", documentId, document.getId());
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
+        }
+        DocumentRO doc = deleteDocumentVersion(document, version, getInitialProperties(resource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.DELETED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
+
+    }
+
+    @Transactional
+    public DocumentRO deleteDocumentVersionForSubresource(Long subresourceId, Long resourceId, Long documentId, int version) {
+        LOG.info("Delete Document For subresource [{}], resource [{}], version [{}]", subresourceId, resourceId, version);
+
+        DBSubresource subresource = subresourceDao.find(subresourceId);
+        DBResource resource = resourceDao.find(resourceId);
+        DBDocument document = subresource.getDocument();
+        if (!Objects.equals(document.getId(), documentId)) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
+        }
+        DocumentRO doc = deleteDocumentVersion(document, version,  getInitialProperties(subresource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.DELETED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
+    }
+
 
     public DocumentRO publishDocumentVersion(DBDocument document, int version, boolean isReviewEnabled, List<DocumentPropertyRO> initialProperties) {
 
@@ -173,7 +209,7 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
         }
         if (isReviewEnabled && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_ALREADY_PUBLISHED);
@@ -189,6 +225,28 @@ public class UIDocumentService {
                 .forEach(dv -> documentVersionService.retireDocumentVersion(dv, EventSourceType.UI, "Retire document version"));
         document.setCurrentVersion(documentVersion.getVersion());
         documentVersionService.publishDocumentVersion(documentVersion, EventSourceType.UI, true);
+        // return the document with the new version
+        return convertWithVersion(document, version, initialProperties);
+    }
+
+    public DocumentRO deleteDocumentVersion(DBDocument document, int version, List<DocumentPropertyRO> initialProperties) {
+
+        DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
+                .filter(dv -> dv.getVersion() == version)
+                .findFirst().orElse(null);
+        if (documentVersion == null) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
+        }
+        if (documentVersion.getStatus() == DocumentVersionStatusType.PUBLISHED) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_WRONG_STATUS);
+        }
+        if (document.getDocumentVersions() != null && document.getCurrentVersion() == version) {
+            LOG.warn("Document version [{}] is already current version for the document [{}]", version, document.getId());
+            // set last document as current version
+            document.setCurrentVersion(document.getDocumentVersions().size());
+        }
+        document.setCurrentVersion(documentVersion.getVersion());
+        documentVersionService.deleteDocumentVersion(documentVersion, document);
         // return the document with the new version
         return convertWithVersion(document, version, initialProperties);
     }
@@ -232,7 +290,7 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
         }
 
         if (!isReviewEnabled) {
@@ -307,7 +365,7 @@ public class UIDocumentService {
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND));
 
         if (!reviewEnabled) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_NOT_ENABLED);
@@ -686,7 +744,7 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND_TAG);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
         }
         documentVersion.setContent(payload);
 

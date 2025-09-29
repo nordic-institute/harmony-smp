@@ -94,60 +94,6 @@ public class DomainDocTemplateEditController {
     }
 
     /**
-     * Method updates domain document template for the domain document type.
-     *
-     * @param userEncId     encrypted user identifier
-     * @param domainEncId   encrypted domain identifier
-     * @param templateEncId encrypted template identifier
-     * @param documentRO    document data
-     * @return updated domain document template
-     */
-    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_DOC_TEMPLATE_UPDATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
-    public DocumentRO updateDomainTemplateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
-                                                   @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
-                                                   @PathVariable(PATH_PARAM_ENC_TEMPLATE_ID) String templateEncId,
-                                                   @RequestBody DocumentRO documentRO) {
-        logEditAccess("update domain document template");
-        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
-        return domainDocTemplateEditService.updateTemplateForDomain(domainId, templateId, documentRO);
-    }
-
-    /**
-     * Method updates domain document template for the domain document type.
-     *
-     * @param userEncId     encrypted user identifier
-     * @param domainEncId   encrypted domain identifier
-     * @param templateEncId encrypted template identifier
-     * @param documentRO    document data
-     * @return updated domain document template
-     */
-    @PostMapping(path = ResourceConstants.SUB_CONTEXT_PATH_EDIT_DOMAIN_DOC_TEMPLATE_PUBLISH, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
-    public DocumentRO publishDomainTemplateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
-                                                   @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
-                                                   @PathVariable(PATH_PARAM_ENC_TEMPLATE_ID) String templateEncId,
-                                                   @RequestBody DocumentRO documentRO) {
-        logEditAccess("update domain document template");
-        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
-        return domainDocTemplateEditService.publishTemplateForDomain(domainId, templateId, documentRO.getPayloadVersion());
-    }
-
-    @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_DOC_TEMPLATE_GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
-    public DocumentRO getDocumentForTemplate(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
-                                             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
-                                             @PathVariable(PATH_PARAM_ENC_TEMPLATE_ID) String templateEncId,
-                                             @RequestParam(value = PARAM_NAME_VERSION, defaultValue = "-1") int version) {
-        logEditAccess("GetDocumentForTemplate");
-        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
-        return domainDocTemplateEditService.getDocumentTemplate(domainId, templateId, version);
-    }
-
-    /**
      * This method removes a domain document template associated with a specific domain document type.
      *
      * @param userEncId     encrypted user identifier
@@ -164,6 +110,81 @@ public class DomainDocTemplateEditController {
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
         return domainDocTemplateEditService.deleteTemplateForDomain(domainId, templateId);
+    }
+
+    /**
+     * Method updates domain document template for the domain document type.
+     *
+     * @param userEncId     encrypted user identifier
+     * @param domainEncId   encrypted domain identifier
+     * @param templateEncId encrypted template identifier
+     * @param documentRO    document data
+     * @return updated domain document template
+     */
+    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_DOC_TEMPLATE_VERSION_UPDATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    public DocumentRO updateDomainTemplateDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                   @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                                   @PathVariable(PATH_PARAM_ENC_TEMPLATE_ID) String templateEncId,
+                                                   @RequestBody DocumentRO documentRO) {
+        logEditAccess("update domain document template");
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
+        return domainDocTemplateEditService.updateTemplateForDomainVersion(domainId, templateId, documentRO);
+    }
+
+    /**
+     * Method updates domain document template for the domain document type.
+     *
+     * @param userEncId     encrypted user identifier
+     * @param domainEncId   encrypted domain identifier
+     * @param templateEncId encrypted template identifier
+     * @param documentRO    document data
+     * @return updated domain document template
+     */
+    @PostMapping(path = ResourceConstants.SUB_CONTEXT_PATH_EDIT_DOMAIN_DOC_TEMPLATE_VERSION_PUBLISH, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    public DocumentRO publishDomainTemplateDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                   @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                                   @PathVariable(PATH_PARAM_ENC_TEMPLATE_ID) String templateEncId,
+                                                   @RequestBody DocumentRO documentRO) {
+        logEditAccess("update domain document template");
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
+        return domainDocTemplateEditService.publishTemplateForDomainVersion(domainId, templateId, documentRO.getPayloadVersion());
+    }
+
+    /**
+     * Method updates domain document template for the domain document type.
+     *
+     * @param userEncId     encrypted user identifier
+     * @param domainEncId   encrypted domain identifier
+     * @param templateEncId encrypted template identifier
+     * @param documentRO    document data
+     * @return updated domain document template
+     */
+    @PostMapping(path = ResourceConstants.SUB_CONTEXT_PATH_EDIT_DOMAIN_DOC_TEMPLATE_VERSION_DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    public DocumentRO deleteDomainTemplateDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                    @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                                    @PathVariable(PATH_PARAM_ENC_TEMPLATE_ID) String templateEncId,
+                                                    @RequestBody DocumentRO documentRO) {
+        logEditAccess("updateDomainDocumentTemplate");
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
+        return domainDocTemplateEditService.deleteTemplateForDomainVersion(domainId, templateId, documentRO.getPayloadVersion());
+    }
+
+    @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_DOC_TEMPLATE_VERSION_GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    public DocumentRO getDocumentForTemplateVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                             @PathVariable(PATH_PARAM_ENC_TEMPLATE_ID) String templateEncId,
+                                             @RequestParam(value = PARAM_NAME_VERSION, defaultValue = "-1") int version) {
+        logEditAccess("GetDocumentForTemplateVersion");
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        Long templateId = SessionSecurityUtils.decryptEntityId(templateEncId);
+        return domainDocTemplateEditService.getDocumentTemplate(domainId, templateId, version);
     }
 
     protected void logEditAccess(String action) {
