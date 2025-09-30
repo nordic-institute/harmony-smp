@@ -21,7 +21,10 @@
       <mat-cell class="smp-table-cell"  *matCellDef="let row"
                 [style]="colDef.style"
                 [matTooltip]="colDef.tooltip? colDef.tooltip(row):null"
-      >{{ colDef.cell(row) }}</mat-cell>
+      >
+        <span *ngIf="!!colDef.icon"><mat-icon>{{ colDef.icon(row) }}</mat-icon></span>
+        {{ colDef.cell(row) }}
+      </mat-cell>
     </ng-container>
     <!-- configure table header -->
     <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"
