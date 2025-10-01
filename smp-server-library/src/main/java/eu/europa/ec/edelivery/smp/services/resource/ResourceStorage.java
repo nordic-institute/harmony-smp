@@ -108,7 +108,7 @@ public class ResourceStorage {
         Optional<DBDocument> optDocument = documentDao.getDocumentForResource(resource);
         if (optDocument.isEmpty()) {
             LOG.debug("Document not found for resource [{}]", resource);
-            return Collections.emptyMap();
+            return new HashMap<>();
         }
         Map<String, String> documentProperties = getDocumentProperties(optDocument.get(), true);
         // then overwrite with document properties

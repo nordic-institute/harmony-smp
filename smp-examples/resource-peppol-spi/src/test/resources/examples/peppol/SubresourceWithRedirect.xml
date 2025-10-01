@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  #%L
+  dynamic-discovery-client
+  %%
+  Copyright (C) 2016 - 2023 European Commission | eDelivery | Dynamic Discovery Client
+  %%
+  Licensed under the LGPL, Version 2.1 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  [PROJECT_HOME]\license\lgpl2-1\license.txt or https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/">
+    <Redirect
+            href="http://serviceMetadata2.eu/busdox-actoridupis%3A%3A0010%3A5798000000001/services/busdox-docidqns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23UBL-2.0">
+        <CertificateUID>PID:9208-2001-3-279815395</CertificateUID>
+        <Extension>
+            <ex:Test xmlns:ex="http://test.eu">Test</ex:Test>
+        </Extension>
+    </Redirect>
+</ServiceMetadata>
+

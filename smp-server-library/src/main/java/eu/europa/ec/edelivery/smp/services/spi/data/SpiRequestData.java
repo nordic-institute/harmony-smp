@@ -24,6 +24,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  *  The resource metadata.
@@ -35,17 +36,23 @@ public class SpiRequestData implements RequestData {
 
     String domainCode;
 
-    ResourceIdentifier resourceIdentifier;
-    ResourceIdentifier subresourceIdentifier;
+    protected final ResourceIdentifier resourceIdentifier;
+    protected final ResourceIdentifier subresourceIdentifier;
 
-    InputStream resourceInputStream;
+    protected final InputStream resourceInputStream;
+    protected final Map<String, String> documentAttributes;
 
 
-    public SpiRequestData(String domainCode, ResourceIdentifier resourceIdentifier, ResourceIdentifier subresourceIdentifier,InputStream inputStream) {
+    public SpiRequestData(String domainCode,
+                          Map<String, String> documentAttributes,
+                          ResourceIdentifier resourceIdentifier,
+                          ResourceIdentifier subresourceIdentifier,
+                          InputStream inputStream) {
         this.domainCode = domainCode;
         this.resourceIdentifier = resourceIdentifier;
         this.subresourceIdentifier = subresourceIdentifier;
         this.resourceInputStream = inputStream;
+        this.documentAttributes = documentAttributes;
     }
 
     @Override
@@ -66,6 +73,10 @@ public class SpiRequestData implements RequestData {
     @Override
     public InputStream getResourceInputStream() {
         return resourceInputStream;
+    }
+
+    public Map<String, String> getDocumentAttributes() {
+        return documentAttributes;
     }
 
     @Override

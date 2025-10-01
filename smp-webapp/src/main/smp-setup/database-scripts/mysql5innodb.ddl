@@ -519,6 +519,7 @@
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Comma separated optional resources url_segment.',
         URL_SEGMENT varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'resources are published under url_segment.',
         FK_EXTENSION_ID bigint,
         primary key (ID)
@@ -535,6 +536,7 @@
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         URL_SEGMENT varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_EXTENSION_ID bigint,
         primary key (REV, ID)
@@ -607,6 +609,7 @@
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Comma separated optional subresources url_segment.',
         URL_SEGMENT varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Subresources are published under url_segment. It must be unique for resource type',
         FK_RESOURCE_DEF_ID bigint,
         primary key (ID)
@@ -623,6 +626,7 @@
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         URL_SEGMENT varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_RESOURCE_DEF_ID bigint,
         primary key (REV, ID)
@@ -719,6 +723,9 @@
        add constraint UKk7l5fili2mmhgslv77afg4myo unique (IDENTIFIER);
 
     alter table SMP_RESOURCE_DEF 
+       add constraint UK3kytx3r10tyeut386xw108ipt unique (URL_SEGMENT_OPTIONAL);
+
+    alter table SMP_RESOURCE_DEF 
        add constraint UKjjbctkhd4h0u9whb1i9wbxwoe unique (URL_SEGMENT);
 
     alter table SMP_RESOURCE_MEMBER 
@@ -738,6 +745,9 @@
 
     alter table SMP_SUBRESOURCE_DEF 
        add constraint SMP_RESDEF_UNIQ_IDENTIFIER unique (IDENTIFIER);
+
+    alter table SMP_SUBRESOURCE_DEF 
+       add constraint UKt6eohbg6l0hx3ad07go5hra9q unique (URL_SEGMENT_OPTIONAL);
 
     alter table SMP_USER 
        add constraint UKrt1f0anklfo05lt0my05fqq6 unique (USERNAME);

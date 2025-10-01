@@ -114,6 +114,7 @@ public class ResourceResolverService {
         // resolve domain
         String currentParameter = pathParameters.get(iParameterIndex);
         locationVector.setDomain(domain);
+        locationVector.setRequestDomainCode(domain.getDomainCode());
         // if domain code matches first parameter skip it!
         if (Strings.CS.equals(currentParameter, domain.getDomainCode())) {
             if (pathParameters.size() <= ++iParameterIndex) {
@@ -122,17 +123,21 @@ public class ResourceResolverService {
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
-
-        DBResourceDef resourceDef = resolveResourceType(domain, resourceRequest.getResourceTypeHttpParameter(), currentParameter);
-        locationVector.setResourceDef(resourceDef);
-        if (Strings.CS.equals(currentParameter, resourceDef.getUrlSegment())) {
+        // ------------------------------------
+        // resolve resource type
+        if (resolveResourceType(locationVector, resourceRequest.getResourceTypeHttpParameter(), currentParameter)) {
             if (pathParameters.size() <= ++iParameterIndex) {
                 throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_FIRST_MATCH)
                         .addParam(ErrorMessageArgument.PATH_PARAMS,  join(pathParameters, ","));
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
-
+        DBResourceDef resourceDef = locationVector.getResourceDef();
+        if (resourceDef == null) {
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_NO_RESOURCE_DEFINITION_FOR_DOMAIN)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain.getDomainCode());
+        }
+        // ------------------------------------
         Identifier resourceId = identifierService.normalizeParticipantIdentifier(domain.getDomainCode(), currentParameter);
         boolean isCaseSensitive = identifierService.isResourceIdentifierCaseSensitive(resourceId, domain.getDomainCode());
         // validate identifier
@@ -189,7 +194,7 @@ public class ResourceResolverService {
         }
         String subResourceDefUrl = pathParameters.get(iParameterIndex);
         // test if subresourceDef exists
-        DBSubresourceDef subresourceDef = getSubresourceDefinition(resourceDef, subResourceDefUrl);
+        DBSubresourceDef subresourceDef = resolveSubresourceDefinition(locationVector, subResourceDefUrl);
         Identifier subResourceId = identifierService.normalizeDocumentIdentifier(
                 domain.getDomainCode(),
                 pathParameters.get(++iParameterIndex));
@@ -242,14 +247,14 @@ public class ResourceResolverService {
 
     /**
      * The process of resolving the resource type starts after the Domain is located. If the domain code was part of the URL path,
-     * determining the resource type begins with the "next" path parameter (Below: the current parameter).
+     * method returns true, indicating that the next path parameter must be evaluated as the resource type, otherwise false,*
      * <p>
      * DomiSMP resolves the resource type for the Domain in the following order.
      *
      * <ol>
-     * <li>If only one resource type is registered for the Domain, it sets it by default (legacy)</li>.
      * <li>The next attempt is to determine it via HTTP Header "Resource-Type." If the header is set with the invalid ResourceDef value, it throws the error.</li>
      * <li>The next attempt is with the current path parameter (must be at least two path parameters).</li>
+     * <li>If there is only one resource type registered for the Domain, it uses that resource type.</li>
      * <li>The next attempt is to use the default resource type configured for the Domain.</li>
      * <li>If the default resource type is not set, it uses the first registered Domain to the DomiSMP.</li>
      * </ol>
@@ -257,31 +262,32 @@ public class ResourceResolverService {
      * NOTE: To enable the url path parameter and the HTTP header to be used at the same time, the "current" path parameter is skipped if it matches the resourceType and there are more than two path parameters left.
      * </p>
      *
-     * @param domain the domain where the resource is registered
+     * @param locationVector the domain where the resource is registered
      * @param headerParameter the value of the HTTP header "Resource-Type" if set or null
      * @param pathParameter the current path parameter to be evaluated as the resource type
-     * @return DBResourceDef the resolved resource type
+     * @return boolean  it returns true if the resource type is resolved based on path parameter, false otherwise
      */
-    public DBResourceDef resolveResourceType(DBDomain domain, String headerParameter, String pathParameter) {
-        LOG.debug("Resolve ResourceType for domain [{}] for HTTP header [{}] and path parameter [{}]", domain.getDomainCode(), headerParameter, pathParameter);
-
+    public boolean resolveResourceType(ResolvedData locationVector, String headerParameter, String pathParameter) {
+        LOG.debug("Resolve ResourceType for domain [{}] for HTTP header [{}] and path parameter [{}]", locationVector.getRequestDomainCode(), headerParameter, pathParameter);
+        DBDomain domain = locationVector.getDomain();
         // get single domain
         List<DBResourceDef> resourceDefs = resourceDefinitionDao.getAllResourceDefForDomain(domain);
         if (resourceDefs.isEmpty()) {
             throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_NO_RESOURCES);
         }
 
-        if (resourceDefs.size() == 1) {
-            DBResourceDef resourceDef = resourceDefs.get(0);
-            LOG.debug("Only one ResourceDef [{}] is registered to domain [{}]", resourceDef.getIdentifier(), domain.getDomainCode());
-            return resourceDefs.get(0);
-        }
         // find by path header parameter
         if (isNotBlank(headerParameter)) {
-            Optional<DBResourceDef> optResDef = resourceDefs.stream().filter(resdef -> Strings.CI.equals(headerParameter, resdef.getUrlSegment())).findFirst();
+            Optional<DBResourceDef> optResDef = resourceDefs.stream()
+                    .filter(resDef -> Strings.CI.equals(headerParameter, resDef.getUrlSegment())
+                                || resDef.getOptionalUrlSegments().contains(headerParameter))
+                    .findFirst();
             if (optResDef.isPresent()) {
+                locationVector.setRequestResourceUrlSegment(headerParameter);
+                locationVector.setResourceDef(optResDef.get());
                 LOG.debug("Located ResourceDef for domain [{}] by the http header [{}]", domain.getDomainCode(), headerParameter);
-                return optResDef.get();
+
+                return false;
             } else {
                 throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_NO_RESOURCE_DEFINITION_FOR_DOMAIN)
                         .addParam(ErrorMessageArgument.HEADER_PARAMETER, headerParameter)
@@ -289,27 +295,45 @@ public class ResourceResolverService {
             }
         }
         // find by path parameter
-        Optional<DBResourceDef> optResDef = resourceDefs.stream().filter(resdef -> Strings.CI.equals(pathParameter, resdef.getUrlSegment())).findFirst();
+        Optional<DBResourceDef> optResDef = resourceDefs.stream()
+                .filter(resdef -> Strings.CI.equals(pathParameter, resdef.getUrlSegment())
+                || resdef.getOptionalUrlSegments().contains(pathParameter))
+                .findFirst();
         if (optResDef.isPresent()) {
+            locationVector.setRequestResourceUrlSegment(pathParameter);
+            locationVector.setResourceDef(optResDef.get());
             LOG.debug("Located ResourceDef for domain [{}] by the path parameter [{}]", domain.getDomainCode(), pathParameter);
-            return optResDef.get();
+            return true;
         }
+
+        if (resourceDefs.size() == 1) {
+            DBResourceDef resourceDef = resourceDefs.get(0);
+            locationVector.setRequestResourceUrlSegment(resourceDef.getUrlSegment());
+            locationVector.setResourceDef(resourceDef);
+            LOG.debug("Only one ResourceDef [{}] is registered to domain [{}]", resourceDef.getIdentifier(), domain.getDomainCode());
+            return false;
+        }
+
         // get default parameter
         optResDef = resourceDefs.stream().filter(resdef ->
                 Strings.CI.equals(resdef.getIdentifier(), domain.getDefaultResourceTypeIdentifier())).findFirst();
         if (optResDef.isPresent()) {
+            locationVector.setRequestResourceUrlSegment(optResDef.get().getUrlSegment());
+            locationVector.setResourceDef(optResDef.get());
             LOG.debug("Located default ResourceDef [{}] for domain [{}] by the path parameter [{}]",
                     domain.getDefaultResourceTypeIdentifier(),
                     domain.getDomainCode(),
                     pathParameter);
-            return optResDef.get();
+            return false;
         }
         // return first
+        locationVector.setRequestResourceUrlSegment(resourceDefs.get(0).getUrlSegment());
+        locationVector.setResourceDef(resourceDefs.get(0));
         LOG.info("Return first (default) ResourceDef [{}] for domain [{}] by the path parameter [{}]",
                 resourceDefs.get(0).getDomainResourceDefs(),
                 domain.getDomainCode(),
                 pathParameter);
-        return resourceDefs.get(0);
+        return false;
     }
 
     public DBResource resolveResourceIdentifier(DBDomain domain, DBResourceDef resourceDef, Identifier resourceIdentifier, boolean isCaseSensitive) {
@@ -395,13 +419,18 @@ public class ResourceResolverService {
         return subresource;
     }
 
-    public DBSubresourceDef getSubresourceDefinition(DBResourceDef resourceDef, String urlPathSegment) {
-        return resourceDef.getSubresources()
+    public DBSubresourceDef resolveSubresourceDefinition(ResolvedData resolvedData, String urlPathSegment) {
+        DBResourceDef resourceDef = resolvedData.getResourceDef();
+        DBSubresourceDef  result = resourceDef.getSubresources()
                 .stream()
-                .filter(subresourceDef -> Strings.CS.equals(subresourceDef.getUrlSegment(), urlPathSegment))
+                .filter(subresourceDef -> Strings.CS.equals(subresourceDef.getUrlSegment(), urlPathSegment)
+                || subresourceDef.getOptionalUrlSegments().contains(urlPathSegment))
                 .findFirst().orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLES_RESOURCE_SUBRESOURCE_MATCH)
                         .addParam(ErrorMessageArgument.URL_SEGMENT, urlPathSegment)
                         .addParam(ErrorMessageArgument.RESOURCE, resourceDef.getName()));
+
+        resolvedData.setRequestSubresourceUrlSegment(urlPathSegment);
+        return result;
     }
 
     public String getUsername(UserDetails user) {
