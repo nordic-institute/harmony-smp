@@ -119,10 +119,8 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
     }
   }
 
-  applyKeyAliasFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  applyCertificateFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
@@ -161,12 +159,4 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
   isDirty(): boolean {
     return false;
   }
-
-  applyCertificateFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
 }

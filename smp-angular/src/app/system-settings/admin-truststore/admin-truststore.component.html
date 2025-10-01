@@ -10,21 +10,15 @@
                        icon="error"
                        label="{{ 'admin.truststore.label.invalid.certificate' | translate: { reason: selected.invalidReason } }}">
     </smp-warning-panel>
-
     <certificate-panel [certificate]="selected" *ngIf="selected; else noDataFound"></certificate-panel>
   </data-panel>
 </div>
-
 
 <ng-template #searchCertificatePanel>
   <smp-warning-panel  *ngIf="dataSource.data?.length ==0"
                       icon="warn"
                      label="{{ 'admin.truststore.label.certificate.trustiness' | translate }}">
   </smp-warning-panel>
-  <mat-form-field id="truststore-filter">
-    <mat-label>{{ "admin.truststore.label.filter" | translate }}</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="{{ 'admin.truststore.placeholder.filter' | translate }}" #input>
-  </mat-form-field>
 
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
@@ -45,35 +39,18 @@
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <table class="mat-elevation-z2" id="admin-truststore-table" mat-table [dataSource]="dataSource" matSort>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="alias">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header class="truststore-table-cell-header">{{ "admin.truststore.label.alias" | translate }}</th>
-      <td mat-cell *matCellDef="let row"
-          [ngClass]="{'datatable-row-error': row.invalid}"
-          [matTooltip]="row.certificateId">{{row.alias}}</td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
-        (click)="certificateSelected(row)"
-        [ngClass]="{'datatable-row-selected': row==selected,'datatable-row-odd': odd}"
-    ></tr>
-
-    <!-- Row shown when there is no matching data. -->
-    <tr class="mat-row" *matNoDataRow>
-      <td *ngIf="input.value;else noDataFound" class="mat-cell" colspan="2">
-        {{ "admin.truststore.label.no.filter.results" | translate: { filterValue: input.value }  }}
-      </td>
-      <ng-template #noDataFound>
-        <td class="mat-cell" colspan="2">{{ "admin.truststore.label.no.data.found" | translate }}</td>
-      </ng-template>
-    </tr>
-  </table>
-
-  <mat-paginator class="mat-elevation-z2" id="extension-paginator"
-                 [hidePageSize]="true"
-                 [pageSize]="5" attr.aria-label="{{ 'admin.truststore.label.select.page' | translate }}"></mat-paginator>
-
+  <smp-table class="mat-elevation-z2" id="admin-truststore-table"
+             filterLabel="admin.truststore.label.filter"
+             filterPlaceholder="admin.truststore.placeholder.filter"
+             noResultLabel="admin.truststore.label.no.data.found"
+             noResultForFilterLabel="admin.truststore.label.no.filter.results"
+             [dataSource]="dataSource"
+             [selectedRow]="selected"
+             [columnDefList]="columns"
+             [displayedColumns]="displayedColumns"
+             (onFilterChanged)="applyCertificateFilter($event)"
+             (onRowClicked)="onCertificateSelected($event)"
+  >
+  </smp-table>
 </ng-template>
