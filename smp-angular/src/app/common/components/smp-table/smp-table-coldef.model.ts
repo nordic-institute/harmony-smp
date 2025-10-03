@@ -8,6 +8,7 @@ export interface SmpTableColDef {
   cell?: (row: any) => any;
   icon?: (row: any) => string;
   tooltip?: (row: any) => any;
+  class?: (row: any) => any;
   style?:string;
   headerStyle?: string;
 }

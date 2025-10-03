@@ -20,7 +20,8 @@
       </mat-header-cell>
       <mat-cell class="smp-table-cell"  *matCellDef="let row"
                 [style]="colDef.style"
-                [matTooltip]="colDef.tooltip? colDef.tooltip(row):null"
+                [ngClass]=" colDef.class ? colDef.class(row): null"
+                [matTooltip]="colDef.tooltip? colDef.tooltip(row): null"
       >
         <span *ngIf="!!colDef.icon"><mat-icon>{{ colDef.icon(row) }}</mat-icon></span>
         {{ colDef.cell(row) }}

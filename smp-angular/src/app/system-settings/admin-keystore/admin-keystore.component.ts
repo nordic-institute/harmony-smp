@@ -42,6 +42,7 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
       {
         columnDef: 'alias',
         header: 'admin.keystore.label.alias',
+        class: (row: CertificateRo) => ({ "datatable-row-error": row.invalid }),
         tooltip: (row: CertificateRo) => row?.certificateId,
         cell: (row: CertificateRo) => row.alias
       } as SmpTableColDef,
@@ -50,6 +51,7 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
         header: 'admin.keystore.label.type',
         tooltip: (row: CertificateRo) => !!row.isContainingKey ? this.tooltipKeyPair: this.tooltipCertificate,
         icon: (row: CertificateRo) => !!row.isContainingKey ? "key": "article",
+        class: (row: CertificateRo) => ({ "datatable-row-error": row.invalid }),
         cell: (row: CertificateRo) => ""
       } as SmpTableColDef
     ];
