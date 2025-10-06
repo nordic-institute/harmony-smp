@@ -2,17 +2,16 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
-import {GlobalLookups} from "../../../common/global-lookups";
 import {DateTimeService} from "../../../common/services/date-time.service";
 
 
 @Component({
-    selector: 'user-certificate-panel',
-    templateUrl: './user-certificate-panel.component.html',
-    styleUrls: ['./user-certificate-panel.component.scss'],
-    standalone: false
+  selector: 'user-certificate-panel',
+  templateUrl: './user-certificate-panel.component.html',
+  styleUrls: ['./user-certificate-panel.component.scss'],
+  standalone: false
 })
-export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
+export class UserCertificatePanelComponent implements BeforeLeaveGuard {
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 
@@ -71,7 +70,7 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
     event?.stopPropagation();
   }
 
-  onShowCertificateButtonClicked(){
+  onShowCertificateButtonClicked() {
     this.onShowCertificate.emit(this.credential)
   }
 

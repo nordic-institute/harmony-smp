@@ -40,10 +40,9 @@ See the Licence for the specific language governing permissions and limitations 
 
     <properties>
 
-        <prerequisites.maven_min_version>3.5</prerequisites.maven_min_version>
+        <prerequisites.maven_min_version>3.9</prerequisites.maven_min_version>
         <!-- the root/main folder of the project used by aggregation plugins (license).
         Alternative ${session.executionRootDirectory} -->
-
         <project.root.baseUri>${maven.multiModuleProjectDirectory}</project.root.baseUri>
         <!-- Note: domismp application target is JDK 8, but minimal build JDK version must be Java 11 due to domismp-tests modules
         -->
@@ -52,18 +51,18 @@ See the Licence for the specific language governing permissions and limitations 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <edelivery.ssl-auth.version>2.1-SNAPSHOT</edelivery.ssl-auth.version>
         <edelivery.dynamic-discovery-client.version>3.1-SNAPSHOT</edelivery.dynamic-discovery-client.version>
-        <edelivery-vault.version>2.0-SNAPSHOT</edelivery-vault.version>
+        <edelivery-vault.version>2.1-SNAPSHOT</edelivery-vault.version>
         <bdmsl-api.version>5.0</bdmsl-api.version>
         <!-- plugin versions -->
         <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
-        <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
+        <plugin.dependency-check-maven.version>12.1.6</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.13</plugin.jacoco-maven-plugin.version>
-        <plugin.sonar-maven-plugin.version>5.1.0.4751</plugin.sonar-maven-plugin.version>
+        <plugin.sonar-maven-plugin.version>5.2.0.4988</plugin.sonar-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
         <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
         <plugin.maven-clean-plugin.version>3.5.0</plugin.maven-clean-plugin.version>
-        <plugin.maven-compiler-plugin.version>3.14.0</plugin.maven-compiler-plugin.version>
+        <plugin.maven-compiler-plugin.version>3.14.1</plugin.maven-compiler-plugin.version>
         <plugin.maven-dependency-plugin.version>3.8.1</plugin.maven-dependency-plugin.version>
         <plugin.maven-failsafe-plugin.version>3.5.4</plugin.maven-failsafe-plugin.version>
         <plugin.maven-jar-plugin.version>3.4.2</plugin.maven-jar-plugin.version>
@@ -71,30 +70,30 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.maven-resources-plugin.version>3.3.1</plugin.maven-resources-plugin.version>
         <plugin.maven-surefire-plugin.version>3.5.4</plugin.maven-surefire-plugin.version>
         <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
-        <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
-        <plugin.versions-maven-plugin.version>2.18.0</plugin.versions-maven-plugin.version>
+        <plugin.frontend-maven-plugin.version>1.15.4</plugin.frontend-maven-plugin.version>
+        <plugin.versions-maven-plugin.version>2.19.1</plugin.versions-maven-plugin.version>
 
         <aspectj.version>1.9.24</aspectj.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>20040616</commons-collections.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-io.version>2.20.0</commons-io.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-lang3.version>3.19.0</commons-lang3.version>
         <commons-net.version>3.12.0</commons-net.version>
         <commons-validator.version>1.10.0</commons-validator.version>
         <cxf-xjc-runtime.version>4.1.0</cxf-xjc-runtime.version>
         <cxf.version>4.1.3</cxf.version>
-        <!-- dependand library of cxf  -->
+        <!-- dependant library of cxf  -->
         <org.eclipse.angus-mail.version>2.0.4</org.eclipse.angus-mail.version>
         <ehcache.version>3.11.1</ehcache.version>
-        <fasterxml.classmate.version>1.7.0</fasterxml.classmate.version>
-        <h2.version>2.3.232</h2.version>
+        <fasterxml.classmate.version>1.7.1</fasterxml.classmate.version>
+        <h2.version>2.4.240</h2.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <hibernate-tools-orm.version>6.6.29.Final</hibernate-tools-orm.version>
+        <hibernate-tools-orm.version>6.6.30.Final</hibernate-tools-orm.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
-        <hibernate.version>6.6.29.Final</hibernate.version>
-        <httpclient5.version>5.5</httpclient5.version>
-        <jackson.version>2.19.2</jackson.version>
+        <hibernate.version>6.6.30.Final</hibernate.version>
+        <httpclient5.version>5.5.1</httpclient5.version>
+        <jackson.version>2.20.0</jackson.version>
         <jakarta.activation-api.version>2.1.4</jakarta.activation-api.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
@@ -112,9 +111,9 @@ See the Licence for the specific language governing permissions and limitations 
         <logback.version>1.5.18</logback.version>
         <metro.version>2.2.1-1</metro.version>
 
-        <mockito.version>5.19.0</mockito.version>
+        <mockito.version>5.20.0</mockito.version>
         <mysql.jdbc.version>9.4.0</mysql.jdbc.version>
-        <org.glassfish.jaxb.jaxb-runtime.version>4.0.5</org.glassfish.jaxb.jaxb-runtime.version>
+        <org.glassfish.jaxb.jaxb-runtime.version>4.0.6</org.glassfish.jaxb.jaxb-runtime.version>
         <slf4j.version>2.0.17</slf4j.version>
         <spring-boot.tomcat.version>10.1.46</spring-boot.tomcat.version>
         <spring-boot.version>3.5.6</spring-boot.version>

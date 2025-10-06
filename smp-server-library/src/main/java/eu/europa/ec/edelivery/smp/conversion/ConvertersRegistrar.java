@@ -40,8 +40,11 @@ public class ConvertersRegistrar {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConvertersRegistrar.class);
 
-    @Autowired
-    private ConfigurableConversionService conversionRegistry;
+    private final ConfigurableConversionService conversionRegistry;
+
+    public ConvertersRegistrar(ConfigurableConversionService conversionRegistry) {
+        this.conversionRegistry = conversionRegistry;
+    }
 
     @Autowired
     public void registerCustomConverters(List<Converter<?,?>> converters) {

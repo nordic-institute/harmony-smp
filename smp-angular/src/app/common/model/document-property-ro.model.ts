@@ -16,8 +16,9 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-import {SearchTableEntity} from '../../common/search-table/search-table-entity.model';
+import {SearchTableEntity} from '../search-table/search-table-entity.model';
 import {PropertyValueTypeEnum} from "../enums/property-value-type.enum";
+import {CertificateRo} from "./certificate-ro.model";
 
 /**
  * Document property read only model.
@@ -30,4 +31,5 @@ export interface DocumentPropertyRo extends SearchTableEntity {
   type?: PropertyValueTypeEnum;
   desc: string;
   readonly?: boolean;
+  certificate?: CertificateRo
 }

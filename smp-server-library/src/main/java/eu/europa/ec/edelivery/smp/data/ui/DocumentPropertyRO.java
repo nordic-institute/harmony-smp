@@ -38,6 +38,7 @@ public class DocumentPropertyRO extends BaseRO {
     private String value;
     private String desc;
     private SMPPropertyTypeEnum type = SMPPropertyTypeEnum.STRING;
+    private CertificateRO certificate;
     // the property is readonly and can not be changed. Example of readonly
     // property is resource identifier
     private boolean readonly;
@@ -92,5 +93,11 @@ public class DocumentPropertyRO extends BaseRO {
         this.readonly = readonly;
     }
 
+    public CertificateRO getCertificate() {
+        return certificate;
+    }
 
+    public void setCertificate(CertificateRO certificate) {
+        this.certificate = certificate;
+    }
 }

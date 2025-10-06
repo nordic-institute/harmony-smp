@@ -110,7 +110,7 @@ public class VaultDao implements PropertyUpdateListener {
     }
 
     public byte[] getSecret(String key) {
-        return vaultService.getSecret(key).getValue();
+        return vaultService.getSecret(key).getValueAsBytes();
     }
 
     public DBConfiguration storeSecret(String key, byte[] value, String description) {
@@ -134,7 +134,12 @@ public class VaultDao implements PropertyUpdateListener {
         ClassLoader classLoader = SMPClassLoaderProvider.getClassLoader();
         LOG.info("Using classloader [{}] to load vault implementation class [{}]", classLoader, vaultName);
         VaultApi vaultInstance = VaultApiFactory.getVaultApi(vaultName, classLoader);
-        vaultInstance.setCredentials(authenticationType, authenticationCredentials);
+        if (StringUtils.isNotBlank(authenticationType)) {
+            LOG.debug("Using authentication type [{}] for vault [{}]", authenticationType, vaultName);
+            vaultInstance.setCredentials(Map.of("type",authenticationType,
+                    "value",authenticationCredentials));
+        }
+
         vaultInstance.initVault(vaultProperties);
         LOG.debug("Successfully created Vault instance of type [{}] ", vaultName);
         return vaultInstance;

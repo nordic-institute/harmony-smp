@@ -476,7 +476,7 @@ public class SmlConnector implements ApplicationContextAware {
             throw new IllegalStateException("Invalid integration configuration. Missing Client cert configuration!");
         }
 
-        return list.stream().filter(cert -> StringUtils.equalsIgnoreCase(alias, cert.getAlias()))
+        return list.stream().filter(cert -> Strings.CI.equals(alias, cert.getAlias()))
                 .findFirst().orElseThrow(() -> new IllegalStateException("Invalid integration configuration. Missing Client cert configuration!"));
 
     }

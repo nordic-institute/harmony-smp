@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -24,11 +24,11 @@ import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
-import org.apache.commons.lang3.StringUtils;
+import jakarta.persistence.*;
+import org.apache.commons.lang3.Strings;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +53,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "    WHERE ((:membership_role IS NOT NULL AND rm.role = :membership_role)" +
         "            OR (:permission_can_review IS NOT NULL AND rm.hasPermissionToReview = :permission_can_review) ) " +
         "      AND rm.resource.id = :resource_id "
-        )
+)
 @NamedQuery(name = QUERY_USER_COUNT, query = "SELECT count(c) FROM DBUser c")
 @NamedQuery(name = QUERY_USERS, query = "SELECT c FROM DBUser c  order by c.username")
 @NamedQuery(name = QUERY_USER_FILTER_COUNT, query = "SELECT count(c) FROM DBUser c " +
@@ -144,6 +144,7 @@ public class DBUser extends BaseEntity {
             fetch = FetchType.LAZY
     )
     private List<DBResourceMember> resourceMembers = new ArrayList<>();
+
     @Override
     public Long getId() {
         return id;
@@ -245,7 +246,7 @@ public class DBUser extends BaseEntity {
         DBUser dbUser = (DBUser) o;
 
         return Objects.equals(id, dbUser.id) &&
-                StringUtils.equalsIgnoreCase(username, dbUser.username);
+                Strings.CI.equals(username, dbUser.username);
     }
 
     @Override

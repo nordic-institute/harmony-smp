@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
@@ -48,6 +49,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.List;
@@ -216,7 +219,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(authorizedUserId);
         DBCredential dbAuthorizedCredentials = dbCredential.orElseThrow(() ->
                 new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_USER_NOT_EXISTS)
-                        .addParam(ErrorMessageArgument.USER_ID,  authorizedUserId));
+                        .addParam(ErrorMessageArgument.USER_ID, authorizedUserId));
 
         DBUser authorizedUser = dbAuthorizedCredentials.getUser();
 
@@ -373,7 +376,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     private UserRO createDBUserAlerting(DBUser dbUser) {
         userDao.persistFlushDetach(dbUser);
-        UserRO userRO =  conversionService.convert(dbUser, UserRO.class);
+        UserRO userRO = conversionService.convert(dbUser, UserRO.class);
         // create alert for user creation
         alertService.alertUserCreated(dbUser);
         return userRO;
@@ -446,11 +449,37 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                         .addParam(ErrorMessageArgument.CERTIFICATE_CREDENTIAL_ID, certificateCredentialId));
         validateCredentials(credential, userId, CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
+
         if (credential.getCertificate() != null) {
-            CertificateRO certificateRO = conversionService.convert(credential.getCertificate(), CertificateRO.class);
-            credentialRO.setCertificate(certificateRO);
+            CertificateRO certificateRO = getCertificateCredentials(credential);
+            Objects.requireNonNull(credentialRO).setCertificate(certificateRO);
         }
+
         return credentialRO;
+    }
+
+    /**
+     * Method returns certificate credentials. If the certificate PEM encoding is available, it tries to parse it and
+     * extract all data from the certificate. If parsing fails, it returns only database data.
+     *
+     * @param credential the credential containing the certificate
+     * @return the CertificateRO with extracted data or database data if parsing fails
+     */
+    private CertificateRO getCertificateCredentials(DBCredential credential) {
+        DBCertificate dbCert = credential.getCertificate();
+        CertificateRO certificateRO = conversionService.convert(dbCert, CertificateRO.class);
+        if (dbCert.getPemEncoding() == null) {
+            return certificateRO;
+        }
+        try {
+            X509Certificate x509c = X509CertificateUtils.getX509Certificate(dbCert.getPemEncoding());
+            CertificateRO crt = conversionService.convert(x509c, CertificateRO.class);
+            crt.setCertificateId(certificateRO.getCertificateId());
+            return crt;
+        } catch (CertificateException e) {
+            LOG.warn("Error occurred while reading the certificate, return only database data!", e);
+            return certificateRO;
+        }
     }
 
     @Transactional

@@ -1,13 +1,39 @@
-<h2 mat-dialog-title>{{formTitle}}</h2>
-<mat-dialog-content style="height:450px;width:900px">
-  <certificate-panel [certificate]="current"></certificate-panel>
+<h2 mat-dialog-title>{{ formTitle }}</h2>
+<mat-dialog-content style="height:600px;width:1100px">
+  @if (message) {
+    <div [ngClass]="{ 'alert-message': message, 'alert-message-success': messageType === 'success',
+         'alert-message-error':messageType === 'error',
+         'alert-message-warning':messageType === 'warning' }"
+         id="cert-alert-message_id" [innerHTML]="message">
+      <span class="alert-message-close-button" (click)="clearAlert()">&times;</span>
+    </div>
+  }
+  <certificate-panel #certificatePanel [certificate]="current"></certificate-panel>
 </mat-dialog-content>
 
 <mat-dialog-actions>
+  @if (enableCertificateImport) {
+    <button id="storeCertificateCredentialsButton"  mat-raised-button color="primary"
+            (click)="storeCertificateCredentials()">
+      <mat-icon>key</mat-icon>
+      <span>{{ "certificate.dialog.button.save.certificate" | translate }}</span>
+    </button>
+  }
+
   <button id="closeDialogButton" mat-raised-button color="primary" mat-dialog-close>
     <mat-icon>close</mat-icon>
     <span>{{ "certificate.dialog.button.close" | translate }}</span>
   </button>
+  @if (enableCertificateImport) {
+    <tool-button-spacer [vertical]="true"></tool-button-spacer>
+    <label class="certificate-file-upload" style="flex-grow: 1">
+      <input #fileInput type="file" id="certificate-file-upload_id" accept=".cer,.crt,.pem,.der"
+             (change)="uploadCertificate($event)">
+      <button id="importButton" mat-flat-button color="primary"
+              (click)="fileInput.click()">{{ "certificate.dialog.button.import" | translate }}
+      </button>
+    </label>
+  }
 </mat-dialog-actions>
 
 
