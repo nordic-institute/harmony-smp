@@ -99,7 +99,6 @@ export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, Contr
     return this.formControl || this.controlContainer.control.get(this.formControlName);
   }
 
-
   applyFilter(filterValue: string) {
 
     this.propertyDataSource.filter = filterValue?.trim().toLowerCase();

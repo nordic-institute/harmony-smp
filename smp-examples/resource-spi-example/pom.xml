@@ -23,7 +23,7 @@
     <properties>
         <sonar.skip>true</sonar.skip>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <org.glassfish.jaxb.jaxb-runtime.version>4.0.5</org.glassfish.jaxb.jaxb-runtime.version>
+        <org.glassfish.jaxb.jaxb-runtime.version>4.0.6</org.glassfish.jaxb.jaxb-runtime.version>
         <jakarta.xml.bind-api.version>4.0.4</jakarta.xml.bind-api.version>
     </properties>
     <artifactId>resource-spi-example</artifactId>

@@ -73,7 +73,6 @@ public class KeystoreAdminController {
         List<CertificateRO> keystoreEntriesList = uiKeystoreService.getKeystoreEntriesList();
         // clear encoded value to reduce http traffic
         keystoreEntriesList.forEach(certificateRO -> {
-            certificateRO.setEncodedValue(null);
             certificateRO.setStatus(EntityROStatus.PERSISTED.getStatusNumber());
         });
         return keystoreEntriesList;

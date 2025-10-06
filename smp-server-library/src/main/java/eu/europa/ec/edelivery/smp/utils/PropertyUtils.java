@@ -28,6 +28,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.event.Level;
@@ -36,6 +37,8 @@ import org.springframework.scheduling.support.CronExpression;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -122,11 +125,21 @@ public class PropertyUtils {
 
         switch (type) {
             case BOOLEAN:
-                if (StringUtils.equalsAnyIgnoreCase(trim(value), "true", "false")) {
+                if (Strings.CI.equalsAny(trim(value), "true", "false")) {
                     return Boolean.valueOf(value.trim());
                 }
                 throw new SMPRuntimeException(CONFIGURATION_INVALID_BOOLEAN)
                         .addParam(PROPERTY_VALUE, value);
+
+            case DATETIME: {
+
+                OffsetDateTime dateTime = DateTimeUtils.parseToOffsetDateTime(value);
+                if (dateTime == null) {
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_DATETIME)
+                            .addParam(PROPERTY_VALUE, value);
+                }
+                return dateTime;
+            }
             case REGEXP:
                 try {
                     return Pattern.compile(value);
@@ -168,11 +181,18 @@ public class PropertyUtils {
             }
             // nothing to validate
             case FILENAME:
-                File file = new File(rootFolder, value);
-                if (!file.exists()) {
-                    LOG.warn("File: [{}] does not exist. Full path: [{}].", value, file.getAbsolutePath());
+                if (isValidFilename(value)) {
+                    File file = new File(rootFolder, value);
+                    if (!file.exists()) {
+                        LOG.warn("File: [{}] does not exist. Full path: [{}].", value, file.getAbsolutePath());
+                    }
+                    return file;
+                } else {
+                    throw new SMPRuntimeException(CONFIGURATION_INVALID_FILENAME)
+                            .addParam(PROPERTY_VALUE, value);
                 }
-                return file;
+
+
             case EMAIL:
                 String trimVal = value.trim();
                 if (EmailValidator.getInstance().isValid(trimVal)) {
@@ -289,5 +309,19 @@ public class PropertyUtils {
             default:
                 LOG.debug(logValue);
         }
+    }
+
+    public static boolean isValidFilename(String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            return false;
+        }
+        // Check for invalid characters (common for most OS)
+        String invalidChars = "[\\\\/:*?\"<>|]";
+        if (filename.matches(".*" + invalidChars + ".*")) {
+            return false;
+        }
+        // Optionally, check if file can be created
+        File file = new File(filename);
+        return !file.isDirectory();
     }
 }

@@ -10,7 +10,10 @@
                        icon="error"
                        label="{{ 'admin.truststore.label.invalid.certificate' | translate: { reason: selected.invalidReason } }}">
     </smp-warning-panel>
-    <certificate-panel [certificate]="selected" *ngIf="selected; else noDataFound"></certificate-panel>
+
+    <certificate-panel style="flex-grow: 1;"
+      [certificate]="selected"
+                        *ngIf="selected; else noDataFound"></certificate-panel>
   </data-panel>
 </div>
 

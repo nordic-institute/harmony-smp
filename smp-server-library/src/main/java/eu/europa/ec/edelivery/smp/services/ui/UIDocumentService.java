@@ -44,6 +44,7 @@ import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
 import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiResponseData;
+import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
@@ -609,6 +610,7 @@ public class UIDocumentService {
                 }
                 break;
             case UPDATED:
+                PropertyUtils.parsePropertyType(documentPropertyRO.getType(), documentPropertyRO.getValue(), null);
                 if (dbDocumentProperty != null) {
                     dbDocumentProperty.setDescription(documentPropertyRO.getDesc());
                     dbDocumentProperty.setValue(documentPropertyRO.getValue());
@@ -618,6 +620,7 @@ public class UIDocumentService {
                 }
                 break;
             case NEW:
+                PropertyUtils.parsePropertyType(documentPropertyRO.getType(), documentPropertyRO.getValue(), null);
                 if (dbDocumentProperty == null) {
                     addDocumentProperty(documentPropertyRO, dbDocument);
                 } else {
@@ -646,8 +649,27 @@ public class UIDocumentService {
         dbDocumentProperty.setValue(documentPropertyRO.getValue());
         dbDocumentProperty.setDescription(documentPropertyRO.getDesc());
         dbDocumentProperty.setType(documentPropertyRO.getType());
-
+        if (documentPropertyRO.getType() == SMPPropertyTypeEnum.CERTIFICATE
+                && documentPropertyRO.getCertificate() != null) {
+            DBDocumentCertificate certificate = createDocumentCertificate(documentPropertyRO);
+            dbDocumentProperty.setDocumentCertificate(certificate);
+            certificate.setDocumentProperty(dbDocumentProperty);
+        }
         dbDocument.getDocumentProperties().add(dbDocumentProperty);
+    }
+
+    private static DBDocumentCertificate createDocumentCertificate(DocumentPropertyRO documentPropertyRO) {
+        DBDocumentCertificate certificate = new DBDocumentCertificate();
+        CertificateRO certRo = documentPropertyRO.getCertificate();
+
+        certificate.setCertificateId(documentPropertyRO.getCertificate().getCertificateId());
+        certificate.setIssuer(certRo.getCertificateId());
+        certificate.setSerialNumber(certRo.getSerialNumber());
+        certificate.setSubject(certRo.getSubject());
+        certificate.setValidFrom(certRo.getValidFrom());
+        certificate.setPemEncoding(certRo.getEncodedValue());
+        certificate.setCertificateId(certRo.getCertificateId());
+        return certificate;
     }
 
     /**
@@ -838,8 +860,8 @@ public class UIDocumentService {
     private void saveDocumentPropertiesAndSettings(DBDocument document, DocumentRO documentRo) {
         if (isDocumentPropertiesChanged(documentRo)) {
             // persist non-transient properties
-            documentRo.getProperties().stream().filter(p ->
-                            TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
+            documentRo.getProperties().stream()
+                    .filter(p -> TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
                     .forEach(p -> persistDocumentProperty(p, document));
         }
 

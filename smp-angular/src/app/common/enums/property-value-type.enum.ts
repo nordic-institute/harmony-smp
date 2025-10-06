@@ -9,4 +9,5 @@ export enum PropertyValueTypeEnum {
   REGEXP = 'REGEXP',
   EMAIL = 'EMAIL',
   URL = 'URL',
+  CERTIFICATE = 'CERTIFICATE',
 }

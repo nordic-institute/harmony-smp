@@ -1,33 +1,24 @@
 import {Component, Inject} from '@angular/core';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogRef
-} from '@angular/material/dialog';
-import {
-  AbstractControl,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup, Validators
-} from "@angular/forms";
-import {
-  AlertMessageService
-} from "../../alert-message/alert-message.service";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {EntityStatus} from "../../enums/entity-status.enum";
 import {HttpClient} from "@angular/common/http";
 import {DocumentPropertyRo} from "../../model/document-property-ro.model";
 import {PropertyValueTypeEnum} from "../../enums/property-value-type.enum";
-import {
-  PropertyValueTypeEnumUtil
-} from "../../enums/utils/PropertyValueTypeEnumUtil";
+import {PropertyValueTypeEnumUtil} from "../../enums/utils/PropertyValueTypeEnumUtil";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import {CertificateDialogComponent} from "../certificate-dialog/certificate-dialog.component";
+import {CertificateService} from "../../services/certificate.service";
+import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
+import {CertificateRo} from "../../model/certificate-ro.model";
 
 @Component({
-    selector: 'document-property-dialog',
-    templateUrl: './document-property-dialog.component.html',
-    styleUrls: ['./document-property-dialog.component.css'],
-    standalone: false
+  selector: 'document-property-dialog',
+  templateUrl: './document-property-dialog.component.html',
+  styleUrls: ['./document-property-dialog.component.css'],
+  standalone: false
 })
 export class DocumentPropertyDialogComponent {
 
@@ -49,8 +40,8 @@ export class DocumentPropertyDialogComponent {
 
     return (c: AbstractControl): { [key: string]: any } => {
       console.log("Check if value is in list: " + c.value + " type: " + typeof c.value);
-      let inputVal = typeof  c?.value?.trim === "function" ? c.value.trim().toLowerCase() : c.value;
-      if (inputVal&& inputVal !== exception
+      let inputVal = typeof c?.value?.trim === "function" ? c.value.trim().toLowerCase() : c.value;
+      if (inputVal && inputVal !== exception
         && list.includes(inputVal))
         return {'notInList': {valid: false}};
       return null;
@@ -65,6 +56,8 @@ export class DocumentPropertyDialogComponent {
     private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: UntypedFormBuilder,
+    private certificateService: CertificateService,
+    private httpErrorHandlerService: HttpErrorHandlerService,
     private translateService: TranslateService) {
 
     this.current = {...data.row};
@@ -74,7 +67,7 @@ export class DocumentPropertyDialogComponent {
 
     this.propertyForm = fb.group({
       'property': new UntypedFormControl({value: '', readonly: true,}, [
-        this.notInList(this.allPropertyNames, this.current.property), Validators.pattern(PropertyValueTypeEnumUtil.PROPERTY_NAME_PATTERN)] ),
+        this.notInList(this.allPropertyNames, this.current.property), Validators.pattern(PropertyValueTypeEnumUtil.PROPERTY_NAME_PATTERN)]),
       'desc': new UntypedFormControl({value: '', readonly: true}, null),
       'type': new UntypedFormControl({value: '', readonly: true}, null),
       'value': new UntypedFormControl({value: ''}),
@@ -222,5 +215,26 @@ export class DocumentPropertyDialogComponent {
 
   propertyValueTypeDescription(name: string): string {
     return PropertyValueTypeEnumUtil.getDescription(PropertyValueTypeEnum[name]);
+  }
+
+  openSelectCertificateDialog() {
+    this.dialog.open(CertificateDialogComponent, {
+      data: {
+        row: this.current?.certificate,
+        formTitle: this.translateService.instant("document.property.dialog.certificate.select.dialog.title"),
+        enableImport: true
+      }
+    }).afterClosed().subscribe((result: CertificateRo) => {
+      alert("Result: " + result)
+      if (result) {
+        this.current.certificate = result;
+        this.propertyForm.controls['value'].setValue(this.current.certificate?.certificateId);
+        this.propertyForm.markAsDirty();
+      }
+    }, error => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        return;
+      }
+    });
   }
 }
