@@ -41,8 +41,8 @@ public class DocumentRO extends BaseRO {
     private int payloadStatus = EntityROStatus.PERSISTED.getStatusNumber();
     private OffsetDateTime payloadCreatedOn;
     private DocumentVersionStatusType documentVersionStatus;
-    private List<DocumentPropertyRO> properties = new ArrayList<>();
-    private List<DocumentVersionEventRO> documentVersionEvents = new ArrayList<>();
+    final private List<DocumentPropertyRO> properties = new ArrayList<>();
+    final private List<DocumentVersionEventRO> documentVersionEvents = new ArrayList<>();
     private List<DocumentVersionRO> documentVersions = new ArrayList<>();
     private DocumentConfigurationRO documentConfiguration;
 
@@ -144,6 +144,13 @@ public class DocumentRO extends BaseRO {
 
     public List<DocumentPropertyRO> getProperties() {
         return properties;
+    }
+
+    public void addProperty(DocumentPropertyRO propertyRO) {
+        if (propertyRO == null) {
+            return;
+        }
+        this.properties.add(propertyRO);
     }
 
     public void addProperty(String key, String value, String description, SMPPropertyTypeEnum type, boolean readonly) {

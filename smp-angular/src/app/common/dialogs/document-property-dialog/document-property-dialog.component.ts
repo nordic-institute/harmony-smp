@@ -224,16 +224,17 @@ export class DocumentPropertyDialogComponent {
         formTitle: this.translateService.instant("document.property.dialog.certificate.select.dialog.title"),
         enableImport: true
       }
-    }).afterClosed().subscribe((result: CertificateRo) => {
-      alert("Result: " + result)
-      if (result) {
-        this.current.certificate = result;
-        this.propertyForm.controls['value'].setValue(this.current.certificate?.certificateId);
-        this.propertyForm.markAsDirty();
-      }
-    }, error => {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
-        return;
+    }).afterClosed().subscribe({
+      next: (result: CertificateRo) => {
+        if (result) {
+          this.current.certificate = result;
+          this.propertyForm.controls['value'].setValue(this.current.certificate?.certificateId);
+          this.propertyForm.markAsDirty();
+        }
+      }, error: (error) => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+          return;
+        }
       }
     });
   }

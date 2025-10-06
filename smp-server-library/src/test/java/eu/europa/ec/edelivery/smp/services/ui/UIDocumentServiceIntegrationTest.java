@@ -47,7 +47,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -154,14 +153,14 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @Test
     void testSaveDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
-        int docVersionCount =resource.getDocument().getDocumentVersions().size();
+        int docVersionCount = resource.getDocument().getDocumentVersions().size();
         DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId());
         assertNotNull(testDoc.getPayload());
         //when
         DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc);
         // then
         assertNotNull(result);
-        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
+        assertEquals(docVersionCount + 1, result.getDocumentVersions().size());
     }
 
     @ParameterizedTest
@@ -190,16 +189,16 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRO testDoc = testInstance.getDocumentForResource(resource.getId(), -1);
-        int propertyCount =testDoc.getProperties().size();
+        int propertyCount = testDoc.getProperties().size();
         testDoc.getProperties().add(TestROUtils.createDocumentProperty(
-                propertyName, propertyValue,propertyType)
+                propertyName, propertyValue, propertyType)
         );
         //when
         DocumentRO result = testInstance.saveDocumentForResource(resource.getId(), testDoc);
 
         // then
         assertNotNull(result);
-        assertEquals(propertyCount+1, result.getProperties().size());
+        assertEquals(propertyCount + 1, result.getProperties().size());
         DocumentPropertyRO added = result.getProperties().stream()
                 .filter(p -> p.getProperty().equals(propertyName)).findFirst().orElse(null);
         assertNotNull(added);
@@ -225,10 +224,10 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRO testDoc = testInstance.getDocumentForResource(resource.getId(), -1);
         testDoc.getProperties().add(TestROUtils.createDocumentProperty(
-                propertyName, propertyValue,propertyType)
+                propertyName, propertyValue, propertyType)
         );
         //when
-        SMPRuntimeException result =  assertThrows(SMPRuntimeException.class,
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.saveDocumentForResource(resource.getId(), testDoc));
 
         // then
@@ -242,11 +241,11 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
         String propertyName = "new.property.for.test.certificate";
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRO testDoc = testInstance.getDocumentForResource(resource.getId(), -1);
-        int propertyCount =testDoc.getProperties().size();
+        int propertyCount = testDoc.getProperties().size();
         CertificateRO cert = TestROUtils.createCertificateRO("CN=TestProperty,OU=Test,O=Test,L=Test,ST=Test,C=EU", BigInteger.TEN);
 
         DocumentPropertyRO certProperty = TestROUtils.createDocumentProperty(
-                propertyName,cert.getCertificateId(), SMPPropertyTypeEnum.CERTIFICATE);
+                propertyName, cert.getCertificateId(), SMPPropertyTypeEnum.CERTIFICATE);
         certProperty.setCertificate(cert);
         testDoc.getProperties().add(certProperty);
 
@@ -255,13 +254,13 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
         // then
         assertNotNull(result);
-        assertEquals(propertyCount+1, result.getProperties().size());
+        assertEquals(propertyCount + 1, result.getProperties().size());
         DocumentPropertyRO addedProperty = result.getProperties().stream()
                 .filter(p -> p.getProperty().equals(propertyName)).findFirst().orElse(null);
         assertNotNull(addedProperty);
         assertEquals(propertyName, addedProperty.getProperty());
         // certificate data returned only on request
-        assertNull(addedProperty.getCertificate());
+        assertNotNull(addedProperty.getCertificate());
         assertEquals(cert.getCertificateId(), addedProperty.getValue());
 
     }
@@ -269,18 +268,18 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @Test
     void testDeleteDocumentVersionForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
-        int docVersionCount =resource.getDocument().getDocumentVersions().size();
+        int docVersionCount = resource.getDocument().getDocumentVersions().size();
         DocumentRO testDoc = testInstance.generateDocumentForResource(resource.getId());
         assertNotNull(testDoc.getPayload());
         DocumentRO documentPayload = testInstance.saveDocumentForResource(resource.getId(), testDoc);
-        assertEquals(docVersionCount+1, documentPayload.getDocumentVersions().size());
+        assertEquals(docVersionCount + 1, documentPayload.getDocumentVersions().size());
 
         //when
-        DocumentRO result = testInstance.deleteDocumentVersionForResource(resource.getId(),resource.getDocument().getId(), documentPayload.getPayloadVersion());
+        DocumentRO result = testInstance.deleteDocumentVersionForResource(resource.getId(), resource.getDocument().getId(), documentPayload.getPayloadVersion());
         // then
         assertNotNull(result);
         assertEquals(docVersionCount, result.getDocumentVersions().size());
-        DocumentRO dbdoc =  testInstance.getDocumentForResource(resource.getId(), documentPayload.getPayloadVersion());
+        DocumentRO dbdoc = testInstance.getDocumentForResource(resource.getId(), documentPayload.getPayloadVersion());
         assertNotEquals(documentPayload.getPayloadVersion(), dbdoc.getPayloadVersion());
 
     }
@@ -288,22 +287,22 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @Test
     void testSaveDocumentForTemplate() {
         DBDomainDocumentTemplate template = testUtilsDao.getDomainDocumentTemplateD1T1();
-        int docVersionCount =template.getDocument().getDocumentVersions().size();
+        int docVersionCount = template.getDocument().getDocumentVersions().size();
 
         DocumentRO testDoc = testInstance.generateTemplateDocument(template.getDomainResourceDef(), null);
         assertNotNull(testDoc.getPayload());
 
         //when
-         DocumentRO result = testInstance.saveDocumentForTemplate(template.getId(), testDoc);
+        DocumentRO result = testInstance.saveDocumentForTemplate(template.getId(), testDoc);
         // then
         assertNotNull(result);
-        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
+        assertEquals(docVersionCount + 1, result.getDocumentVersions().size());
     }
 
     @Test
     void testSaveDocumentForSubresourceTemplate() {
         DBDomainDocumentTemplate template = testUtilsDao.getDomainDocumentTemplateD1T1Sub();
-        int docVersionCount =template.getDocument().getDocumentVersions().size();
+        int docVersionCount = template.getDocument().getDocumentVersions().size();
 
         DocumentRO testDoc = testInstance.generateTemplateDocument(template.getDomainResourceDef(), template.getSubresourceDef());
         assertNotNull(testDoc.getPayload());
@@ -312,13 +311,13 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
         DocumentRO result = testInstance.saveDocumentForTemplate(template.getId(), testDoc);
         // then
         assertNotNull(result);
-        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
+        assertEquals(docVersionCount + 1, result.getDocumentVersions().size());
     }
 
     @Test
     void testSaveDocumentForSubresource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
-        int docVersionCount =subresource.getDocument().getDocumentVersions().size();
+        int docVersionCount = subresource.getDocument().getDocumentVersions().size();
         DocumentRO testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId());
         assertNotNull(testDoc.getPayload());
@@ -327,7 +326,7 @@ class UIDocumentServiceIntegrationTest extends AbstractServiceIntegrationTest {
         DocumentRO result = testInstance.saveSubresourceDocumentForResource(subresource.getId(), subresource.getResource().getId(), testDoc);
         // then
         assertNotNull(result);
-        assertEquals(docVersionCount+1, result.getDocumentVersions().size());
+        assertEquals(docVersionCount + 1, result.getDocumentVersions().size());
     }
 
     @Test

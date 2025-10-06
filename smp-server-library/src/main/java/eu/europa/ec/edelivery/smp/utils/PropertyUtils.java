@@ -37,7 +37,6 @@ import org.springframework.scheduling.support.CronExpression;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -48,6 +47,12 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType.*;
 import static org.apache.commons.lang3.StringUtils.*;
 
+/**
+ * Utility class for SMP properties parsing and validation
+ *
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 public class PropertyUtils {
 
 
@@ -282,9 +287,7 @@ public class PropertyUtils {
     public static void printProperties(Properties properties, Level loggingLevel) {
         if (properties != null) {
             LOG.debug("------ Print properties ------");
-            properties.entrySet().stream().forEach(e ->
-                    printProperty((String) e.getKey(), (String) e.getValue(), loggingLevel)
-            );
+            properties.forEach((key, value) -> printProperty((String) key, (String) value, loggingLevel));
         }
     }
 
