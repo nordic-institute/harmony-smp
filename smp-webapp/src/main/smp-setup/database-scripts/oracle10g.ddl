@@ -1,5 +1,5 @@
 -- This is [CREATE] database script for DomiSML version: [5.2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.29.Final] with dialect [org.hibernate.dialect.OracleDialect].
+-- This file was generated using hibernate version [6.6.30.Final] with dialect [org.hibernate.dialect.OracleDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     create sequence SMP_ALERT_PROP_SEQ start with 1 increment by 1;
@@ -316,13 +316,67 @@
         primary key (REV, ID)
     );
 
+    create table SMP_DOCUMENT_CERTIFICATE (
+        ID number(19,0) not null,
+        CREATED_ON timestamp(6) with time zone not null,
+        LAST_UPDATED_ON timestamp(6) with time zone not null,
+        CERTIFICATE_ID varchar2(1024 char) unique,
+        ISSUER varchar2(1024 char),
+        PEM_ENCODED_CERT clob,
+        SERIALNUMBER varchar2(128 char),
+        SUBJECT varchar2(1024 char),
+        VALID_FROM timestamp(6) with time zone,
+        VALID_TO timestamp(6) with time zone,
+        primary key (ID)
+    );
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.ID is
+        'Shared primary key with master table SMP_DOC_PROP_SEQ';
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.CERTIFICATE_ID is
+        'Formatted Certificate id using tags: cn, o, c and serialNumber';
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.ISSUER is
+        'Certificate issuer (canonical form)';
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.PEM_ENCODED_CERT is
+        'PEM encoded certificate';
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.SERIALNUMBER is
+        'Certificate serial number';
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.SUBJECT is
+        'Certificate subject (canonical form)';
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.VALID_FROM is
+        'Certificate valid from date.';
+
+    comment on column SMP_DOCUMENT_CERTIFICATE.VALID_TO is
+        'Certificate valid to date.';
+
+    create table SMP_DOCUMENT_CERTIFICATE_AUD (
+        ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp(6) with time zone,
+        LAST_UPDATED_ON timestamp(6) with time zone,
+        CERTIFICATE_ID varchar2(1024 char),
+        ISSUER varchar2(1024 char),
+        PEM_ENCODED_CERT clob,
+        SERIALNUMBER varchar2(128 char),
+        SUBJECT varchar2(1024 char),
+        VALID_FROM timestamp(6) with time zone,
+        VALID_TO timestamp(6) with time zone,
+        primary key (REV, ID)
+    );
+
     create table SMP_DOCUMENT_PROPERTY (
         ID number(19,0) not null,
         CREATED_ON timestamp(6) with time zone not null,
         LAST_UPDATED_ON timestamp(6) with time zone not null,
         DESCRIPTION varchar2(4000 char),
         PROPERTY_NAME varchar2(255 char),
-        PROPERTY_TYPE varchar2(64 char) check (PROPERTY_TYPE in ('STRING','DATETIME','LIST_STRING','MAP_STRING','INTEGER','BOOLEAN','REGEXP','CRON_EXPRESSION','EMAIL','FILENAME','PATH','URL')),
+        PROPERTY_TYPE varchar2(64 char) check (PROPERTY_TYPE in ('STRING','DATETIME','LIST_STRING','MAP_STRING','INTEGER','BOOLEAN','REGEXP','CRON_EXPRESSION','EMAIL','FILENAME','PATH','URL','CERTIFICATE')),
         PROPERTY_VALUE varchar2(4000 char),
         FK_DOCUMENT_ID number(19,0),
         primary key (ID),
@@ -343,7 +397,7 @@
         LAST_UPDATED_ON timestamp(6) with time zone,
         DESCRIPTION varchar2(4000 char),
         PROPERTY_NAME varchar2(255 char),
-        PROPERTY_TYPE varchar2(64 char) check (PROPERTY_TYPE in ('STRING','DATETIME','LIST_STRING','MAP_STRING','INTEGER','BOOLEAN','REGEXP','CRON_EXPRESSION','EMAIL','FILENAME','PATH','URL')),
+        PROPERTY_TYPE varchar2(64 char) check (PROPERTY_TYPE in ('STRING','DATETIME','LIST_STRING','MAP_STRING','INTEGER','BOOLEAN','REGEXP','CRON_EXPRESSION','EMAIL','FILENAME','PATH','URL','CERTIFICATE')),
         PROPERTY_VALUE varchar2(4000 char),
         FK_DOCUMENT_ID number(19,0),
         primary key (REV, ID)
@@ -424,10 +478,10 @@
         LAST_UPDATED_ON timestamp(6) with time zone not null,
         DEFAULT_RESOURCE_IDENTIFIER varchar2(255 char),
         DOMAIN_CODE varchar2(256 char) not null unique,
+        ENABLE_DOMAIN_TRUSTSTORE number(1,0) check (ENABLE_DOMAIN_TRUSTSTORE in (0,1)),
         SIGNATURE_ALGORITHM varchar2(256 char),
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
-        SML_APPEND_DOMAIN_CODE number(1,0) check (SML_APPEND_DOMAIN_CODE in (0,1)),
         SML_CLIENT_CERT_AUTH number(1,0) not null check (SML_CLIENT_CERT_AUTH in (0,1)),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
@@ -435,6 +489,7 @@
         SML_REGISTERED number(1,0) not null check (SML_REGISTERED in (0,1)),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_OMAIN_CODE_SUFFIX in (0,1)),
         VISIBILITY varchar2(64 char) check (VISIBILITY in ('PUBLIC','INTERNAL','PRIVATE')),
         primary key (ID)
     );
@@ -448,6 +503,9 @@
     comment on column SMP_DOMAIN.DOMAIN_CODE is
         'Domain code used as http parameter in rest webservices';
 
+    comment on column SMP_DOMAIN.ENABLE_DOMAIN_TRUSTSTORE is
+        'If enabled use the domain custom truststore to validate domain certificates, else it uses the system truststore';
+
     comment on column SMP_DOMAIN.SIGNATURE_ALGORITHM is
         'Set signature algorithm. Ex.: http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
 
@@ -456,9 +514,6 @@
 
     comment on column SMP_DOMAIN.SIGNATURE_KEY_ALIAS is
         'Signature key alias used for SML integration';
-
-    comment on column SMP_DOMAIN.SML_APPEND_DOMAIN_CODE is
-        'Append the domain code to SMP url when registering the SMP entry';
 
     comment on column SMP_DOMAIN.SML_CLIENT_CERT_AUTH is
         'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)';
@@ -481,6 +536,9 @@
     comment on column SMP_DOMAIN.SML_SUBDOMAIN is
         'SML subdomain';
 
+    comment on column SMP_DOMAIN.SML_ENABLE_URL_OMAIN_CODE_SUFFIX is
+        'Append the domain code to SMP url when registering the SMP entry';
+
     comment on column SMP_DOMAIN.VISIBILITY is
         'The visibility of the domain: PUBLIC, INTERNAL';
 
@@ -492,10 +550,10 @@
         LAST_UPDATED_ON timestamp(6) with time zone,
         DEFAULT_RESOURCE_IDENTIFIER varchar2(255 char),
         DOMAIN_CODE varchar2(256 char),
+        ENABLE_DOMAIN_TRUSTSTORE number(1,0) check (ENABLE_DOMAIN_TRUSTSTORE in (0,1)),
         SIGNATURE_ALGORITHM varchar2(256 char),
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
-        SML_APPEND_DOMAIN_CODE number(1,0) check (SML_APPEND_DOMAIN_CODE in (0,1)),
         SML_CLIENT_CERT_AUTH number(1,0) check (SML_CLIENT_CERT_AUTH in (0,1)),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
@@ -503,6 +561,7 @@
         SML_REGISTERED number(1,0) check (SML_REGISTERED in (0,1)),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_OMAIN_CODE_SUFFIX in (0,1)),
         VISIBILITY varchar2(64 char) check (VISIBILITY in ('PUBLIC','INTERNAL','PRIVATE')),
         primary key (REV, ID)
     );
@@ -1049,6 +1108,16 @@
 
     alter table SMP_DOCUMENT_AUD 
        add constraint FKh9epnme26i271eixtvrpqejvi 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_DOCUMENT_CERTIFICATE 
+       add constraint FKdo996u5n5vqp9950jbrd32tpv 
+       foreign key (ID) 
+       references SMP_DOCUMENT_PROPERTY;
+
+    alter table SMP_DOCUMENT_CERTIFICATE_AUD 
+       add constraint FKlfwn1ehct3domxnwc1dr3mx4g 
        foreign key (REV) 
        references SMP_REV_INFO;
 

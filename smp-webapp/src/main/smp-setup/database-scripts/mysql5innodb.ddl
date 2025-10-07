@@ -1,5 +1,5 @@
 -- This is [CREATE] database script for DomiSML version: [5.2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.29.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
+-- This file was generated using hibernate version [6.6.30.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     create table SMP_ALERT (
@@ -182,13 +182,43 @@
         primary key (REV, ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+    create table SMP_DOCUMENT_CERTIFICATE (
+        ID bigint not null comment 'Shared primary key with master table SMP_DOC_PROP_SEQ',
+        CREATED_ON datetime(6) not null,
+        LAST_UPDATED_ON datetime(6) not null,
+        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Formatted Certificate id using tags: cn, o, c and serialNumber',
+        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate issuer (canonical form)',
+        PEM_ENCODED_CERT longtext comment 'PEM encoded certificate',
+        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate serial number',
+        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate subject (canonical form)',
+        VALID_FROM datetime(6) comment 'Certificate valid from date.',
+        VALID_TO datetime(6) comment 'Certificate valid to date.',
+        primary key (ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_DOCUMENT_CERTIFICATE_AUD (
+        ID bigint not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime(6),
+        LAST_UPDATED_ON datetime(6),
+        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PEM_ENCODED_CERT longtext,
+        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        VALID_FROM datetime(6),
+        VALID_TO datetime(6),
+        primary key (REV, ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
     create table SMP_DOCUMENT_PROPERTY (
         ID bigint not null auto_increment comment 'Unique document property id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
         DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
         PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROPERTY_TYPE enum ('BOOLEAN','CRON_EXPRESSION','DATETIME','EMAIL','FILENAME','INTEGER','LIST_STRING','MAP_STRING','PATH','REGEXP','STRING','URL'),
+        PROPERTY_TYPE enum ('BOOLEAN','CERTIFICATE','CRON_EXPRESSION','DATETIME','EMAIL','FILENAME','INTEGER','LIST_STRING','MAP_STRING','PATH','REGEXP','STRING','URL'),
         PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint,
         primary key (ID)
@@ -202,7 +232,7 @@
         LAST_UPDATED_ON datetime(6),
         DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROPERTY_TYPE enum ('BOOLEAN','CRON_EXPRESSION','DATETIME','EMAIL','FILENAME','INTEGER','LIST_STRING','MAP_STRING','PATH','REGEXP','STRING','URL'),
+        PROPERTY_TYPE enum ('BOOLEAN','CERTIFICATE','CRON_EXPRESSION','DATETIME','EMAIL','FILENAME','INTEGER','LIST_STRING','MAP_STRING','PATH','REGEXP','STRING','URL'),
         PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint,
         primary key (REV, ID)
@@ -252,10 +282,10 @@
         LAST_UPDATED_ON datetime(6) not null,
         DEFAULT_RESOURCE_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Default resourceType code',
         DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Domain code used as http parameter in rest webservices',
+        ENABLE_DOMAIN_TRUSTSTORE bit comment 'If enabled use the domain custom truststore to validate domain certificates, else it uses the system truststore',
         SIGNATURE_ALGORITHM varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Set signature algorithm. Ex.: http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Set signature hash method. Ex.: http://www.w3.org/2001/04/xmlenc#sha256',
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Signature key alias used for SML integration',
-        SML_APPEND_DOMAIN_CODE bit comment 'Append the domain code to SMP url when registering the SMP entry',
         SML_CLIENT_CERT_AUTH bit not null comment 'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)',
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used for SML integration',
         SML_CLIENT_KEY_CHANGE_ALIAS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used to update the certificate for SML integration',
@@ -263,6 +293,7 @@
         SML_REGISTERED bit not null comment 'Flag for: Is domain registered in SML',
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SMP ID used for SML integration',
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SML subdomain',
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX bit comment 'Append the domain code to SMP url when registering the SMP entry',
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC') comment 'The visibility of the domain: PUBLIC, INTERNAL',
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -275,10 +306,10 @@
         LAST_UPDATED_ON datetime(6),
         DEFAULT_RESOURCE_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ENABLE_DOMAIN_TRUSTSTORE bit,
         SIGNATURE_ALGORITHM varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_APPEND_DOMAIN_CODE bit,
         SML_CLIENT_CERT_AUTH bit,
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_KEY_CHANGE_ALIAS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -286,6 +317,7 @@
         SML_REGISTERED bit,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX bit,
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
         primary key (REV, ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -668,6 +700,9 @@
     alter table SMP_CREDENTIAL 
        add constraint SMP_CRD_USER_NAME_TYPE_IDX unique (CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
 
+    alter table SMP_DOCUMENT_CERTIFICATE 
+       add constraint UK7gl0tu846ixaiplii4tku1cqc unique (CERTIFICATE_ID);
+
     alter table SMP_DOCUMENT_PROPERTY 
        add constraint SMP_DOC_PROP_IDX unique (FK_DOCUMENT_ID, PROPERTY_NAME);
 
@@ -799,6 +834,16 @@
 
     alter table SMP_DOCUMENT_AUD 
        add constraint FKh9epnme26i271eixtvrpqejvi 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
+    alter table SMP_DOCUMENT_CERTIFICATE 
+       add constraint FKdo996u5n5vqp9950jbrd32tpv 
+       foreign key (ID) 
+       references SMP_DOCUMENT_PROPERTY (ID);
+
+    alter table SMP_DOCUMENT_CERTIFICATE_AUD 
+       add constraint FKlfwn1ehct3domxnwc1dr3mx4g 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

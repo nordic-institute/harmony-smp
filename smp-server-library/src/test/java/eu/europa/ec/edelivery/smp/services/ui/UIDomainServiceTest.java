@@ -91,7 +91,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
         domainRO.setSmlSmpId(smlSmpId);
         domainRO.setSmlClientKeyAlias(clientKeyAlias);
         domainRO.setSmlClientCertAuth(clientCertAuth);
-        domainRO.setSmlAppendDomainCode(appendDomainCode);
+        domainRO.setSmlUrlDomainCodeSuffixEnabled(appendDomainCode);
         DBDomain domain = testUtilsDao.getD1();
 
         testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO);
@@ -101,7 +101,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
         assertEquals(smlSmpId, result.getSmlSmpId());
         assertEquals(clientKeyAlias, result.getSmlClientKeyAlias());
         assertEquals(clientCertAuth, result.isSmlClientCertAuth());
-        assertEquals(appendDomainCode, result.isSmlAppendDomainCode());
+        assertEquals(appendDomainCode, result.isSmlUrlDomainCodeSuffixEnabled());
     }
 
 

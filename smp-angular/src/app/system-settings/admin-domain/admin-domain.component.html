@@ -23,45 +23,57 @@
                       (onDiscardNew)="onDiscardNew()"
         ></domain-panel>
       </mat-tab>
-      <mat-tab *ngIf="selected?.domainId;">
-        <ng-template mat-tab-label>
-          <smp-label icon="extension" label="{{ 'admin.domain.label.resource.type' | translate }}"></smp-label>
-        </ng-template>
-        <domain-resource-type-panel #domainResourceTypePanelComponent
-                                    [domain]="selected"
-                                    [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
-                                    (onSaveResourceTypesEvent)="onSaveResourceTypesEvent($event)"
-        ></domain-resource-type-panel>
-      </mat-tab>
-      <mat-tab label="{{ 'admin.domain.label.members' | translate }}" *ngIf="selected?.domainId;">
-        <ng-template mat-tab-label>
-          <smp-label icon="groups" label="{{ 'admin.domain.label.members' | translate }}"></smp-label>
-        </ng-template>
-        <domain-member-panel #domainMemberPanelComponent
-                             [membershipType]="membershipType"
-                             [domain]="selected"
-        ></domain-member-panel>
-      </mat-tab>
-      <mat-tab *ngIf="selected?.domainId;">
-        <ng-template mat-tab-label>
-          <smp-label icon="settings" label="{{ 'admin.domain.label.configuration' | translate }}"></smp-label>
-        </ng-template>
-        <domain-properties-panel #domainPropertiesPanelComponent
-                                 [systemAdminService]="true"
-                                 [domain]="selected"
-                                 (onSavePropertiesDataEvent)="onSavePropertiesDataEvent($event)"
-        ></domain-properties-panel>
-      </mat-tab>
-      <mat-tab *ngIf="selected?.domainId;">
-        <ng-template mat-tab-label>
-          <smp-label icon="dns" label="{{ 'admin.domain.label.sml.integration' | translate }}"></smp-label>
-        </ng-template>
-        <domain-sml-integration-panel #domainSmlIntegrationPanelComponent
-                                      [keystoreCertificates]="keystoreCertificates"
+      @if (selected?.domainId) {
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <smp-label icon="extension" label="{{ 'admin.domain.label.resource.type' | translate }}"></smp-label>
+          </ng-template>
+          <domain-resource-type-panel #domainResourceTypePanelComponent
                                       [domain]="selected"
-                                      (onSaveSmlIntegrationDataEvent)="onSaveSmlIntegrationDataEvent($event)"
-        ></domain-sml-integration-panel>
-      </mat-tab>
+                                      [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
+                                      (onSaveResourceTypesEvent)="onSaveResourceTypesEvent($event)"
+          ></domain-resource-type-panel>
+        </mat-tab>
+        <mat-tab label="{{ 'admin.domain.label.members' | translate }}">
+          <ng-template mat-tab-label>
+            <smp-label icon="groups" label="{{ 'admin.domain.label.members' | translate }}"></smp-label>
+          </ng-template>
+          <domain-member-panel #domainMemberPanelComponent
+                               [membershipType]="membershipType"
+                               [domain]="selected"
+          ></domain-member-panel>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <smp-label icon="settings" label="{{ 'admin.domain.label.configuration' | translate }}"></smp-label>
+          </ng-template>
+          <domain-properties-panel #domainPropertiesPanelComponent
+                                   [systemAdminService]="true"
+                                   [domain]="selected"
+                                   (onSavePropertiesDataEvent)="onSavePropertiesDataEvent($event)"
+          ></domain-properties-panel>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <smp-label icon="dns" label="{{ 'admin.domain.label.sml.integration' | translate }}"></smp-label>
+          </ng-template>
+          <domain-sml-integration-panel #domainSmlIntegrationPanelComponent
+                                        [keystoreCertificates]="keystoreCertificates"
+                                        [domain]="selected"
+                                        (onSaveSmlIntegrationDataEvent)="onSaveSmlIntegrationDataEvent($event)"
+          ></domain-sml-integration-panel>
+        </mat-tab>
+        @if (selected?.domainTrustStoreEnabled) {
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <smp-label icon="key" label="{{ 'admin.domain.label.custom.truststore' | translate }}"></smp-label>
+            </ng-template>
+            <domain-truststore-panel #truststorePanelComponent
+                                     [domain]="selected"
+            ></domain-truststore-panel>
+          </mat-tab>
+        }
+      }
     </mat-tab-group>
   </data-panel>
 </div>

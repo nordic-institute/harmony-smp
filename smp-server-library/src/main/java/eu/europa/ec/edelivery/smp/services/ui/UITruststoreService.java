@@ -34,6 +34,7 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.context.annotation.Lazy;
@@ -170,7 +171,7 @@ public class UITruststoreService extends BasicKeystoreService {
         lastUpdateTrustStoreFile = truststoreFile;
     }
 
-    public void clearTruststoreCache(){
+    public void clearTruststoreCache() {
         truststoreCertificates.clear();
         normalizedTrustedList.clear();
         certificateROList.clear();
@@ -191,7 +192,21 @@ public class UITruststoreService extends BasicKeystoreService {
 
 
     public CertificateRO getCertificateData(String base64Cert, boolean validate, boolean validateDuplicate) {
-        return getCertificateData(Base64.getMimeDecoder().decode(base64Cert), validate, validateDuplicate);
+        X509Certificate cert;
+        CertificateRO cro;
+        try {
+            cert = X509CertificateUtils.getX509Certificate(base64Cert);
+        } catch (CertificateException e) {
+            LOG.debug("Error occurred while parsing the certificate ", e);
+            LOG.warn("Can not parse the certificate with error:[{}]!", ExceptionUtils.getRootCauseMessage(e));
+            cro = new CertificateRO();
+            cro.setError(true);
+            cro.setInvalid(true);
+            cro.setInvalidReason("Can not read the certificate!");
+            return cro;
+        }
+
+        return getCertificateData(cert, validate, validateDuplicate);
     }
 
     /**
@@ -223,6 +238,11 @@ public class UITruststoreService extends BasicKeystoreService {
             cro.setInvalidReason("Can not read the certificate!");
             return cro;
         }
+        return getCertificateData(cert, validate, validateDuplicate);
+    }
+
+    public CertificateRO getCertificateData(X509Certificate cert, boolean validate, boolean validateDuplicate) {
+        CertificateRO cro;
 
         cro = convertToRo(cert);
         if (validate) {
@@ -304,7 +324,7 @@ public class UITruststoreService extends BasicKeystoreService {
         validateCertificateWithTruststore(x509Certificate, subjectRegExp, allowedCertificatePolicies, truststore);
     }
 
-    public void validateCertificateWithDomainTruststore(DBDomain domain,  X509Certificate x509Certificate) throws CertificateException {
+    public void validateCertificateWithDomainTruststore(DBDomain domain, X509Certificate x509Certificate) throws CertificateException {
 
         if (x509Certificate == null) {
             throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
@@ -332,7 +352,7 @@ public class UITruststoreService extends BasicKeystoreService {
         }
 
         PublicKey certKey = x509Certificate.getPublicKey();
-        if (!StringUtils.equalsAnyIgnoreCase(certKey.getAlgorithm(), allowedCertificateKeyTypes.toArray(new String[]{}))) {
+        if (!Strings.CI.equalsAny(certKey.getAlgorithm(), allowedCertificateKeyTypes.toArray(new String[]{}))) {
             throw new CertificateException("Certificate does not have allowed key algorithm type! Key type ["
                     + certKey.getAlgorithm() + "] Allowed values ["
                     + allowedCertificateKeyTypes + "]!");
@@ -652,8 +672,8 @@ public class UITruststoreService extends BasicKeystoreService {
      * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
      * the whole chain. Because in some configuration cases does not use the truststore
      *
-     * @param certificate
-     * @throws CertificateException
+     * @param certificate to validate
+     * @throws CertificateException in case certificate does not contain any of the allowed policies
      */
     protected void validateCertificatePolicyMatchLegacy(X509Certificate certificate) throws CertificateException {
 

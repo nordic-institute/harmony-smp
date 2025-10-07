@@ -44,6 +44,7 @@ import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
 import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiResponseData;
+import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
@@ -57,10 +58,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 
 import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
@@ -609,15 +607,45 @@ public class UIDocumentService {
                 }
                 break;
             case UPDATED:
+                PropertyUtils.parsePropertyType(documentPropertyRO.getType(), documentPropertyRO.getValue(), null);
                 if (dbDocumentProperty != null) {
                     dbDocumentProperty.setDescription(documentPropertyRO.getDesc());
                     dbDocumentProperty.setValue(documentPropertyRO.getValue());
+                    if (documentPropertyRO.getType() == SMPPropertyTypeEnum.CERTIFICATE) {
+                        DBDocumentCertificate certificate = dbDocumentProperty.getDocumentCertificate();
+                        CertificateRO certRo = documentPropertyRO.getCertificate();
+                        if (certificate == null) {
+                            if (certRo != null) {
+                                certificate = createDocumentCertificate(documentPropertyRO);
+                                dbDocumentProperty.setDocumentCertificate(certificate);
+                                certificate.setDocumentProperty(dbDocumentProperty);
+                            } else {
+                                LOG.debug("Document property [{}] of type certificate does not have certificate object",
+                                        documentPropertyRO.getProperty());
+                            }
+                        } else {
+                            if (certRo != null) {
+                                // update existing certificate
+                                updateCertificate(certificate, certRo);
+                            } else {
+                                // remove existing certificate
+                                dbDocumentProperty.setDocumentCertificate(null);
+                            }
+                        }
+                    } else {
+                        // if the property type is changed from certificate to other and there is existing certificate remove it
+                        if (dbDocumentProperty.getDocumentCertificate() != null) {
+                            dbDocumentProperty.setDocumentCertificate(null);
+                        }
+                    }
+
                 } else {
                     LOG.warn("Document property [{}] not found for document [{}]. property is added", documentPropertyRO.getProperty(), dbDocument.getId());
                     addDocumentProperty(documentPropertyRO, dbDocument);
                 }
                 break;
             case NEW:
+                PropertyUtils.parsePropertyType(documentPropertyRO.getType(), documentPropertyRO.getValue(), null);
                 if (dbDocumentProperty == null) {
                     addDocumentProperty(documentPropertyRO, dbDocument);
                 } else {
@@ -634,6 +662,23 @@ public class UIDocumentService {
     }
 
     /**
+     * Method updates the certificate entity with the values from the certificate RO
+     *
+     * @param certificate certificate entity to update
+     * @param certRo      certificate RO with new values
+     */
+    protected void updateCertificate(DBDocumentCertificate certificate, CertificateRO certRo) {
+        certificate.setCertificateId(certRo.getCertificateId());
+        certificate.setIssuer(certRo.getCertificateId());
+        certificate.setSerialNumber(certRo.getSerialNumber());
+        certificate.setSubject(certRo.getSubject());
+        certificate.setValidFrom(certRo.getValidFrom());
+        certificate.setValidTo(certRo.getValidTo());
+        certificate.setPemEncoding(certRo.getEncodedValue());
+        certificate.setCertificateId(certRo.getCertificateId());
+    }
+
+    /**
      * Method adds new  Document Property to the DBDocument property list
      *
      * @param documentPropertyRO Document Property RO to persist
@@ -646,8 +691,20 @@ public class UIDocumentService {
         dbDocumentProperty.setValue(documentPropertyRO.getValue());
         dbDocumentProperty.setDescription(documentPropertyRO.getDesc());
         dbDocumentProperty.setType(documentPropertyRO.getType());
-
+        if (documentPropertyRO.getType() == SMPPropertyTypeEnum.CERTIFICATE
+                && documentPropertyRO.getCertificate() != null) {
+            DBDocumentCertificate certificate = createDocumentCertificate(documentPropertyRO);
+            dbDocumentProperty.setDocumentCertificate(certificate);
+            certificate.setDocumentProperty(dbDocumentProperty);
+        }
         dbDocument.getDocumentProperties().add(dbDocumentProperty);
+    }
+
+    private DBDocumentCertificate createDocumentCertificate(DocumentPropertyRO documentPropertyRO) {
+        DBDocumentCertificate certificate = new DBDocumentCertificate();
+        CertificateRO certRo = documentPropertyRO.getCertificate();
+        updateCertificate(certificate, certRo);
+        return certificate;
     }
 
     /**
@@ -838,8 +895,8 @@ public class UIDocumentService {
     private void saveDocumentPropertiesAndSettings(DBDocument document, DocumentRO documentRo) {
         if (isDocumentPropertiesChanged(documentRo)) {
             // persist non-transient properties
-            documentRo.getProperties().stream().filter(p ->
-                            TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
+            documentRo.getProperties().stream()
+                    .filter(p -> TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
                     .forEach(p -> persistDocumentProperty(p, document));
         }
 
@@ -1142,10 +1199,7 @@ public class UIDocumentService {
         documentRo.setCurrentVersion(document.getCurrentVersion());
         // set list of versions
         document.getDocumentProperties()
-                .forEach(p -> documentRo.addProperty(p.getProperty(),
-                        p.getValue(),
-                        p.getDescription(),
-                        p.getType(), false));
+                .forEach(p -> documentRo.addProperty(convert(p)));
 
         docConfigRo.setMimeType(document.getMimeType());
 
@@ -1161,6 +1215,32 @@ public class UIDocumentService {
             );
         }
         return documentRo;
+    }
+
+    /**
+     * Convert DBDocumentProperty to DocumentPropertyRO
+     *
+     * @param documentProperty to convert
+     * @return converted DocumentPropertyRO
+     */
+    protected DocumentPropertyRO convert(DBDocumentProperty documentProperty) {
+        DocumentPropertyRO documentPropertyRO = new DocumentPropertyRO();
+        documentPropertyRO.setProperty(documentProperty.getProperty());
+        documentPropertyRO.setValue(documentProperty.getValue());
+        documentPropertyRO.setDesc(documentProperty.getDescription());
+        documentPropertyRO.setType(documentProperty.getType());
+        if (documentProperty.getType() == SMPPropertyTypeEnum.CERTIFICATE && documentProperty.getDocumentCertificate() != null) {
+            DBDocumentCertificate cert = documentProperty.getDocumentCertificate();
+            CertificateRO certRo = new CertificateRO();
+            certRo.setCertificateId(cert.getCertificateId());
+            certRo.setEncodedValue(cert.getPemEncoding());
+            certRo.setIssuer(cert.getIssuer());
+            certRo.setSerialNumber(cert.getSerialNumber());
+            certRo.setSubject(cert.getSubject());
+            certRo.setValidFrom(cert.getValidFrom());
+            documentPropertyRO.setCertificate(certRo);
+        }
+        return documentPropertyRO;
     }
 
     /**

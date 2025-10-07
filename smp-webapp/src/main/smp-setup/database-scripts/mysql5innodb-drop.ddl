@@ -1,5 +1,5 @@
 -- This is [DROP] database script for DomiSML version: [5.2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.29.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
+-- This file was generated using hibernate version [6.6.30.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     alter table SMP_ALERT_AUD 
@@ -41,6 +41,14 @@
     alter table SMP_DOCUMENT_AUD 
        drop 
        foreign key FKh9epnme26i271eixtvrpqejvi;
+
+    alter table SMP_DOCUMENT_CERTIFICATE 
+       drop 
+       foreign key FKdo996u5n5vqp9950jbrd32tpv;
+
+    alter table SMP_DOCUMENT_CERTIFICATE_AUD 
+       drop 
+       foreign key FKlfwn1ehct3domxnwc1dr3mx4g;
 
     alter table SMP_DOCUMENT_PROPERTY 
        drop 
@@ -229,6 +237,10 @@
     drop table if exists SMP_DOCUMENT;
 
     drop table if exists SMP_DOCUMENT_AUD;
+
+    drop table if exists SMP_DOCUMENT_CERTIFICATE;
+
+    drop table if exists SMP_DOCUMENT_CERTIFICATE_AUD;
 
     drop table if exists SMP_DOCUMENT_PROPERTY;
 

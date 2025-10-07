@@ -14,7 +14,8 @@ export interface DomainRo extends SearchTableEntity {
   signatureKeyAlias?: string;
   smlRegistered?: boolean;
   smlClientCertAuth?: boolean;
-  smlAppendDomainCode?: boolean;
+  smlUrlDomainCodeSuffixEnabled?: boolean;
+  domainTrustStoreEnabled?: boolean;
   visibility?:VisibilityEnum;
   defaultResourceTypeIdentifier?:string;
   resourceDefinitions?: string[]

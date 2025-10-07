@@ -31,6 +31,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIGroupPublicService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -86,18 +87,18 @@ public class GroupEditController {
         if (StringUtils.isBlank(forRole)) {
             return uiGroupPublicService.getAllGroupsForDomain(domainId);
         }
-        if (StringUtils.equalsIgnoreCase("group-admin", forRole)) {
+        if (Strings.CI.equals("group-admin", forRole)) {
             return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, MembershipRoleType.ADMIN);
         }
 
-        if (StringUtils.equalsIgnoreCase("resource-admin", forRole)) {
+        if (Strings.CI.equals("resource-admin", forRole)) {
             return uiGroupPublicService.getAllGroupsForDomainAndUserAndResourceRole(domainId, userId, MembershipRoleType.ADMIN);
         }
 
-        if (StringUtils.equalsIgnoreCase("group-viewer", forRole)) {
+        if (Strings.CI.equals("group-viewer", forRole)) {
             return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, MembershipRoleType.VIEWER);
         }
-        if (StringUtils.equalsIgnoreCase("all-roles", forRole)) {
+        if (Strings.CI.equals("all-roles", forRole)) {
             return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, null);
         }
         throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GET_DOMAIN_GROUPS)

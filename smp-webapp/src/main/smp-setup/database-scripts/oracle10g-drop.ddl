@@ -1,5 +1,5 @@
 -- This is [DROP] database script for DomiSML version: [5.2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.29.Final] with dialect [org.hibernate.dialect.OracleDialect].
+-- This file was generated using hibernate version [6.6.30.Final] with dialect [org.hibernate.dialect.OracleDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     drop table SMP_ALERT cascade constraints;
@@ -25,6 +25,10 @@
     drop table SMP_DOCUMENT cascade constraints;
 
     drop table SMP_DOCUMENT_AUD cascade constraints;
+
+    drop table SMP_DOCUMENT_CERTIFICATE cascade constraints;
+
+    drop table SMP_DOCUMENT_CERTIFICATE_AUD cascade constraints;
 
     drop table SMP_DOCUMENT_PROPERTY cascade constraints;
 

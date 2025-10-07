@@ -47,6 +47,8 @@ import static eu.europa.ec.edelivery.smp.utils.DateTimeUtils.formatOffsetDateTim
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 /**
+ * Service to alert about document certificate expiration
+ *
  * @author Sebastian-Ion TINCU
  * @since 5.2
  */

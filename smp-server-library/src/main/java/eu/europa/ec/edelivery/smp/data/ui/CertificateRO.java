@@ -50,6 +50,7 @@ public class CertificateRO extends BaseRO {
     private boolean isContainingKey;
 
     private final List<String> certificatePolicies = new ArrayList<>();
+    private List<CertificateExtensionRO> extensions  = new ArrayList<>();
     private String invalidReason;
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
@@ -180,6 +181,10 @@ public class CertificateRO extends BaseRO {
 
     public List<String> getCertificatePolicies() {
         return certificatePolicies;
+    }
+
+    public List<CertificateExtensionRO> getExtensions() {
+        return extensions;
     }
 
     @JsonIgnore

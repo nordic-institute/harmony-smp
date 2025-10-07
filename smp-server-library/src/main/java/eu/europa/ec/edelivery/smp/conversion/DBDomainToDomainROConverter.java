@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -58,7 +57,8 @@ public class DBDomainToDomainROConverter implements Converter<DBDomain, DomainRO
             BeanUtils.copyProperties(target, source);
             Long memberCount = domainMemberDao.getDomainMemberCount(source.getId(), null, MembershipRoleType.ADMIN);
             target.setAdminMemberCount(memberCount);
-            target.setSmlAppendDomainCode(source.isSmlAppendDomainCode());
+            target.setSmlUrlDomainCodeSuffixEnabled(source.isSmlUrlDomainCodeSuffixEnabled());
+            target.setDomainTrustStoreEnabled(source.isDomainTrustStoreEnabled());
 
             List<String> domainDocuments = source.getDomainResourceDefs().stream().map(dbDomainResourceDef -> dbDomainResourceDef.getResourceDef().getIdentifier()).toList();
             target.getResourceDefinitions().addAll(domainDocuments);

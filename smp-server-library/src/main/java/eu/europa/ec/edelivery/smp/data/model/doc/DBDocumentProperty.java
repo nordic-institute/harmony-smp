@@ -23,12 +23,12 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -37,8 +37,8 @@ import java.util.StringJoiner;
 /**
  * Document property entity
  *
- * @since 5.1
  * @author Joze Rihtarsic
+ * @since 5.1
  */
 
 @Entity
@@ -76,6 +76,12 @@ public class DBDocumentProperty extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "FK_DOCUMENT_ID")
     private DBDocument document;
+
+    @OneToOne(mappedBy = "documentProperty",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
+    private DBDocumentCertificate certificate;
 
     public DBDocumentProperty() {
     }
@@ -131,6 +137,14 @@ public class DBDocumentProperty extends BaseEntity {
 
     public void setType(SMPPropertyTypeEnum type) {
         this.type = type;
+    }
+
+    public DBDocumentCertificate getDocumentCertificate() {
+        return certificate;
+    }
+
+    public void setDocumentCertificate(DBDocumentCertificate certificate) {
+        this.certificate = certificate;
     }
 
     @Transient

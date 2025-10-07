@@ -1,23 +1,5 @@
-<div id="admin-truststore-panel">
-  <data-panel id="admin-truststore-data-panel"
-              title="{{ 'admin.truststore.title' | translate }}"
-              text="{{ 'admin.truststore.text' | translate }}"
-              [labelColumnContent]="searchCertificatePanel">
-    <ng-template #noDataFound>
-      <div class="empty-data-panel">{{ "admin.truststore.label.no.certificates.selected" | translate }}</div>
-    </ng-template>
-    <smp-warning-panel *ngIf="selected?.invalid;"
-                       icon="error"
-                       label="{{ 'admin.truststore.label.invalid.certificate' | translate: { reason: selected.invalidReason } }}">
-    </smp-warning-panel>
+<div id="truststore-panel">
 
-    <certificate-panel style="flex-grow: 1;"
-      [certificate]="selected"
-                        *ngIf="selected; else noDataFound"></certificate-panel>
-  </data-panel>
-</div>
-
-<ng-template #searchCertificatePanel>
   <smp-warning-panel  *ngIf="dataSource.data?.length ==0"
                       icon="warn"
                      label="{{ 'admin.truststore.label.certificate.trustiness' | translate }}">
@@ -43,7 +25,7 @@
     </mat-toolbar-row>
   </mat-toolbar>
 
-  <smp-table class="mat-elevation-z2" id="admin-truststore-table"
+  <smp-table class="mat-elevation-z2" id="truststore-table"
              filterLabel="admin.truststore.label.filter"
              filterPlaceholder="admin.truststore.placeholder.filter"
              noResultLabel="admin.truststore.label.no.data.found"
@@ -56,4 +38,4 @@
              (onRowClicked)="onCertificateSelected($event)"
   >
   </smp-table>
-</ng-template>
+</div>

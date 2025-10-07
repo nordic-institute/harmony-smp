@@ -94,6 +94,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       'adminMemberCount': new FormControl({value: '', readonly: true}),
       'visibility': new FormControl({value: '', readonly: true}),
       'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
+      'domainTrustStoreEnabled': new FormControl({value: false, readonly: false}),
     });
     (async () => await this.updateShowWarningMessage()) ();
   }
@@ -104,6 +105,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     newDomain.signatureKeyAlias = this.domainForm.get('signatureKeyAlias').value;
     newDomain.visibility = this.domainForm.get('visibility').value;
     newDomain.defaultResourceTypeIdentifier = this.domainForm.get('defaultResourceTypeIdentifier').value;
+    newDomain.domainTrustStoreEnabled = this.domainForm.get('domainTrustStoreEnabled').value;
     return newDomain;
   }
 
@@ -115,6 +117,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['signatureKeyAlias'].setValue(this._domain.signatureKeyAlias);
       this.domainForm.controls['adminMemberCount'].setValue(this._domain.adminMemberCount);
       this.domainForm.controls['visibility'].setValue(this._domain.visibility);
+      this.domainForm.controls['domainTrustStoreEnabled'].setValue(this._domain.domainTrustStoreEnabled);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue(this._domain.defaultResourceTypeIdentifier);
       this.domainForm.enable();
       if (!!value?.domainId) {
@@ -125,6 +128,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['signatureKeyAlias'].setValue("");
       this.domainForm.controls['adminMemberCount'].setValue("0");
       this.domainForm.controls['visibility'].setValue(VisibilityEnum.Public);
+      this.domainForm.controls['domainTrustStoreEnabled'].setValue(false);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
       this.domainForm.disable();
     }

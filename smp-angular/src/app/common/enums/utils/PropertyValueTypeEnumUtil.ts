@@ -42,6 +42,8 @@ export class PropertyValueTypeEnumUtil {
         return 'Email';
       case PropertyValueTypeEnum.URL:
         return 'URL';
+      case PropertyValueTypeEnum.CERTIFICATE:
+        return 'CERTIFICATE';
       default:
         return '';
     }

@@ -93,7 +93,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
         LOG.info("Running test: [{}]", desc);
         //given
         DBDomain domain = testUtilsDao.getD1();
-        domain.setSmlAppendDomainCode(appendDomainCode);
+        domain.setSmlUrlDomainCodeSuffixEnabled(appendDomainCode);
 
         //when
         ServiceMetadataPublisherServiceType result = testInstance.createServiceMetadataPublisherServiceType(domain);

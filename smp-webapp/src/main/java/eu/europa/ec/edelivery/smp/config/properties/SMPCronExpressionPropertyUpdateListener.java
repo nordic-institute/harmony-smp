@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -24,7 +24,7 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Component;
 
@@ -71,12 +71,12 @@ public class SMPCronExpressionPropertyUpdateListener implements PropertyUpdateLi
             }
             // check if cron was changed
             CronExpression newCronExpression = (CronExpression) properties.get(trigger.getCronExpressionProperty());
-            if (newCronExpression ==null) {
+            if (newCronExpression == null) {
                 LOG.debug("New cron expression for property: [{}] is not set!, skip re-setting the cron!", trigger.getCronExpressionProperty());
                 continue;
             }
 
-            if (StringUtils.equalsIgnoreCase(trigger.getExpression(), newCronExpression.toString())) {
+            if (Strings.CI.equals(trigger.getExpression(), newCronExpression.toString())) {
                 LOG.debug("Cron expression did not changed for cron: [{}], skip re-setting the cron!", trigger.getCronExpressionProperty());
                 continue;
             }

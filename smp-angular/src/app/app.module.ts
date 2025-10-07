@@ -369,6 +369,8 @@ import {
 import {
   DomainDocumentTemplateEditPanelComponent
 } from "./edit/edit-domain/domain-extension-template-panel/domain-document-template-edit-panel/domain-document-template-edit-panel.component";
+import {DomainTruststoreComponent} from "./common/panels/domain-truststore-panel/domain-truststore.component";
+import {DomainTruststoreService} from "./common/panels/domain-truststore-panel/domain-truststore.service";
 
 @NgModule({ declarations: [
         AccessTokenPanelComponent,
@@ -464,6 +466,7 @@ import {
         SubresourcePanelComponent,
         TimerComponent,
         ToolbarComponent,
+        DomainTruststoreComponent,
         UserAlertsComponent,
         UserAccessTokensComponent,
         UserCertificatePanelComponent,
@@ -523,6 +526,7 @@ import {
         EditResourceController,
         EditResourceService,
         ExtensionService,
+        DomainTruststoreService,
         GlobalLookups,
         HttpErrorHandlerService,
         HttpEventService,

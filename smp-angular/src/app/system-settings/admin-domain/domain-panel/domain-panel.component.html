@@ -65,7 +65,13 @@
         align="end">{{ "domain.panel.hint.domain.visibility" | translate }}
       </mat-hint>
     </mat-form-field>
-
+    <mat-slide-toggle style="width:100%"
+                      formControlName="domainTrustStoreEnabled"
+                      id="domain-truststore-enabled_id"
+                      matTooltip="{{ 'domain.panel.label.domain.truststore.enabled.tooltip' | translate }}"
+    >
+      {{ "domain.panel.label.domain.truststore.enabled" | translate }}
+    </mat-slide-toggle>
     <mat-form-field *ngIf="domainResourceTypes?.length" style="width:100%">
       <mat-label>{{ "domain.panel.label.domain.default.resource.type" | translate }}</mat-label>
       <select matNativeControl formControlName="defaultResourceTypeIdentifier"
