@@ -145,9 +145,13 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Future date when to update the certificate for SML integration")
     OffsetDateTime smlClientKeyChangeDate;
 
-    @Column(name = "SML_APPEND_DOMAIN_CODE")
+    @Column(name = "SML_ENABLE_URL_OMAIN_CODE_SUFFIX")
     @ColumnDescription(comment = "Append the domain code to SMP url when registering the SMP entry")
-    Boolean smlAppendDomainCode = true;
+    Boolean smlUrlDomainCodeSuffixEnabled = true;
+
+    @Column(name = "ENABLE_DOMAIN_TRUSTSTORE")
+    @ColumnDescription(comment = "If enabled use the domain custom truststore to validate domain certificates, else it uses the system truststore")
+    Boolean domainTrustStoreEnabled = false;
 
     @Column(name = "SIGNATURE_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Signature key alias used for SML integration")
@@ -235,13 +239,21 @@ public class DBDomain extends BaseEntity {
         this.smlSmpId = smlSmpId;
     }
 
-    public Boolean isSmlAppendDomainCode() {
+    public Boolean isSmlUrlDomainCodeSuffixEnabled() {
         // return false if null
-        return Boolean.TRUE.equals(smlAppendDomainCode);
+        return Boolean.TRUE.equals(smlUrlDomainCodeSuffixEnabled);
     }
 
-    public void setSmlAppendDomainCode(Boolean smlAppendDomainCode) {
-        this.smlAppendDomainCode = smlAppendDomainCode;
+    public void setSmlUrlDomainCodeSuffixEnabled(Boolean smlAppendDomainCode) {
+        this.smlUrlDomainCodeSuffixEnabled = smlAppendDomainCode;
+    }
+
+    public Boolean isDomainTrustStoreEnabled() {
+        return Boolean.TRUE.equals(domainTrustStoreEnabled);
+    }
+
+    public void setDomainTrustStoreEnabled(Boolean domainTrustStoreEnabled) {
+        this.domainTrustStoreEnabled = domainTrustStoreEnabled;
     }
 
     public String getSmlClientKeyAlias() {
@@ -346,7 +358,7 @@ public class DBDomain extends BaseEntity {
                 .append("smlClientKeyAlias", smlClientKeyAlias)
                 .append("smlClientKeyChangeAlias", smlClientKeyChangeAlias)
                 .append("smlClientKeyChangeDate", smlClientKeyChangeDate)
-                .append("smlAppendDomainCode", smlAppendDomainCode)
+                .append("smlAppendDomainCode", smlUrlDomainCodeSuffixEnabled)
                 .append("signatureKeyAlias", signatureKeyAlias)
                 .append("smlRegistered", smlRegistered)
                 .append("smlClientCertAuth", smlClientCertAuth)
@@ -376,7 +388,7 @@ public class DBDomain extends BaseEntity {
                 .append(signatureAlgorithm, dbDomain.signatureAlgorithm)
                 .append(signatureDigestMethod, dbDomain.signatureDigestMethod)
                 .append(defaultResourceTypeIdentifier, dbDomain.defaultResourceTypeIdentifier)
-                .append(smlAppendDomainCode, dbDomain.smlAppendDomainCode)
+                .append(smlUrlDomainCodeSuffixEnabled, dbDomain.smlUrlDomainCodeSuffixEnabled)
                 .append(visibility, dbDomain.visibility).isEquals();
     }
 

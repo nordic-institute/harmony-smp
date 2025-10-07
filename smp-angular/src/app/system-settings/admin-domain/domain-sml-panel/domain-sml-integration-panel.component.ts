@@ -91,7 +91,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSmpId), this._domain?.smlSmpId)]),
       'smlClientKeyAlias': new FormControl({value: '', readonly: true}),
       'smlClientCertAuth': new FormControl({value: '',  readonly: true}),
-      'smlAppendDomainCode': new FormControl({value: '', readonly: true}),
+      'smlUrlDomainCodeSuffixEnabled': new FormControl({value: '', readonly: true}),
       'smlClientKeyCertificate': new FormControl({value: '', readonly: true}),
       'smlRegistered': new FormControl({value: '', readonly: true}),
     });
@@ -103,7 +103,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     newDomain.smlSmpId = this.domainForm.get('smlSmpId').value;
     newDomain.smlClientKeyAlias = this.domainForm.get('smlClientKeyAlias').value;
     newDomain.smlClientCertAuth = this.domainForm.get('smlClientCertAuth').value;
-    newDomain.smlAppendDomainCode = this.domainForm.get('smlAppendDomainCode').value;
+    newDomain.smlUrlDomainCodeSuffixEnabled = this.domainForm.get('smlUrlDomainCodeSuffixEnabled').value;
     return newDomain;
   }
 
@@ -115,11 +115,11 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['smlClientKeyAlias'].setValue(this._domain.smlClientKeyAlias);
       this.domainForm.controls['smlRegistered'].setValue(this._domain.smlRegistered);
       this.domainForm.controls['smlClientCertAuth'].setValue(this._domain.smlClientCertAuth);
-      this.domainForm.controls['smlAppendDomainCode'].setValue(this._domain.smlAppendDomainCode);
+      this.domainForm.controls['smlUrlDomainCodeSuffixEnabled'].setValue(this._domain.smlUrlDomainCodeSuffixEnabled);
       this.domainForm.enable();
       if (this.isDomainRegistered) {
         this.domainForm.controls['smlSmpId'].disable()
-        this.domainForm.controls['smlAppendDomainCode'].disable()
+        this.domainForm.controls['smlUrlDomainCodeSuffixEnabled'].disable()
       }
     } else {
       this.domainForm.controls['smlSubdomain'].setValue("");

@@ -478,10 +478,10 @@
         LAST_UPDATED_ON timestamp(6) with time zone not null,
         DEFAULT_RESOURCE_IDENTIFIER varchar2(255 char),
         DOMAIN_CODE varchar2(256 char) not null unique,
+        ENABLE_DOMAIN_TRUSTSTORE number(1,0) check (ENABLE_DOMAIN_TRUSTSTORE in (0,1)),
         SIGNATURE_ALGORITHM varchar2(256 char),
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
-        SML_APPEND_DOMAIN_CODE number(1,0) check (SML_APPEND_DOMAIN_CODE in (0,1)),
         SML_CLIENT_CERT_AUTH number(1,0) not null check (SML_CLIENT_CERT_AUTH in (0,1)),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
@@ -489,6 +489,7 @@
         SML_REGISTERED number(1,0) not null check (SML_REGISTERED in (0,1)),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_OMAIN_CODE_SUFFIX in (0,1)),
         VISIBILITY varchar2(64 char) check (VISIBILITY in ('PUBLIC','INTERNAL','PRIVATE')),
         primary key (ID)
     );
@@ -502,6 +503,9 @@
     comment on column SMP_DOMAIN.DOMAIN_CODE is
         'Domain code used as http parameter in rest webservices';
 
+    comment on column SMP_DOMAIN.ENABLE_DOMAIN_TRUSTSTORE is
+        'If enabled use the domain custom truststore to validate domain certificates, else it uses the system truststore';
+
     comment on column SMP_DOMAIN.SIGNATURE_ALGORITHM is
         'Set signature algorithm. Ex.: http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
 
@@ -510,9 +514,6 @@
 
     comment on column SMP_DOMAIN.SIGNATURE_KEY_ALIAS is
         'Signature key alias used for SML integration';
-
-    comment on column SMP_DOMAIN.SML_APPEND_DOMAIN_CODE is
-        'Append the domain code to SMP url when registering the SMP entry';
 
     comment on column SMP_DOMAIN.SML_CLIENT_CERT_AUTH is
         'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)';
@@ -535,6 +536,9 @@
     comment on column SMP_DOMAIN.SML_SUBDOMAIN is
         'SML subdomain';
 
+    comment on column SMP_DOMAIN.SML_ENABLE_URL_OMAIN_CODE_SUFFIX is
+        'Append the domain code to SMP url when registering the SMP entry';
+
     comment on column SMP_DOMAIN.VISIBILITY is
         'The visibility of the domain: PUBLIC, INTERNAL';
 
@@ -546,10 +550,10 @@
         LAST_UPDATED_ON timestamp(6) with time zone,
         DEFAULT_RESOURCE_IDENTIFIER varchar2(255 char),
         DOMAIN_CODE varchar2(256 char),
+        ENABLE_DOMAIN_TRUSTSTORE number(1,0) check (ENABLE_DOMAIN_TRUSTSTORE in (0,1)),
         SIGNATURE_ALGORITHM varchar2(256 char),
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
-        SML_APPEND_DOMAIN_CODE number(1,0) check (SML_APPEND_DOMAIN_CODE in (0,1)),
         SML_CLIENT_CERT_AUTH number(1,0) check (SML_CLIENT_CERT_AUTH in (0,1)),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
@@ -557,6 +561,7 @@
         SML_REGISTERED number(1,0) check (SML_REGISTERED in (0,1)),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_OMAIN_CODE_SUFFIX in (0,1)),
         VISIBILITY varchar2(64 char) check (VISIBILITY in ('PUBLIC','INTERNAL','PRIVATE')),
         primary key (REV, ID)
     );

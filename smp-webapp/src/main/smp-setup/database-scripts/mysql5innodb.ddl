@@ -282,10 +282,10 @@
         LAST_UPDATED_ON datetime(6) not null,
         DEFAULT_RESOURCE_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Default resourceType code',
         DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Domain code used as http parameter in rest webservices',
+        ENABLE_DOMAIN_TRUSTSTORE bit comment 'If enabled use the domain custom truststore to validate domain certificates, else it uses the system truststore',
         SIGNATURE_ALGORITHM varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Set signature algorithm. Ex.: http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Set signature hash method. Ex.: http://www.w3.org/2001/04/xmlenc#sha256',
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Signature key alias used for SML integration',
-        SML_APPEND_DOMAIN_CODE bit comment 'Append the domain code to SMP url when registering the SMP entry',
         SML_CLIENT_CERT_AUTH bit not null comment 'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)',
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used for SML integration',
         SML_CLIENT_KEY_CHANGE_ALIAS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used to update the certificate for SML integration',
@@ -293,6 +293,7 @@
         SML_REGISTERED bit not null comment 'Flag for: Is domain registered in SML',
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SMP ID used for SML integration',
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SML subdomain',
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX bit comment 'Append the domain code to SMP url when registering the SMP entry',
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC') comment 'The visibility of the domain: PUBLIC, INTERNAL',
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -305,10 +306,10 @@
         LAST_UPDATED_ON datetime(6),
         DEFAULT_RESOURCE_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ENABLE_DOMAIN_TRUSTSTORE bit,
         SIGNATURE_ALGORITHM varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_APPEND_DOMAIN_CODE bit,
         SML_CLIENT_CERT_AUTH bit,
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_KEY_CHANGE_ALIAS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -316,6 +317,7 @@
         SML_REGISTERED bit,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SML_ENABLE_URL_OMAIN_CODE_SUFFIX bit,
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
         primary key (REV, ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

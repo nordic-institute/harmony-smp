@@ -39,7 +39,8 @@ public class DomainRO extends BaseRO {
     private String domainCode;
     private String smlSubdomain;
     private String smlSmpId;
-    boolean smlAppendDomainCode;
+    private boolean smlUrlDomainCodeSuffixEnabled;
+    private boolean domainTrustStoreEnabled;
     private String smlClientKeyAlias;
     private String signatureKeyAlias;
     private boolean smlClientCertAuth;
@@ -82,12 +83,20 @@ public class DomainRO extends BaseRO {
         this.smlSmpId = smlSmpId;
     }
 
-    public boolean isSmlAppendDomainCode() {
-        return smlAppendDomainCode;
+    public boolean isSmlUrlDomainCodeSuffixEnabled() {
+        return smlUrlDomainCodeSuffixEnabled;
     }
 
-    public void setSmlAppendDomainCode(boolean smlAppendDomainCode) {
-        this.smlAppendDomainCode = smlAppendDomainCode;
+    public void setSmlUrlDomainCodeSuffixEnabled(boolean smlUrlDomainCodeSuffixEnabled) {
+        this.smlUrlDomainCodeSuffixEnabled = smlUrlDomainCodeSuffixEnabled;
+    }
+
+    public boolean isDomainTrustStoreEnabled() {
+        return domainTrustStoreEnabled;
+    }
+
+    public void setDomainTrustStoreEnabled(boolean domainTrustStoreEnabled) {
+        this.domainTrustStoreEnabled = domainTrustStoreEnabled;
     }
 
     public String getSmlClientKeyAlias() {

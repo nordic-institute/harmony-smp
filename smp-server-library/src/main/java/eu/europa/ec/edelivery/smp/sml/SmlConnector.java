@@ -281,7 +281,7 @@ public class SmlConnector implements ApplicationContextAware {
         String smpPhysicalAddress = configurationService.getDomainSMLIntegrationSMPPhysicalAddress(domain);
 
         String smlSmpId = domain.getSmlSmpId();
-        if (domain.isSmlAppendDomainCode()) {
+        if (domain.isSmlUrlDomainCodeSuffixEnabled()) {
             smpLogicalAddress =  Strings.CS.appendIfMissing(smpLogicalAddress , "/") + domain.getDomainCode();
         }
 

@@ -154,6 +154,8 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         domain.setDefaultResourceTypeIdentifier(data.getDefaultResourceTypeIdentifier());
         domain.setSignatureKeyAlias(data.getSignatureKeyAlias());
         domain.setVisibility(data.getVisibility());
+        domain.setSmlUrlDomainCodeSuffixEnabled(data.isSmlUrlDomainCodeSuffixEnabled());
+        domain.setDomainTrustStoreEnabled(data.isDomainTrustStoreEnabled());
     }
 
     @Transactional
@@ -177,7 +179,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         domain.setSmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         domain.setSmlClientKeyAlias(data.getSmlClientKeyAlias());
         domain.setSmlClientCertAuth(data.isSmlClientCertAuth());
-        domain.setSmlAppendDomainCode(data.isSmlAppendDomainCode());
+        domain.setSmlUrlDomainCodeSuffixEnabled(data.isSmlUrlDomainCodeSuffixEnabled());
 
         // if registered, validate the updated domain to ensure its SML integration certificate is valid
         if (domain.isSmlRegistered() && !smlIntegrationService.isDomainValid(domain)) {
