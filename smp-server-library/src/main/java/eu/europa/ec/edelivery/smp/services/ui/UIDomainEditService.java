@@ -115,7 +115,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
         result.setCount(count);
         List<DomainPublicRO> refList = domainDao.getAllDomainsForUser(user, page, pageSize).stream()
                 .map(doc -> conversionService.convert(doc, DomainPublicRO.class))
-                .collect(Collectors.toList());
+                .toList();
         result.getServiceEntities().addAll(refList);
         return result;
     }
@@ -154,7 +154,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
         }
         result.setCount(count);
         List<DBDomainMember> memberROS = domainMemberDao.getDomainMembers(domainId, page, pageSize, filter);
-        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).collect(Collectors.toList());
+        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).toList();
 
         result.getServiceEntities().addAll(memberList);
         return result;
@@ -202,7 +202,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not get domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
 
         //filter and validate resources to be removed
@@ -220,7 +220,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
     public List<DomainPropertyRO> getDomainEditProperties(Long domainId) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         return domainConfigurationDao.getDomainPropertiesForRole(domain, SMPRole.USER).stream()
                 .map(property -> conversionService.convert(property, DomainPropertyRO.class))
@@ -238,7 +238,7 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
     public List<DomainPropertyRO> updateDomainEditProperties(Long domainId, List<DomainPropertyRO> domainProperties) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         return domainConfigurationDao.updateDomainPropertiesForRole(domain, domainProperties, SMPRole.USER).stream()
                 .map(property -> conversionService.convert(property, DomainPropertyRO.class))
