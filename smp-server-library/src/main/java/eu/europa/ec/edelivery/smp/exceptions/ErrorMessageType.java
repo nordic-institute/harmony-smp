@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.exceptions;
 
+import eu.europa.ec.smp.spi.exceptions.IErrorCodeType;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -38,7 +39,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument.*;
  * @since 5.2
  * @author Joze Rihtarsic
  */
-public enum ErrorMessageType {
+public enum ErrorMessageType implements IErrorCodeType {
+    CERTIFICATE_ERROR_GENERIC(CERTIFICATE_ERROR, "error.certificate.cannot.decode", "Certificate error: [{{error}}]!", CERTIFICATE, ERROR),
     CERTIFICATE_CANNOT_DECODE(CERTIFICATE_ERROR, "error.certificate.cannot.decode", "Certificate error: cannot decode certificate  [{{certificate}}]. Error: [{{error}}]!", CERTIFICATE, ERROR),
     CERTIFICATE_CANNOT_ENCODE(CERTIFICATE_ERROR, "error.certificate.cannot.encode", "Certificate error: cannot encode certificate [{{certificate}}]. Error: [{{error}}]!", CERTIFICATE, ERROR),
     CERTIFICATE_CANNOT_GET_POLICY_IDENTIFIER(CERTIFICATE_ERROR, "error.certificate.cannot.get.policy.identifier", "Certificate error: cannot retrieve policy identifiers for [{{certificate}}]. Error: [{{error}}]!", CERTIFICATE, ERROR),
@@ -247,7 +249,7 @@ public enum ErrorMessageType {
     INVALID_REQUEST_USER_CREATE_USER_ALREADY_EXISTS(INVALID_REQUEST,"error.invalid.request.user.create.user.already.exists", "Invalid request [CreateUser]. Error: user with username [{{username}}] already exists!", USERNAME),
     INVALID_REQUEST_USER_CREDENTIALS_CERTIFICATE_NOT_EXISTS(INVALID_REQUEST,"error.invalid.request.user.credentials.certificate.not.exists", "Invalid request [CertificateCredentials]. Error: certificate is not given for certificate credential!"),
     INVALID_REQUEST_USER_CREDENTIALS_NOT_EXISTS(INVALID_REQUEST,"error.invalid.request.user.credentials.not.exists", "Invalid request [Credentials]. Error: credentials with [{{certificateCredentialId}}] does not exist!", CERTIFICATE_CREDENTIAL_ID),
-    INVALID_REQUEST_USER_NOT_EXISTS(INVALID_REQUEST,"error.invalid.request.user.not.exists", "Invalid request [UserId]. Error: user with [{{userId}}] does not exist!", USER_ID),
+    INVALID_REQUEST_USER_NOT_EXISTS(INVALID_REQUEST,"error.invalid.request.user.not.exists", "Invalid request [UserId]. Error: user with given id does not exist!", USER_ID),
     INVALID_REQUEST_USER_PASSWORD_CHANGE(INVALID_REQUEST,"error.invalid.request.user.password.change", "Invalid request [PasswordChange]. Error: [{{error}}]!", ERROR),
     INVALID_REQUEST_VALIDATE_PAYLOAD(INVALID_REQUEST, "error.invalid.request.validate.payload", "Invalid request [UploadPayload]. Error: content validation failed!"),
     INVALID_REQUEST_VALIDATE_PROPERTY(INVALID_REQUEST, "error.invalid.request.validate.property", "Invalid request [ValidateProperty]. Error: property name is empty!"),
@@ -281,6 +283,7 @@ public enum ErrorMessageType {
     UNAUTHORIZED_UNAUTHORIZED_INVALID_USER_IDENTIFIER(UNAUTHORIZED, "error.unauthorized.unauthorized.invalid.user.identifier", "Invalid user identifier! User not authorized."),
     UNAUTHORIZED_USER(UNAUTHORIZED,"error.unauthorized.user", "User not authorized!"),
     UNAUTHORIZED_USER_CHANGE_INVALID_NEW_CREDENTIAL(ErrorCode.USER_CHANGE_INVALID_NEW_CREDENTIAL, "error.unauthorized.user.change.invalid.new.credential", "Password change failed. [{{validationMessage}}]", VALIDATION_MESSAGE),
+    UNAUTHORIZED_USER_CHANGE_INVALID_AUTHORIZATION_CREDENTIAL(ErrorCode.UNAUTHORIZED, "error.unauthorized.user.change.invalid.authorization.credential", "Password change failed. Invalid authorization password!"),
     UNAUTHORIZED_USER_FOR_GROUP(UNAUTHORIZED, "error.unauthorized.user.for.group", "User [{{username}}] is not authorized for group [{{domainGroup}}] in domain [{{domainCode}}]", USERNAME, DOMAIN_GROUP, DOMAIN_CODE),
     UNAUTHORIZED_USER_NOT_ADMIN(UNAUTHORIZED, "error.unauthorized.user.not.admin", "User [{{username}}] is not admin for any group in domain [{{domainCode}}]", USERNAME, DOMAIN_CODE),
     USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, "error.user.illegal.state.username.multiple.entries", "More than one user entry (credential token: [{{identifier}}]) is defined in database!", IDENTIFIER),

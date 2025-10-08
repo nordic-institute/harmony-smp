@@ -1,6 +1,6 @@
 /*-
  * #START_LICENSE#
- * smp-server-library
+ * smp-webapp
  * %%
  * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
@@ -19,30 +19,34 @@
 package eu.europa.ec.edelivery.smp.exceptions;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-public class SMPRuntimeException extends RuntimeException implements I18NException {
+/**
+ * Exception thrown when authentication fails due to bad credentials.
+ *
+ * @since 5.2
+ * @author Joze Rihtarsic
+ */
+public class SMPBadCredentialsException extends BadCredentialsException implements I18NException {
+    private String defaultTranslatedMessage;
 
     private final ErrorMessageType messageCode;
 
     private final Map<ErrorMessageArgument, Object> args = new HashMap<>();
 
-    private String defaultTranslatedMessage;
-
-    public SMPRuntimeException(ErrorMessageType messageCode) {
-
+    public SMPBadCredentialsException(ErrorMessageType messageCode) {
         this(messageCode, null);
     }
 
-    public SMPRuntimeException(ErrorMessageType messageCode, Throwable th) {
-        super(th);
+    public SMPBadCredentialsException(ErrorMessageType messageCode, Throwable th) {
+        super(messageCode.getTemplate(), th);
         this.messageCode = messageCode;
     }
 
-    public SMPRuntimeException addParam(ErrorMessageArgument key, Object value) {
+    public SMPBadCredentialsException addParam(ErrorMessageArgument key, Object value) {
         this.args.put(key, value == null ? "" : value);
         return this;
     }
@@ -74,8 +78,7 @@ public class SMPRuntimeException extends RuntimeException implements I18NExcepti
     public Map<String, Object> getMessageArgs() {
         // Convert keys to String
         return args.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey().getArgumentName(), Map.Entry::getValue));
-
+                .collect(Collectors.toMap(e ->
+                        e.getKey().getArgumentName(), Map.Entry::getValue));
     }
-
 }

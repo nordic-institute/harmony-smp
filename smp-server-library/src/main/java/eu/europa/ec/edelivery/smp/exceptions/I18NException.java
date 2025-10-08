@@ -1,6 +1,6 @@
 /*-
  * #START_LICENSE#
- * smp-spi
+ * smp-webapp
  * %%
  * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
@@ -16,19 +16,15 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-package eu.europa.ec.smp.spi.exceptions;
+package eu.europa.ec.edelivery.smp.exceptions;
 
-import java.util.Map;
-
+import eu.europa.ec.smp.spi.exceptions.TranslatedMessage;
 /**
- * @author Sebastian-Ion TINCU
+ * Interface for exceptions that support internationalization (i18n) by providing an error code and translated messages.
+ *
  * @since 5.2
+ * @author Joze Rihtarsic
  */
-public interface TranslatedMessage {
-
-    void setDefaultTranslatedMessage(String message);
-
-    String getMessageCode();
-
-    Map<String, Object> getMessageArgs();
+public interface I18NException extends TranslatedMessage {
+    ErrorCode getErrorCode();
 }

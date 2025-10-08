@@ -450,7 +450,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     // documentForm form
     this.documentForm.controls['selectDocumentSource'].markAsPristine();
     if (!this.showReference && this.documentForm.controls['editorText'].dirty) {
-      this.documentForm.controls['selectDocumentSource'].disable();
+      //this.documentForm.controls['selectDocumentSource'].disable();
     } else {
       this.documentForm.controls['selectDocumentSource'].enable();
     }

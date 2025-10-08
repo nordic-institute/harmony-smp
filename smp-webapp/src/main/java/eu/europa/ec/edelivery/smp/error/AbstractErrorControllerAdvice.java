@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -24,7 +24,7 @@ import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.exceptions.I18NException;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -51,9 +51,11 @@ abstract class AbstractErrorControllerAdvice {
     public ResponseEntity<?> handleRuntimeException(RuntimeException runtimeException) {
         ResponseEntity<?> response;
         String currentLocale = LocaleUtils.getCurrentLocale();
-        if (runtimeException instanceof SMPRuntimeException ex) {
-            response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()), ex.getErrorCode(),
-                    smpExceptionLanguageService.getMessageTranslation(ex.getMessageCode(), ex.getMessageArgs(),  currentLocale), ex);
+        if (runtimeException instanceof I18NException ex) {
+            response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()),
+                    ex.getErrorCode(),
+                    smpExceptionLanguageService.getMessageTranslation(ex.getMessageCode(), ex.getMessageArgs(), currentLocale),
+                    runtimeException);
         } else if (runtimeException instanceof AuthenticationException ex) {
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED,
                     smpExceptionLanguageService.getMessageTranslation("error.ui.authentication.exception", currentLocale), ex);
@@ -92,6 +94,6 @@ abstract class AbstractErrorControllerAdvice {
     }
 
     abstract ResponseEntity<?> buildAndLog(HttpStatus status, ErrorCode errorCode,
-                                        ErrorBusinessCode businessCode,
-                                        String msg, Exception exception);
+                                           ErrorBusinessCode businessCode,
+                                           String msg, Exception exception);
 }

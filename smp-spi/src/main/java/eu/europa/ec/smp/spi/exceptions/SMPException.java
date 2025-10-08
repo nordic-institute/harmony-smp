@@ -31,7 +31,6 @@ public class SMPException extends Exception implements TranslatedMessage {
 
     private final Map<String, Object> args;
 
-    private final boolean translateMessageArgs;
 
     private String defaultTranslatedMessage = "";
 
@@ -40,13 +39,9 @@ public class SMPException extends Exception implements TranslatedMessage {
     }
 
     public SMPException(String messageCode, Map<String, Object> args) {
-        this(messageCode, args, false);
-    }
-
-    public SMPException(String messageCode, Map<String, Object> args, boolean translateMessageArgs) {
         this.messageCode = messageCode;
         this.args = args;
-        this.translateMessageArgs = translateMessageArgs;
+
     }
 
     public SMPException(String messageCode, Throwable cause) {
@@ -54,14 +49,9 @@ public class SMPException extends Exception implements TranslatedMessage {
     }
 
     public SMPException(String messageCode, Throwable cause, Map<String, Object> args) {
-        this(messageCode, cause, args, false);
-    }
-
-    public SMPException(String messageCode, Throwable cause, Map<String, Object> args, boolean translateMessageArgs) {
         super(cause);
         this.messageCode = messageCode;
         this.args = args;
-        this.translateMessageArgs = translateMessageArgs;
     }
 
     @Override
@@ -82,10 +72,5 @@ public class SMPException extends Exception implements TranslatedMessage {
     @Override
     public String getMessage() {
         return defaultTranslatedMessage;
-    }
-
-    @Override
-    public boolean getTranslateMessageArgs() {
-        return translateMessageArgs;
     }
 }
