@@ -118,7 +118,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         // if is  vault secret store it to vault
         if (isVaultManagedProperty(key)) {
             if ( isVaultWriteEnabled()) {
-                return vaultDao.storeSecret(key.getProperty(), value.getBytes(),
+                return vaultDao.storeSecret(key.getProperty(), value,
                         StringUtils.isBlank(description) ? key.getDesc() : description);
             } else {
                 LOG.warn("Property [{}] is vault managed property but vault write permission is disabled! Property is ignored!", key.getProperty());
@@ -196,11 +196,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             refreshProperties();
         }
         if (key.isEncrypted()) {
-            byte[] token = getSecurityToken(key);
-            if (token == null) {
-                return null;
-            }
-            return (T) (new String(token, StandardCharsets.UTF_8));
+            return (T) getSecurityToken(key);
         }
         return (T) cachedPropertyValues.get(key.getProperty());
     }
@@ -361,13 +357,13 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         List<SMPPropertyEnum> vaultProperties = Arrays.stream(SMPPropertyEnum.values())
                 .filter(SMPPropertyEnum::isEncrypted)
                 .toList();
-        Map<SMPPropertyEnum, byte[]> vaultProp = new HashMap<>();
+        Map<SMPPropertyEnum, Object> vaultProp = new HashMap<>();
         for (SMPPropertyEnum prop : vaultProperties) {
             if (cachedProperties.containsKey(prop.getProperty())) {
                 String val = cachedProperties.getProperty(prop.getProperty());
-                byte[] decVal = null;
+                String decVal = null;
                 try {
-                    decVal = decryptString(prop, val);
+                    decVal = decryptStringToString(prop, val);
                 } catch (KeyException e) {
                     LOG.warn("Can not decrypt property [{}]. Error: [{}]", val, ExceptionUtils.getRootCauseMessage(e));
                 }
@@ -378,9 +374,9 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
 
-    public byte[] getSecurityToken(SMPPropertyEnum key) {
+    public String getSecurityToken(SMPPropertyEnum key) {
         if (isVaultEnabled()) {
-            return vaultDao.getSecret(key.getProperty());
+            return vaultDao.getSecretAsString(key.getProperty());
         }
 
         String value = cachedProperties.getProperty(key.getProperty());
@@ -388,7 +384,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             return null;
         }
         try {
-            return decryptString(key, value);
+            return decryptStringToString(key, value);
         } catch (KeyException e) {
             LOG.error("Can not decrypt token [{}]! Error: [{}]", key, ExceptionUtils.getRootCauseMessage(e));
         }
@@ -613,7 +609,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         } else {
             if (!file.isFile()) {
                 throw new SMPRuntimeException(CONFIGURATION_FILE_NOT_FILE)
-                        .addParam(ABSOLUTE_PATH, file == null ? "null" : file.getAbsolutePath());
+                        .addParam(ABSOLUTE_PATH, file.getAbsolutePath());
             }
         }
     }
@@ -624,13 +620,13 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
 
-    public byte[] decryptString(SMPPropertyEnum key, String value) throws KeyException {
+    public String decryptStringToString(SMPPropertyEnum key, String value) throws KeyException {
         try {
             File location = getEncryptionKeyFilepath();
             if (location == null) {
                 throw new KeyException("Bad configuration. Encryption key does not exist!");
             }
-            return decryptString(key, value, location);
+            return decryptStringToString(key, value, location);
         } catch (KeyException kexc) {
             throw kexc;
         } catch (Exception exc) {

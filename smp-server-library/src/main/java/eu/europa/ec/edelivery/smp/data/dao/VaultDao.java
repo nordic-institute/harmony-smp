@@ -109,11 +109,15 @@ public class VaultDao implements PropertyUpdateListener {
         return vaultService;
     }
 
-    public byte[] getSecret(String key) {
+    public byte[] getSecretAsByteArray(String key) {
         return vaultService.getSecret(key).getValueAsBytes();
     }
 
-    public DBConfiguration storeSecret(String key, byte[] value, String description) {
+    public String getSecretAsString(String key) {
+        return vaultService.getSecret(key).getValueAsString();
+    }
+
+    public DBConfiguration storeSecret(String key, Object value, String description) {
         vaultService.storeSecret(key, value, description);
         DBConfiguration res = new DBConfiguration();
         res.setProperty(key);
@@ -149,7 +153,7 @@ public class VaultDao implements PropertyUpdateListener {
      * This method is called when the properties are updated and the vault service is not null.
      * It will try to add missing the vault secrets from current database values.
      */
-    public void updateVaultOnMissingProperties(Map<SMPPropertyEnum, byte[]> updateVaultProperties) {
+    public void updateVaultOnMissingProperties(Map<SMPPropertyEnum, Object> updateVaultProperties) {
         if (vaultService == null) {
             LOG.warn("Vault service is null, skipping update of missing vault secretes");
             return;
@@ -165,8 +169,8 @@ public class VaultDao implements PropertyUpdateListener {
                 continue;
             }
 
-            byte[] value = updateVaultProperties.get(property);
-            if (value != null && value.length > 0) {
+            Object value = updateVaultProperties.get(property);
+            if (value != null) {
                 // if the property is not in the vault, store it
                 if (vaultService.getSecret(property.getProperty()) == null) {
                     LOG.debug("Adding missing vault secret for key [{}]", property.getProperty());
