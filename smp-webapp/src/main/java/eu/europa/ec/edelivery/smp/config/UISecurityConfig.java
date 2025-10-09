@@ -160,6 +160,7 @@ public class UISecurityConfig {
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, "/ui/public/rest/search/**")).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, "/ui/public/rest/security/authentication")).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER_RESET)).permitAll()
+                        .requestMatchers(matcherBuilder.matcher(HttpMethod.POST, ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER_VALIDATE_RESET_TOKEN)).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.DELETE, "/ui/public/rest/security/authentication")).permitAll()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE)).authenticated()
                         .requestMatchers(matcherBuilder.matcher(HttpMethod.PUT, "/ui/public/rest/**")).hasAnyAuthority(
