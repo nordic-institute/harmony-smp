@@ -21,14 +21,11 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
-import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 
-import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -53,7 +50,7 @@ public class VaultDaoTest {
     VaultDao testInstance = Mockito.spy(new VaultDao());
 
     @BeforeEach
-    void setUp()  {
+    void setUp() {
 
         Base64.Encoder encoder = Base64.getEncoder();
         // configure properties for vault
@@ -66,7 +63,7 @@ public class VaultDaoTest {
         config.setProperty("demo-vault.init.prefix." + TRUSTSTORE_PASSWORD.getProperty(), encoder.encodeToString("TRUSTSTORE_PASSWORD-secret".getBytes()));
         config.setProperty("demo-vault.init.prefix." + MAIL_SERVER_PASSWORD.getProperty(), encoder.encodeToString("MAIL_SERVER_PASSWORD-secret".getBytes()));
         config.setProperty("demo-vault.init.prefix." + HTTP_PROXY_PASSWORD.getProperty(), encoder.encodeToString("HTTP_PROXY_PASSWORD-secret".getBytes()));
-        
+
         //
         Map<SMPPropertyEnum, Object> properties = Map.of(
                 VAULT_ENABLED, Boolean.TRUE,
@@ -87,12 +84,11 @@ public class VaultDaoTest {
     })
     void testGetSecretFromVault(SMPPropertyEnum key) {
         // given // when
-        byte[] result = testInstance.getSecret(key.getProperty());
+        String result = testInstance.getSecretAsString(key.getProperty());
 
         // then
-        String resultStr = StringUtils.toEncodedString(result, Charset.defaultCharset());
         // see the secrets loaded to demo-vault in setUp() method
-        assertEquals(key.name() + "-secret", resultStr);
+        assertEquals(key.name() + "-secret", result);
     }
 
     @ParameterizedTest
@@ -106,13 +102,13 @@ public class VaultDaoTest {
         // given
         String value = "ThisIsMySecret-" + UUID.randomUUID();
         // when
-        DBConfiguration result = testInstance.storeSecret(property.getProperty(), value.getBytes(), property + " description");
+        DBConfiguration result = testInstance.storeSecret(property.getProperty(), value, property + " description");
 
         //then
         assertNotNull(result);
         assertEquals(property.getProperty(), result.getProperty());
         assertEquals("*******", result.getValue());
-        String resultFromVault = StringUtils.toEncodedString(testInstance.getSecret(property.getProperty()), Charset.defaultCharset());
+        String resultFromVault = testInstance.getSecretAsString(property.getProperty());
         assertEquals(value, resultFromVault);
     }
 }

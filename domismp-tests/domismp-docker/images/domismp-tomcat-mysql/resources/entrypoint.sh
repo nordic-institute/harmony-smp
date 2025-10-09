@@ -42,16 +42,9 @@ init_tomcat() {
   # add external extensions
   for extensionLibFile in /tmp/artefacts/*.jar; do
     # Check if the glob gets expanded to existing files.
-    [ -e "$extensionLibFile" ] && mv $extensionLibFile $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs || echo "Extensions do not exist"
+    [ -e "$extensionLibFile" ] && mv $extensionLibFile "${SMP_EXT_LIBS}" || echo "Extensions do not exist"
   done
 
-  # if DEPLOY_VAULT_HASHICORP is set, download the latest snapshot artefact
-  echo "[INFO] Download vault library: $DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY"
-  if [ -n "$DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY" ]; then
-    echo "[INFO] Downloading vault $DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY to: $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
-    wget -O "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs/vault.jar" "https://ec.europa.eu/digital-building-blocks/artifact/repository/eDelivery/$DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY"
-
-  fi
 
   echo "[INFO] init tomcat JAVA_OPTS: $JAVA_OPTS"
   export JAVA_OPTS
@@ -278,7 +271,7 @@ init_smp_properties() {
   {
     echo "# SMP init parameters"
     echo "smp.security.folder=${DATA_DIR}/smp/"
-    echo "smp.libraries.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
+    echo "smp.libraries.folder=${SMP_EXT_LIBS}"
     echo "smp.locale.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/locales"
     echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
     echo "smp.automation.authentication.external.tls.clientCert.enabled=true"

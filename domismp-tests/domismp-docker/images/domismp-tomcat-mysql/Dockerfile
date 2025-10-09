@@ -29,9 +29,9 @@ ENV SMP_HOME=/opt/smp \
     SMP_INIT_PROPERTY_DELIMITER="||"  \
     SMP_INIT_PROPERTIES=""   \
     SMP_DB_USER_PASSWORD=smp  \
+    DEPLOY_VAULT_SNAPTSHOT_ARTEFACT="eu.europa.ec.edelivery.vault:edelivery-vault-hashicorp:2.1-SNAPSHOT" \
     MYSQL_ROOT_PASSWORD=root \
     DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY=/eu/europa/ec/edelivery/vault/edelivery-vault-hashicorp/2.0/edelivery-vault-hashicorp-2.0-only-spring-vault.jar \
-# sml environment variables
     SML_VERSION=5.0 \
     SML_DISTRIBUTION_URL=https://ec.europa.eu/digital-building-blocks/artifact/repository/public/eu/europa/ec/bdmsl/bdmsl-webapp/ \
     SML_SHA512=929e749f56c02a1a94e4a45bc6ee765d89188c55c2801f8039099d4946d21dae70eb952e82873f2758e0e3cbaea379ca898c64aa10a4e65612a2526aca9975f9  \
@@ -40,18 +40,17 @@ ENV SMP_HOME=/opt/smp \
     SML_DB_USER=sml \
     SML_DB_USER_PASSWORD=sml  \
     BIND_USER=bind   \
-# misc variables
     JACOCO_VERSION=0.8.13 \
     JACOCO_SHA512=f0a09d84bfa5f5c07bdee0ba506911d80922e9838e824a53bf9c64e643e7300f902db4b503339cfb4bd7b4151248ba83d268bdfa40fcd0a55a9a40f8c64c3683 \
     LANG=en_US.utf8  \
     LD_LIBRARY_PATH=/usr/local/apr/lib \
-   # set debug
     JPDA_ADDRESS="*:5005" \
     JPDA_TRANSPORT="dt_socket"
 
 # set tomcat and java home environment variables
-ENV TOMCAT_HOME=/opt/apache-tomcat-$TOMCAT_VERSION  \
-    JAVA_HOME=/opt/java/${JAVA_VERSION}/
+ENV TOMCAT_HOME=/opt/smp/apache-tomcat-$TOMCAT_VERSION
+ENV JAVA_HOME=/opt/java/${JAVA_VERSION}/
+ENV SMP_EXT_LIBS=${TOMCAT_HOME}/smp-libs
 
 # Exposing ports used in entrypoint.sh ..
 # - 3306 Mysql port
@@ -141,7 +140,8 @@ RUN  curl -o $SMP_HOME/edelivery-sml.war "$SML_DISTRIBUTION_URL/$SML_VERSION/bdm
 ENV BIND_USER=bind
     
 ADD ./artefacts /tmp/artefacts
-COPY ./entrypoint.sh /sbin/entrypoint.sh
+COPY ./resources/entrypoint.sh /sbin/entrypoint.sh
+COPY ./resources/download-snapshot.sh /tmp/download-snapshot.sh
 
 
 COPY bind/db.test.edelivery.local /opt/smlconf/bind/db.test.edelivery.local
@@ -158,7 +158,9 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && cp /tmp/sml-setup/encriptionPrivateKey.private  /opt/smlconf/encriptionPrivateKey.private \
     && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jks \
     && mkdir $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs \
-    && chmod u+x /sbin/entrypoint.sh
+    && chmod u+x /sbin/entrypoint.sh \
+    && chmod +x /tmp/download-snapshot.sh
+RUN  [ -n "$DEPLOY_VAULT_SNAPTSHOT_ARTEFACT" ] && /tmp/download-snapshot.sh "$DEPLOY_VAULT_SNAPTSHOT_ARTEFACT" "${SMP_EXT_LIBS}"
 
 
 HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=5 \
