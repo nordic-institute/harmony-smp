@@ -195,7 +195,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         assertNotNull(resultObject);
         assertEquals(domainToUpdate.getDomainCode(), resultObject.getDomainCode());
         assertEquals(EntityROStatus.UPDATED.getStatusNumber(), resultObject.getStatus());
-        assertEquals(!domainToUpdate.isDomainTrustStoreEnabled(), resultObject.isDomainTrustStoreEnabled());
+        assertEquals(domainToUpdate.isDomainTrustStoreEnabled(), resultObject.isDomainTrustStoreEnabled());
     }
 
     @Test
@@ -221,7 +221,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         assertNotNull(resultObject);
         assertEquals(domainToUpdate.getDomainCode(), resultObject.getDomainCode());
         assertEquals(EntityROStatus.UPDATED.getStatusNumber(), resultObject.getStatus());
-        assertEquals(!domainToUpdate.isSmlUrlDomainCodeSuffixEnabled(), resultObject.isSmlUrlDomainCodeSuffixEnabled());
+        assertEquals(domainToUpdate.isSmlUrlDomainCodeSuffixEnabled(), resultObject.isSmlUrlDomainCodeSuffixEnabled());
     }
 
     @Test

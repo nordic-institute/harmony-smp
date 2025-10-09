@@ -489,7 +489,7 @@ public class ConfigurationService {
     //-----------------------
     // user Created
     public Boolean getAlertUserCreatedEnabled() {
-        return configurationDAO.getPropertyValue(ALERT_USER_CREATED_ENABLED);
+        return Boolean.TRUE.equals(configurationDAO.getPropertyValue(ALERT_USER_CREATED_ENABLED));
     }
 
     public AlertLevelEnum getAlertUserCreatedLevel() {

@@ -73,17 +73,11 @@ public enum ErrorCode {
     SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183", ErrorBusinessCode.TECHNICAL),
     VALIDATION_ERROR(500,"SMP:184", ErrorBusinessCode.FORMAT_ERROR),
     SPI_GENERIC_ERROR(500,"SMP:300", ErrorBusinessCode.TECHNICAL),
-
-
     ;
 
     private final int httpCode;
     private final String errorCode;
     private final ErrorBusinessCode errorBusinessCode;
-
-    public int getHttpCode() {
-        return httpCode;
-    }
 
     ErrorCode(int httpCode, String errorCode, ErrorBusinessCode ebc) {
         this.httpCode = httpCode;
@@ -99,4 +93,7 @@ public enum ErrorCode {
         return errorBusinessCode;
     }
 
+    public int getHttpCode() {
+        return httpCode;
+    }
 }

@@ -23,6 +23,8 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPBadCredentialsException;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -90,7 +91,7 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         Jwt jwt = this.getJwt(authBearer);
         if (StringUtils.isBlank(jwt.getSubject())) {
             LOG.debug("Failed to authenticate since the JWT subject is empty");
-            throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.bearer.token"));
+            throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_INVALID_BEARER_TOKEN);
         }
         List<SMPAuthority> authorities = getGrantedAuthorities(jwt);
         String principalClaimValue = jwt.getClaimAsString(getPrincipalClaimName());

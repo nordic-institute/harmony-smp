@@ -18,17 +18,23 @@
  */
 package eu.europa.ec.smp.spi.exceptions;
 
-import java.util.Map;
-
 /**
- * @author Sebastian-Ion TINCU
+ * Interface for error code types that provide a message code and a template for localization.
+ *
+ * @author Joze RIHTARSIC
  * @since 5.2
  */
-public interface TranslatedMessage {
-
-    void setDefaultTranslatedMessage(String message);
-
+public interface IErrorCodeType {
+    /**
+     * Gets the message code associated with this error code type.
+     *
+     * @return the message code as a String
+     */
     String getMessageCode();
-
-    Map<String, Object> getMessageArgs();
+    /**
+     * Gets the template associated with this error code type.
+     *
+     * @return the template as a String
+     */
+    String getTemplate();
 }

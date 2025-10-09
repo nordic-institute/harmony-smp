@@ -27,7 +27,8 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPBadCredentialsException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -36,7 +37,6 @@ import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,7 +51,6 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_USER;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -69,7 +68,6 @@ public class SMPAuthorizationService {
 
     private final ConversionService conversionService;
     private final ConfigurationService configurationService;
-    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
 
     public SMPAuthorizationService(UserDao userDao,
@@ -85,7 +83,6 @@ public class SMPAuthorizationService {
         this.resourceMemberDao = resourceMemberDao;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     public boolean isSystemAdministrator() {
@@ -99,7 +96,7 @@ public class SMPAuthorizationService {
             domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         } catch (SMPRuntimeException | NumberFormatException ex) {
             LOG.error("Error occurred while decrypting domain-id:[" + domainEncId + "]", ex);
-            throw new BadCredentialsException("Login failed; Invalid userID or password");
+            throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_INVALID_USERNAME_PASSWORD);
         }
         return domainMemberDao.isUserDomainMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(domainId), MembershipRoleType.ADMIN);
     }
@@ -272,9 +269,9 @@ public class SMPAuthorizationService {
         } catch (SMPRuntimeException | NumberFormatException ex) {
             LOG.error("Error occurred while decrypting entity-id:[" + entityId + "]", ex);
             if (userEntity) {
-                throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.unauthorized.invalid.user.identifier"));
+                throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_UNAUTHORIZED_INVALID_USER_IDENTIFIER);
             }
-            throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.unauthorized.invalid.identifier"));
+            throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_UNAUTHORIZED_INVALID_IDENTIFIER);
         }
     }
 }

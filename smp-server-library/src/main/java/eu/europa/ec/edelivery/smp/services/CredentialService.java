@@ -36,6 +36,7 @@ import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPBadCredentialsException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -107,9 +108,9 @@ public class CredentialService {
         this.periodicalAlertDao = periodicalAlertDao;
         this.smpExceptionLanguageService = smpExceptionLanguageService;
 
-        this.badCredentialsException = new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.username.password"));
-        this.unauthorizedInvalidResetToken = new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.reset.token"));
-        this.suspendedCredentialsException = new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.credential.suspended"));
+        this.badCredentialsException = new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_INVALID_USERNAME_PASSWORD);
+        this.unauthorizedInvalidResetToken = new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_INVALID_RESET_TOKEN);
+        this.suspendedCredentialsException = new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_CREDENTIAL_SUSPENDED);
     }
 
     @Transactional(noRollbackFor = {AuthenticationException.class, SMPRuntimeException.class, RuntimeException.class})
@@ -125,7 +126,7 @@ public class CredentialService {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider", username);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, "Username does not exits", username);
                 delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
-                throw new BadCredentialsException(smpExceptionLanguageService.getMessageTranslation("error.unauthorized.invalid.username.password"));
+                throw this.badCredentialsException ;
             }
             credential = dbCredential.get();
         } catch (RuntimeException ex) {
@@ -255,7 +256,7 @@ public class CredentialService {
                 String message = "Certificate is not trusted! Error: " + ExceptionUtils.getRootCauseMessage(e);
                 LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, certificateIdentifier, message
                         + " The cert chain is not in truststore or either subject regexp or allowed cert policies does not match");
-                throw new BadCredentialsException(message);
+                throw new SMPBadCredentialsException(ErrorMessageType.CERTIFICATE_ERROR_GENERIC).addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e) );
             }
         }
         DBCredential credential;
@@ -274,7 +275,7 @@ public class CredentialService {
 
         } catch (RuntimeException ex) {
             LOG.error("Database connection error", ex);
-            throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
+            throw new SMPBadCredentialsException(ErrorMessageType.CERTIFICATE_ERROR_GENERIC).addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(ex) );
         }
 
         DBCertificate certificate = credential.getCertificate();
