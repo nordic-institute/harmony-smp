@@ -59,10 +59,10 @@ public class VaultDaoTest {
         config.setProperty("demo-vault.file.name", "vault-secrets-" + UUID.randomUUID() + ".properties");
         config.setProperty("demo-vault.file.directory", targetDirectory.toFile().getAbsolutePath());
 
-        config.setProperty("demo-vault.init.prefix." + KEYSTORE_PASSWORD.getProperty(), encoder.encodeToString("KEYSTORE_PASSWORD-secret".getBytes()));
-        config.setProperty("demo-vault.init.prefix." + TRUSTSTORE_PASSWORD.getProperty(), encoder.encodeToString("TRUSTSTORE_PASSWORD-secret".getBytes()));
-        config.setProperty("demo-vault.init.prefix." + MAIL_SERVER_PASSWORD.getProperty(), encoder.encodeToString("MAIL_SERVER_PASSWORD-secret".getBytes()));
-        config.setProperty("demo-vault.init.prefix." + HTTP_PROXY_PASSWORD.getProperty(), encoder.encodeToString("HTTP_PROXY_PASSWORD-secret".getBytes()));
+        config.setProperty("demo-vault.init.prefix." + KEYSTORE_PASSWORD.getProperty(), "KEYSTORE_PASSWORD-secret");
+        config.setProperty("demo-vault.init.prefix." + TRUSTSTORE_PASSWORD.getProperty(), "TRUSTSTORE_PASSWORD-secret");
+        config.setProperty("demo-vault.init.prefix." + MAIL_SERVER_PASSWORD.getProperty(), "MAIL_SERVER_PASSWORD-secret");
+        config.setProperty("demo-vault.init.prefix." + HTTP_PROXY_PASSWORD.getProperty(), "HTTP_PROXY_PASSWORD-secret");
 
         //
         Map<SMPPropertyEnum, Object> properties = Map.of(
