@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -52,7 +51,6 @@ public class VaultDaoTest {
     @BeforeEach
     void setUp() {
 
-        Base64.Encoder encoder = Base64.getEncoder();
         // configure properties for vault
         Properties config = new Properties();
         config.setProperty("demo-vault.storage.type", "FILE");

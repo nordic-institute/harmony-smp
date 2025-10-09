@@ -152,7 +152,7 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         LOG.info("JWT contains scopes: [{}]", String.join(", ", scopes));
 
         // if any scope contains a domain scopes the request is authorized
-        if (anyDomainCodeMatch(scopes)) {
+        if (!anyDomainCodeMatch(scopes)) {
             String message = "JWT with scopes [" + scopeClaim +
                     "] not contain valid domain scope.";
             LOG.warn("Failed to authenticate since the JWT was invalid: [{}]", message);

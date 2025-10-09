@@ -280,7 +280,7 @@ public enum ErrorMessageType implements IErrorCodeType {
     UNAUTHORIZED_CREDENTIAL_NOT_EXISTS(UNAUTHORIZED, "error.unauthorized.credential.not.exists", "Credential does not exist!"),
     UNAUTHORIZED_CREDENTIAL_NOT_OWNER(UNAUTHORIZED, "error.unauthorized.credential.not.owner", "User is not owner of the credential!"),
     UNAUTHORIZED_CREDENTIAL_WRONG_TYPE(UNAUTHORIZED, "error.unauthorized.credential.wrong.type", "Credentials are not expected credential type!"),
-    UNAUTHORIZED_CREDENTIAL_WRONG_TARGET_TYPE(UNAUTHORIZED, "error.unauthorized.credential.wrong.type", "Credentials are not expected target type!"),
+    UNAUTHORIZED_CREDENTIAL_WRONG_TARGET_TYPE(UNAUTHORIZED, "error.unauthorized.credential.wrong.target.type", "Credentials are not expected target type!"),
     UNAUTHORIZED_CREDENTIAL_SUSPENDED(UNAUTHORIZED, "error.unauthorized.credential.suspended", "The user credential is suspended. Please try again later or contact your administrator."),
     UNAUTHORIZED_INVALID_BEARER_TOKEN(UNAUTHORIZED, "error.unauthorized.invalid.bearer.token", "The bearer token is invalid or not active any more. Please try to regenerate your token."),
     UNAUTHORIZED_INVALID_RESET_TOKEN(UNAUTHORIZED, "error.unauthorized.invalid.reset.token", "The reset token it is invalid or not active any more. Please try to reset your password again."),
