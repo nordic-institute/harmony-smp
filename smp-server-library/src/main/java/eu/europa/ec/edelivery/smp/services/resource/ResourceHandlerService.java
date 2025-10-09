@@ -98,7 +98,7 @@ public class ResourceHandlerService extends ResourceSPIHandler {
         handleReadResource(handlerSpi, requestData, responseData, resourceResponse);
     }
 
-    protected Map<String, String> getDocumentAttributes( ResolvedData resolvedData) {
+    protected Map<String, String> getDocumentAttributes(ResolvedData resolvedData) {
         Map<String, String> documentAttributes = new HashMap<>();
         documentAttributes.put(TransientDocumentPropertyType.RESOURCE_URL_SEGMENT.getPropertyName(), resolvedData.getRequestResourceUrlSegment());
         documentAttributes.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resolvedData.getResource().getIdentifierValue());
@@ -160,12 +160,13 @@ public class ResourceHandlerService extends ResourceSPIHandler {
         } catch (ResourceException e) {
             switch (e.getErrorCode()) {
                 case INVALID_PARAMETERS:
-                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, e.getMessage());
+                    throw new BadRequestException(ErrorMessageType.INVALID_REQUEST_PARAMETER)
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 case INVALID_RESOURCE:
                     throw new SMPRuntimeException(ErrorMessageType.RESOURCE_INVALID_EXTENSION)
-                        .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
-                        .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme())
-                            .addParam(ErrorMessageArgument.ERROR, e.getMessage());
+                            .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                            .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme())
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 default:
                     throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCE_READING, e);
             }
@@ -232,7 +233,8 @@ public class ResourceHandlerService extends ResourceSPIHandler {
         } catch (ResourceException e) {
             switch (e.getErrorCode()) {
                 case INVALID_PARAMETERS:
-                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, ExceptionUtils.getRootCauseMessage(e));
+                    throw new BadRequestException(ErrorMessageType.INVALID_REQUEST_PARAMETER)
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 case INVALID_RESOURCE:
                     throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_INVALID_XML)
                             .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));

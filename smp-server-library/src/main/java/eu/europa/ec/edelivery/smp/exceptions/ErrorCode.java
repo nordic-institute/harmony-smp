@@ -49,7 +49,9 @@ public enum ErrorCode {
 
     // service group error
     RESOURCE_NOT_EXISTS(404,"SMP:131", ErrorBusinessCode.NOT_FOUND),
+
     INVALID_EXTENSION_FOR_SG(400,"SMP:132", ErrorBusinessCode.XSD_INVALID),
+    WRONG_FIELD(400,"SMP:133", ErrorBusinessCode.WRONG_FIELD),
 
     // service metadata error
     SUBRESOURCE_NOT_EXISTS(404,"SMP:141", ErrorBusinessCode.NOT_FOUND),

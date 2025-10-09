@@ -493,19 +493,19 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     protected void validateCredentials(DBCredential credential, Long userId, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         if (credential == null) {
             LOG.warn("Can not delete credential for ID [{}], because it does not exists!", userId);
-            throw new BadRequestException(ErrorBusinessCode.UNAUTHORIZED, "Credential does not exist!");
+            throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_CREDENTIAL_NOT_EXISTS);
         }
         // validate data
         if (!Objects.equals(credential.getUser().getId(), userId)) {
-            throw new BadRequestException(ErrorBusinessCode.UNAUTHORIZED, "User is not owner of the credential");
+            throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_CREDENTIAL_NOT_OWNER);
         }
 
         if (credential.getCredentialType() != credentialType) {
-            throw new BadRequestException(ErrorBusinessCode.UNAUTHORIZED, "Credentials are not expected credential type!");
+            throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_CREDENTIAL_WRONG_TYPE);
         }
 
         if (credential.getCredentialTarget() != credentialTargetType) {
-            throw new BadRequestException(ErrorBusinessCode.UNAUTHORIZED, "Credentials are not expected target type!");
+            throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_CREDENTIAL_WRONG_TARGET_TYPE);
         }
     }
 
@@ -517,8 +517,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                                               CredentialRO credentialDataRO
     ) {
         LOG.debug("update User credential status: [{}]", userId);
-
-
         DBCredential credential = credentialDao.find(credentialId);
         validateCredentials(credential, userId, credentialType, credentialTargetType);
 
