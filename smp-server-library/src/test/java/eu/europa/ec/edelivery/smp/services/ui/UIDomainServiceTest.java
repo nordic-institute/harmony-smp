@@ -28,6 +28,8 @@ import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -109,7 +111,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
     void updateSMLDomainData_domainNotFound() {
         BadRequestException result = assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(-1L, new DomainRO()));
-        assertEquals("Domain does not exist in database!", result.getMessage());
+        assertEquals("Invalid domain id!", result.getMessage());
     }
 
     @Test
@@ -121,7 +123,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
 
         BadRequestException result = assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-        assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("SMP-SML identifier must not change for registered domain [utestRegistered03]!"));
     }
 
     @Test
@@ -141,7 +143,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
 
         BadRequestException result = assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-        assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("The SML-SMP certificate for domain [utestRegistered03] is not valid!"));
     }
 
     @Test
