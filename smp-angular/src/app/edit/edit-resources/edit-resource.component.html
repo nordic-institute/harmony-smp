@@ -4,7 +4,7 @@
               text="{{ 'edit.resource.text' | translate }}"
               [labelColumnContent]="searchGroupPanel">
 
-    <mat-tab-group #resourceTabs [selectedIndex]="getSelectedTabIndex()"
+    <mat-tab-group [selectedIndex]="getSelectedTabIndex()"
                    *ngIf="hasResources;else noUserAdminGroupsDataFound"
                    class="edit-resource-tab-group"
                    >
@@ -24,8 +24,7 @@
         <ng-template mat-tab-label>
           <smp-label icon="groups" label="{{ 'edit.resource.label.members' | translate }}"></smp-label>
         </ng-template>
-        <domain-member-panel #groupMemberPanelComponent
-                             [membershipType]="groupMembershipType"
+        <domain-member-panel [membershipType]="groupMembershipType"
                              [domain]="selectedDomain"
                              [group]="selectedGroup"
                              [resource]="selectedResource"
@@ -55,64 +54,61 @@
 </div>
 
 <ng-template #searchGroupPanel>
-  <div *ngIf="!!domainList &&  domainList.length > 0">
-    <div class="edit-resource-selection-panel"
-      *ngIf="hasResources || filterResourceResults "
-    >
-      <mat-form-field style="width:100%">
-        <mat-label>{{ "edit.resource.label.selected.domain" | translate }}</mat-label>
-        <mat-select placeholder="{{ 'edit.resource.placeholder.selected.domain' | translate }}"
-                    matTooltip="{{ 'edit.resource.tooltip.selected.domain' | translate }}"
-                    id="domain_id"
-                    [(value)]="selectedDomain"
-                    required>
-          <mat-option *ngFor="let domain of domainList"
-                      [value]="domain"
-          >
-            {{domain.domainCode}}
-          </mat-option>
+  <div class="edit-resource-selection-panel"
+    *ngIf="!!domainList &&  domainList.length > 0 && (hasResources || filterResourceResults)"
+  >
+    <mat-form-field style="width:100%">
+      <mat-label>{{ "edit.resource.label.selected.domain" | translate }}</mat-label>
+      <mat-select placeholder="{{ 'edit.resource.placeholder.selected.domain' | translate }}"
+                  matTooltip="{{ 'edit.resource.tooltip.selected.domain' | translate }}"
+                  id="domain_id"
+                  [(value)]="selectedDomain"
+                  required>
+        <mat-option *ngFor="let domain of domainList"
+                    [value]="domain"
+        >
+          {{domain.domainCode}}
+        </mat-option>
 
-        </mat-select>
-      </mat-form-field>
+      </mat-select>
+    </mat-form-field>
 
-      <mat-form-field style="width:100%">
-        <mat-label>{{ "edit.resource.label.selected.group" | translate }}</mat-label>
-        <mat-select placeholder="{{ 'edit.resource.placeholder.selected.group' | translate }}"
-                    matTooltip="{{ 'edit.resource.tooltip.selected.group' | translate }}"
-                    id="group_id"
-                    [(value)]="selectedGroup"
-                    required>
-          <mat-option *ngFor="let group of groupList"
-                      [value]="group">{{group.groupName}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+    <mat-form-field style="width:100%">
+      <mat-label>{{ "edit.resource.label.selected.group" | translate }}</mat-label>
+      <mat-select placeholder="{{ 'edit.resource.placeholder.selected.group' | translate }}"
+                  matTooltip="{{ 'edit.resource.tooltip.selected.group' | translate }}"
+                  id="group_id"
+                  [(value)]="selectedGroup"
+                  required>
+        <mat-option *ngFor="let group of groupList"
+                    [value]="group">{{group.groupName}}</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-      <div class="edit-resource-container mat-elevation-z2">
-        <div class="edit-resource-loading-shade"
-             *ngIf="isLoadingResults">
-          <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-        </div>
-        <smp-table
-          #resourceTable
-          filterLabel="edit.resource.label.filter"
-          filterPlaceholder="edit.resource.placeholder.filter"
-          noResultLabel="edit.resource.label.no.data.found"
-          noResultForFilterLabel="edit.resource.label.no.filter.results"
-          [isLoadableTable]="true"
-          [dataSource]="dataSource"
-          [dataLength]="dataSource.resourceCount"
-          [selectedRow]="selectedResource"
-          [filterValue]="filterResourceValue"
-          [columnDefList]="columns"
-          [displayedColumns]="displayedColumns"
-          [isLoading]="isLoadingResults"
-          [disabledFilter]="disabledResourceFilter"
-          (onFilterChanged)="onFilterChangedEvent($event)"
-          (onPageChanged)="onPageChanged($event)"
-          (onRowClicked)="onResourceSelected($event)"
-          >
-        </smp-table>
+    <div class="edit-resource-container mat-elevation-z2">
+      <div class="edit-resource-loading-shade"
+           *ngIf="isLoadingResults">
+        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
       </div>
+      <smp-table
+        filterLabel="edit.resource.label.filter"
+        filterPlaceholder="edit.resource.placeholder.filter"
+        noResultLabel="edit.resource.label.no.data.found"
+        noResultForFilterLabel="edit.resource.label.no.filter.results"
+        [isLoadableTable]="true"
+        [dataSource]="dataSource"
+        [dataLength]="dataSource.resourceCount"
+        [selectedRow]="selectedResource"
+        [filterValue]="filterResourceValue"
+        [columnDefList]="columns"
+        [displayedColumns]="displayedColumns"
+        [isLoading]="isLoadingResults"
+        [disabledFilter]="disabledResourceFilter"
+        (onFilterChanged)="onFilterChangedEvent($event)"
+        (onPageChanged)="onPageChanged($event)"
+        (onRowClicked)="onResourceSelected($event)"
+        >
+      </smp-table>
     </div>
   </div>
 </ng-template>
