@@ -89,7 +89,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         columnDef: 'resource-count',
         header: 'resource.search.label.column.subresource.count',
         cell: (row: ResourceSearchRo) => row.serviceMetadata?.length || 0,
-        style: "max-width: 80px; width: 80px; display: flex; justify-content: right;"
+        style: "max-width: 60px; width: 60px; display: flex; justify-content: right;"
       } as SmpTableColDef,
       {
         columnDef: 'visibility',
@@ -112,12 +112,13 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         columnDef: 'resource-value',
         header: 'resource.search.label.column.resource.id',
         cell: (row: ResourceSearchRo) => row.participantIdentifier,
-        style: "flex-grow: 2;flex-basis:250px;"
+        style: "flex-grow: 4;flex-basis:250px;"
       } as SmpTableColDef,
       {
         columnDef: 'resource-type',
         header: 'resource.search.label.column.document.type',
-        cell: (row: ResourceSearchRo) => row.documentType
+        cell: (row: ResourceSearchRo) => row.documentType,
+        style: "flex-basis:120px;"
       } as SmpTableColDef,
       {
         columnDef: 'resource-url',

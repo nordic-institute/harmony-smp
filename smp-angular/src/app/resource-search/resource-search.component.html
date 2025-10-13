@@ -14,7 +14,7 @@
                   [displayedColumnIds]="displayedColumnIds"
 
 >
-  <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value">
+  <ng-template #rowSMPUrlLinkAction let-row="row" >
     <a target="_blank"
        href="{{contextPath}}{{createResourceURL(row)}}">{{ "resource.search.label.open.url" | translate }}</a>
   </ng-template>
@@ -47,7 +47,6 @@
       <mat-form-field class="smp-data-panel-field">
         <mat-label>{{ "resource.search.label.document.type" | translate }}</mat-label>
         <mat-select class="mat-select" placeholder="{{ 'resource.search.placeholder.document.type' | translate }}"
-                    matTootip="{{ 'resource.search.tooltip.document.type' | translate }}"
                     id="DocumentType"
                     [(value)]="filter.documentType">
           <mat-option *ngFor="let documentType of documentTypeList"
@@ -75,7 +74,7 @@
         <div class="subresource-item-table-row">
           <div class="subresource-item-connector-cell"><span class="subresource-item-connector-header">&nbsp;</span>
           </div>
-          <div class="mat-mdc-header-cell">{{ 'resource.search.label.subresource.url.context"' | translate }}</div>
+          <div class="mat-mdc-header-cell">{{ 'resource.search.label.subresource.url.context' | translate }}</div>
           <div class="mat-mdc-header-cell">{{ 'resource.search.label.subresource.id.scheme' | translate }}</div>
           <div class="mat-mdc-header-cell">{{ 'resource.search.label.subresource.id' | translate }}</div>
           <div class="mat-mdc-header-cell">URL</div>

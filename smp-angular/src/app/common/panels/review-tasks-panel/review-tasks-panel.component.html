@@ -16,7 +16,7 @@
   <ng-template #additionalToolButtons>
     <span style="width: 2px">&nbsp;</span>
   </ng-template>
-  <ng-template #dateTimeColumn let-value="value">
-    <div class='truncate-text' title="{{value | date:dateTimeFormat}}">{{ value | date:dateTimeFormat }}</div>
+  <ng-template #dateTimeColumn let-row="row">
+    <div class='truncate-text' title="{{row.lastUpdatedOn | date:dateTimeFormat}}">{{ row.lastUpdatedOn  | date:dateTimeFormat }}</div>
   </ng-template>
 </smp-search-table>

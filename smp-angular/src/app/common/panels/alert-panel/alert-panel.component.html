@@ -1,7 +1,7 @@
 ﻿<smp-search-table
   #searchTable
   [title]="'alert.panel.title' | translate"
-  noResultLabel='alert.panel.table.no.data.found"'
+  noResultLabel='alert.panel.table.no.data.found'
   [showIndexColumn]="false"
   [columns]="columns"
   [displayedColumnIds]="displayedColumnIds"
@@ -14,20 +14,21 @@
   [allowDeleteItems]="false"
   [allowEditItems]="true"
   [showActionButtons]="false"
+  (onRowDoubleClickedEventEmitter)="onRowDoubleClicked($event)"
 >
   <ng-template #additionalToolButtons>
     <span style="width: 2px">&nbsp;</span>
   </ng-template>
-  <ng-template #dateTimeColumn let-value="value">
-    <div class='truncate-text' title="{{value | date:dateTimeFormat}}">{{ value | date:dateTimeFormat }}</div>
+  <ng-template #dateTimeColumn let-row="row" >
+    <div class='truncate-text' title="{{row.reportingTime | date:dateTimeFormat}}">{{ row.reportingTime | date:dateTimeFormat }}</div>
   </ng-template>
-  <ng-template #truncateText let-value="value">
-    <div class='truncate-text' title="{{value}}">{{ value }}</div>
+  <ng-template #truncateText let-row="row" >
+    <div class='truncate-text' title="{{row.alertStatusDesc}}">{{ row.alertStatusDesc }}</div>
   </ng-template>
-  <ng-template #forUser let-row="row" let-value="value">
-    <div class='truncate-text' title="{{ 'alert.panel.user.title' | translate: {value, mailTo: row.mailTo} }}">{{ value }}</div>
+  <ng-template #forUser let-row="row" >
+    <div class='truncate-text' title="{{ 'alert.panel.user.title' | translate: {value:row.username, mailTo: row.mailTo} }}">{{row.username }}</div>
   </ng-template>
-  <ng-template #credentialType let-row="row" let-value="value">
-    <div class='truncate-text'>{{ value['CREDENTIAL_TYPE'] }}</div>
+  <ng-template #credentialType let-row="row" >
+    <div class='truncate-text'>{{ row.alertDetails['CREDENTIAL_TYPE'] }}</div>
   </ng-template>
 </smp-search-table>
