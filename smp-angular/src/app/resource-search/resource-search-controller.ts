@@ -1,35 +1,28 @@
-import {
-  SearchTableController
-} from '../common/search-table/search-table-controller';
+import {SearchTableController} from '../common/search-table/search-table-controller';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ResourceSearchRo} from './resource-search-ro.model';
 import {of} from "rxjs/internal/observable/of";
-import {
-  SearchTableValidationResult
-} from "../common/search-table/search-table-validation-result.model";
-import {
-  SearchTableEntity
-} from "../common/search-table/search-table-entity.model";
+import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
+import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
 
-export class ResourceSearchController implements SearchTableController {
+export class ResourceSearchController implements SearchTableController<ResourceSearchRo> {
 
   constructor(public dialog: MatDialog) {
 
-
   }
 
-  public showDetails(row): MatDialogRef<any> {
+  public showDetails(row: ResourceSearchRo): MatDialogRef<any> {
     return null;
   }
 
-  public showExtension(row: any) {
+  public showExtension(row: ResourceSearchRo) {
   }
 
-  public edit(row): MatDialogRef<any> {
+  public edit(row: ResourceSearchRo): MatDialogRef<any> {
     return null;
   }
 
-  public delete(row: any) {
+  public delete(row: ResourceSearchRo) {
   }
 
   newDialog(config): MatDialogRef<any> {
@@ -58,9 +51,8 @@ export class ResourceSearchController implements SearchTableController {
     }
   }
 
-  isRowExpanderDisabled(row: SearchTableEntity): boolean {
-    const resource = <ResourceSearchRo>row;
-    return !(resource.serviceMetadata && resource.serviceMetadata.length);
+  isRowExpanderDisabled(row: ResourceSearchRo): boolean {
+    return !(row.serviceMetadata && row.serviceMetadata.length);
   }
 
   isRecordChanged(oldModel, newModel): boolean {

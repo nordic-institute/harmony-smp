@@ -3,7 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  Output,
+  Output, TemplateRef,
   ViewChild
 } from '@angular/core';
 import {MatTable, MatTableDataSource} from "@angular/material/table";
@@ -31,6 +31,7 @@ export class SmpTableComponent implements AfterViewInit {
   @Input() noResultLabel: string;
   @Input() noResultForFilterLabel: string;
   @Input() disabledFilter: boolean;
+  @Input() showFilter: boolean = true;
   @Input() displayedColumns: string[];
   @Input() columnDefList: SmpTableColDef[];
 
@@ -39,7 +40,40 @@ export class SmpTableComponent implements AfterViewInit {
   // is done on client side
   @Input() isLoadableTable: boolean = false;
   @Input() dataSource: MatTableDataSource<any>;
+  @Input() multiTemplateDataRows: boolean = false;
   @ViewChild("smpTablePaginator") _paginator: MatPaginator;
+  @Input() tableRowDetailContainer: TemplateRef<any>;
+
+  _pageSizeOptions: number[] = [5, 10, 20, 50, 100];
+  _pageSize: number = 10;
+
+  @Input() set pageSizeOptions(value: number[]) {
+    if (value && value.length > 0) {
+      this._pageSizeOptions = value;
+    }
+  }
+  get pageSizeOptions(): number[] {
+    return this._pageSizeOptions;
+  }
+
+  @Input() set pageSize(value: number) {
+    this._pageSize = value;
+    if (this.paginator) {
+      this.paginator.pageSize = value;
+    }
+  }
+  get pageSize(): number {
+    return this._pageSize;
+  }
+
+  get columnsWithDetailIds(): string[] {
+    if (this.displayedColumns) {
+      return [...this.displayedColumns, 'expandedDetail'];
+    }
+    return ['expandedDetail'];
+  }
+
+  // internal selected row
 
   selected: any;
   isLoadingResults = false;
@@ -97,37 +131,27 @@ export class SmpTableComponent implements AfterViewInit {
 
   @Input() set dataLength(value: number) {
     console.log("Setting paginator size: " + value);
-    if (this._paginator) {
-      this._paginator.length = value;
+    if (this.paginator) {
+      this.paginator.length = value;
     }
   }
 
   get dataLength(): number {
-    return this._paginator.length;
-  }
-
-  @Input() set pageSize(value: number) {
-    if (this._paginator) {
-      this._paginator.pageSize = value;
-    }
-  }
-
-  get pageSize(): number {
-    return this._paginator.pageSize;
+    return this.paginator?.length;
   }
 
   @Input() set pageIndex(value: number) {
-    if (this._paginator) {
-      this._paginator.pageIndex = value;
+    if (this.paginator) {
+      this.paginator.pageIndex = value;
     }
   }
 
   firstPage(): void {
-      this._paginator.firstPage();
+      this.paginator.firstPage();
   }
 
   lastPage(): void {
-    this._paginator.lastPage();
+    this.paginator.lastPage();
   }
 
   getHeaderStyle(col: SmpTableColDef): string {

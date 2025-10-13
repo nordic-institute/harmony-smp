@@ -28,8 +28,8 @@ services:
         ||smp.alert.accessToken.expired.enabled=true
         ||smp.alert.certificate.imminent_expiration.enabled=true
         ||smp.alert.certificate.expired.enabled=true
-        ||smp.alert.accessToken.expired.enabled=true
         ||smp.authorization.jwt.enabled=true
+        ||smp.authorization.jwt.tls.client.certificate.bound=true
         ||smp.authorization.jwt.audience=oots-audience-custom
         ||smp.authorization.jwt.issuer=https://authorization-server:8143/realms/OOTS
         ||smp.authorization.jwt.key=MCowBQYDK2VwAyEAJQUoAZs7F8INql8oKpyrfBntIamUqRBdutFuRB7zc1M=

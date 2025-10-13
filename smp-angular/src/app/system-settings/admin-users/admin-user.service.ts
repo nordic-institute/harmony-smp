@@ -2,12 +2,11 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {SecurityService} from "../../security/security.service";
-import {SearchTableResult} from "../../common/search-table/search-table-result.model";
 import {User} from "../../security/user.model";
 import {TableResult} from "../../common/model/table-result.model";
-import {MemberRo} from "../../common/model/member-ro.model";
 import {SmpConstants} from "../../smp.constants";
 import {UserRo} from "../../common/model/user-ro.model";
+import {SearchUserRo} from "../../common/model/search-user-ro.model";
 
 @Injectable()
 export class AdminUserService {
@@ -17,7 +16,7 @@ export class AdminUserService {
     private securityService: SecurityService) {
   }
 
-  getUsersObservable(filter: string, page: number, pageSize: number): Observable<SearchTableResult> {
+  getUsersObservable(filter: string, page: number, pageSize: number): Observable<TableResult<SearchUserRo>> {
     const currentUser: User = this.securityService.getCurrentUser();
 
     let params: HttpParams = new HttpParams()
@@ -25,7 +24,7 @@ export class AdminUserService {
       .set('pageSize', pageSize.toString())
       .set('filter', !filter ? "" : filter);
 
-    return this.http.get<TableResult<MemberRo>>(SmpConstants.INTERNAL_USER_MANAGE_SEARCH
+    return this.http.get<TableResult<SearchUserRo>>(SmpConstants.INTERNAL_USER_MANAGE_SEARCH
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId), {params});
   }
 

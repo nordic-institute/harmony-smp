@@ -1,7 +1,6 @@
 import {SearchTableController} from '../../common/search-table/search-table-controller';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {GlobalLookups} from "../../common/global-lookups";
-import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
 import {HttpClient} from "@angular/common/http";
 import {PropertyRo} from "./property-ro.model";
 import {Injectable} from "@angular/core";
@@ -10,16 +9,16 @@ import {
 } from "../../common/dialogs/property-details-dialog/property-details-dialog.component";
 
 @Injectable()
-export class PropertyController implements SearchTableController {
+export class PropertyController implements SearchTableController<PropertyRo> {
 
   constructor(protected http: HttpClient, protected lookups: GlobalLookups, public dialog: MatDialog) {
   }
 
-  validateDeleteOperation(rows: SearchTableEntity[]) {
+  validateDeleteOperation(rows: PropertyRo[]) {
     return null;
   }
 
-  newRow(): SearchTableEntity {
+  newRow(): PropertyRo {
     return null;
   }
 
@@ -28,25 +27,25 @@ export class PropertyController implements SearchTableController {
   }
 
   isRecordChanged(oldEntity: PropertyRo, newEntity: PropertyRo): boolean {
-      let isEqual = this.isEqual(oldEntity.value,newEntity.value);
-      if (!isEqual) {
-        return true; // Property has changed
-      }
+    let isEqual = this.isEqual(oldEntity.value, newEntity.value);
+    if (!isEqual) {
+      return true; // Property has changed
+    }
   }
 
-  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+  isRowExpanderDisabled(row: PropertyRo): boolean {
     return true;
   }
 
-  public showDetails(row: any): MatDialogRef<any> {
+  public showDetails(row: PropertyRo): MatDialogRef<any> {
     return this.dialog.open(PropertyDetailsDialogComponent);
   }
 
-  public edit(row: any): MatDialogRef<any> {
-    return this.dialog.open(PropertyDetailsDialogComponent, row);
+  public edit(data: any): MatDialogRef<any> {
+    return this.dialog.open(PropertyDetailsDialogComponent, data);
   }
 
-  public delete(row: any) {
+  public delete(row: PropertyRo) {
   }
 
   newDialog(config): MatDialogRef<any> {

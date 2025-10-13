@@ -2,6 +2,7 @@ import {SearchTableEntity} from '../../search-table/search-table-entity.model';
 
 export interface AlertRo extends SearchTableEntity {
   sid: string;
+  username?: string;
   alertType: string;
   alertStatus: string;
   alertStatusDesc?:string;

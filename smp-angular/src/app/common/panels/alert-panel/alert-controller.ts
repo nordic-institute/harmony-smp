@@ -1,20 +1,22 @@
 import {SearchTableController} from '../../search-table/search-table-controller';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {GlobalLookups} from "../../global-lookups";
-import {SearchTableEntity} from "../../search-table/search-table-entity.model";
-import {ObjectPropertiesDialogComponent} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
+import {
+  ObjectPropertiesDialogComponent
+} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
+import {AlertRo} from "./alert-ro.model";
 
-export class AlertController implements SearchTableController {
+export class AlertController implements SearchTableController<AlertRo> {
 
   constructor(protected lookups: GlobalLookups,
               public dialog: MatDialog) {
   }
 
-  validateDeleteOperation(rows: SearchTableEntity[]) {
+  validateDeleteOperation(rows: AlertRo[]) {
     return null;
   }
 
-  newRow(): SearchTableEntity {
+  newRow(): AlertRo {
     return null;
   }
 
@@ -26,47 +28,47 @@ export class AlertController implements SearchTableController {
     return false;
   }
 
-  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+  isRowExpanderDisabled(row: AlertRo): boolean {
     return true;
   }
 
-  public showDetails(row: any): MatDialogRef<any> {
+  public showDetails(row: AlertRo): MatDialogRef<any> {
     return this.dialog.open(ObjectPropertiesDialogComponent, {
       data: {
         i18n: "alert.panel.dialog.title.alert.details",
         object: [{
           i18n: "alert.panel.label.column.alert.date",
-          value: row.row?.reportingTime,
+          value: row?.reportingTime,
           type: "dateTime"
         }, {
           i18n: "alert.panel.label.column.alert.level",
-          value: row.row?.alertLevel
+          value: row?.alertLevel
         }, {
           i18n: "alert.panel.label.column.for.user",
-          value: row.row?.username
+          value: row?.username
         }, {
           i18n: "alert.panel.label.column.credential.type",
-          value: row.row?.alertDetails['CREDENTIAL_TYPE']
+          value: row?.alertDetails['CREDENTIAL_TYPE']
         }, {
           i18n: "alert.panel.label.column.alert.type",
-          value: row.row?.alertType,
+          value: row?.alertType,
         }, {
           i18n: "alert.panel.label.column.alert.status",
-          value: row.row?.alertStatus,
+          value: row?.alertStatus,
         }, {
           i18n: "alert.panel.label.column.status.description",
-          value: row.row?.alertStatusDesc,
+          value: row?.alertStatusDesc,
         }]
       }
     });
   }
 
-  public edit(row: any): MatDialogRef<any> {
+  public edit(row: AlertRo): MatDialogRef<any> {
     // not actually editing the row
     return this.showDetails(row);
   }
 
-  public delete(row: any) {
+  public delete(row: AlertRo) {
   }
 
   newDialog(config): MatDialogRef<any> {

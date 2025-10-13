@@ -1,21 +1,22 @@
 ﻿<smp-search-table
   #searchTable
-  [columnPicker]="columnPicker"
   [url]="baseUrl"
   [additionalToolButtons]="additionalToolButtons"
   [searchTableController]="reviewTaskController"
-  [showSearchPanel]="false"
+  [showSearchParametersPanel]="false"
+  [columns]="columns"
+  [displayedColumnIds]="displayedColumnIds"
   [filter]="filter"
   [allowNewItems]="false"
   [allowDeleteItems]="false"
   [allowEditItems]="true"
   [showActionButtons]="false"
-  (onRowDoubleClicked)="onRowDoubleClicked($event)"
+  (onRowDoubleClickedEventEmitter)="onRowDoubleClicked($event)"
 >
   <ng-template #additionalToolButtons>
     <span style="width: 2px">&nbsp;</span>
   </ng-template>
-  <ng-template #dateTimeColumn let-value="value" ngx-datatable-cell-template>
+  <ng-template #dateTimeColumn let-value="value">
     <div class='truncate-text' title="{{value | date:dateTimeFormat}}">{{ value | date:dateTimeFormat }}</div>
   </ng-template>
 </smp-search-table>

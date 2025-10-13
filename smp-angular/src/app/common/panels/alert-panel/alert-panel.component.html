@@ -1,11 +1,14 @@
 ﻿<smp-search-table
   #searchTable
   [title]="'alert.panel.title' | translate"
-  [columnPicker]="columnPicker"
+  noResultLabel='alert.panel.table.no.data.found"'
+  [showIndexColumn]="false"
+  [columns]="columns"
+  [displayedColumnIds]="displayedColumnIds"
   [url]="baseUrl"
   [additionalToolButtons]="additionalToolButtons"
   [searchTableController]="alertController"
-  [showSearchPanel]="false"
+  [showSearchParametersPanel]="false"
   [filter]="filter"
   [allowNewItems]="false"
   [allowDeleteItems]="false"
@@ -15,16 +18,16 @@
   <ng-template #additionalToolButtons>
     <span style="width: 2px">&nbsp;</span>
   </ng-template>
-  <ng-template #dateTimeColumn let-value="value" ngx-datatable-cell-template>
+  <ng-template #dateTimeColumn let-value="value">
     <div class='truncate-text' title="{{value | date:dateTimeFormat}}">{{ value | date:dateTimeFormat }}</div>
   </ng-template>
-  <ng-template #truncateText let-value="value" ngx-datatable-cell-template>
+  <ng-template #truncateText let-value="value">
     <div class='truncate-text' title="{{value}}">{{ value }}</div>
   </ng-template>
-  <ng-template #forUser let-row="row" let-value="value" ngx-datatable-cell-template>
+  <ng-template #forUser let-row="row" let-value="value">
     <div class='truncate-text' title="{{ 'alert.panel.user.title' | translate: {value, mailTo: row.mailTo} }}">{{ value }}</div>
   </ng-template>
-  <ng-template #credentialType let-row="row" let-value="value" ngx-datatable-cell-template>
+  <ng-template #credentialType let-row="row" let-value="value">
     <div class='truncate-text'>{{ value['CREDENTIAL_TYPE'] }}</div>
   </ng-template>
 </smp-search-table>

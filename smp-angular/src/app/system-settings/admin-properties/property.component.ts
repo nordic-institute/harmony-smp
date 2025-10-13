@@ -1,26 +1,18 @@
-import {
-  AfterViewChecked,
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
-import {ColumnPicker} from '../../common/column-picker/column-picker.model';
+import {AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild} from '@angular/core';
 import {AlertMessageService} from '../../common/alert-message/alert-message.service';
 import {PropertyController} from './property-controller';
 import {SmpConstants} from "../../smp.constants";
 import {SearchTableComponent} from "../../common/search-table/search-table.component";
 import {SecurityService} from "../../security/security.service";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
-import {TranslateService} from "@ngx-translate/core";
-import {lastValueFrom} from "rxjs";
+import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
+import {PropertyRo} from "./property-ro.model";
 
 
 @Component({
-    templateUrl: './property.component.html',
-    styleUrls: ['./property.component.css'],
-    standalone: false
+  templateUrl: './property.component.html',
+  styleUrls: ['./property.component.css'],
+  standalone: false
 })
 export class PropertyComponent implements AfterViewInit, AfterViewChecked {
 
@@ -28,17 +20,18 @@ export class PropertyComponent implements AfterViewInit, AfterViewChecked {
   @ViewChild('searchTable') searchTable: SearchTableComponent;
   @ViewChild('propertyColumnTemplate') propertyColumnTemplate: TemplateRef<any>;
   @ViewChild('propertyValueTemplate') propertyValueTemplate: TemplateRef<any>;
+  @ViewChild('propertyTypeColumnTemplate') propertyTypeColumnTemplate: TemplateRef<any>;
 
   baseUrl: string = SmpConstants.REST_INTERNAL_PROPERTY_MANAGE;
-  columnPicker: ColumnPicker = new ColumnPicker();
   filter: any = {property: ""};
+
+  columns: SmpTableColDef[];
+  displayedColumnIds: string[];
 
   constructor(public securityService: SecurityService,
               protected propertyController: PropertyController,
               protected alertService: AlertMessageService,
-              private changeDetector: ChangeDetectorRef,
-              private translateService: TranslateService) {
-
+              private changeDetector: ChangeDetectorRef) {
   }
 
   ngAfterViewChecked() {
@@ -46,25 +39,46 @@ export class PropertyComponent implements AfterViewInit, AfterViewChecked {
   }
 
   async initColumns() {
-    this.columnPicker.allColumns = [
-      {
-        name: await lastValueFrom(this.translateService.get("property.label.column.property")),
-        title: await lastValueFrom(this.translateService.get("property.label.column.title.property")),
-        prop: 'property',
-        maxWidth: 580,
-        cellTemplate: this.propertyColumnTemplate,
-        showInitially: true,
-      },
-      {
-        name: await lastValueFrom(this.translateService.get("property.label.column.value")),
-        title: await lastValueFrom(this.translateService.get("property.label.column.title.value")),
-        prop: 'value',
-        cellTemplate: this.propertyValueTemplate,
-        showInitially: true,
 
-      },
+    this.displayedColumnIds = [
+      'property-key',
+      'property-value',
+      'property-type',
+      'restart-needed'
     ];
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+
+    this.columns = [
+      {
+        columnDef: 'property-key',
+        header: 'property.label.column.property',
+        headerTooltip: 'property.label.column.title.property',
+        cellTemplate: this.propertyColumnTemplate,
+        style: "max-width: 580px; width: 200px; display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'property-value',
+        header: 'property.label.column.value',
+        headerTooltip: 'property.label.column.title.value',
+        cellTemplate: this.propertyValueTemplate,
+        style: "width: 120px; "
+      } as SmpTableColDef,
+      {
+        columnDef: 'property-type',
+        header: 'property.label.column.type',
+        headerTooltip: 'property.label.column.title.type',
+        cellTemplate: this.propertyTypeColumnTemplate,
+        style: "max-width: 120px; width: 120px;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'restart-needed',
+        header: 'property.label.column.restart.needed',
+        headerTooltip: 'property.label.column.title.restart.needed',
+        cell: (row: PropertyRo) => row.restartNeeded,
+        style: "max-width: 120px; width: 120px;"
+      } as SmpTableColDef,
+    ];
+
+    this.searchTable.tableColumnInit(this.columns, this.displayedColumnIds);
   }
 
   ngAfterViewInit() {
@@ -84,7 +98,7 @@ export class PropertyComponent implements AfterViewInit, AfterViewChecked {
     return this.searchTable.isDirty();
   }
 
-  aliasCssClass(alias: string, row) {
+  aliasCssClass(row: PropertyRo) {
     if (row.status === EntityStatus.NEW) {
       return 'table-row-new';
     } else if (row.status === EntityStatus.UPDATED) {

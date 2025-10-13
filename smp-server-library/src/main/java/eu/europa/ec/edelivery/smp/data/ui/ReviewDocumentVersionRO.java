@@ -43,7 +43,7 @@ public class ReviewDocumentVersionRO implements Serializable {
     private String resourceIdentifierScheme;
     private String subresourceIdentifierValue;
     private String subresourceIdentifierScheme;
-    private String target;
+    private String documentLevel;
     private OffsetDateTime lastUpdatedOn;
 
 
@@ -128,12 +128,12 @@ public class ReviewDocumentVersionRO implements Serializable {
         this.subresourceIdentifierScheme = subresourceIdentifierScheme;
     }
 
-    public String getTarget() {
-        return target;
+    public String getDocumentLevel() {
+        return documentLevel;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
+    public void setDocumentLevel(String documentLevel) {
+        this.documentLevel = documentLevel;
     }
 
     public OffsetDateTime getLastUpdatedOn() {
