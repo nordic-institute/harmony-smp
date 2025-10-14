@@ -33,6 +33,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
 
   @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>
   @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
+  @ViewChild('domainCodeTemplate') domainCodeTemplate: TemplateRef<any>;
 
   columns: SmpTableColDef[];
   displayedColumnIds: string[];
@@ -100,7 +101,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
       {
         columnDef: 'domain',
         header: 'resource.search.label.column.domain',
-        cell: (row: ResourceSearchRo) => row.domainCode
+        cellTemplate: this.domainCodeTemplate
       } as SmpTableColDef,
       {
         columnDef: 'resource-scheme',
