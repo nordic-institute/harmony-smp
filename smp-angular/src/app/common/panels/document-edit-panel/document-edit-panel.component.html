@@ -128,11 +128,12 @@
 
 
       </div>
-      <smp-warning-panel *ngIf="!documentEditable"
-                         icon="info"
-                         type="desc"
-                         [label]="'document.edit.panel.note.editable' | translate: { editableDocStatusList: editableDocStatusList }">
-      </smp-warning-panel>
+      @if (!documentEditable && isNotReviewMode) {
+        <smp-warning-panel icon="info"
+                           type="desc"
+                           [label]="'document.edit.panel.note.editable' | translate: { editableDocStatusList: editableDocStatusList }">
+        </smp-warning-panel>
+      }
     </div>
     <expandable-panel>
       <!-- The document panels -->
@@ -211,16 +212,18 @@
         <mat-icon>publish</mat-icon>
         <span>{{ "document.edit.panel.button.version.publish" | translate }}</span>
       </button>
-      <button  id="delete_id"
-               mat-raised-button
-               color="primary"
-               matTooltip="{{ 'document.edit.panel.tooltip.version.delete' | translate }}"
-               [disabled]="deleteButtonDisabled"
-               (click)="onDeleteButtonClicked()">
-        <mat-icon>delete</mat-icon>
+      @if (isNotReviewMode) {
         <tool-button-spacer></tool-button-spacer>
-        <span>{{ "document.edit.panel.button.delete" | translate }}</span>
-      </button>
+        <button  id="delete_id"
+                 mat-raised-button
+                 color="primary"
+                 matTooltip="{{ 'document.edit.panel.tooltip.version.delete' | translate }}"
+                 [disabled]="deleteButtonDisabled"
+                 (click)="onDeleteButtonClicked()">
+          <mat-icon>delete</mat-icon>
+          <span>{{ "document.edit.panel.button.delete" | translate }}</span>
+        </button>
+      }
       <ng-container *ngIf="reviewEnabled">
         <button *ngIf="isNotReviewMode" id="reviewResource_id"
                 mat-raised-button
