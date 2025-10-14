@@ -62,10 +62,10 @@ class SMPExceptionLanguageServiceTest {
 
     @Test
     public void translateMessageCode() {
-        messageCodes.put("message.code", "Message [{{property}}]");
+        messageCodes.put("message.code", "Message [{{propertyName}}]");
 
         String translation = smpExceptionLanguageService.getMessageTranslation("message.code",
-                Map.of("property", "value"));
+                Map.of("propertyName", "value"));
 
         Assertions.assertEquals("Message [value]", translation);
     }
@@ -81,11 +81,11 @@ class SMPExceptionLanguageServiceTest {
     public void translateInnerMessageCode() {
         String outerMessageCode = "message.code.outer";
         String innerMessageCode = "message.code.inner";
-        messageCodes.put(outerMessageCode, "Outer message [{{errorMessageCode}}]"); // inner
-        messageCodes.put(innerMessageCode, "Inner message [{{property}}]");
+        messageCodes.put(outerMessageCode, "Outer message [{{error}}]"); // inner
+        messageCodes.put(innerMessageCode, "Inner message [{{propertyName}}]");
         String translation = smpExceptionLanguageService.getMessageTranslation(outerMessageCode,
                 Map.of(ErrorMessageArgument.ERROR_MESSAGE_CODE.getArgumentName(), innerMessageCode,
-                        "property", "value"));
+                        "propertyName", "value"));
         Assertions.assertEquals("Outer message [Inner message [value]]", translation);
     }
 }

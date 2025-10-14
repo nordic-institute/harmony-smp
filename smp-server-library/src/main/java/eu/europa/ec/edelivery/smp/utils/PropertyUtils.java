@@ -74,11 +74,12 @@ public class PropertyUtils {
             }
             return null;
         }
-        if (!prop.getValuePattern().matcher(value).find()) {
+        if (!prop.getValuePattern().matcher(value).matches()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
             throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_PROPERTY)
                     .addParam(ERROR_MESSAGE_CODE, prop.getErrorMessageCode())
-                    .addParam(PROPERTY_NAME, prop.getProperty());
+                    .addParam(PROPERTY_NAME, prop.getProperty())
+                    .addParam(PROPERTY_VALUE,value);
         }
 
         SMPPropertyTypeEnum type = prop.getPropertyType();

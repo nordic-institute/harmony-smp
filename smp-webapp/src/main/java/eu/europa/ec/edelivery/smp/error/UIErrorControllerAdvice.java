@@ -45,6 +45,7 @@ import static java.lang.String.format;
 @RestControllerAdvice({"eu.europa.ec.edelivery.smp.ui"})
 public class UIErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
+
     @Autowired
     public UIErrorControllerAdvice(SMPExceptionLanguageService smpExceptionLanguageService) {
         super(smpExceptionLanguageService);

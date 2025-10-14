@@ -52,7 +52,6 @@ public enum ErrorMessageArgument {
     PATH("path"),
     PATH_PARAMS("pathParams"),
     PATTERN("pattern"),
-    PROPERTY("property"),
     PROPERTY_NAME("propertyName"),
     PROPERTY_VALUE("propertyValue"),
     RESOURCE("resource"),
@@ -66,7 +65,8 @@ public enum ErrorMessageArgument {
     USER_ROLE("userRole"),
     USERNAME("username"),
     VALIDATION_MESSAGE("validationMessage"),
-    // special arguments for error messages which is code for i18n translation messages and need to be translated
+    // special arguments for error messages which is code for i18n translation messages and need to be translated. The value
+    // is set back to argument map with code 'error'
     ERROR_MESSAGE_CODE("errorMessageCode"),
     ;
     private final String argumentName;

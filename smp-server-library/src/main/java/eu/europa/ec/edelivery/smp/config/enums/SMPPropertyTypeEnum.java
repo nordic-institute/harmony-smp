@@ -25,19 +25,19 @@ package eu.europa.ec.edelivery.smp.config.enums;
  * @since 4.2
  */
 public enum SMPPropertyTypeEnum {
-    STRING(".{0,2000}", "error.invalid.property.string"),
+    STRING("^.{0,2000}$", "error.invalid.property.string"),
     DATETIME(".{0,2000}", "error.invalid.property.datetime"),
     LIST_STRING(".{0,2000}", "error.invalid.property.list.string"),
     MAP_STRING(".{0,2000}", "error.invalid.property.map.string"),
-    INTEGER("\\d{0,12}", "error.invalid.property.integer"),
+    INTEGER("^\\d{0,12}$", "error.invalid.property.integer"),
     BOOLEAN("true|false", "error.invalid.property.boolean"),
-    REGEXP(".{0,2000}", "error.invalid.property.regexp"),
-    CRON_EXPRESSION(".{0,2000}", "error.invalid.property.cron.expression"),
-    EMAIL(".{0,2000}", "error.invalid.property.email"),
+    REGEXP("^.{0,2000}$", "error.invalid.property.regexp"),
+    CRON_EXPRESSION("^([\\d\\*\\/\\-,]+\\s){5}[\\d\\*\\/\\-,]+$", "error.invalid.property.cron.expression"),
+    EMAIL("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$", "error.invalid.property.email"),
     FILENAME(".{0,2000}", "error.invalid.property.filename"),
     PATH(".{0,2000}", "error.invalid.property.path"),
-    URL(".{0,2000}", "error.invalid.property.url"),
-    CERTIFICATE(".{0,2000}", "error.invalid.property.certificate"),
+    URL("^([A-Za-z]+)://[^\\s/$.?#].[^\\s]*$", "error.invalid.property.url"),
+    CERTIFICATE(".{0,4000}", "error.invalid.property.certificate"),
     ;
 
     final String defValidationRegExp;
