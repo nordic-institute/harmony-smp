@@ -4,7 +4,7 @@
               text="{{ 'edit.resource.text' | translate }}"
               [labelColumnContent]="searchGroupPanel">
 
-    <mat-tab-group #resourceTabs [selectedIndex]="getSelectedTabIndex()"
+    <mat-tab-group [selectedIndex]="getSelectedTabIndex()"
                    *ngIf="hasResources;else noUserAdminGroupsDataFound"
                    class="edit-resource-tab-group"
                    >
@@ -24,8 +24,7 @@
         <ng-template mat-tab-label>
           <smp-label icon="groups" label="{{ 'edit.resource.label.members' | translate }}"></smp-label>
         </ng-template>
-        <domain-member-panel #groupMemberPanelComponent
-                             [membershipType]="groupMembershipType"
+        <domain-member-panel [membershipType]="groupMembershipType"
                              [domain]="selectedDomain"
                              [group]="selectedGroup"
                              [resource]="selectedResource"
@@ -50,13 +49,13 @@
                        class="smp-no-data-panel"
                        icon="warning"
                        type="warning"
-                       [label]="(filterResourceResults ? 'edit.resource.label.no.filter.results.admin': 'edit.resource.label.user.not.administrator') | translate"></smp-warning-panel>
+                       [label]="(filterResourceResults && !!domainList &&  domainList.length > 0 ? 'edit.resource.label.no.filter.results.admin': 'edit.resource.label.user.not.administrator') | translate"></smp-warning-panel>
   </ng-template>
 </div>
 
 <ng-template #searchGroupPanel>
   <div class="edit-resource-selection-panel"
-    *ngIf="hasResources || filterResourceResults "
+    *ngIf="!!domainList &&  domainList.length > 0 && (hasResources || filterResourceResults)"
   >
     <mat-form-field style="width:100%">
       <mat-label>{{ "edit.resource.label.selected.domain" | translate }}</mat-label>
@@ -92,7 +91,6 @@
         <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
       </div>
       <smp-table
-        #resourceTable
         filterLabel="edit.resource.label.filter"
         filterPlaceholder="edit.resource.placeholder.filter"
         noResultLabel="edit.resource.label.no.data.found"

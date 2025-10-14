@@ -31,7 +31,6 @@ import {
 } from "../../components/smp-table/smp-table-coldef.model";
 import {MatTableDataSource} from "@angular/material/table";
 
-
 @Component({
     selector: 'domain-member-panel',
     templateUrl: './membership-panel.component.html',
@@ -45,7 +44,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   dataLength: number = 0;
   @Input() membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
 
-
   private _domain: DomainRo;
   private _group: GroupRo;
   private _resource: ResourceRo;
@@ -58,8 +56,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   isLoadingResults = false;
   formTitle = "";
-
-  //@ViewChild('memberPaginator') paginator: MatPaginator;
 
   constructor(private domainService: AdminDomainService,
               private membershipService: MembershipService,
@@ -99,10 +95,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       } as SmpTableColDef
 
     ];
-
-  }
-  ngAfterViewInit() {
-    this.loadMembershipData();
   }
 
   async updateTitle() {
@@ -218,7 +210,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public refresh() {
-
     this.loadMembershipData();
   }
 
@@ -248,8 +239,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public async onDeleteSelectedButtonClicked() {
-
-
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.title")),
@@ -269,17 +258,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   isDirty(): boolean {
     return false
-  }
-
-  get entityNotSelected() {
-    switch (this.membershipType) {
-      case MemberTypeEnum.DOMAIN:
-        return !this._domain;
-      case MemberTypeEnum.GROUP:
-        return !this._group;
-      case MemberTypeEnum.RESOURCE:
-        return !this._resource;
-    }
   }
 
   protected getMembershipListService(): Observable<SearchTableResult> {
@@ -306,9 +284,3 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     }
   }
 }
-
-
-
-
-
-

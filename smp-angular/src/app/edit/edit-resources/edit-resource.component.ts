@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Input, ViewChild,} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {PageEvent} from "@angular/material/paginator";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
@@ -10,7 +10,6 @@ import {EditResourceController} from "./edit-resource.controller";
 import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
 import {SmpTableComponent} from "../../common/components/smp-table/smp-table.component";
 
-
 @Component({
     templateUrl: './edit-resource.component.html',
     styleUrls: ['./edit-resource.component.css'],
@@ -19,10 +18,12 @@ import {SmpTableComponent} from "../../common/components/smp-table/smp-table.com
 export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
 
-  @ViewChild("resourceTable") resourceTable: SmpTableComponent
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   selected: ResourceRo;
   isLoadingResults = false;
   dataSource: EditResourceController;
+
   // define columns for smp-table
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
   columns: SmpTableColDef[];
@@ -45,7 +46,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.resourceTable.paginator;
+    this.dataSource.paginator = this.paginator;
 
     this.editResourceController.refreshDataOnDataChange();
 

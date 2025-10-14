@@ -3,11 +3,9 @@ import {
   EventEmitter,
   Input,
   OnInit,
-  Output,
-  ViewChild
+  Output
 } from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator} from "@angular/material/paginator";
 import {EditDomainService} from "../edit-domain/edit-domain.service";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {EditGroupService} from "./edit-group.service";
@@ -61,8 +59,6 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   };
 
   loading: boolean = false;
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private domainService: EditDomainService,
               private groupService: EditGroupService,
@@ -137,5 +133,4 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   isDirty(): boolean {
     return false;
   }
-
 }
