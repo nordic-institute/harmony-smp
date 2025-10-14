@@ -204,24 +204,24 @@ public enum SMPPropertyEnum {
 
     AUTOMATION_AUTHORIZATION_JWT_ISSUER("smp.authorization.jwt.issuer", "",
             "Validate issuer of the JWT token. If empty, no validation is done. If set, the issuer must match the value of the JWT token's 'iss' claim.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
     ),
     AUTOMATION_AUTHORIZATION_JWT_MTLS_CERT_BOUND("smp.authorization.jwt.tls.client.certificate.bound", "false",
             "Validate OAuth 2.0 Mutual TLS Certificate Bound to Access Token cnf.x5t#S256.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, BOOLEAN
     ),
     AUTOMATION_AUTHORIZATION_JWT_AUDIENCE("smp.authorization.jwt.audience", "",
             "Validate audience of the JWT token. If empty, no validation is done. If set, the audience must match the value of the JWT token's 'aud' claim.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
     ),
     AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_KEY("smp.authorization.jwt.key", "",
             "The base64 signature key used to verify the JWT token.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
     ),
 
     AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_ALGORITHM("smp.authorization.jwt.algorithm", "RS256",
             "The signature algorithm used to verify the JWT token e.g.: RS256, HS256, ES256, PS256.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
     ),
 
     EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",

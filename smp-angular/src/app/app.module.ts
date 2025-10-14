@@ -54,9 +54,6 @@ import {
   CertificatePanelComponent
 } from "./common/panels/certificate-panel/certificate-panel.component";
 import {
-  ColumnPickerComponent
-} from './common/column-picker/column-picker.component';
-import {
   ConfirmationDialogComponent
 } from './common/dialogs/confirmation-dialog/confirmation-dialog.component';
 import {
@@ -146,7 +143,6 @@ import {
 import {NavTree} from "./window/sidenav/nav-tree/nav-tree.component";
 import {NavigationService} from "./window/sidenav/navigation-model.service";
 import {NgModule} from '@angular/core';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {
   ObjectPropertiesDialogComponent
 } from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
@@ -156,7 +152,6 @@ import {
 import {
   ResourceDetailsDialogComponent
 } from "./system-settings/admin-extension/resource-details-dialog/resource-details-dialog.component";
-import {RowLimiterComponent} from './common/row-limiter/row-limiter.component';
 import {
   SaveDialogComponent
 } from './common/dialogs/save-dialog/save-dialog.component';
@@ -371,6 +366,7 @@ import {
 } from "./edit/edit-domain/domain-extension-template-panel/domain-document-template-edit-panel/domain-document-template-edit-panel.component";
 import {DomainTruststoreComponent} from "./common/panels/domain-truststore-panel/domain-truststore.component";
 import {DomainTruststoreService} from "./common/panels/domain-truststore-panel/domain-truststore.service";
+import {CdkColumnDef} from "@angular/cdk/table";
 
 @NgModule({ declarations: [
         AccessTokenPanelComponent,
@@ -391,7 +387,6 @@ import {DomainTruststoreService} from "./common/panels/domain-truststore-panel/d
         CertificatePanelComponent,
         SmpEditorComponent,
         SmpTableComponent,
-        ColumnPickerComponent,
         ConfirmationDialogComponent,
         CredentialDialogComponent,
         DataPanelComponent,
@@ -445,7 +440,6 @@ import {DomainTruststoreService} from "./common/panels/domain-truststore-panel/d
         ResourceDetailsPanelComponent,
         ResourceDialogComponent,
         ResourceDocumentPanelComponent,
-        RowLimiterComponent,
         ReferenceDocumentDialogComponent,
         ReviewDocumentPanelComponent,
         ReviewTasksComponent,
@@ -503,16 +497,17 @@ import {DomainTruststoreService} from "./common/panels/domain-truststore-panel/d
         MatTooltipModule,
         MatTreeModule,
         MatButtonToggleModule,
-        NgxDatatableModule,
         ReactiveFormsModule,
         routing,
         MatAutocompleteModule,
         ClipboardModule,
-        NgxTranslateModule], providers: [
+        NgxTranslateModule],
+  providers: [
         AdminDomainService,
         AdminKeystoreService,
         AdminTruststoreService,
         AdminUserService,
+        CdkColumnDef,
         AlertMessageService,
         AuthorizedGuard,
         CertificateService,

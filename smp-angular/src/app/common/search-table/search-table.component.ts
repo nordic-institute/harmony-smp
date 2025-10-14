@@ -1,50 +1,34 @@
-import {
-  Component, EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
 import {lastValueFrom, Observable} from 'rxjs';
 import {AlertMessageService} from '../alert-message/alert-message.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {ColumnPicker} from '../column-picker/column-picker.model';
-import {RowLimiter} from '../row-limiter/row-limiter.model';
 import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
 import {EntityStatus} from '../enums/entity-status.enum';
-import {
-  CancelDialogComponent
-} from '../dialogs/cancel-dialog/cancel-dialog.component';
-import {
-  SaveDialogComponent
-} from '../dialogs/save-dialog/save-dialog.component';
+import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
+import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpParams} from '@angular/common/http';
-import {
-  ConfirmationDialogComponent
-} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
-import {
-  SearchTableValidationResult
-} from "./search-table-validation-result.model";
+import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {SearchTableValidationResult} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
-import {Router} from "@angular/router";
 import ObjectUtils from "../utils/object-utils";
 import {TranslateService} from "@ngx-translate/core";
+import {MatTableDataSource} from "@angular/material/table";
+import {SmpTableColDef} from "../components/smp-table/smp-table-coldef.model";
+import {PageEvent} from "@angular/material/paginator";
 
 @Component({
-    selector: 'smp-search-table',
-    templateUrl: './search-table.component.html',
-    styleUrls: ['./search-table.component.css'],
-    standalone: false
+  selector: 'smp-search-table',
+  templateUrl: './search-table.component.html',
+  styleUrls: ['./search-table.component.css'],
+  standalone: false
 })
-export class SearchTableComponent implements OnInit {
-  @Output() onRowDoubleClicked: EventEmitter<SearchTableEntity> = new EventEmitter<SearchTableEntity>();
+export class SearchTableComponent implements OnInit, AfterViewInit {
+  @Output() onRowDoubleClickedEventEmitter: EventEmitter<SearchTableEntity> = new EventEmitter<SearchTableEntity>();
 
-  @ViewChild('searchTable', {static: true}) searchTable: any;
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
   @ViewChild('rowIndex', {static: true}) rowIndex: TemplateRef<any>;
@@ -57,122 +41,118 @@ export class SearchTableComponent implements OnInit {
 
   @Input() id: String = "";
   @Input() title: String = "";
-  @Input() columnPicker: ColumnPicker;
   @Input() url: string = ''; // URL for query (and if manageUrl is null also for "managing")
   @Input() manageUrl: string = ''; // (for "managing" the entities (add, update, remove) )
-  @Input() searchTableController: SearchTableController;
+  @Input() searchTableController: SearchTableController<any>;
   @Input() filter: any = {};
   @Input() showActionButtons: boolean = true;
-  @Input() showSearchPanel: boolean = true;
+  @Input() showSearchParametersPanel: boolean = true;
+  @Input() showSimpleFilter: boolean = false;
+  @Input() simpleFilterKey: string = "filter";
+  @Input() filterLabel: string;
+  @Input() filterPlaceholder: string;
+  @Input() filterValue: string;
+  @Input() noResultLabel: string;
+  @Input() noResultForFilterLabel: string;
+  @Input() disabledFilter: boolean;
   @Input() showIndexColumn: boolean = false;
   @Input() allowNewItems: boolean = false;
   @Input() allowEditItems: boolean = true;
   @Input() allowDeleteItems: boolean = false;
 
+  @Input() columns: SmpTableColDef[];
+  @Input() displayedColumnIds: string[];
+
   loading = false;
 
-  columnActions: any;
-  columnExpandDetails: any;
-  columnIndex: any;
+  columnActions: SmpTableColDef;
+  columnExpandAction: SmpTableColDef;
+  columnIndex: SmpTableColDef;
+  dataSource: MatTableDataSource<SearchTableEntity> = new MatTableDataSource();
+  selectedRows: Array<SearchTableEntity> = [];
 
-  rowLimiter: RowLimiter = new RowLimiter();
-
-  rowNumber: number;
-
-  rows: Array<SearchTableEntity> = [];
-  selected: Array<SearchTableEntity> = [];
-
-  count: number = 0;
-  offset: number = 0;
+  totalRowCount: number = 0;
+  pageSize: number = 50;
+  pageIndex: number = 50;
   orderBy: string = null;
   asc = false;
   forceRefresh: boolean = false;
   showSpinner: boolean = false;
   currentResult: SearchTableResult = null;
-  // override datatable messages to remove selectedMessage message
-  datatableMessages: any = {
-    // Message to show when array is presented
-    // but contains no values
-    emptyMessage: 'No data to display',
-
-    // Footer total message
-    totalMessage: 'total',
-
-    // Footer selected message
-    selectedMessage: null
-  };
 
   constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertMessageService,
               private downloadService: DownloadService,
               public dialog: MatDialog,
-              private router: Router,
               private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
     this.columnIndex = {
+      columnDef: 'row-index',
+      header: 'search.table.label.column.index',
       cellTemplate: this.rowIndex,
-      name: 'Index',
-      width: 80,
-      maxWidth: 80,
-      sortable: false,
-      showInitially: false
-    };
+      style: "max-width: 50px; width: 50px; display: flex; justify-content: right;"
+    } as SmpTableColDef;
 
     this.columnActions = {
+      columnDef: 'row-actions',
+      header: 'search.table.label.column.actions',
       cellTemplate: this.rowActions,
-      name: 'Actions',
-      width: 100,
-      maxWidth: 150,
-      sortable: false,
-      showInitially: false
-    };
-    this.columnExpandDetails = {
+      style: "max-width: 150px; width: 100px; display: flex; justify-content: center;"
+    } as SmpTableColDef;
+
+    this.columnExpandAction = {
+      columnDef: 'row-expand',
+      header: 'search.table.label.column.expand',
       cellTemplate: this.rowExpand,
-      name: 'Upd.',
-      width: 50,
-      maxWidth: 50,
-      sortable: false,
-      showInitially: false
-    };
+      style: "max-width: 50px; width: 50px; display: flex; justify-content: center;"
+    } as SmpTableColDef;
+  }
+
+  ngAfterViewInit() {
+    this.search();
   }
 
 
-  tableColumnInit() {
+  tableColumnInit(columns: SmpTableColDef[], displayedColumnIds: string[]) {
     // Add actions to last column
-    if (this.columnPicker) {
+    if (columns) {
       // prepend columns
       if (!!this.tableRowDetailContainer) {
-        console.log("show table row details!")
-        this.columnExpandDetails.showInitially = true
-        this.columnPicker.allColumns.unshift(this.columnExpandDetails);
+        columns.unshift(this.columnExpandAction);
+        displayedColumnIds.unshift(this.columnExpandAction.columnDef);
       }
       if (this.showIndexColumn) {
-        console.log("show table index!")
-        this.columnIndex.showInitially = true
-        this.columnPicker.allColumns.unshift(this.columnIndex);
+        columns.unshift(this.columnIndex);
+        displayedColumnIds.unshift(this.columnIndex.columnDef);
       }
-
       if (this.showActionButtons) {
-        console.log("show action buttons!")
-        this.columnActions.showInitially = true
-        this.columnPicker.allColumns.push(this.columnActions);
+        columns.push(this.columnActions);
+        displayedColumnIds.push(this.columnActions.columnDef);
       }
-      this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
     } else {
-      console.log("Column picker is not registered for the table!")
+      console.log("No Columns registered for the table!")
     }
 
   }
 
-  getRowClass(row) {
+  getRowClass(row: SearchTableEntity) {
     return {
-      'datatable-row-selected': (this.selected && this.selected.length >= 0 && this.rows.indexOf(row) === this.rowNumber),
+      'datatable-row-selected': (this.isRowSelected(row)),
       'table-row-new': (row.status === EntityStatus.NEW),
       'table-row-updated': (row.status === EntityStatus.UPDATED),
       'deleted': (row.status === EntityStatus.REMOVED)
     };
+  }
+
+  /**
+   * Check if a row is selected and return true if is already in the selectedRows array or false if not
+   * @param row the row to check
+   * @return true if the row is selected, false otherwise
+   */
+  isRowSelected(row: SearchTableEntity): boolean {
+    return this.selectedRows && this.selectedRows.indexOf(row) !== -1;
   }
 
   getTableDataEntries$(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable<SearchTableResult> {
@@ -214,63 +194,50 @@ export class SearchTableComponent implements OnInit {
     }
   }
 
-  private pageInternal(offset: number, pageSize: number, orderBy: string, asc: boolean) {
-    this.getTableDataEntries$(offset, pageSize, orderBy, asc).subscribe((result: SearchTableResult) => {
+  private pageInternal(pageIndex: number, pageSize: number, orderBy: string, asc: boolean) {
+
+    this.getTableDataEntries$(pageIndex, pageSize, orderBy, asc).subscribe((result: SearchTableResult) => {
       // empty page - probably refresh from delete...check if we can go one page back
       // try again
-      if (result.count < 1 && offset > 0) {
-        this.pageInternal(offset--, pageSize, orderBy, asc)
+      if (result.count < 1 && pageIndex > 0) {
+        // empty page - probably refresh from delete...check if we can go one page back
+        // try again
+        this.pageInternal(pageIndex--, pageSize, orderBy, asc)
       } else {
         this.currentResult = result;
-        this.offset = offset;
-        this.rowLimiter.pageSize = pageSize;
-        this.orderBy = orderBy;
-        this.asc = asc;
-        this.unselectRows();
-        this.forceRefresh = false;
-        this.count = result.count; // must be set else table can not calculate page numbers
-        this.rows = result.serviceEntities.map(serviceEntity => {
+        this.dataSource.data = result.serviceEntities.map(serviceEntity => {
           return {
             ...serviceEntity,
             status: EntityStatus.PERSISTED,
             deleted: false
           }
         });
+
+        this.totalRowCount = result.count;
+        this.pageSize = result.pageSize;
+        this.pageIndex = result.page;
+        this.unselectRows();
       }
     }, (error: any) => {
+      this.currentResult = null
       console.error("Error occurred while retrieving table data:" + JSON.stringify(error));
     });
   }
 
-  onPage(event) {
-    this.page(event.offset, event.pageSize, this.orderBy, this.asc);
+  onRowDoubleClicked(row: SearchTableEntity) {
+    this.onRowDoubleClickedEventEmitter.emit(row);
+    this.editSearchTableEntityRow(row);
   }
 
-  onSort(event) {
-    let ascending = event.newValue !== 'desc';
-    this.page(this.offset, this.rowLimiter.pageSize, event.column.prop, ascending);
-  }
-
-  onSelect({selected}) {
-    this.selected = [...selected];
-    if (this.editButtonEnabled) {
-      this.rowNumber = this.rows.indexOf(this.selected[0]);
-    }
-  }
-
-  onActivate(event) {
-    if ("dblclick" === event.type) {
-      this.onRowDoubleClicked.emit(event.row);
-      this.editSearchTableEntityRow(event.row);
-    }
-  }
-
-  changePageSize(newPageLimit: number) {
-    this.page(0, newPageLimit, this.orderBy, this.asc);
+  /**
+   *  Get the current selected row (if multiple selected, the first one)
+   */
+  get currentRow(): SearchTableEntity {
+    return this.selectedRows && this.selectedRows.length > 0 ? this.selectedRows[0] : null;
   }
 
   search() {
-    this.page(0, this.rowLimiter.pageSize, this.orderBy, this.asc);
+    this.page(0, this.pageSize, this.orderBy, this.asc);
   }
 
 
@@ -287,8 +254,8 @@ export class SearchTableComponent implements OnInit {
     }
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        this.rows = [...this.rows, {...formRef.componentInstance.getCurrent()}];
-        this.count++;
+        this.dataSource.data = [...this.dataSource.data, {...formRef.componentInstance.getCurrent()}];
+        this.totalRowCount++;
       } else {
         this.unselectRows();
       }
@@ -300,7 +267,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   fireDeleteEntityEvent() {
-    this.deleteSearchTableEntities(this.selected);
+    this.deleteSearchTableEntities(this.selectedRows);
   }
 
   onDeleteRowActionClicked(row: SearchTableEntity) {
@@ -312,18 +279,19 @@ export class SearchTableComponent implements OnInit {
   }
 
   fireEditEntityEvent() {
-    if (this.rowNumber >= 0 && this.rows[this.rowNumber] && this.rows[this.rowNumber].deleted) {
+
+    if (this.currentRow?.deleted) {
       this.alertService.error('You cannot edit a deleted entry.', false);
       return;
     }
-    this.editSearchTableEntity(this.rowNumber);
+    this.editSearchTableEntity(this.currentRow);
   }
 
   async onSaveButtonClicked(withDownloadCSV: boolean) {
     try {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
-          const modifiedRowEntities = this.rows.filter(el => el.status !== EntityStatus.PERSISTED);
+          const modifiedRowEntities = this.dataSource.data.filter(el => el.status !== EntityStatus.PERSISTED);
           this.showSpinner = true;
           this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(async res => {
             this.showSpinner = false;
@@ -362,7 +330,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   onRefresh() {
-    this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
+    this.page(this.pageIndex, this.pageSize, this.orderBy, this.asc);
   }
 
   onCancelButtonClicked() {
@@ -373,16 +341,12 @@ export class SearchTableComponent implements OnInit {
     });
   }
 
-  getRowsAsString(): number {
-    return this.rows.length;
-  }
-
   getCurrentResult() {
     return this.currentResult;
   }
 
   get editButtonEnabled(): boolean {
-    return this.selected && this.selected.length == 1 && !this.selected[0].deleted;
+    return this.selectedRows && this.selectedRows.length == 1 && !this.selectedRows[0].deleted;
   }
 
   get managementUrl(): string {
@@ -390,13 +354,12 @@ export class SearchTableComponent implements OnInit {
   }
 
   get deleteButtonEnabled(): boolean {
-    return this.selected && this.selected.length > 0 && !this.selected.every(el => el.deleted);
+    return this.selectedRows && this.selectedRows.length > 0 && !this.selectedRows.every(el => el.deleted);
   }
 
   get submitButtonsEnabled(): boolean {
-    const rowsDeleted = !!this.rows.find(row => row.deleted);
-    const dirty = rowsDeleted || !!this.rows.find(el => el.status !== EntityStatus.PERSISTED);
-    return dirty;
+    let rowsDeleted = !!this.dataSource.data.find(row => row.deleted);
+    return rowsDeleted || !!this.dataSource.data.find(el => el.status !== EntityStatus.PERSISTED);
   }
 
   get safeRefresh(): boolean {
@@ -407,43 +370,38 @@ export class SearchTableComponent implements OnInit {
     return rowDisabled || this.searchTableController.isRowExpanderDisabled(row);
   }
 
-  private editSearchTableEntity(rowNumber: number) {
-    const row = this.rows[rowNumber];
+  private editSearchTableEntity(editRow: SearchTableEntity) {
+
+    let rowNumber = this.getRowNumber(editRow);
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
-      data: {edit: row?.status != EntityStatus.NEW, row}
+      data: {edit: editRow?.status != EntityStatus.NEW, row: editRow}
     });
     if (!formRef) {
       return;
     }
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        const changed = this.searchTableController.isRecordChanged(row, formRef.componentInstance.getCurrent());
+        const changed = this.searchTableController.isRecordChanged(editRow, formRef.componentInstance.getCurrent());
         if (changed) {
-          const status = ObjectUtils.isEqual(row.status, EntityStatus.PERSISTED)
+          const status = ObjectUtils.isEqual(editRow.status, EntityStatus.PERSISTED)
             ? EntityStatus.UPDATED
-            : row.status;
-          this.rows[rowNumber] = {
+            : editRow.status;
+          this.dataSource.data[rowNumber] = {
             ...formRef.componentInstance.getCurrent(),
             status
           };
-          this.rows = [...this.rows];
+          this.dataSource.data = [...this.dataSource.data];
         }
       }
     });
   }
 
-  public updateTableRow(rowNumber: number, row: any, status: EntityStatus) {
-    this.rows[rowNumber] = {...row, status};
-    this.rows = [...this.rows];
-  }
-
   public getRowNumber(row: any) {
-    return this.rows.indexOf(row);
+    return this.dataSource.data.indexOf(row);
   }
 
   private editSearchTableEntityRow(row: SearchTableEntity) {
-    let rowNumber = this.rows.indexOf(row);
-    this.editSearchTableEntity(rowNumber);
+    this.editSearchTableEntity(row);
   }
 
   private deleteSearchTableEntities(rows: Array<SearchTableEntity>) {
@@ -454,7 +412,7 @@ export class SearchTableComponent implements OnInit {
       } else {
         for (const row of rows) {
           if (row.status === EntityStatus.NEW) {
-            this.rows.splice(this.rows.indexOf(row), 1);
+            this.dataSource.data.splice(this.dataSource.data.indexOf(row), 1);
           } else {
             this.searchTableController.delete(row);
             row.status = EntityStatus.REMOVED;
@@ -468,19 +426,32 @@ export class SearchTableComponent implements OnInit {
   }
 
   private unselectRows() {
-    this.selected = [];
+    this.selectedRows = [];
   }
 
-  toggleExpandRow(selectedRow: any) {
-    //this.searchTableController.toggleExpandRow(selectedRow);
-    this.searchTable.rowDetail.toggleExpandRow(selectedRow);
-  }
-
-  onDetailToggle(event) {
-
+  onToggleExpandRow(selectedRow: SearchTableEntity) {
+    selectedRow.expanded = !selectedRow.expanded;
   }
 
   isDirty(): boolean {
     return this.submitButtonsEnabled;
+  }
+
+  applyTableFilter(filterValue: string) {
+    this.filter[this.simpleFilterKey] = filterValue?.trim().toLowerCase();
+    this.search();
+  }
+
+  public onRowSelected(tableEntity: SearchTableEntity) {
+    if (this.isRowSelected(tableEntity)) {
+      console.log("Row already selected");
+      return;
+    }
+    // current implementation allows only single selection
+    this.selectedRows = [tableEntity];
+  }
+
+  onPageChanged(page: PageEvent) {
+    this.page(page.pageIndex, page.pageSize, this.orderBy, this.asc);
   }
 }

@@ -7,6 +7,7 @@
 @use 'app/common/search-table/_search-table.component-theme' as search-table;
 @use 'app/user-settings/user-access-tokens/access-token-panel/_access-token-panel.component-theme' as access-token-panel;
 @use 'app/common/panels/expandable-panel-component/expandable-panel.component' as expandable-panel;
+@use 'app/resource-search/resource-search.component' as resource-search;
 
 @mixin all-component-colors($theme) {
   @include toolbar.set-component-colors($theme);
@@ -15,6 +16,7 @@
   @include search-table.set-component-colors($theme);
   @include access-token-panel.set-component-colors($theme);
   @include expandable-panel.set-component-colors($theme);
+  @include resource-search.set-component-colors($theme);
   /* shared classes*/
 
 

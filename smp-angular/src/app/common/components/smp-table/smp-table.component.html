@@ -1,35 +1,63 @@
 <div class="smp-table-container">
-  <mat-form-field id="smp-table-filter_id" class="smp-table-filter">
-    <mat-label *ngIf="filterLabel">{{ filterLabel | translate }}</mat-label>
-    <input matInput #tableFilter [value]="filterValue"
-           (keyup)="onFilterChangedEvent($event)"
-           placeholder="{{ filterPlaceholder | translate }}"
-           [disabled]="disabledFilter"
-    >
-  </mat-form-field>
+  @if (showFilter) {
+    <mat-form-field id="smp-table-filter_id" class="smp-table-filter">
+      <mat-label *ngIf="filterLabel">{{ filterLabel | translate }}</mat-label>
+      <input matInput #tableFilter [value]="filterValue"
+             (keyup)="onFilterChangedEvent($event)"
+             placeholder="{{ filterPlaceholder | translate }}"
+             [disabled]="disabledFilter"
+      >
+    </mat-form-field>
+  }
   <mat-table class="mat-elevation-z2"
              [dataSource]="dataSource"
+             [multiTemplateDataRows]="multiTemplateDataRows"
   >
     <!-- configure table columns based on the  columnDefList -->
     <ng-container *ngFor="let colDef of columnDefList; let colIndex = index"
                   matColumnDef="{{colDef.columnDef}}">
       <mat-header-cell *matHeaderCellDef
                        class="smp-table-cell-header"
+                       [matTooltip]="colDef.headerTooltip ? (colDef.headerTooltip | translate) : ''"
                        [style]="getHeaderStyle(colDef)">{{ colDef.header | translate }}
 
       </mat-header-cell>
-      <mat-cell class="smp-table-cell"  *matCellDef="let row"
+      <mat-cell class="smp-table-cell" *matCellDef="let row"
                 [style]="colDef.style"
                 [ngClass]=" colDef.class ? colDef.class(row): null"
                 [matTooltip]="colDef.tooltip? colDef.tooltip(row): null"
       >
-        <span *ngIf="!!colDef.icon"><mat-icon>{{ colDef.icon(row) }}</mat-icon></span>
-        {{ colDef.cell(row) }}
+        @if (!!colDef.cellTemplate) {
+          <ng-container
+            *ngTemplateOutlet="colDef.cellTemplate; context: { $implicit: row, row:row, value: row}"></ng-container>
+        } @else {
+          @if (!!colDef.icon) {
+            <span><mat-icon>{{ colDef.icon(row) }}</mat-icon></span>
+          }
+
+          {{ colDef.cell(row) }}
+        }
+
       </mat-cell>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <div  *matCellDef="let row"
+          style="max-width: unset;"
+        >
+        @if (row.expanded) {
+
+          <ng-container *ngTemplateOutlet="tableRowDetailContainer; context: { $implicit: row, row:row, value: row}"
+
+          ></ng-container>
+
+        }
+      </div>
     </ng-container>
     <!-- configure table header -->
     <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"
-    class="smp-table-header-row"></mat-header-row>
+                    class="smp-table-header-row"></mat-header-row>
     <!-- configure table rows -->
     <mat-row class="smp-table-row" *matRowDef="let odd = odd; let row; columns: displayedColumns;"
              (click)="onRowClickedEvent(row)"
@@ -38,23 +66,29 @@
              [matTooltip]="row.status === EntityStatus.ERROR && row.statusMessage ? row.statusMessage : null"
     ></mat-row>
 
+    @if (multiTemplateDataRows) {
+      <!-- Expanded Detail Row -->
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="smp-table-detail-row"></tr>
+    }
+
+
     <!-- Row shown when there is no matching data. -->
     <div class="mat-row" *matNoDataRow>
-      <div *ngIf="tableFilter.value;else noDataFound"
-           class="mat-cell">
-        {{ noResultForFilterLabel | translate: {filterValue: tableFilter.value} }}
-      </div>
-      <ng-template #noDataFound>
+      @if (showFilter && filterValue) {
+        <div class="mat-cell">
+          {{ noResultForFilterLabel | translate: {filterValue: tableFilter.value} }}
+        </div>
+      } @else {
         <div>{{ noResultLabel | translate }}</div>
-      </ng-template>
+      }
     </div>
   </mat-table>
 </div>
 
 <mat-paginator #smpTablePaginator
                (page)="onPageChangedEvent($event)"
-               [pageSizeOptions]="[5, 10, 15, 20]"
+               [pageSizeOptions]="pageSizeOptions"
                showFirstLastButtons="true"
-               [pageSize]="10"
+               [pageSize]="pageSize"
 ></mat-paginator>
 

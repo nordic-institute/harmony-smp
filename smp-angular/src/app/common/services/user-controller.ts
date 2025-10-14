@@ -13,7 +13,7 @@ import {ApplicationRoleEnum} from "../enums/application-role.enum";
 import {CertificateRo} from "../model/certificate-ro.model";
 
 
-export class UserController implements SearchTableController {
+export class UserController implements SearchTableController<UserRo> {
 
   nullCert:CertificateRo;
   compareUserProperties = ["username","password","emailAddress","active","role","certificate"];
@@ -24,15 +24,15 @@ export class UserController implements SearchTableController {
     this.nullCert = this.newCertificateRo();
   }
 
-  public showDetails(row): MatDialogRef<any> {
+  public showDetails(row:UserRo): MatDialogRef<any> {
     return null;
   }
 
-  public edit(row): MatDialogRef<any> {
+  public edit(row:UserRo): MatDialogRef<any> {
     return null;
   }
 
-  public delete(row: any) {
+  public delete(row: UserRo) {
   }
 
   newDialog(config): MatDialogRef<any> {
@@ -159,6 +159,4 @@ export class UserController implements SearchTableController {
       fingerprints: '',
     };
   }
-
-
 }

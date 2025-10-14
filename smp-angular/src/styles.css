@@ -64,10 +64,6 @@ div.mat-mdc-tab-body-wrapper {
   word-wrap: break-word !important;
 }
 
-.ngx-datatable span {
-  word-wrap: break-word;
-}
-
 .buttonsRow {
   display: flex;
   justify-content: flex-end;

@@ -8,7 +8,6 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import {ColumnPicker} from '../../column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
 
 import {AlertMessageService} from '../../alert-message/alert-message.service';
@@ -17,9 +16,9 @@ import {HttpClient} from '@angular/common/http';
 import {GlobalLookups} from "../../global-lookups";
 import {SearchTableComponent} from "../../search-table/search-table.component";
 import {SecurityService} from "../../../security/security.service";
-import {TranslateService} from "@ngx-translate/core";
-import {lastValueFrom} from "rxjs";
 import {DateTimeService} from "../../services/date-time.service";
+import {SmpTableColDef} from "../../components/smp-table/smp-table-coldef.model";
+import {AlertRo} from "./alert-ro.model";
 
 /**
  * This is a generic alert panel component for previewing alert list
@@ -32,8 +31,6 @@ import {DateTimeService} from "../../services/date-time.service";
 })
 export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
-  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
   @ViewChild('dateTimeColumn') dateTimeColumn: TemplateRef<any>;
   @ViewChild('truncateText') truncateText: TemplateRef<any>;
@@ -41,9 +38,10 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
   @ViewChild('forUser') forUser: TemplateRef<any>;
 
   @Input() baseUrl = null;
-  columnPicker: ColumnPicker = new ColumnPicker();
   alertController: AlertController;
   filter: any = {};
+  columns: SmpTableColDef[];
+  displayedColumnIds: string[];
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
@@ -51,8 +49,7 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
               protected http: HttpClient,
               protected alertService: AlertMessageService,
               public dialog: MatDialog,
-              private changeDetector: ChangeDetectorRef,
-              private translateService: TranslateService) {
+              private changeDetector: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -64,64 +61,69 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
   }
 
   async initColumns() {
-    this.columnPicker.allColumns = [
-      {
-        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.date")),
-        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.date")),
-        prop: 'reportingTime',
-        showInitially: true,
-        maxWidth: 250,
-        cellTemplate: this.dateTimeColumn,
-      },
-      {
-        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.level")),
-        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.level")),
-        prop: 'alertLevel',
-        showInitially: true,
-        maxWidth: 100,
-
-      },
-      {
-        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.for.user")),
-        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.for.user")),
-        prop: 'username',
-        cellTemplate: this.forUser,
-        maxWidth: 200,
-        showInitially: true,
-      },
-      {
-        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.credential.type")),
-        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.credential.type")),
-        prop: 'alertDetails',
-        maxWidth: 200,
-        cellTemplate: this.credentialType,
-        showInitially: true,
-      },
-      {
-        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.type")),
-        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.type")),
-        prop: 'alertType',
-        cellTemplate: this.truncateText,
-        showInitially: true,
-      },
-      {
-        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.alert.status")),
-        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.alert.status")),
-        prop: 'alertStatus',
-        showInitially: true,
-        maxWidth: 100,
-      },
-      {
-        name: await lastValueFrom(this.translateService.get("alert.panel.label.column.status.description")),
-        title: await lastValueFrom(this.translateService.get("alert.panel.label.column.title.status.description")),
-        prop: 'alertStatusDesc',
-        cellTemplate: this.truncateText,
-        showInitially: true,
-
-      },
+    this.displayedColumnIds = [
+      'reporting-time',
+      'alert-level',
+      'username',
+      'alert-details',
+      'alert-type',
+      'alert-status',
+      'alert-status-desc'
     ];
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
-    this.searchTable.tableColumnInit();
+
+    this.columns = [
+      {
+        columnDef: 'reporting-time',
+        header: 'alert.panel.label.column.alert.date',
+        headerTooltip: 'alert.panel.label.column.title.alert.date',
+        cellTemplate: this.dateTimeColumn,
+        style: "max-width: 250px; width: 200px; display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'alert-level',
+        header: 'alert.panel.label.column.alert.level',
+        headerTooltip: 'alert.panel.label.column.title.alert.level',
+        cell: (alert: AlertRo) => alert.alertLevel,
+        style: "max-width:100px; width: 100px; display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'username',
+        header: 'alert.panel.label.column.for.user',
+        headerTooltip: 'alert.panel.label.column.title.for.user',
+        cellTemplate: this.forUser,
+        style: "max-width:200px; width: 100px; display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'alert-details',
+        header: 'alert.panel.label.column.credential.type',
+        headerTooltip: 'alert.panel.label.column.title.credential.type',
+        cellTemplate: this.credentialType,
+        style: "max-width:200px; width: 200px;display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'alert-type',
+        header: 'alert.panel.label.column.alert.type',
+        headerTooltip: 'alert.panel.label.column.title.alert.type',
+        cell: (alert: AlertRo) => alert.alertType,
+        style: "max-width:240px; width: 200px; display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'alert-status',
+        header: 'alert.panel.label.column.alert.status',
+        headerTooltip: 'alert.panel.label.column.title.alert.status',
+        cell: (alert: AlertRo) => alert.alertStatus,
+        style: "max-width:100px; width: 100px; display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'alert-status-desc',
+        header: 'alert.panel.label.column.status.description',
+        headerTooltip: 'alert.panel.label.column.title.status.description',
+        cellTemplate: this.truncateText,
+        style: "display: flex; justify-content: left;"
+      } as SmpTableColDef,
+    ];
+
+    this.searchTable.tableColumnInit(this.columns, this.displayedColumnIds);
   }
 
   ngAfterViewInit() {
@@ -135,5 +137,8 @@ export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChec
 
   get dateTimeFormat(): string {
     return this.dateTimeService.userDateTimeFormat;
+  }
+  onRowDoubleClicked(row: AlertRo) {
+    this.alertController.showDetails(row);
   }
 }

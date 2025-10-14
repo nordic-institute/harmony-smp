@@ -8,41 +8,34 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
-import {
-  AlertMessageService
-} from '../common/alert-message/alert-message.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {ResourceSearchController} from './resource-search-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
-import {
-  SearchTableComponent
-} from "../common/search-table/search-table.component";
+import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {ResourceSearchRo} from "./resource-search-ro.model";
 import {SubresourceSearchRo} from "./subresource-search-ro.model";
-import {
-  ResourceFilterOptionsService
-} from "../common/services/resource-filter-options.service";
-import {
-  ResourceFilterOptionsRo
-} from "../common/model/resource-filter-options-ro.model";
+import {ResourceFilterOptionsService} from "../common/services/resource-filter-options.service";
+import {ResourceFilterOptionsRo} from "../common/model/resource-filter-options-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 import {SecurityEventService} from "../security/security-event.service";
+import {SmpTableColDef} from "../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
-    templateUrl: './resource-search.component.html',
-    styleUrls: ['./resource-search.component.css'],
-    standalone: false
+  templateUrl: './resource-search.component.html',
+  styleUrls: ['./resource-search.component.css'],
+  standalone: false
 })
 export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>
   @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
-  columnPicker: ColumnPicker = new ColumnPicker();
+  columns: SmpTableColDef[];
+  displayedColumnIds: string[];
   resourceSearchController: ResourceSearchController;
   filter: any = {};
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
@@ -82,63 +75,59 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
   }
 
   async initColumns() {
-    this.columnPicker.allColumns = [
+
+    this.displayedColumnIds = ['resource-count',
+      'visibility',
+      'domain',
+      'resource-scheme',
+      'resource-value',
+      'resource-type',
+      'resource-url'];
+
+    this.columns = [
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.subresource.count")),
-        prop: 'serviceMetadata.length',
-        width: 70,
-        maxWidth: 70,
-        resizable: 'false',
-        showInitially: true,
-      },
+        columnDef: 'resource-count',
+        header: 'resource.search.label.column.subresource.count',
+        cell: (row: ResourceSearchRo) => row.serviceMetadata?.length || 0,
+        style: "max-width: 60px; width: 60px; display: flex; justify-content: right;"
+      } as SmpTableColDef,
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.visibility")),
-        prop: 'visibility',
-        width: 100,
-        maxWidth: 100,
-        resizable: 'false',
-        showInitially: true,
-      },
+        columnDef: 'visibility',
+        header: 'resource.search.label.column.visibility',
+        cell: (row: ResourceSearchRo) => row.visibility,
+        style: "width: 120px; "
+      } as SmpTableColDef,
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.domain")),
-        prop: 'domainCode',
-        width: 180,
-        maxWidth: 180,
-        resizable: 'false',
-        showInitially: true,
-      },
+        columnDef: 'domain',
+        header: 'resource.search.label.column.domain',
+        cell: (row: ResourceSearchRo) => row.domainCode
+      } as SmpTableColDef,
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.scheme")),
-        prop: 'participantScheme',
-        width: 250,
-        maxWidth: 250,
-        resizable: 'true',
-        showInitially: true,
-      },
+        columnDef: 'resource-scheme',
+        header: 'resource.search.label.column.resource.scheme',
+        cell: (row: ResourceSearchRo) => row.participantScheme,
+        style: "flex-grow: 2;flex-basis:250px;"
+      } as SmpTableColDef,
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.id")),
-        prop: 'participantIdentifier',
-        width: 450,
-        resizable: 'true',
-        showInitially: true,
-      },
+        columnDef: 'resource-value',
+        header: 'resource.search.label.column.resource.id',
+        cell: (row: ResourceSearchRo) => row.participantIdentifier,
+        style: "flex-grow: 4;flex-basis:250px;"
+      } as SmpTableColDef,
       {
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.document.type")),
-        prop: 'documentType',
-        width: 450,
-        resizable: 'true',
-        showInitially: true,
-      },
+        columnDef: 'resource-type',
+        header: 'resource.search.label.column.document.type',
+        cell: (row: ResourceSearchRo) => row.documentType,
+        style: "flex-basis:120px;"
+      } as SmpTableColDef,
       {
+        columnDef: 'resource-url',
+        header: 'resource.search.label.column.resource.url',
         cellTemplate: this.rowSMPUrlLinkAction,
-        name: await lastValueFrom(this.translateService.get("resource.search.label.column.resource.url")),
-        width: 120,
-        maxWidth: 120,
-        resizable: 'false',
-        showInitially: true,
-      },
+      } as SmpTableColDef,
     ];
-    this.searchTable.tableColumnInit();
+
+    this.searchTable.tableColumnInit(this.columns, this.displayedColumnIds);
   }
 
   ngAfterViewChecked() {

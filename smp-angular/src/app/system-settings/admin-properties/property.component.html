@@ -1,11 +1,19 @@
 <smp-search-table
   #searchTable
   [title]="'property.title' | translate"
-  [columnPicker]="columnPicker"
+  [showSearchParametersPanel]="false"
+  [showSimpleFilter]="true"
+  [simpleFilterKey]="'property'"
+  filterLabel='property.label.filter'
+  filterPlaceholder='property.placeholder.filter'
+  noResultLabel='property.label.no.data.found'
+  noResultForFilterLabel='property.label.no.result.for.filter'
+  [showIndexColumn]="false"
+  [columns]="columns"
+  [displayedColumnIds]="displayedColumnIds"
   [url]="baseUrl"
   [searchTableController]="propertyController"
   [searchPanel]="searchPanel"
-  [showSearchPanel]="true"
   [filter]="filter"
   [showActionButtons]="true"
   [allowNewItems]="false"
@@ -22,19 +30,25 @@
     </mat-form-field>
   </ng-template>
 
-  <ng-template #propertyColumnTemplate let-row="row" let-value="value" ngx-datatable-cell-template>
-    <span [class]='aliasCssClass(value, row)' [matTooltip]='row.desc'>{{value}}</span>
+  <ng-template #propertyColumnTemplate let-row="row">
+    <span [class]='aliasCssClass(row)' [matTooltip]='row.desc'>{{row.property}}</span>
   </ng-template>
+
+  <ng-template #propertyTypeColumnTemplate let-row="row">
+    <span [class]='aliasCssClass(row)' >{{ "property.type." + (!row?.type ? "empty" : row.type.toLowerCase()) + ".label" | translate }}</span>
+  </ng-template>
+
 
   <ng-template #tableTitle>
     <span *ngIf="isServerRestartNeeded()" [class]="'alert-message'">{{ "property.label.server.restart.needed" | translate }}</span>
   </ng-template>
+
   <ng-template #propertyValueTemplate
                let-row="row"
                let-value="value"
-               ngx-datatable-cell-template>
+               >
     <span [class]='aliasCssClass(value, row)'
-      [matTooltip]='row.desc'>{{ value }}</span>
+      [matTooltip]='row.desc'>{{ row.value }}</span>
     <span *ngIf="row.updateDate" style="display: block;font-size: 0.8em;color: darkorange">{{ "property.label.new.value" | translate: { value: row.newValue } }}
         <span *ngIf="!row.restartNeeded">
       {{ "property.label.server.restart.time" | translate: { date: (row.updateDate | date:'yyyy-MM-dd HH:mm:ss') } }}</span>

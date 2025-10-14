@@ -54,4 +54,8 @@
   min-height: 36px;
 }
 
+.smp-table-detail-row {
+  height: unset;
+}
+
 
