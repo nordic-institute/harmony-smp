@@ -92,7 +92,7 @@ public class SMPExceptionLanguageService {
             Map<String, Object>  innerArg = new HashMap<>(args);
             Object value =  innerArg.remove(ErrorMessageArgument.ERROR_MESSAGE_CODE.getArgumentName());
             value = getMessageTranslation(value.toString(), innerArg);
-            arguments.put(ErrorMessageArgument.ERROR_MESSAGE_CODE.getArgumentName(), value);
+            arguments.put(ErrorMessageArgument.ERROR.getArgumentName(), value);
         }
         return ErrorMessageType.replacePlaceholder(messageTemplate, arguments);
     }

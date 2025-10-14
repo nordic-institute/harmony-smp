@@ -32,6 +32,8 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,9 +65,12 @@ public class UIPropertyService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIPropertyService.class);
     ConfigurationDao configurationDao;
     final SMPDynamicCronTrigger refreshPropertiesTrigger;
+    final SMPExceptionLanguageService smpExceptionLanguageService;
 
     public UIPropertyService(ConfigurationDao configurationDao,
-                             @Qualifier(TRIGGER_BEAN_PROPERTY_REFRESH) SMPDynamicCronTrigger refreshPropertiesTrigger) {
+                             @Qualifier(TRIGGER_BEAN_PROPERTY_REFRESH) SMPDynamicCronTrigger refreshPropertiesTrigger,
+                             SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
         this.configurationDao = configurationDao;
         this.refreshPropertiesTrigger = refreshPropertiesTrigger;
     }
@@ -162,7 +167,7 @@ public class UIPropertyService {
             ErrorMessageType msg = ErrorMessageType.INVALID_PROPERTY_UNKNOWN;
             propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
-            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY, propertyRO.getProperty())));
+            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY_NAME, propertyRO.getProperty())));
             return propertyValidationRO;
         }
         SMPPropertyEnum propertyEnum = optPropertyEnum.get();
@@ -171,7 +176,7 @@ public class UIPropertyService {
             ErrorMessageType msg = ErrorMessageType.INVALID_PROPERTY_MISSING;
             propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
-            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY, propertyRO.getProperty())));
+            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY_NAME, propertyRO.getProperty())));
             return propertyValidationRO;
         }
 
@@ -180,7 +185,9 @@ public class UIPropertyService {
             File confDir = Paths.get(SMPEnvironmentProperties.getInstance().getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
             PropertyUtils.parseProperty(propertyEnum, propertyRO.getValue(), confDir);
         } catch (SMPRuntimeException ex) {
-            propertyValidationRO.setErrorMessage(ex.getMessage());
+            String currentLocale = LocaleUtils.getCurrentLocale();
+            String message = smpExceptionLanguageService.getMessageTranslation(ex.getMessageCode(), ex.getMessageArgs(), currentLocale);
+            propertyValidationRO.setErrorMessage(message);
             propertyValidationRO.setPropertyValid(false);
             propertyValidationRO.setMessageCode(ex.getMessageCode());
             return propertyValidationRO;

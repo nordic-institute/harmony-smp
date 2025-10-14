@@ -136,7 +136,6 @@ class X509CertificateToCertificateROConverterTest {
         };
     }
 
-
     X509CertificateToCertificateROConverter testInstance = new X509CertificateToCertificateROConverter();
 
     @ParameterizedTest
