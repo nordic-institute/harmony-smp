@@ -129,6 +129,10 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       } else {
         this.document = doc;
       }
+      if (!this.isNotReviewMode) {
+        // close the panel after review action in review mode
+        this.onBackButtonClicked();
+      }
     },
     error: (err: any) => {
       this.httpErrorHandlerService.handleHttpError(err)
@@ -579,10 +583,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.editResourceService.reviewApproveForSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
     // request review
     onReviewRequestObservable.subscribe(this.reviewActionDocumentObserver);
-
-    if (!this.isNotReviewMode) {
-      this.onBackButtonClicked();
-    }
   }
 
 
@@ -611,9 +611,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.editResourceService.reviewRejectSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
     // request review
     onReviewRequestObservable.subscribe(this.reviewActionDocumentObserver);
-    if (!this.isNotReviewMode) {
-      this.onBackButtonClicked();
-    }
   }
 
   /**
