@@ -216,7 +216,7 @@
   "membership.panel.placeholder.filter": "Member filter",
   "membership.panel.title.domain": "Direct Domain members {{value}}",
   "membership.panel.title.group": "Direct Group members {{value}}",
-  "membership.panel.title.resource": "Resource direct members",
+  "membership.panel.title.resource": "Direct Resource members",
   "membership.panel.tooltip.invite.member": "Invite new member",
   "membership.panel.tooltip.edit.membership": "Edit membership of selected user",
   "membership.panel.tooltip.delete.membership": "Delete selected membership",
