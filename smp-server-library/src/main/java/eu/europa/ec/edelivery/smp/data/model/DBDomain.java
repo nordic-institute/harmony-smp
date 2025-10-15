@@ -145,7 +145,7 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Future date when to update the certificate for SML integration")
     OffsetDateTime smlClientKeyChangeDate;
 
-    @Column(name = "SML_ENABLE_URL_OMAIN_CODE_SUFFIX")
+    @Column(name = "SML_ENABLE_URL_DOMAIN_CODE_SUFFIX")
     @ColumnDescription(comment = "Append the domain code to SMP url when registering the SMP entry")
     Boolean smlUrlDomainCodeSuffixEnabled = true;
 

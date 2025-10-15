@@ -128,6 +128,11 @@ public class DBCredential extends BaseEntity {
     @Column(name = "EXPIRE_ON")
     @ColumnDescription(comment = "Date when password will expire")
     private OffsetDateTime expireOn;
+    // Column is just for database backward compatibility to allow 5.1 and 5.2 versions to workon same database during upgrade
+    // not used anymore since 5.2 where it was  replaced by periodical alert
+    @Column(name = "LAST_ALERT_ON")
+    @ColumnDescription(comment = "Generated last password expire alert")
+    private OffsetDateTime expireAlertOn;
     @Column(name = "LOGIN_FAILURE_COUNT")
     @ColumnDescription(comment = "Sequential login failure count")
     private Integer sequentialLoginFailureCount;
@@ -226,6 +231,14 @@ public class DBCredential extends BaseEntity {
 
     public void setExpireOn(OffsetDateTime expireOn) {
         this.expireOn = expireOn;
+    }
+
+    public OffsetDateTime getExpireAlertOn() {
+        return expireAlertOn;
+    }
+
+    public void setExpireAlertOn(OffsetDateTime expireAlertOn) {
+        this.expireAlertOn = expireAlertOn;
     }
 
     public Integer getSequentialLoginFailureCount() {

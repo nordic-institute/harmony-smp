@@ -120,6 +120,7 @@
         CREDENTIAL_TARGET enum ('REST_API','UI') not null comment 'Credential target UI, API',
         CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD') not null comment 'Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS',
         CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Credential description',
+        LAST_ALERT_ON datetime(6) comment 'Generated last password expire alert',
         EXPIRE_ON datetime(6) comment 'Date when password will expire',
         LAST_FAILED_LOGIN_ON datetime(6) comment 'Last failed login attempt',
         CREDENTIAL_NAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
@@ -143,6 +144,7 @@
         CREDENTIAL_TARGET enum ('REST_API','UI'),
         CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD'),
         CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LAST_ALERT_ON datetime(6),
         EXPIRE_ON datetime(6),
         LAST_FAILED_LOGIN_ON datetime(6),
         CREDENTIAL_NAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -293,7 +295,7 @@
         SML_REGISTERED bit not null comment 'Flag for: Is domain registered in SML',
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SMP ID used for SML integration',
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SML subdomain',
-        SML_ENABLE_URL_OMAIN_CODE_SUFFIX bit comment 'Append the domain code to SMP url when registering the SMP entry',
+        SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit comment 'Append the domain code to SMP url when registering the SMP entry',
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC') comment 'The visibility of the domain: PUBLIC, INTERNAL',
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -317,7 +319,7 @@
         SML_REGISTERED bit,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_ENABLE_URL_OMAIN_CODE_SUFFIX bit,
+        SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit,
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
         primary key (REV, ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

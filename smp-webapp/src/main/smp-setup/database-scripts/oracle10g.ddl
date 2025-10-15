@@ -208,6 +208,7 @@
         CREDENTIAL_TARGET varchar2(255 char) not null check (CREDENTIAL_TARGET in ('UI','REST_API')),
         CREDENTIAL_TYPE varchar2(255 char) not null check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS')),
         CREDENTIAL_DESC varchar2(256 char),
+        LAST_ALERT_ON timestamp(6) with time zone,
         EXPIRE_ON timestamp(6) with time zone,
         LAST_FAILED_LOGIN_ON timestamp(6) with time zone,
         CREDENTIAL_NAME varchar2(256 char) not null,
@@ -240,6 +241,9 @@
 
     comment on column SMP_CREDENTIAL.CREDENTIAL_DESC is
         'Credential description';
+
+    comment on column SMP_CREDENTIAL.LAST_ALERT_ON is
+        'Generated last password expire alert';
 
     comment on column SMP_CREDENTIAL.EXPIRE_ON is
         'Date when password will expire';
@@ -274,6 +278,7 @@
         CREDENTIAL_TARGET varchar2(255 char) check (CREDENTIAL_TARGET in ('UI','REST_API')),
         CREDENTIAL_TYPE varchar2(255 char) check (CREDENTIAL_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','CAS')),
         CREDENTIAL_DESC varchar2(256 char),
+        LAST_ALERT_ON timestamp(6) with time zone,
         EXPIRE_ON timestamp(6) with time zone,
         LAST_FAILED_LOGIN_ON timestamp(6) with time zone,
         CREDENTIAL_NAME varchar2(256 char),
@@ -489,7 +494,7 @@
         SML_REGISTERED number(1,0) not null check (SML_REGISTERED in (0,1)),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
-        SML_ENABLE_URL_OMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_OMAIN_CODE_SUFFIX in (0,1)),
+        SML_ENABLE_URL_DOMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_DOMAIN_CODE_SUFFIX in (0,1)),
         VISIBILITY varchar2(64 char) check (VISIBILITY in ('PUBLIC','INTERNAL','PRIVATE')),
         primary key (ID)
     );
@@ -536,7 +541,7 @@
     comment on column SMP_DOMAIN.SML_SUBDOMAIN is
         'SML subdomain';
 
-    comment on column SMP_DOMAIN.SML_ENABLE_URL_OMAIN_CODE_SUFFIX is
+    comment on column SMP_DOMAIN.SML_ENABLE_URL_DOMAIN_CODE_SUFFIX is
         'Append the domain code to SMP url when registering the SMP entry';
 
     comment on column SMP_DOMAIN.VISIBILITY is
@@ -561,7 +566,7 @@
         SML_REGISTERED number(1,0) check (SML_REGISTERED in (0,1)),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
-        SML_ENABLE_URL_OMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_OMAIN_CODE_SUFFIX in (0,1)),
+        SML_ENABLE_URL_DOMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_DOMAIN_CODE_SUFFIX in (0,1)),
         VISIBILITY varchar2(64 char) check (VISIBILITY in ('PUBLIC','INTERNAL','PRIVATE')),
         primary key (REV, ID)
     );
