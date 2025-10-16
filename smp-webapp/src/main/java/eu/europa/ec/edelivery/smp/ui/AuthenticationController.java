@@ -33,7 +33,6 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,9 +74,7 @@ public class AuthenticationController {
 
     private final CsrfTokenRepository csrfTokenRepository;
 
-    private SMPCookieWriter smpCookieWriter;
-
-    private SMPExceptionLanguageService smpExceptionLanguageService;
+    private final SMPCookieWriter smpCookieWriter;
 
     private final SecurityContextRepository securityContextRepository =
             new HttpSessionSecurityContextRepository();
@@ -87,14 +84,12 @@ public class AuthenticationController {
                                     SMPAuthorizationService authorizationService,
                                     ConfigurationService configurationService,
                                     SMPCookieWriter smpCookieWriter,
-                                    CsrfTokenRepository csrfTokenRepository,
-                                    SMPExceptionLanguageService smpExceptionLanguageService) {
+                                    CsrfTokenRepository csrfTokenRepository) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.configurationService = configurationService;
         this.smpCookieWriter = smpCookieWriter;
         this.csrfTokenRepository = csrfTokenRepository;
-        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     @PostMapping(value = ResourceConstants.PATH_ACTION_AUTHENTICATION)
@@ -168,7 +163,7 @@ public class AuthenticationController {
      * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
      *                Return 200 if token is valid, 401 if token is invalid
      */
-    @PostMapping(value = ResourceConstants.PATH_ACTION_VALIDATE_RESET_TOKEN)
+    @PostMapping(value = ResourceConstants.PATH_ACTION_VALIDATE_RESET_CREDENTIALS)
     public void validateResetToken(@RequestBody CredentialResetRO resetRO) {
         LOG.debug("validateResetToken [{}]", resetRO);
         if (resetRO == null
@@ -214,7 +209,7 @@ public class AuthenticationController {
     /**
      * set cookie parameters <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie">...</a>
      *
-     * @param request - the HTTP request containing the session
+     * @param request  - the HTTP request containing the session
      * @param response - the HTTP response to which the session cookie will be written
      */
     public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
