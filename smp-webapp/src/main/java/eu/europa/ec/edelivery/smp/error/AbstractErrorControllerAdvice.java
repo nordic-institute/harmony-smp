@@ -21,10 +21,7 @@ package eu.europa.ec.edelivery.smp.error;
 import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
 import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
-import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.I18NException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -35,7 +32,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 
+import java.util.Map;
+
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.TECHNICAL;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType.*;
 import static org.springframework.http.HttpStatus.*;
 
 abstract class AbstractErrorControllerAdvice {
@@ -51,26 +51,28 @@ abstract class AbstractErrorControllerAdvice {
     public ResponseEntity<?> handleRuntimeException(RuntimeException runtimeException) {
         ResponseEntity<?> response;
         String currentLocale = LocaleUtils.getCurrentLocale();
-        if (runtimeException instanceof I18NException ex) {
+        if (runtimeException instanceof BadRequestException ex) {
+            response = buildAndLog(UNPROCESSABLE_ENTITY, ex.getErrorBusinessCode(),
+                smpExceptionLanguageService.getMessageTranslation(UI_BAD_REQUEST_EXCEPTION.getMessageCode(), currentLocale), ex);
+        } else if (runtimeException instanceof I18NException ex) {
             response = buildAndLog(HttpStatus.resolve(ex.getErrorCode().getHttpCode()),
                     ex.getErrorCode(),
                     smpExceptionLanguageService.getMessageTranslation(ex.getMessageCode(), ex.getMessageArgs(), currentLocale),
                     runtimeException);
         } else if (runtimeException instanceof AuthenticationException ex) {
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED,
-                    smpExceptionLanguageService.getMessageTranslation("error.ui.authentication.exception", currentLocale), ex);
+                    smpExceptionLanguageService.getMessageTranslation(UI_AUTHENTICATION_EXCEPTION.getMessageCode(), currentLocale), ex);
         } else if (runtimeException instanceof AccessDeniedException ex) {
             response = buildAndLog(FORBIDDEN, ErrorBusinessCode.UNAUTHORIZED,
-                    smpExceptionLanguageService.getMessageTranslation("error.ui.access.denied.exception", currentLocale), ex);
-        } else if (runtimeException instanceof BadRequestException ex) {
-            response = buildAndLog(UNPROCESSABLE_ENTITY, ex.getErrorBusinessCode(),
-                    smpExceptionLanguageService.getMessageTranslation("error.ui.bad.request.exception", currentLocale), ex);
+                    smpExceptionLanguageService.getMessageTranslation(UI_ACCESS_DENIED_EXCEPTION.getMessageCode(), currentLocale), ex);
         } else if (runtimeException instanceof MalformedIdentifierException ex) {
             response = buildAndLog(BAD_REQUEST, ErrorBusinessCode.FORMAT_ERROR,
-                    smpExceptionLanguageService.getMessageTranslation("error.ui.malformed.identifier.exception", currentLocale), ex);
+                    smpExceptionLanguageService.getMessageTranslation(UI_MALFORMED_IDENTIFIER_EXCEPTION.getMessageCode(),
+                            Map.of(ErrorMessageArgument.ERROR.getArgumentName(), ExceptionUtils.getRootCauseMessage(ex)),
+                            currentLocale), ex);
         } else {
             response = buildAndLog(INTERNAL_SERVER_ERROR, TECHNICAL,
-                    smpExceptionLanguageService.getMessageTranslation("error.ui.internal.error", currentLocale), runtimeException);
+                    smpExceptionLanguageService.getMessageTranslation(UI_INTERNAL_ERROR.getMessageCode(), currentLocale), runtimeException);
         }
 
         String errorCodeId = "N/A";
