@@ -272,7 +272,7 @@ public enum ErrorMessageType implements IErrorCodeType {
     UI_BAD_REQUEST_EXCEPTION(INVALID_REQUEST, "error.ui.bad.request.exception", "Unexpected bad request error occurred."),
     UI_BAD_REQUEST_WITH_ERROR(INVALID_REQUEST, "error.ui.bad.request.with.error", "Bad request. Error: {{error}}", ERROR),
     UI_INTERNAL_ERROR(INTERNAL_ERROR, "error.ui.internal.error", "Unexpected technical error occurred."),
-    UI_MALFORMED_IDENTIFIER_EXCEPTION(INVALID_REQUEST, "error.ui.malformed.identifier.exception", "Unexpected malformed identifier error occurred."),
+    UI_MALFORMED_IDENTIFIER_EXCEPTION(INVALID_REQUEST, "error.ui.malformed.identifier.exception", "Unexpected malformed identifier error occurred. Error: [{{error}}].", ERROR),
     UI_SMP_RUNTIME_EXCEPTION(INTERNAL_ERROR, "error.ui.smp.runtime.exception", "Unexpected runtime error occurred."),
     UI_VALIDATION_LOCALE(INTERNAL_ERROR, "error.ui.validation.locale", "Invalid locale [{{locale}}].",LOCALE),
     UI_RESOURCE_INVALID_REFERENCE(VALIDATION_ERROR, "error.ui.resource.invalid.reference", "Resource has invalid reference. The referenced document is not accessible anymore and the reference own document is shown instead. Fix error in document editor"),
@@ -304,7 +304,6 @@ public enum ErrorMessageType implements IErrorCodeType {
     private final String template;
 
     private final ErrorMessageArgument[] arguments;
-
 
     ErrorMessageType(ErrorCode errorCode, String  messageCode, String message, ErrorMessageArgument... arguments) {
         this.errorCode = errorCode;
