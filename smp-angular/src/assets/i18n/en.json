@@ -143,6 +143,7 @@
   "certificate.panel.tab.extension.table.no.filter.found": "No certificate extensions matching the filter \"{{filterValue}}\"",
   "certificate.panel.tab.extension.value": "Value of extension",
   "certificate.dialog.button.import": "Import certificate",
+  "certificate.dialog.button.save": "Save certificate",
 
   "certificate.panel.tab.export.title": "Export",
   "certificate.panel.label.alias": "Alias",
