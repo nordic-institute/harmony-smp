@@ -27,6 +27,7 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -100,7 +101,7 @@ public class UISecurityConfig {
                             // optional cas authentication configuration
                             @Lazy CasAuthenticationProvider casAuthenticationProvider,
                             @Lazy @Qualifier(SMP_CAS_FILTER_BEAN) CasAuthenticationFilter casAuthenticationFilter
-                            ) {
+    ) {
 
         this.configurationService = configurationService;
         this.smpAuthenticationProviderForUI = smpAuthenticationProviderForUI;
@@ -125,19 +126,19 @@ public class UISecurityConfig {
         AuthenticationManager manager = authenticationManagerBean();
         SMPSecurityExceptionHandler smpSecurityExceptionHandler = new SMPSecurityExceptionHandler();
         if (configurationService.isSSOEnabledForUserAuthentication()) {
-            String casEndpointPath= SMP_SECURITY_PATH_CAS_AUTHENTICATE;
+            String casEndpointPath = SMP_SECURITY_PATH_CAS_AUTHENTICATE;
             LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint for endpoint [{}]!", casEndpointPath);
             httpSecurity
                     .exceptionHandling(exceptionHandling -> exceptionHandling
-                            .defaultAuthenticationEntryPointFor(createCasAuthenticationEntryPoint(),matcherBuilder.matcher(HttpMethod.GET, casEndpointPath))
+                            .defaultAuthenticationEntryPointFor(createCasAuthenticationEntryPoint(), matcherBuilder.matcher(HttpMethod.GET, casEndpointPath))
                             .defaultAuthenticationEntryPointFor(smpSecurityExceptionHandler, matcherBuilder.matcher("/ui/**"))
                     ).addFilter(casAuthenticationFilter);
         } else {
-                httpSecurity.exceptionHandling(
-                        exceptionHandling -> exceptionHandling
-                                .authenticationEntryPoint(smpSecurityExceptionHandler)
-                                .accessDeniedHandler(smpSecurityExceptionHandler)
-                );
+            httpSecurity.exceptionHandling(
+                    exceptionHandling -> exceptionHandling
+                            .authenticationEntryPoint(smpSecurityExceptionHandler)
+                            .accessDeniedHandler(smpSecurityExceptionHandler)
+            );
         }
 
 
@@ -212,7 +213,7 @@ public class UISecurityConfig {
         }
         String casUrl = configurationService.getCasURL().toString();
         String casLoginPath = configurationService.getCasURLPathLogin();
-        String casUrlLogin = StringUtils.removeEnd(casUrl, "/") + StringUtils.prependIfMissing(casLoginPath, "/");
+        String casUrlLogin = Strings.CS.removeEnd(casUrl, "/") + Strings.CS.prependIfMissing(casLoginPath, "/");
         URL path = configurationService.getCasCallbackUrl();
 
         // create service properties
