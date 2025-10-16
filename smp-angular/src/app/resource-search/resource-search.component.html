@@ -14,6 +14,12 @@
                   [displayedColumnIds]="displayedColumnIds"
 
 >
+  <ng-template #domainCodeTemplate let-row="row">
+    <div class="ellipsis">
+      {{row.domainCode}}
+    </div>
+  </ng-template>
+
   <ng-template #rowSMPUrlLinkAction let-row="row" >
     <a target="_blank"
        href="{{contextPath}}{{createResourceURL(row)}}">{{ "resource.search.label.open.url" | translate }}</a>
