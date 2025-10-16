@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,13 +19,13 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.apache.commons.lang3.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,15 +60,20 @@ public class URLCsrfIgnoreMatcher implements RequestMatcher {
         // ignore non ui sites!
         String uri = request.getRequestURI();
         LOG.debug("Test CSRF for uri [{}]", uri);
-        if (!StringUtils.startsWithAny(uri, "/ui/", "/smp/ui/")) {
+        if (!Strings.CI.startsWithAny(uri, "/ui/", "/smp/ui/")) {
             LOG.debug("URL is not part of the UI  [{}]", uri);
+            return false;
+        } else if (Strings.CI.equals(request.getMethod(), HttpMethod.POST.name())
+                && Strings.CI.endsWithAny(uri, "/ui/public/rest/security/validate-reset-credential")) {
+            // special case for reset password validation which is POST call redirected from email link
+            LOG.debug("HTTP method [{}] for validate-reset-credential is ignored for CSRF!", request.getMethod());
             return false;
         }
         Optional<RegexRequestMatcher> unprotectedMatcher = unprotectedMatcherList.stream().filter(requestMatcher -> requestMatcher.matches(request)).findFirst();
-        if (unprotectedMatcher.isPresent()) {
-            LOG.debug("Ignore CSRF for: [{}] - [{}] with matcher [{}]!", request.getMethod(), request.getRequestURI(), unprotectedMatcher.get());
-        }
-        return !unprotectedMatcher.isPresent();
+        unprotectedMatcher
+                .ifPresent(regexRequestMatcher -> LOG.debug("Ignore CSRF for: [{}] - [{}] with matcher [{}]!",
+                        request.getMethod(), request.getRequestURI(), regexRequestMatcher));
+        return unprotectedMatcher.isEmpty();
     }
 
 
@@ -93,9 +98,7 @@ public class URLCsrfIgnoreMatcher implements RequestMatcher {
         if (httpMethods == null || httpMethods.isEmpty()) {
             unprotectedMatcherList.add(new RegexRequestMatcher(ignoreUrlPattern, null));
         } else {
-            httpMethods.forEach(httpMethod -> {
-                unprotectedMatcherList.add(new RegexRequestMatcher(ignoreUrlPattern, httpMethod.name()));
-            });
+            httpMethods.forEach(httpMethod -> unprotectedMatcherList.add(new RegexRequestMatcher(ignoreUrlPattern, httpMethod.name())));
         }
     }
 }
