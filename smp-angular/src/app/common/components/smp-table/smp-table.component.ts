@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, ElementRef,
   EventEmitter,
   Input,
   Output, TemplateRef,
@@ -25,6 +25,7 @@ export class SmpTableComponent implements AfterViewInit {
   @Output() onRowDoubleClicked: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild(MatTable) table: MatTable<any>;
+  @ViewChild("tableFilter")  tableFilterField: ElementRef<HTMLInputElement>;
   @Input() filterLabel: string;
   @Input() filterPlaceholder: string;
   @Input() filterValue: string;
@@ -95,6 +96,17 @@ export class SmpTableComponent implements AfterViewInit {
   onFilterChangedEvent(event: Event) {
     let value: string = (event.target as HTMLInputElement).value;
     this.onFilterChanged.emit(value);
+  }
+  clearFilter(){
+    this.setFilterValue("")
+  }
+
+  /** Sets filter value and emits event. Method can be used to set filter value programmatically
+   **/
+  setFilterValue(value: string) {
+    this.filterValue = value
+    this.tableFilterField.nativeElement.value = value;
+    this.onFilterChanged.emit(this.filterValue);
   }
 
   onRowClickedEvent(row: any) {

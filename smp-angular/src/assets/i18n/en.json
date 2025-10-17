@@ -278,6 +278,7 @@
   "user.profile.panel.success.update": "The operation 'update user' completed successfully.",
   "user.profile.panel.error.update": "The operation 'update user' not completed successfully.",
   "row.limiter.placeholder": "Rows",
+  "smp.table.button.clear.filter.tooltip" : "Clear search filter",
   "search.table.button.cancel": "Cancel",
   "search.table.button.delete": "Delete",
   "search.table.button.edit": "Edit",

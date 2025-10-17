@@ -1,13 +1,22 @@
 <div class="smp-table-container">
   @if (showFilter) {
-    <mat-form-field id="smp-table-filter_id" class="smp-table-filter">
-      <mat-label *ngIf="filterLabel">{{ filterLabel | translate }}</mat-label>
-      <input matInput #tableFilter [value]="filterValue"
-             (keyup)="onFilterChangedEvent($event)"
-             placeholder="{{ filterPlaceholder | translate }}"
-             [disabled]="disabledFilter"
-      >
-    </mat-form-field>
+    <div class="smp-table-filter-container">
+      <mat-form-field id="smp-table-filter_id" class="smp-table-filter">
+        <mat-label *ngIf="filterLabel">{{ filterLabel | translate }}</mat-label>
+        <input matInput #tableFilter [value]="filterValue"
+               (keyup)="onFilterChangedEvent($event)"
+               placeholder="{{ filterPlaceholder | translate }}"
+               [disabled]="disabledFilter"
+        >
+      </mat-form-field>
+
+      <button mat-icon-button matSuffix aria-label="Clear"
+              (click)="clearFilter()"
+              matTooltip="{{ 'smp.table.button.clear.filter.tooltip' | translate }}">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </div>
+
   }
   <mat-table class="mat-elevation-z2"
              [dataSource]="dataSource"
@@ -43,9 +52,9 @@
 
     <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
     <ng-container matColumnDef="expandedDetail">
-      <div  *matCellDef="let row"
-          style="max-width: unset;"
-        >
+      <div *matCellDef="let row"
+           style="max-width: unset;"
+      >
         @if (row.expanded) {
 
           <ng-container *ngTemplateOutlet="tableRowDetailContainer; context: { $implicit: row, row:row, value: row}"
