@@ -74,6 +74,7 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         sg.setPage(page < 0 ? 0 : page);
 
         long iCnt = getDatabaseDao().getDataListCount(filter);
+
         if (pageSize < 0) { // if page size iz -1 return all results and set pageSize to maxCount
             pageSize = (int) iCnt;
         }

@@ -73,7 +73,7 @@ export class SearchTableComponent implements OnInit, AfterViewInit {
 
   totalRowCount: number = 0;
   pageSize: number = 50;
-  pageIndex: number = 50;
+  pageIndex: number = 0;
   orderBy: string = null;
   asc = false;
   forceRefresh: boolean = false;

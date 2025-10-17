@@ -20,12 +20,14 @@ import {UserRo} from "../../common/model/user-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 import {MatTableDataSource} from "@angular/material/table";
 import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
+import {PageEvent} from "@angular/material/paginator";
+import {SmpTableComponent} from "../../common/components/smp-table/smp-table.component";
 
 
 @Component({
-    templateUrl: './admin-user.component.html',
-    styleUrls: ['./admin-user.component.css'],
-    standalone: false
+  templateUrl: './admin-user.component.html',
+  styleUrls: ['./admin-user.component.css'],
+  standalone: false
 })
 export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['username', 'fullName'];
@@ -35,9 +37,12 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   managedUserData?: UserRo;
   columns: SmpTableColDef[];
 
-  filter: string;
+  filterValue: string;
   resultsLength: number = 0;
+  pageSize: number = 10;
+  pageIndex: number = 0;
   isLoadingResults: boolean = false;
+  @ViewChild('smpTableComponent') smpTableComponent: SmpTableComponent;
 
   constructor(private adminUserService: AdminUserService,
               private httpErrorHandlerService: HttpErrorHandlerService,
@@ -66,16 +71,20 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   }
 
   applyUserFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    this.filterValue= filterValue?.trim().toLowerCase();
+    this.loadTableData();
+  }
+
+  onPageChanged(page: PageEvent) {
+    this.pageIndex = page.pageIndex;
+    this.pageSize = page.pageSize;
+    this.loadTableData();
   }
 
   loadTableData(selectUsername: string = null) {
     this.isLoadingResults = true;
 
-    this.adminUserService.getUsersObservable(this.filter, this.dataSource.paginator.pageIndex, this.dataSource.paginator.pageSize)
+    this.adminUserService.getUsersObservable(this.filterValue, this.pageIndex, this.pageSize)
       .pipe(
         finalize(() => {
           this.isLoadingResults = false;
@@ -84,6 +93,8 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
           this.userData = [...result.serviceEntities];
           this.dataSource.data = this.userData;
           this.resultsLength = result.count;
+          this.pageIndex = result.page;
+          this.pageSize = result.pageSize;
           this.isLoadingResults = false;
 
           if (selectUsername) {
@@ -184,6 +195,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         if (user) {
           thatAdminUserComponent.selected = null;
           thatAdminUserComponent.managedUserData = null;
+          thatAdminUserComponent.filterValue = user.username;
           thatAdminUserComponent.loadTableData(user.username);
           thatAdminUserComponent.alertService.success(await lastValueFrom(thatAdminUserComponent.translateService.get("admin.user.success.create", {username: user.username})));
         }

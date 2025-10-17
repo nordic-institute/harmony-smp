@@ -35,17 +35,25 @@
     </mat-toolbar-row>
   </mat-toolbar>
 
-  <smp-table class="mat-elevation-z2" id="admin-user-table"
+  <smp-table #smpTableComponent
+             id="admin-user-table"
+             class="mat-elevation-z2"
              filterLabel="admin.user.label.filter"
              filterPlaceholder="admin.user.placeholder.filter"
              noResultLabel="admin.user.label.no.data.found"
              noResultForFilterLabel="admin.user.label.no.filter.results"
              [dataSource]="dataSource"
+             [filterValue]="filterValue"
+             [isLoadableTable] ="true"
              [selectedRow]="selected"
              [columnDefList]="columns"
+             [pageSize]="pageSize"
+             [pageIndex]="pageIndex"
+             [dataLength]="resultsLength"
              [displayedColumns]="displayedColumns"
              (onFilterChanged)="applyUserFilter($event)"
              (onRowClicked)="onUserSelected($event)"
+             (onPageChanged)="onPageChanged($event)"
   >
   </smp-table>
 </ng-template>

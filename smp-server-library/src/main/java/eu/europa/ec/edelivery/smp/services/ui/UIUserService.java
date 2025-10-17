@@ -548,6 +548,13 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             result.setCount(0L);
             return result;
         }
+        // adjust page if out of range
+        int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+        if (iStartIndex >= count && page > 0) {
+            page = count.intValue() / pageSize - (iStartIndex == count ? 1 : 0); // go back to fist page with results
+            result.setPage(page); // go back for a page
+        }
+
         result.setCount(count);
         List<DBUser> users = userDao.getFilteredUserList(page, pageSize, filter);
         List<SearchUserRO> userList = users.stream().map(usr -> conversionService.convert(usr, SearchUserRO.class)).toList();
