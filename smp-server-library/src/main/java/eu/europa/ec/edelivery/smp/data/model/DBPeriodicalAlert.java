@@ -45,7 +45,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_PERIODICAL_AL
         query = "SELECT distinct a FROM DBPeriodicalAlert a" +
                 " WHERE a.entityType = :entity_type" +
                 " AND a.entityIdentifier = :identifier" +
-                " AND a.alertScope = :alertScope")
+                " AND a.alertScope = :alert_scope")
 public class DBPeriodicalAlert extends BaseEntity {
 
     @Id

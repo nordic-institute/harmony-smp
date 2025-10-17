@@ -83,7 +83,7 @@ public class ResourceConstants {
     public static final String PATH_ACTION_UPDATE_RESOURCE_TYPES = "update-resource-types";
     public static final String PATH_ACTION_UPDATE_SML_DATA = "update-sml-integration-data";
     public static final String PATH_ACTION_RESET_CREDENTIAL_REQUEST = "request-reset-credential";
-    public static final String PATH_ACTION_VALIDATE_RESET_TOKEN = "validate-reset-credential";
+    public static final String PATH_ACTION_VALIDATE_RESET_CREDENTIALS = "validate-reset-credential";
     public static final String PATH_ACTION_RESET_CREDENTIAL = "reset-credential";
     public static final String PATH_ACTION_AUTHENTICATION = "authentication";
     public static final String PATH_ACTION_GENERATE_DNS_QUERY = "generate-dns-query";
@@ -196,7 +196,8 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION = CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER = CONTEXT_PATH_PUBLIC_SECURITY + "/user";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER_RESET = CONTEXT_PATH_PUBLIC_SECURITY + "/" + PATH_ACTION_RESET_CREDENTIAL_REQUEST;
-    public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER_VALIDATE_RESET_TOKEN = CONTEXT_PATH_PUBLIC_SECURITY + "/" + PATH_ACTION_VALIDATE_RESET_TOKEN;
+    public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER_VALIDATE_RESET_CREDENTIALS = CONTEXT_PATH_PUBLIC_SECURITY + "/" + PATH_ACTION_VALIDATE_RESET_CREDENTIALS;
+    public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER_RESET_CREDENTIALS = CONTEXT_PATH_PUBLIC_SECURITY + "/" + PATH_ACTION_RESET_CREDENTIAL;
 
     // --------------------------------------
     //internal

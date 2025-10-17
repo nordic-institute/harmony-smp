@@ -43,14 +43,12 @@ class AuthenticationResourceTest {
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     SMPCookieWriter smpCookieWriter = Mockito.mock(SMPCookieWriter.class);
     CsrfTokenRepository csrfTokenRepository = Mockito.mock(CsrfTokenRepository.class);
-    SMPExceptionLanguageService smpExceptionLanguageService = Mockito.mock(SMPExceptionLanguageService.class);
 
     AuthenticationController testInstance = new AuthenticationController(authenticationService,
             authorizationService,
             configurationService,
             smpCookieWriter,
-            csrfTokenRepository,
-            smpExceptionLanguageService);
+            csrfTokenRepository);
 
     @Test
     void logout() {
