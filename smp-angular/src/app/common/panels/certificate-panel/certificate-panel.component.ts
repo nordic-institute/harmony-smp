@@ -51,6 +51,7 @@ export class CertificatePanelComponent {
     if (this.extensionData.paginator) {
       this.extensionData.paginator.firstPage();
     }
+    this.selectedExtension= this.extensionData.filteredData.length > 0 ? this.extensionData.filteredData[0] : null;
   }
 
   get certificate(): CertificateRo {
@@ -63,7 +64,12 @@ export class CertificatePanelComponent {
 
   @Input() set certificate(value: CertificateRo) {
     this._certificate = value;
-    this.extensionData.data = value?.extensions
+    this.extensionData.data = value?.extensions || [];
+    if (this.extensionData.data.length > 0) {
+      this.selectedExtension = this.extensionData.data[0];
+    } else {
+        this.selectedExtension = null;
+    }
   }
 
 
