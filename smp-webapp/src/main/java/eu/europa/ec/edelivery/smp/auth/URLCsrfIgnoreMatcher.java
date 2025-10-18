@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
@@ -64,7 +65,9 @@ public class URLCsrfIgnoreMatcher implements RequestMatcher {
             LOG.debug("URL is not part of the UI  [{}]", uri);
             return false;
         } else if (Strings.CI.equals(request.getMethod(), HttpMethod.POST.name())
-                && Strings.CI.endsWithAny(uri, "/ui/public/rest/security/validate-reset-credential")) {
+                && Strings.CI.endsWithAny(uri,
+                ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER_VALIDATE_RESET_CREDENTIALS,
+                ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER_RESET_CREDENTIALS)) {
             // special case for reset password validation which is POST call redirected from email link
             LOG.debug("HTTP method [{}] for validate-reset-credential is ignored for CSRF!", request.getMethod());
             return false;

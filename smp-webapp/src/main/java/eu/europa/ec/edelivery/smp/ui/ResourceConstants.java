@@ -96,7 +96,7 @@ public class ResourceConstants {
     public static final String PATH_ACTION_SML_CHANGE_CERTIFICATE = "sml-change-certificate";
 
     // --------------------------------------
-    // context paths
+    // context path
     public static final String CONTEXT_PATH_PUBLIC = "/ui/public/rest/";
     public static final String CONTEXT_PATH_INTERNAL = "/ui/internal/rest/";
     public static final String CONTEXT_PATH_INTERNAL_USERID = CONTEXT_PATH_INTERNAL + "{" + PATH_PARAM_ENC_USER_ID + "}/";
