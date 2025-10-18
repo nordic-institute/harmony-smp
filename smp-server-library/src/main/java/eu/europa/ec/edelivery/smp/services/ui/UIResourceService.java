@@ -339,7 +339,7 @@ public class UIResourceService {
             }
             resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
         }
-        ResourceRO resourceROResult = conversionService.convert(resource, ResourceRO.class);
+        ResourceRO resourceROResult = convertResourceWithReferenceData(resource);
         if (StringUtils.isNotBlank(resourceRO.getResourceId()) && resourceROResult != null) {
             // return the same encrypted id so the UI can use update old resource
             resourceROResult.setResourceId(resourceRO.getResourceId());
