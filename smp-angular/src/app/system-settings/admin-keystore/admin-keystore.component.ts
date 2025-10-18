@@ -49,10 +49,11 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
       {
         columnDef: 'entry-type',
         header: 'admin.keystore.label.type',
-        tooltip: (row: CertificateRo) => !!row.isContainingKey ? this.tooltipKeyPair: this.tooltipCertificate,
-        icon: (row: CertificateRo) => !!row.isContainingKey ? "key": "article",
+        tooltip: (row: CertificateRo) => !!row.containingKey ? this.tooltipKeyPair: this.tooltipCertificate,
+        icon: (row: CertificateRo) => !!row.containingKey ? "key": "article",
         class: (row: CertificateRo) => ({ "datatable-row-error": row.invalid }),
-        cell: (row: CertificateRo) => ""
+        cell: (row: CertificateRo) => "",
+        style: "max-width: 80px; width: 50px; display: flex; justify-content: center;"
       } as SmpTableColDef
     ];
 
@@ -89,8 +90,8 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
     if (certificateRos == null || certificateRos.length == 0) {
       return;
     }
-    let aliasAdded: string[] = []
-    let aliasDeleted: string[] = []
+    let dataAdded: string[] = []
+    let dataDeleted: string[] = []
     let errorsDetected: string[] = []
 
     certificateRos.forEach((certificateRo) => {
@@ -98,20 +99,19 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
       if (certificateRo.status == EntityStatus.NEW) {
         this.keystoreCertificates.push(certificateRo)
         this.selected = certificateRo;
-        aliasAdded.push(certificateRo.alias);
+        dataAdded.push( "<li>" + certificateRo.alias + " - " + certificateRo.certificateId + "</li>");
       } else if (certificateRo.status == EntityStatus.REMOVED) {
-        aliasDeleted.push(certificateRo.alias);
-
+        dataDeleted.push( "<li>" + certificateRo.alias + " - " + certificateRo.certificateId + "</li>");
         this.keystoreCertificates = this.keystoreCertificates.filter(item => item.alias !== certificateRo.alias)
       } else if (certificateRo.status == EntityStatus.ERROR) {
         errorsDetected.push(certificateRo.actionMessage);
       }
     });
-    let msg = aliasAdded.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.added", {aliases: aliasAdded})) : "";
-    msg += aliasDeleted.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.deleted", {aliases: aliasDeleted})) : "";
+    let msg = dataAdded.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.added", {data: "<ul>"+dataAdded+ "</ul>"})) : "";
+    msg += dataDeleted.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.deleted", {data: "<ul>"+dataDeleted + "</ul>"})) : "";
     msg += errorsDetected.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.errors.detected", {errors: errorsDetected})) : "";
 
-    this.alertService.success(msg);
+    this.alertService.success(msg, false, 4, true);
 
     this.selected = null;
     this.dataSource.data = this.keystoreCertificates;

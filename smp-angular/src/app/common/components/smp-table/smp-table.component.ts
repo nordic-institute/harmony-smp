@@ -2,7 +2,7 @@ import {
   AfterViewInit,
   Component, ElementRef,
   EventEmitter,
-  Input,
+  Input, OnInit,
   Output, TemplateRef,
   ViewChild
 } from '@angular/core';
@@ -80,6 +80,9 @@ export class SmpTableComponent implements AfterViewInit {
   isLoadingResults = false;
 
   constructor() {
+    if (this.filterValue === undefined) {
+      this.filterValue = '';
+    }
   }
 
   ngAfterViewInit(): void {
@@ -87,9 +90,6 @@ export class SmpTableComponent implements AfterViewInit {
     // because internal paginator has its own paginator which is limited only to page.
     if (!this.isLoadableTable) {
        this.dataSource.paginator = this.paginator;
-    }
-    if (this.filterValue === undefined) {
-      this.filterValue = '';
     }
   }
 

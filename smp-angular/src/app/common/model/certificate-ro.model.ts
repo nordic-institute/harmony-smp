@@ -15,7 +15,7 @@ export interface CertificateRo {
   alias?: string;
   publicKeyType?: string;
   certificatePolicies?: string[];
-  isContainingKey?: boolean;
+  containingKey?: boolean;
   invalid?: boolean;
   error?: boolean;
   invalidReason?: string;

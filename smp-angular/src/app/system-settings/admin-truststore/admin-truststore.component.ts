@@ -12,11 +12,11 @@ import {TranslateService} from "@ngx-translate/core";
 import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
-    templateUrl: './admin-truststore.component.html',
-    styleUrls: ['./admin-truststore.component.css'],
-    standalone: false
+  templateUrl: './admin-truststore.component.html',
+  styleUrls: ['./admin-truststore.component.css'],
+  standalone: false
 })
-export class AdminTruststoreComponent implements OnInit,  OnDestroy, BeforeLeaveGuard {
+export class AdminTruststoreComponent implements OnInit, OnDestroy, BeforeLeaveGuard {
   displayedColumns: string[] = ['alias'];
   dataSource: MatTableDataSource<CertificateRo> = new MatTableDataSource();
   trustedCertificateList: CertificateRo[];
@@ -38,7 +38,8 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, BeforeLeave
         columnDef: 'alias',
         header: 'admin.truststore.label.alias',
         tooltip: (row: CertificateRo) => row?.certificateId,
-        cell: (row: CertificateRo) => row.alias
+        cell: (row: CertificateRo) => row.alias,
+        class: (row: CertificateRo) => ({ "datatable-row-error": row.invalid }),
       } as SmpTableColDef,
     ];
 
@@ -56,8 +57,10 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, BeforeLeave
 
   ngOnInit(): void {
     // filter predicate for search the domain
-    this.dataSource.filterPredicate  =
-      (data: CertificateRo, filter: string) => {return !filter || -1!=data.alias.toLowerCase().indexOf(filter.trim().toLowerCase()) };
+    this.dataSource.filterPredicate =
+      (data: CertificateRo, filter: string) => {
+        return !filter || -1 != data.alias.toLowerCase().indexOf(filter.trim().toLowerCase())
+      };
   }
 
   ngOnDestroy(): void {
@@ -81,13 +84,12 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, BeforeLeave
       this.selected = certificateRo;
       this.alertService.success(await lastValueFrom(this.translateService.get("admin.truststore.success.import", {
         certificateId: certificateRo.certificateId,
-        alias: certificateRo.alias
-      })));
+        data: "<ul><li>" + certificateRo.alias + " - " + certificateRo.certificateId + "</li></ul>",
+      })), false, 3, true);
     } else if (certificateRo.status == EntityStatus.REMOVED) {
       this.alertService.success(await lastValueFrom(this.translateService.get("admin.truststore.success.remove", {
-        certificateId: certificateRo.certificateId,
-        alias: certificateRo.alias
-      })));
+        data: "<ul><li>" + certificateRo.alias + " - " + certificateRo.certificateId + "</li></ul>",
+      })), false, 3, true);
       this.selected = null;
       this.trustedCertificateList = this.trustedCertificateList.filter(item => item.alias !== certificateRo.alias)
     } else if (certificateRo.status == EntityStatus.ERROR) {
@@ -96,7 +98,7 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, BeforeLeave
     this.dataSource.data = this.trustedCertificateList;
     // if new cert is added - go to last page
     if (certificateRo.status == EntityStatus.NEW) {
-      if(this.dataSource.paginator) {
+      if (this.dataSource.paginator) {
         this.dataSource.paginator.lastPage();
       }
     }

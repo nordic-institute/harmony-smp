@@ -225,12 +225,20 @@ export class MembershipPanelComponent implements BeforeLeaveGuard, OnInit {
         resource: this._resource,
         member: member,
       }
-    }).afterClosed().subscribe( () => {
+    }).afterClosed().subscribe((newAdmin: number) => {
       this.refresh();
+      if (newAdmin) {
+        this._domain.adminMemberCount += newAdmin;
+        if (this._domain.adminMemberCount < 0) {
+          this._domain.adminMemberCount = 1;
+        }
+        this.domainService.notifyDomainEntryUpdated(this._domain);
+      }
     });
   }
 
   public async onDeleteSelectedButtonClicked() {
+    let selectedRole = this.selectedMember.roleType;
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.title")),
@@ -238,8 +246,16 @@ export class MembershipPanelComponent implements BeforeLeaveGuard, OnInit {
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.getDeleteMembershipService().subscribe( () => {
+        this.getDeleteMembershipService().subscribe(() => {
             this.refresh();
+            // refresh domain to update counts
+            if (this.membershipType === MemberTypeEnum.DOMAIN &&
+              selectedRole === MembershipRoleEnum.ADMIN) {
+              if (this._domain.adminMemberCount > 0) {
+                this._domain.adminMemberCount--;
+                this.domainService.notifyDomainEntryUpdated(this._domain);
+              }
+            }
           }, (error) => {
             this.alertService.error(error.error?.errorDescription);
           }

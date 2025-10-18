@@ -86,14 +86,12 @@ export class DomainTruststoreComponent implements OnInit,  OnDestroy, BeforeLeav
       this.trustedCertificateList.push(certificateRo)
       this.selected = certificateRo;
       this.alertService.success(await lastValueFrom(this.translateService.get("admin.truststore.success.import", {
-        certificateId: certificateRo.certificateId,
-        alias: certificateRo.alias
-      })));
+        data: "<ul><li>" +  certificateRo.alias +" - " + certificateRo.certificateId + "</li></ul>",
+      })),false, 3, true);
     } else if (certificateRo.status == EntityStatus.REMOVED) {
       this.alertService.success(await lastValueFrom(this.translateService.get("admin.truststore.success.remove", {
-        certificateId: certificateRo.certificateId,
-        alias: certificateRo.alias
-      })));
+        data: "<ul><li>" +  certificateRo.alias +" - " + certificateRo.certificateId + "</li></ul>",
+      })),false, 3, true);
       this.selected = null;
       this.trustedCertificateList = this.trustedCertificateList.filter(item => item.alias !== certificateRo.alias)
     } else if (certificateRo.status == EntityStatus.ERROR) {
