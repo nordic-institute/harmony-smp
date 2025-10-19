@@ -60,8 +60,6 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   @ViewChild('domainResourceTypePanelComponent') domainResourceTypePanelComponent: DomainResourceTypePanelComponent;
   @ViewChild('domainSmlIntegrationPanelComponent') domainSmlIntegrationPanelComponent: DomainSmlIntegrationPanelComponent;
   @ViewChild('domainTable') domainTable: SmpTableComponent;
-  @ViewChild('adminCountColumn', {static: true}) adminCountColumn: TemplateRef<any>;
-
   @ViewChild('domainTabs') domainTabs: MatTabGroup;
 
   constructor(private domainService: AdminDomainService,
@@ -84,7 +82,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
         header: 'admin.domain.label.domain.admin.count',
         cell: (row: DomainRo) => row.adminMemberCount?.toString() || '0',
         class: (row: DomainRo) => ({"datatable-row-error": this.hasRowErrors(row)}),
-        style: "max-width: 80px; width: 50px; display: flex; justify-content: right;"
+        style: "max-width: 80px; width: 50px; padding-right: 15px; display: flex; justify-content: right;"
       } as SmpTableColDef,
     ];
 

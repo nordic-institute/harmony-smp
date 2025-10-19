@@ -107,8 +107,8 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, BeforeLeaveGua
         errorsDetected.push(certificateRo.actionMessage);
       }
     });
-    let msg = dataAdded.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.added", {data: "<ul>"+dataAdded+ "</ul>"})) : "";
-    msg += dataDeleted.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.deleted", {data: "<ul>"+dataDeleted + "</ul>"})) : "";
+    let msg = dataAdded.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.added", {data: "<ul>"+dataAdded.join("")+ "</ul>"})) : "";
+    msg += dataDeleted.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.certificates.deleted", {data: "<ul>"+dataDeleted.join("") + "</ul>"})) : "";
     msg += errorsDetected.length > 0 ? await lastValueFrom(this.translateService.get("admin.keystore.success.errors.detected", {errors: errorsDetected})) : "";
 
     this.alertService.success(msg, false, 4, true);

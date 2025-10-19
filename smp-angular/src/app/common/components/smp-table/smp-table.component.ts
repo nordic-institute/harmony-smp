@@ -2,7 +2,7 @@ import {
   AfterViewInit,
   Component, ElementRef,
   EventEmitter,
-  Input, OnInit,
+  Input,
   Output, TemplateRef,
   ViewChild
 } from '@angular/core';
@@ -171,6 +171,16 @@ export class SmpTableComponent implements AfterViewInit {
       return '';
     }
     return ( col?.style?col.style:'') + ' '  +( col?.headerStyle?col.headerStyle:'') ;
+  }
+
+  getRowClass(row, oddRow: boolean) {
+    return {
+      'datatable-row-selected': row === this.selected,
+      'datatable-row-new': (row.status === EntityStatus.NEW),
+      'datatable-row-updated': (row.status === EntityStatus.UPDATED),
+      'deleted': (row.status === EntityStatus.REMOVED),
+      'datatable-row-odd': oddRow
+    };
   }
 
   protected readonly EntityStatus = EntityStatus;
