@@ -65,6 +65,7 @@
         align="end">{{ "domain.panel.hint.domain.visibility" | translate }}
       </mat-hint>
     </mat-form-field>
+    <!-- Temporarily disabled for release DomiSMP 5.2 RC: see the ticket #EDELIVERY-12744
     <mat-slide-toggle style="width:100%"
                       formControlName="domainTrustStoreEnabled"
                       id="domain-truststore-enabled_id"
@@ -72,6 +73,7 @@
     >
       {{ "domain.panel.label.domain.truststore.enabled" | translate }}
     </mat-slide-toggle>
+    -->
     <mat-form-field *ngIf="domainResourceTypes?.length" style="width:100%">
       <mat-label>{{ "domain.panel.label.domain.default.resource.type" | translate }}</mat-label>
       <select matNativeControl formControlName="defaultResourceTypeIdentifier"

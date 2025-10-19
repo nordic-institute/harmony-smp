@@ -20,10 +20,7 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
-import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.*;
@@ -77,7 +74,7 @@ public class UITruststoreService extends BasicKeystoreService {
     private final UserDao userDao;
 
     List<String> normalizedTrustedList = new ArrayList<>();
-    Map<String, X509Certificate> truststoreCertificates = new HashMap();
+    Map<String, X509Certificate> truststoreCertificates = new HashMap<>();
     List<CertificateRO> certificateROList = new ArrayList<>();
     long lastUpdateTrustStoreFileTime = 0;
     File lastUpdateTrustStoreFile = null;
@@ -213,8 +210,9 @@ public class UITruststoreService extends BasicKeystoreService {
      * Validate certificate!
      *
      * @param buff     - bytearray of the certificate (pem of or der)
-     * @param validate
-     * @return
+     * @param validate - if true then validate the certificate
+     * @param validateDuplicate - if certificate is already registered by other user it throws exception
+     * @return CertificateRO - certificate data
      */
     public CertificateRO getCertificateData(byte[] buff, boolean validate, boolean validateDuplicate) {
         X509Certificate cert;
@@ -324,17 +322,18 @@ public class UITruststoreService extends BasicKeystoreService {
         validateCertificateWithTruststore(x509Certificate, subjectRegExp, allowedCertificatePolicies, truststore);
     }
 
-    public void validateCertificateWithDomainTruststore(DBDomain domain, X509Certificate x509Certificate) throws CertificateException {
-
-        if (x509Certificate == null) {
-            throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
-        }
-        List<DBDomainConfiguration> domainConfigurations = configurationService.getDomainConfigurations(domain);
-        Pattern subjectRegExp = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_SUBJECT_REGULAR_EXPRESSION);
-        List<String> allowedCertificatePolicies = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_ALLOWED_CERT_POLICY_OIDS);
-        KeyStore truststore = getDomainTrustStore(domainConfigurations);
-        validateCertificateWithTruststore(x509Certificate, subjectRegExp, allowedCertificatePolicies, truststore);
-    }
+//    Temporarily disabled for release DomiSMP 5.2 RC: see the ticket #EDELIVERY-12744
+//    public void validateCertificateWithDomainTruststore(DBDomain domain, X509Certificate x509Certificate) throws CertificateException {
+//
+//        if (x509Certificate == null) {
+//            throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
+//        }
+//        List<DBDomainConfiguration> domainConfigurations = configurationService.getDomainConfigurations(domain);
+//        Pattern subjectRegExp = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_SUBJECT_REGULAR_EXPRESSION);
+//        List<String> allowedCertificatePolicies = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.CERTIFICATE_ALLOWED_CERT_POLICY_OIDS);
+//        KeyStore truststore = getDomainTrustStore(domainConfigurations);
+//        validateCertificateWithTruststore(x509Certificate, subjectRegExp, allowedCertificatePolicies, truststore);
+//    }
 
     /**
      * Method validates if certificate public key algorithm is allowed. If the allowedCertificateKeyType list is null or empty, then
@@ -368,7 +367,7 @@ public class UITruststoreService extends BasicKeystoreService {
         // if the truststore is empty then truststore validation is ignored
         // backward compatibility
         if (!normalizedTrustedList.isEmpty() && !(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
-                || isSubjectOnTrustedList(cert.getIssuerDN().getName()))) {
+                || isSubjectOnTrustedList(cert.getIssuerX500Principal().getName()))) {
             throw new CertificateNotTrustedException(CERT_ERROR_MSG_NOT_TRUSTED);
         }
 
@@ -477,7 +476,12 @@ public class UITruststoreService extends BasicKeystoreService {
     /**
      * Delete keys smp keystore
      *
-     * @param alias
+     * @param alias - alias of the certificate to delete
+     * @return deleted X509Certificate or null if alias does not exist
+     * @throws NoSuchAlgorithmException - if keystore can not be loaded due to invalid algorithm
+     * @throws KeyStoreException  - if keystore can not be loaded due to keystore error
+     * @throws IOException - if keystore can not be loaded due to IO error
+     * @throws CertificateException  - Certificate error
      */
     public X509Certificate deleteCertificate(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
@@ -530,36 +534,37 @@ public class UITruststoreService extends BasicKeystoreService {
         return trustStore;
     }
 
-    public KeyStore getDomainTrustStore(List<DBDomainConfiguration> domainConfigurations) {
-        File truststoreFile = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_FILENAME);
-        String truststoreType = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_TYPE);
-        String truststoreToken = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_PASSWORD);
-
-        if (truststoreFile == null) {
-            LOG.debug("Truststore file is not configured for the domain! Skip truststore validation!");
-            return null;
-        }
-        if (!truststoreFile.exists()) {
-            LOG.error("Truststore file [{}] does not exists!", truststoreFile.getAbsolutePath());
-            return null;
-        }
-        if (StringUtils.isEmpty(truststoreToken)) {
-            LOG.error("Truststore credentials are missing in configuration table for truststore: [{}] !", truststoreFile.getName());
-            return null;
-        }
-
-        try (InputStream truststoreInputStream = new FileInputStream(truststoreFile)) {
-            String type = StringUtils.defaultIfEmpty(truststoreType, "JKS");
-            LOG.info("Load domain truststore [{}] with type [{}].", truststoreFile, type);
-            KeyStore loadedTrustStore = KeyStore.getInstance(type);
-            loadedTrustStore.load(truststoreInputStream, truststoreToken.toCharArray());
-            return loadedTrustStore;
-        } catch (Exception exception) {
-            LOG.error("Could not load domain truststore: [{}] Error: [{}]", new Object[]{truststoreFile, ExceptionUtils.getRootCauseMessage(exception), exception});
-        }
-        return null;
-    }
-
+    //      Temporarily disabled for release DomiSMP 5.2 RC: see the ticket #EDELIVERY-12744
+//      public KeyStore getDomainTrustStore(List<DBDomainConfiguration> domainConfigurations) {
+//          File truststoreFile = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_FILENAME);
+//          String truststoreType = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_TYPE);
+//          String truststoreToken = configurationService.getDomainConfigurationValue(domainConfigurations, SMPDomainPropertyEnum.TRUSTSTORE_PASSWORD);
+//
+//          if (truststoreFile == null) {
+//              LOG.debug("Truststore file is not configured for the domain! Skip truststore validation!");
+//              return null;
+//          }
+//          if (!truststoreFile.exists()) {
+//              LOG.error("Truststore file [{}] does not exists!", truststoreFile.getAbsolutePath());
+//              return null;
+//          }
+//          if (StringUtils.isEmpty(truststoreToken)) {
+//              LOG.error("Truststore credentials are missing in configuration table for truststore: [{}] !", truststoreFile.getName());
+//              return null;
+//          }
+//
+//          try (InputStream truststoreInputStream = new FileInputStream(truststoreFile)) {
+//              String type = StringUtils.defaultIfEmpty(truststoreType, "JKS");
+//              LOG.info("Load domain truststore [{}] with type [{}].", truststoreFile, type);
+//              KeyStore loadedTrustStore = KeyStore.getInstance(type);
+//              loadedTrustStore.load(truststoreInputStream, truststoreToken.toCharArray());
+//              return loadedTrustStore;
+//          } catch (Exception exception) {
+//              LOG.error("Could not load domain truststore: [{}] Error: [{}]", new Object[]{truststoreFile, ExceptionUtils.getRootCauseMessage(exception), exception});
+//          }
+//          return null;
+//      }
+//
     public String createAliasFromCert(X509Certificate x509cert, KeyStore truststore) {
         String dn = x509cert.getSubjectX500Principal().getName();
         String alias = null;
@@ -573,8 +578,7 @@ public class UITruststoreService extends BasicKeystoreService {
                     NamingEnumeration enr = rdn.toAttributes().getAll();
                     while (enr.hasMore()) {
                         Object mvRDn = enr.next();
-                        if (mvRDn instanceof BasicAttribute) {
-                            BasicAttribute ba = (BasicAttribute) mvRDn;
+                        if (mvRDn instanceof BasicAttribute ba) {
                             if (Objects.equals("CN", ba.getID())) {
                                 cn = new Rdn(ba.getID(), ba.get());
                                 break;
@@ -616,10 +620,10 @@ public class UITruststoreService extends BasicKeystoreService {
      * Store keystore
      *
      * @param keyStore to store
-     * @throws IOException
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     * @throws KeyStoreException
+     * @throws IOException - if keystore can not be stored due to IO error
+     * @throws CertificateException - if keystore can not be stored due to certificate error
+     * @throws NoSuchAlgorithmException - if keystore can not be stored due to invalid/unsupported  algorithm
+     * @throws KeyStoreException - if keystore can not be stored due to keystore error
      */
     private void storeTruststore(KeyStore keyStore) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         File keystoreFilePath = getTruststoreFile();
