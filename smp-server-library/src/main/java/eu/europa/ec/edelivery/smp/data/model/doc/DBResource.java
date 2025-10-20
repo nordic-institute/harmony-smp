@@ -118,13 +118,21 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:document_type IS NULL OR r.domainResourceDef.resourceDef.name = :document_type) "
 )
 @NamedQuery(name = QUERY_RESOURCE_REFERENCE_DATA,
-        query = "SELECT  new eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData(" +
-                "    r.document.id as documentId, " +
-                "    r.document.sharingEnabled as sharingEnabled, " +
-                "    (SELECT COUNT(r) FROM DBDocument d2 WHERE d2.referenceDocument = r.document) as referencedByCount, " +
-                "    r.document.referenceDocument.id as referencedDocumentId, " +
-                "    r.document.referenceDocumentUrl as referenceUrlPath) " +
-                "  FROM DBResource r WHERE r.id = :resource_id")
+        query = "SELECT new eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData(" +
+                "    r.document.id as documentId," +
+                "    r.document.sharingEnabled as sharingEnabled," +
+                "    COUNT(d2.id) as referencedByCount," +
+                "    r.document.referenceDocument.id as referencedDocumentId," +
+                "    r.document.referenceDocumentUrl as referenceUrlPath" +
+                 " ) " +
+                " FROM DBResource r" +
+                " LEFT JOIN DBDocument d2 ON d2.referenceDocument = r.document" +
+                " WHERE r.id = :resource_id" +
+                " GROUP BY" +
+                "    r.document.id," +
+                "    r.document.sharingEnabled," +
+                "    r.document.referenceDocument.id," +
+                "    r.document.referenceDocumentUrl")
 public class DBResource extends BaseEntity {
 
     @Id
@@ -154,7 +162,7 @@ public class DBResource extends BaseEntity {
 
     // The domain group list which handles the resource
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FK_GROUP_ID", nullable = true)
+    @JoinColumn(name = "FK_GROUP_ID")
     private DBGroup group;
 
     // The domain to which the resource belongs
@@ -274,10 +282,10 @@ public class DBResource extends BaseEntity {
     }
 
     /**
-     * Id is database suragete id + natural key!
+     * Id is database surrogate id + natural key!
      *
-     * @param o
-     * @return
+     * @param o other object to compare
+     * @return true if equal
      */
     @Override
     public boolean equals(Object o) {

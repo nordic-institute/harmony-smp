@@ -175,6 +175,7 @@ export class SmpTableComponent implements AfterViewInit {
 
   getRowClass(row, oddRow: boolean) {
     return {
+      'datatable-row-error': (!!row.statusMessage || row.status === EntityStatus.ERROR),
       'datatable-row-selected': row === this.selected,
       'datatable-row-new': (row.status === EntityStatus.NEW),
       'datatable-row-updated': (row.status === EntityStatus.UPDATED),
