@@ -23,10 +23,34 @@ if [ ! -d ${DATA_DIR} ]; then
 fi
 
 init_tomcat() {
+    echo "[INFO] init tomcat: $TOMCAT_HOME"
+    cd "$TOMCAT_HOME"
+
+    echo "[INFO] configure datasource in tomcat context.xml"
+    # build resource XML as a shell variable (multiline for readability)
+    RESOURCE="$(cat << EOF
+    <Resource name="jdbc/eDeliverySmpDs" auth="Container" type="javax.sql.DataSource" maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="$SMP_DB_USER" password="$SMP_DB_USER_PASSWORD" driverClassName="${SMP_DB_DRIVER}" url="$SMP_DB_URL"/>
+    <Resource name="jdbc/eDeliverySmlDs" auth="Container" type="javax.sql.DataSource" maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="$SML_DB_USER" password="$SML_DB_USER_PASSWORD" driverClassName="${SML_DB_DRIVER}" url="jdbc:mysql://localhost:3306/$SML_DB_SCHEMA?characterEncoding=UTF-8&amp;useUnicode=true"/>
+EOF
+)"
+
+    # insert resource before </Context> in `"$TOMCAT_HOME/conf/context.xml"`
+    TMP_FILE=$(mktemp)
+    awk -v resource="$RESOURCE" '
+      /<\/Context>/ {
+        print resource
+      }
+      { print }
+    ' "$TOMCAT_HOME/conf/context.xml" > "$TMP_FILE"
+
+    # Overwrite the original file
+    mv "$TMP_FILE" "$TOMCAT_HOME/conf/context.xml"
+    sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$TOMCAT_HOME/conf/server.xml" \
+
   # add java code coverage agent to image
-  if [ -e /opt/jacoco/jacoco-agent.jar ]; then
-    JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901,includes=eu.europa.ec.edelivery.smp.* $JAVA_OPTS"
-  fi
+    if [ -e /opt/jacoco/jacoco-agent.jar ]; then
+      JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901,includes=eu.europa.ec.edelivery.smp.* $JAVA_OPTS"
+    fi
 
   # for debugging
   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
