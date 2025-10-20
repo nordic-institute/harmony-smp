@@ -8,7 +8,6 @@ import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resour
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
 import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
-import {SmpTableComponent} from "../../common/components/smp-table/smp-table.component";
 
 @Component({
     templateUrl: './edit-resource.component.html',
@@ -119,7 +118,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   }
 
   get isLoading(): boolean {
-    return this.editResourceController.isLoadingResults;
+    return this.editResourceController.loadingResults;
   }
 
   isDirty(): boolean {
