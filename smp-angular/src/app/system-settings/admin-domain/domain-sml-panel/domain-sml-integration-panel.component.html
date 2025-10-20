@@ -82,6 +82,13 @@
 
       </select>
     </mat-form-field>
+    @if (changeCertificateAliasSet) {
+      <smp-warning-panel
+        type="desc"
+        icon="info"
+        label="{{ 'domain.sml.integration.panel.confirm.change.certificate.note.description' | translate:{alias: this.changeCertificate?.certificateAlias, changeDate: this.changeCertificate?.changeDateTime | date:dateTimeFormat, }  }}"
+      ></smp-warning-panel>
+    }
     <mat-slide-toggle style="width:100%"
                       formControlName="smlClientCertAuth"
                       id="smlClientCertHeaderAuth_id">
@@ -114,7 +121,7 @@
       </button>
       <tool-button-spacer></tool-button-spacer>
       <button  id="prepareCertificateButton" mat-raised-button (click)="onPrepareCertificateClicked()"
-               [disabled]="changeCertificateAliasSet" color="primary">
+               [disabled]="changeCertificateAliasSet ||!enableSMLUnregister()" color="primary">
         <mat-icon>link</mat-icon>
         <span>{{ "domain.sml.integration.panel.button.prepare" | translate }}</span>
       </button>
