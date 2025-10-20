@@ -45,7 +45,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -175,20 +174,22 @@ public class DomainGroupGuard {
 
     private boolean isCertificateAuthorizedForDomain(DBDomain domain, X509Certificate x509Certificate) {
         // check if domain has its own truststore
-        boolean hasDomainTruststoreConfig = configurationService.hasCustomDomainConfiguration(domain, SMPDomainPropertyEnum.TRUSTSTORE_FILENAME);
-        if (!hasDomainTruststoreConfig) {
-            // domain does not have its own truststore, validation against system truststore is already done
-            LOG.debug("Domain [{}] does not have its own truststore configured. Skip domain specific truststore validation", domain.getDomainCode());
-            return true;
-        }
-        try {
-            uITruststoreService.validateCertificateWithDomainTruststore(domain, x509Certificate);
-        } catch (CertificateException e) {
-            LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate validation error for domain [{}]: [{}]",
-                    domain.getDomainCode(),
-                    e.getMessage());
-            return false;
-        }
+        //Temporarily disabled for release DomiSMP 5.2 RC: see the ticket #EDELIVERY-12744
+//        boolean hasDomainTruststoreConfig = configurationService.hasCustomDomainConfiguration(domain, SMPDomainPropertyEnum.TRUSTSTORE_FILENAME);
+//        if (!hasDomainTruststoreConfig) {
+//            // domain does not have its own truststore, validation against system truststore is already done
+//            LOG.debug("Domain [{}] does not have its own truststore configured. Skip domain specific truststore validation", domain.getDomainCode());
+//            return true;
+//        }
+//        try {
+//            uITruststoreService.validateCertificateWithDomainTruststore(domain, x509Certificate);
+//        } catch (CertificateException e) {
+//            LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate validation error for domain [{}]: [{}]",
+//                    domain.getDomainCode(),
+//                    e.getMessage());
+//            return false;
+//        }
+        // validation against system truststore is already done
         return true;
     }
 
