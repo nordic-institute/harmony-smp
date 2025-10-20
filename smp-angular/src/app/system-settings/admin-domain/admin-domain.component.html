@@ -7,6 +7,12 @@
     <ng-template #noDataFound>
       <div class="empty-data-panel">{{ "admin.domain.label.no.domains.selected" | translate }}</div>
     </ng-template>
+    @if (showWarning) {
+      <smp-warning-panel
+                         icon="warning"
+                         type="warning"
+                         [htmlContent]="warningMessage"></smp-warning-panel>
+    }
     <mat-tab-group class="domain-configuration-tab"
                    #domainTabs
                    *ngIf="selected;else noDataFound"

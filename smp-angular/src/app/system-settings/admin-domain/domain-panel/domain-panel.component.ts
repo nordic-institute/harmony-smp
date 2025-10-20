@@ -96,7 +96,6 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
       'domainTrustStoreEnabled': new FormControl({value: false, readonly: false}),
     });
-    (async () => await this.updateShowWarningMessage()) ();
   }
 
   get domain(): DomainRo {
@@ -132,7 +131,6 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
       this.domainForm.disable();
     }
-    (async () => await this.updateShowWarningMessage()) ();
     this.domainForm.markAsPristine();
   }
 
@@ -151,28 +149,6 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
   }
 
-  get showWarning() {
-    return !!this._domain?.domainId && (!this.domainResourceTypes?.length
-      || !this._domain.signatureKeyAlias
-      || !this._domain.adminMemberCount
-      || this._domain.adminMemberCount < 1)
-  }
-
-  async updateShowWarningMessage() {
-    let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
-    if (!this._domain.signatureKeyAlias) {
-      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.signature.key"));
-    }
-    if (!this.domainResourceTypes?.length) {
-      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.resource.type"));
-    }
-    if (!this._domain.adminMemberCount || this._domain.adminMemberCount < 1) {
-      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.admin.member"));
-    }
-    message += "</ul>"; // No need to translate this part
-
-    this.warningMessage = message;
-  }
 
   get submitButtonEnabled(): boolean {
     return this.domainForm.valid && this.domainForm.dirty;

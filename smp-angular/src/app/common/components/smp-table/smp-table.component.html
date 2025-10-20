@@ -56,11 +56,7 @@
            style="max-width: unset;"
       >
         @if (row.expanded) {
-
-          <ng-container *ngTemplateOutlet="tableRowDetailContainer; context: { $implicit: row, row:row, value: row}"
-
-          ></ng-container>
-
+          <ng-container *ngTemplateOutlet="tableRowDetailContainer; context: { $implicit: row, row:row, value: row}"></ng-container>
         }
       </div>
     </ng-container>
@@ -71,7 +67,7 @@
     <mat-row class="smp-table-row" *matRowDef="let odd = odd; let row; columns: displayedColumns;"
              (click)="onRowClickedEvent(row)"
              (dblclick)="onRowDoubleClickedEvent(row)"
-             [ngClass]="{'datatable-row-selected': row==selectedRow,'datatable-row-odd': odd, 'datatable-row-error': row.status == EntityStatus.ERROR}"
+             [ngClass]="getRowClass(row, odd)"
              [matTooltip]="row.status === EntityStatus.ERROR && row.statusMessage ? row.statusMessage : null"
     ></mat-row>
 

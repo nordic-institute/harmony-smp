@@ -80,6 +80,9 @@ export class SmpTableComponent implements AfterViewInit {
   isLoadingResults = false;
 
   constructor() {
+    if (this.filterValue === undefined) {
+      this.filterValue = '';
+    }
   }
 
   ngAfterViewInit(): void {
@@ -87,9 +90,6 @@ export class SmpTableComponent implements AfterViewInit {
     // because internal paginator has its own paginator which is limited only to page.
     if (!this.isLoadableTable) {
        this.dataSource.paginator = this.paginator;
-    }
-    if (this.filterValue === undefined) {
-      this.filterValue = '';
     }
   }
 
@@ -171,6 +171,16 @@ export class SmpTableComponent implements AfterViewInit {
       return '';
     }
     return ( col?.style?col.style:'') + ' '  +( col?.headerStyle?col.headerStyle:'') ;
+  }
+
+  getRowClass(row, oddRow: boolean) {
+    return {
+      'datatable-row-selected': row === this.selected,
+      'datatable-row-new': (row.status === EntityStatus.NEW),
+      'datatable-row-updated': (row.status === EntityStatus.UPDATED),
+      'deleted': (row.status === EntityStatus.REMOVED),
+      'datatable-row-odd': oddRow
+    };
   }
 
   protected readonly EntityStatus = EntityStatus;

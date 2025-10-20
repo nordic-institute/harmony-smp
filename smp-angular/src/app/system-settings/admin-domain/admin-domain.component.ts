@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {PageEvent} from "@angular/material/paginator";
 import {AdminDomainService} from "./admin-domain.service";
@@ -29,13 +29,13 @@ import {SmpTableComponent} from "../../common/components/smp-table/smp-table.com
 
 
 @Component({
-    templateUrl: './admin-domain.component.html',
-    styleUrls: ['./admin-domain.component.css'],
-    standalone: false
+  templateUrl: './admin-domain.component.html',
+  styleUrls: ['./admin-domain.component.css'],
+  standalone: false
 })
 export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, BeforeLeaveGuard {
   readonly membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
-  displayedColumns: string[] = ['domainCode'];
+  displayedColumns: string[] = ['domainCode', 'adminCnt'];
   columns: SmpTableColDef[];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected?: DomainRo;
@@ -53,15 +53,13 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   pageIndex: number = 0;
   pageSize: number = 10;
   filterValue: string;
-  //@ViewChild(MatPaginator) paginator: MatPaginator;
-  //@ViewChild(MatSort) sort: MatSort;
+
+  warningMessage: string = "";
 
   @ViewChild('domainPanelComponent') domainPanelComponent: DomainPanelComponent;
   @ViewChild('domainResourceTypePanelComponent') domainResourceTypePanelComponent: DomainResourceTypePanelComponent;
   @ViewChild('domainSmlIntegrationPanelComponent') domainSmlIntegrationPanelComponent: DomainSmlIntegrationPanelComponent;
   @ViewChild('domainTable') domainTable: SmpTableComponent;
-
-
   @ViewChild('domainTabs') domainTabs: MatTabGroup;
 
   constructor(private domainService: AdminDomainService,
@@ -76,7 +74,15 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       {
         columnDef: 'domainCode',
         header: 'admin.domain.label.domain.code',
-        cell: (row: DomainRo) => row.domainCode
+        cell: (row: DomainRo) => row.domainCode,
+        class: (row: DomainRo) => ({"datatable-row-error": this.hasRowErrors(row)}),
+      } as SmpTableColDef,
+      {
+        columnDef: 'adminCnt',
+        header: 'admin.domain.label.domain.admin.count',
+        cell: (row: DomainRo) => row.adminMemberCount?.toString() || '0',
+        class: (row: DomainRo) => ({"datatable-row-error": this.hasRowErrors(row)}),
+        style: "max-width: 80px; width: 50px; padding-right: 15px; display: flex; justify-content: right;"
       } as SmpTableColDef,
     ];
 
@@ -115,6 +121,40 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     let allResourceDefinition: ResourceDefinitionRo[] = [];
     extensions.forEach(ext => allResourceDefinition.push(...ext.resourceDefinitions))
     this.domiSMPResourceDefinitions = allResourceDefinition;
+  }
+
+  get showWarning() {
+    return this.hasRowErrors(this.selected);
+  }
+
+  async updateShowWarningMessage() {
+    let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
+    if (!this.selected?.signatureKeyAlias) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.signature.key"));
+    }
+    if (!this.domainResourceTypes(this.selected)?.length) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.resource.type"));
+    }
+    if (!this.selected?.adminMemberCount || this.selected?.adminMemberCount < 1) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.admin.member"));
+    }
+    message += "</ul>"; // No need to translate this part
+
+    this.warningMessage = message;
+  }
+
+  domainResourceTypes(domain: DomainRo): ResourceDefinitionRo[] {
+    if (!domain || !domain.resourceDefinitions) {
+      return [];
+    }
+    return this.domiSMPResourceDefinitions.filter(resType => domain.resourceDefinitions.includes(resType.identifier))
+  }
+
+  hasRowErrors(domain: DomainRo): boolean {
+    return !!domain?.domainId && (!this.domainResourceTypes(domain)?.length
+      || !domain.signatureKeyAlias
+      || !domain.adminMemberCount
+      || domain.adminMemberCount < 1)
   }
 
   ngOnInit(): void {
@@ -195,7 +235,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     if (domain == null) {
       return;
     }
-
+    this.updateShowWarningMessage();
     if (domain.status == EntityStatus.NEW) {
       this.domainList.push(domain)
       this.selected = domain;
@@ -225,7 +265,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   }
 
   refreshDomainList() {
-      this.domainService.getDomains(this.filterValue,
+    this.domainService.getDomains(this.filterValue,
       this.pageIndex,
       this.pageSize);
   }
@@ -328,19 +368,23 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       this.registerTabClick();
     }
 
+
     if (this.selected == domainSelected) {
       return;
     }
+
     if (this.isCurrentTabDirty()) {
       let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
       canChangeTab.then((canChange: boolean) => {
         if (canChange) {
           // reset
           this.resetCurrentTabData();
+          this.updateShowWarningMessage();
           this.selected = domainSelected;
         }
       });
     } else {
+      this.updateShowWarningMessage();
       this.selected = domainSelected;
     }
   }

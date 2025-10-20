@@ -24,6 +24,15 @@
     background-color: smp.get-theme-color($theme, primary, 50, 0.2) !important;
   }
 
+  .datatable-row-new {
+    color: darkgreen !important;
+    font-weight: bold !important;
+  }
+
+  .datatable-row-updated {
+    font-weight: bold !important;
+  }
+
   .datatable-row-error {
     font-weight: bold;
     color: smp.get-theme-color($theme, warn, 500) !important;

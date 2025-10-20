@@ -45,9 +45,8 @@
 
   <ng-template #propertyValueTemplate
                let-row="row"
-               let-value="value"
                >
-    <span [class]='aliasCssClass(value, row)'
+    <span [class]='aliasCssClass( row)'
       [matTooltip]='row.desc'>{{ row.value }}</span>
     <span *ngIf="row.updateDate" style="display: block;font-size: 0.8em;color: darkorange">{{ "property.label.new.value" | translate: { value: row.newValue } }}
         <span *ngIf="!row.restartNeeded">

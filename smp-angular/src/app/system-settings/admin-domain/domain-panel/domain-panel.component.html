@@ -3,10 +3,6 @@
     <h3>{{ "domain.panel.title" | translate }}</h3>
     <div class="panel" *ngIf="_domain!=null &&  !_domain.domainId"><p
       style="font-weight: bold">{{ "domain.panel.text" | translate }}</div>
-    <smp-warning-panel *ngIf="showWarning"
-                       icon="warning"
-                       type="warning"
-                       [htmlContent]="warningMessage"></smp-warning-panel>
     <mat-form-field style="width:100%">
       <mat-label>{{ "domain.panel.label.domain" | translate }}</mat-label>
       <input matInput
