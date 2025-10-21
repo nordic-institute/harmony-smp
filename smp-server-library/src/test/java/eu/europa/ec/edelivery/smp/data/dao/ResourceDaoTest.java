@@ -293,6 +293,33 @@ class ResourceDaoTest extends AbstractBaseDao {
     }
 
     @Test
+    public void testGetDocumentReferenceDataMultipleResources() {
+        // given
+        DBResource resourceTarget = testUtilsDao.createResource("target-reference", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), true);
+
+        // given
+        testUtilsDao.createResource("using-reference-01", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), resourceTarget.getDocument());
+        DBResource resource02 =  testUtilsDao.createResource("using-reference-02", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), resourceTarget.getDocument());
+
+        // when ( - the target resource is a reference and has one document which is using it)
+        DBDocumentReferenceData dcRef = testInstance.getDocumentReferenceData(resourceTarget);
+        DBDocumentReferenceData resource02RefData = testInstance.getDocumentReferenceData(resource02);
+
+        assertNotNull(dcRef);
+        assertNotNull(resource02RefData);
+        assertTrue(dcRef.isSharingEnabled());
+        assertFalse(resource02RefData.isSharingEnabled());
+        assertEquals(2, dcRef.getReferencedByCount());
+        assertEquals(0, resource02RefData.getReferencedByCount());
+    }
+
+    @Test
     public void testGetDocumentReferenceDataUsingReference() {
         // given
         DBResource resourceTarget = testUtilsDao.createResource("target-reference", "doc-reference-scheme",
@@ -312,7 +339,7 @@ class ResourceDaoTest extends AbstractBaseDao {
         assertFalse(dcRef.isSharingEnabled());
         assertEquals(0, dcRef.getReferencedByCount());
         assertEquals(dcRef.getReferencedDocumentId(), resourceTarget.getDocument().getId());
-        assertEquals(dcRef.getReferenceUrlPath(), "http://referencedocument");
+        assertEquals("http://referencedocument", dcRef.getReferenceUrlPath());
     }
 
     protected static DBResourceFilter creatResourceFilter(DBGroup group, DBDomain domain, DBResourceDef resourceDef) {

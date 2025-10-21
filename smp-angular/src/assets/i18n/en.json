@@ -58,7 +58,7 @@
   "property.type.filename.label": "Filename",
   "property.type.url.label": "URL",
   "property.type.list_string.label": "List of Strings",
-  "property.type.map_string.label": "Map of Integers",
+  "property.type.map_string.label": "Map of Strings",
   "property.type.regexp.label": "Regular Expression",
   "property.type.certificate.label": "Certificate",
   "expired.password.dialog.text": "Your password is more than three months old. Please change it as soon as possible!",
