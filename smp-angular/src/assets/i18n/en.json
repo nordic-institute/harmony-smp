@@ -790,6 +790,9 @@
   "domain.sml.integration.panel.prepare.certificate.dialog.error.migration.date.in.past": "The migration date must be in the future!",
   "domain.sml.integration.panel.prepare.certificate.dialog.error.invalid.form": "Please check that the certificate for signing responses is selected and that the date and time make a valid future date!",
   "domain.sml.integration.panel.tooltip.smp.change.client.certificate.alias.default.option": "Choose certificate for signing soap response",
+  "domain.sml.integration.panel.confirm.change.certificate.dialog.title": "Change SML client certificate",
+  "domain.sml.integration.panel.confirm.change.certificate.dialog.description": "Action will configure the SML integration client certificate with the prepared certificate: [{{alias}}]<br/><br/>Do you wish to continue?",
+  "domain.sml.integration.panel.confirm.change.certificate.note.description": "The certificate with alias [{{alias}}] is scheduled to be set as SML Client certificate on [{{changeDate}}].<br/>After this date, the certificate will be used for SML communication.",
 
   "admin.domain.button.create": "Create domain",
   "admin.domain.button.delete": "Delete selected",
