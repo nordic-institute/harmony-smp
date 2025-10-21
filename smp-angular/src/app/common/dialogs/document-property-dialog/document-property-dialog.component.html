@@ -19,6 +19,14 @@
         {{ "document.property.dialog.error.property.name.pattern" | translate }}
       </div>
     </mat-form-field>
+    <mat-form-field appearance="fill" style="width: 100%">
+      <mat-label>{{ "document.property.dialog.label.property.type" | translate }}</mat-label>
+      <mat-select formControlName="type" style="width: 100%">
+        <mat-option *ngFor="let type of propertyTypes" [value]="type">
+          {{ "property.type." + (!type ? "empty" : type.toLowerCase()) + ".label" | translate }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
     @if (propertyForm.controls['type'].value === PropertyValueTypeEnum.BOOLEAN) {
       <mat-checkbox
         formControlName="value"
@@ -61,14 +69,6 @@
              formControlName="desc"
       />
 
-    </mat-form-field>
-    <mat-form-field appearance="fill" style="width: 100%">
-      <mat-label>{{ "document.property.dialog.label.property.type" | translate }}</mat-label>
-      <mat-select formControlName="type" style="width: 100%">
-        <mat-option *ngFor="let type of propertyTypes" [value]="type">
-          {{ "property.type." + (!type ? "empty" : type.toLowerCase()) + ".label" | translate }}
-        </mat-option>
-      </mat-select>
     </mat-form-field>
   </form>
 </mat-dialog-content>

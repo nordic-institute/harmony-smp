@@ -179,7 +179,7 @@ export class SmpTableComponent implements AfterViewInit {
       'datatable-row-selected': row === this.selected,
       'datatable-row-new': (row.status === EntityStatus.NEW),
       'datatable-row-updated': (row.status === EntityStatus.UPDATED),
-      'deleted': (row.status === EntityStatus.REMOVED),
+      'datatable-row-deleted': (row.status === EntityStatus.REMOVED),
       'datatable-row-odd': oddRow
     };
   }

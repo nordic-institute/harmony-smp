@@ -611,6 +611,7 @@ public class UIDocumentService {
                 if (dbDocumentProperty != null) {
                     dbDocumentProperty.setDescription(documentPropertyRO.getDesc());
                     dbDocumentProperty.setValue(documentPropertyRO.getValue());
+                    dbDocumentProperty.setType(documentPropertyRO.getType());
                     if (documentPropertyRO.getType() == SMPPropertyTypeEnum.CERTIFICATE) {
                         DBDocumentCertificate certificate = dbDocumentProperty.getDocumentCertificate();
                         CertificateRO certRo = documentPropertyRO.getCertificate();

@@ -38,6 +38,11 @@
     color: smp.get-theme-color($theme, warn, 500) !important;
   }
 
+  .datatable-row-deleted {
+    text-decoration: line-through !important;
+    font-weight: bold;
+  }
+
   .datatable-row-selected {
     background-color: smp.get-theme-color($theme, primary, 600) !important;
   }

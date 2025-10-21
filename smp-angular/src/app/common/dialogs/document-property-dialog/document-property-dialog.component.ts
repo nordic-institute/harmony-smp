@@ -140,10 +140,10 @@ export class DocumentPropertyDialogComponent {
     console.log("Get input type for row " + PropertyValueTypeEnumUtil.getKeyName(this.current.type))
     switch (propertyType) {
       case PropertyValueTypeEnum.STRING:
-      case PropertyValueTypeEnum.LIST_STRING:
-      case PropertyValueTypeEnum.MAP_STRING:
-      case PropertyValueTypeEnum.FILENAME:
-      case PropertyValueTypeEnum.PATH:
+      // case PropertyValueTypeEnum.LIST_STRING:
+      // case PropertyValueTypeEnum.MAP_STRING:
+      // case PropertyValueTypeEnum.FILENAME:
+      // case PropertyValueTypeEnum.PATH:
         return 'text';
       case PropertyValueTypeEnum.INTEGER:
         return 'text';

@@ -184,9 +184,8 @@ export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, Contr
           let indexToUpdate = this.propertyDataSource.data
             .findIndex(item => item.property === result.property);
 
-          let property: DocumentPropertyRo = this.equals(this.initPropertyList[indexToUpdate], result) ?
-            this.initPropertyList[indexToUpdate] : result;
-
+          let property: DocumentPropertyRo = this.equals(this.propertyDataSource.data[indexToUpdate], result) ?
+            this.propertyDataSource.data[indexToUpdate] : result;
 
           this.propertyDataSource.data[indexToUpdate] = property;
           // trigger reload
@@ -205,10 +204,10 @@ export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, Contr
    * @param value2
    */
   private equals(value1: DocumentPropertyRo, value2: DocumentPropertyRo): boolean {
-    return value1.property === value2.property
-      && value1.value === value2.value
-      && value1.desc === value2.desc
-      && value1.type === value2.type;
+    return value1?.property === value2?.property
+      && value1?.value === value2?.value
+      && value1?.desc === value2?.desc
+      && value1?.type === value2?.type;
   }
 
   public onDeleteSelectedProperty(): void {
@@ -225,6 +224,7 @@ export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, Contr
     } else {
       this.selected.status = EntityStatus.REMOVED;
       this.selected.deleted = true;
+      this.dataChanged= true;
     }
     // to trigger refresh
     this.propertyDataSource.data = [...properties];
@@ -236,6 +236,14 @@ export class DocumentPropertiesPanelComponent implements BeforeLeaveGuard, Contr
     * reset/reload properties from the server
    */
   public onResetButtonClicked(): void {
+    // set back initial value and set all items to PERSISTED
+    this.propertyDataSource.data = this.initPropertyList.map(item => {
+      item.status = EntityStatus.PERSISTED;
+      item.deleted = false;
+      return item;
+    });
+    this.dataChanged = false;
+    this.selected = null;
     this.control.setValue(this.initPropertyList);
     this.control.markAsPristine();
   }
