@@ -89,7 +89,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
 
   }
 
-
   @Input()
   set group(value: GroupRo) {
     (async () => {

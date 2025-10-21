@@ -26,7 +26,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   // data changed indicates the cached data may be outdated and need to be refreshed
   _dataChanged: boolean = false;
-  _isLoadingResults: boolean = false;
+  _loadingResults: boolean = false;
 
   _selectedDomain: DomainRo;
   _selectedGroup: GroupRo;
@@ -66,16 +66,16 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   // this flag is used to trigger data refresh when data is needed.
   //The data can be changed for the user when adding/creating new resource in the edit group
-  @Input() set isLoadingResults(value: boolean) {
+  @Input() set loadingResults(value: boolean) {
     if (!value) {
       // data was loaded, and we can reset the flag for data changed
       this._dataChanged = value;
     }
-    this._isLoadingResults = value;
+    this._loadingResults = value;
   }
 
-  get isLoadingResults(): boolean {
-    return this._isLoadingResults;
+  get loadingResults(): boolean {
+    return this._loadingResults;
   }
 
   private clearSelectedData() {
@@ -87,7 +87,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedDomainResourceDefs = [];
     this._selectedComponent = '';
     this.resourcesFilter = {};
-    this.isLoadingResults = false;
+    this.loadingResults = false;
     this.updateResourceList([], 0, -1, -1);
   }
 
@@ -101,7 +101,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
       this.refreshGroups();
       this.refreshDomainsResourceDefinitions();
     } else {
-      this.isLoadingResults = false;
+      this.loadingResults = false;
       this.groupList = [];
       this._selectedDomainResourceDefs = [];
     }
@@ -111,12 +111,12 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     return this._selectedGroup;
   };
 
-  @Input() set selectedGroup(resource: GroupRo) {
-    this._selectedGroup = resource;
+  @Input() set selectedGroup(group: GroupRo) {
+    this._selectedGroup = group;
     if (!!this._selectedGroup || this.dataChanged) {
       this.refreshResources();
     } else {
-      this.isLoadingResults = false;
+      this.loadingResults = false;
       this.updateResourceList([], 0, -1, -1);
     }
   };
@@ -162,14 +162,14 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   refreshDomains() {
-    this.isLoadingResults = true;
+    this.loadingResults = true;
     this.domainService.getDomainsForResourceAdminUserObservable()
       .subscribe({
         next: (result: DomainRo[]) => {
-          this.updateDomainList(result)
+          this.updateDomainList(result);
         }, error: (err: any) => {
           this.alertService.error(err.error?.errorDescription)
-          this.isLoadingResults = false;
+          this.loadingResults = false;
         }
       });
   }
@@ -178,16 +178,16 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!this.selectedDomain) {
       this.updateGroupList([]);
 
-      this.isLoadingResults = false;
+      this.loadingResults = false;
       return;
     }
-    this.isLoadingResults = true;
+    this.loadingResults = true;
     this.groupService.getDomainGroupsForResourceAdminObservable(this.selectedDomain)
       .subscribe({
         next: (result: GroupRo[]) => {
-          this.updateGroupList(result)
+          this.updateGroupList(result);
         }, error: (error: any) => {
-          this.isLoadingResults = false;
+          this.loadingResults = false;
           this.alertService.error(error.error?.errorDescription)
         }
       });
@@ -195,19 +195,19 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   refreshResources() {
     if (!this._selectedGroup) {
-      this.isLoadingResults = false;
+      this.loadingResults = false;
       this.updateResourceList([], 0, -1, -1);
       return;
     }
-    this.isLoadingResults = true;
+    this.loadingResults = true;
     this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
       this.resourcesFilter,  this.paginator? this.paginator.pageIndex : 0, this.paginator? this.paginator.pageSize : 10)
       .subscribe({
         next: (result: TableResult<ResourceRo>) => {
           this.updateResourceList(result.serviceEntities, result.count, result.page, result.pageSize);
-          this.isLoadingResults = false;
+          this.loadingResults = false;
         }, error: (error: any) => {
-          this.isLoadingResults = false;
+          this.loadingResults = false;
           this.alertService.error(error.error?.errorDescription)
         }
       });
@@ -217,7 +217,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this.domainService.getDomainResourceDefinitionsObservable(this.selectedDomain)
       .subscribe({
         next: (result: ResourceDefinitionRo[]) => {
-          this._selectedDomainResourceDefs = result
+          this._selectedDomainResourceDefs = result;
         }, error: (error: any) => {
           this.alertService.error(error.error?.errorDescription)
         }
@@ -225,27 +225,43 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   updateDomainList(list: DomainRo[]) {
+    let currentSelection: DomainRo = this.selectedDomain;
+    this.selectedDomain = null;
+
     this.domainList = list.sort((a, b) => a.domainCode.localeCompare(b.domainCode));
-    if (!!this.domainList && this.domainList.length > 0) {
+    if (!!currentSelection) {
+      this.selectedDomain = this.domainList.find(d =>
+        d.domainCode == currentSelection.domainCode);
+    }
+
+    if (!this.selectedDomain && !!this.domainList && this.domainList.length > 0) {
       this.selectedDomain = this.domainList[0];
     } else {
       this._dataChanged = false;
-      this.isLoadingResults = false;
+      this.loadingResults = false;
     }
   }
 
   updateGroupList(list: GroupRo[]) {
+    let currentSelection: GroupRo = this.selectedGroup;
+    this.selectedGroup = null;
+
     this.groupList = list.sort((a, b) => a.groupName.localeCompare(b.groupName));
-    if (!!this.groupList && this.groupList.length > 0) {
-      this.selectedGroup = this.groupList[0];
+    if (!!currentSelection) {
+      this.selectedGroup = this.groupList.find(g =>
+        g.groupName == currentSelection.groupName);
+    }
+
+    if (!this.selectedGroup && !!this.groupList && this.groupList.length > 0) {
+        this.selectedGroup = this.groupList[0];
     } else {
       this._dataChanged = false;
-      this.isLoadingResults = false;
+      this.loadingResults = false;
     }
   }
 
   updateResourceList(list: ResourceRo[], totalDataSize: number = 0, pageIndex: number = 0, pageSize: number = 10) {
-    let currR: ResourceRo = this.selectedResource;
+    let currentSelection: ResourceRo = this.selectedResource;
     this.selectedResource = null;
 
     if (this.paginator) {
@@ -256,10 +272,10 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._resourceCount= totalDataSize;
     this.data = list;
 
-    if (!!currR) {
+    if (!!currentSelection) {
       this.selectedResource = list.find(r =>
-        r.identifierScheme == currR.identifierScheme &&
-        r.identifierValue == currR.identifierValue);
+        r.identifierScheme == currentSelection.identifierScheme &&
+        r.identifierValue == currentSelection.identifierValue);
     }
 
     if (!this.selectedResource && !!list && list.length > 0) {
@@ -290,7 +306,6 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   get selectedResourceDefinition(): ResourceDefinitionRo {
-
     if (!this._selectedResource) {
       return null;
     }
