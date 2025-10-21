@@ -27,7 +27,7 @@ ORA_SERVICE="xe"
 SMP_DB_USERNAME="smp"
 SMP_DB_PASSWORD="test"
 # this is JDBC URL for SMP application, the hostname must match the one from docker-compose.yml for database service
-SMP_JDBC_URL="jdbc:oracle:thin:@//smp-oracle-db:1521/${ORA_SERVICE}"
+SMP_DB_URL="jdbc:oracle:thin:@//smp-oracle-db:1521/${ORA_SERVICE}"
 SMP_DB_SCRIPTS=./properties/db-scripts
 SMP_WLS_INIT_SCRIPTS=./properties/weblogic-init
 START_LOCAL="false"

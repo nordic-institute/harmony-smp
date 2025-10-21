@@ -24,11 +24,11 @@ ENV SMP_HOME=/opt/smp \
     JAVA_SHA256=974d3acef0b7193f541acb61b76e81670890551366625d4f6ca01b91ac152ce0 \
     SMP_DB_SCHEMA=smp  \
     SMP_DB_USER=smp \
-    DB_DRIVER=com.mysql.cj.jdbc.Driver \
-    DB_DIALECT=org.hibernate.dialect.MySQLDialect \
-    SMP_INIT_PROPERTY_DELIMITER="||"  \
-    SMP_INIT_PROPERTIES=""   \
     SMP_DB_USER_PASSWORD=smp  \
+    SMP_DB_DRIVER=com.mysql.cj.jdbc.Driver \
+    SMP_DB_DIALECT=org.hibernate.dialect.MySQLDialect \
+    SMP_INIT_PROPERTY_DELIMITER="||"  \
+    SMP_INIT_PROPERTIES="" \
     DEPLOY_VAULT_SNAPTSHOT_ARTEFACT="eu.europa.ec.edelivery.vault:edelivery-vault-hashicorp:2.1-SNAPSHOT" \
     MYSQL_ROOT_PASSWORD=root \
     DOWNLOAD_VAULT_LIBRARY_FROM_EDELIVERY=/eu/europa/ec/edelivery/vault/edelivery-vault-hashicorp/2.0/edelivery-vault-hashicorp-2.0-only-spring-vault.jar \
@@ -39,6 +39,8 @@ ENV SMP_HOME=/opt/smp \
     SML_DB_SCHEMA=sml  \
     SML_DB_USER=sml \
     SML_DB_USER_PASSWORD=sml  \
+    SML_DB_DRIVER=com.mysql.cj.jdbc.Driver \
+    SML_DB_DIALECT=org.hibernate.dialect.MySQLDialect \
     BIND_USER=bind   \
     JACOCO_VERSION=0.8.13 \
     JACOCO_SHA512=f0a09d84bfa5f5c07bdee0ba506911d80922e9838e824a53bf9c64e643e7300f902db4b503339cfb4bd7b4151248ba83d268bdfa40fcd0a55a9a40f8c64c3683 \
@@ -51,6 +53,8 @@ ENV SMP_HOME=/opt/smp \
 ENV TOMCAT_HOME=/opt/smp/apache-tomcat-$TOMCAT_VERSION
 ENV JAVA_HOME=/opt/java/${JAVA_VERSION}/
 ENV SMP_EXT_LIBS=${TOMCAT_HOME}/smp-libs
+# dependand environment variables
+ENV SMP_DB_URL="jdbc:mysql://localhost:3306/$SMP_DB_SCHEMA?characterEncoding=UTF-8&amp;useUnicode=true"
 
 # Exposing ports used in entrypoint.sh ..
 # - 3306 Mysql port
@@ -99,22 +103,16 @@ RUN   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF
     && sha512sum tomcat.zip | grep $TOMCAT_SHA512    \
     && unzip tomcat.zip \
     && mv mysql-connector-j-$MYSQL_DRV_VERSION.jar $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/lib/ \
+    && mv ${ORACLE_JDBC_NAME}-${ORACLE_JDBC_VERSION}.jar $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/lib/ \
     && rm tomcat.zip   \
     && mkdir -p $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/  \
-    && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
-# add sml and smp datasource 
-    && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SMP_DB_USER\" password=\"$SMP_DB_USER_PASSWORD\" driverClassName=\"${DB_DRIVER}\" url=\"jdbc:mysql:\/\/localhost:3306\/$SMP_DB_SCHEMA?characterEncoding=UTF-8\&amp;useUnicode=true\"\/>\\n<Resource name=\"jdbc\/eDeliverySmlDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SML_DB_USER\" password=\"$SML_DB_USER_PASSWORD\" driverClassName=\"${DB_DRIVER}\" url=\"jdbc:mysql:\/\/localhost:3306\/$SML_DB_SCHEMA?characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
-    && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"
+    && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh
 # add SMP init configuration
-# echo "smp.datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-RUN  echo "smp.jdbc.driver=${DB_DRIVER}" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-  && echo "smp.jdbc.url=jdbc:mysql://localhost:3306/$SMP_DB_SCHEMA?useSSL=false&characterEncoding=UTF-8&useUnicode=true&allowPublicKeyRetrieval=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-     && echo "smp.database.hibernate.dialect=${DB_DIALECT}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-     && echo "smp.jdbc.user=$SMP_DB_USER" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-     && echo "smp.jdbc.password=$SMP_DB_USER_PASSWORD" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+RUN  echo "smp.datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+    && echo "smp.hibernate.dialect=${SMP_DB_DIALECT}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties  \
    # add SML init configuration
    && echo "sml.datasource.jndi=java:comp/env/jdbc/eDeliverySmlDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
-   && echo "sml.hibernate.dialect=${DB_DIALECT}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
+   && echo "sml.hibernate.dialect=${SML_DB_DIALECT}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
    && echo "sml.jsp.servlet.class=org.apache.jasper.servlet.JspServlet" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
 # mysql configuration
    && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf   \

@@ -26,21 +26,22 @@ function initializeVariables() {
 ################################################################
 # Function exports the logs to file and stop and clear containers
 function stopAndClearTestContainers() {
-  echo "Save docker log to docker-file"
-  docker compose -p "${PLAN_PREFIX}" logs > smp-containers.log 2>&1
-  echo "Clear containers and volumes"
-  docker compose -p "${PLAN_PREFIX}" rm -s -f -v
+    COMPOSE_FILE="-f docker-compose${1}.yml"
+    echo "Save docker log to docker-file"
+    docker compose -p "${PLAN_PREFIX}" ${COMPOSE_FILE} logs > sml-containers.log 2>&1
+    echo "Clear containers and volumes"
+    docker compose -p "${PLAN_PREFIX}" ${COMPOSE_FILE} rm -s -f -v
 }
 
 ################################################################
 # function starts the container with the prefix and version. If local is set to true,
 # and docker-compose.local.yml is present, then local docker compose file is used as well
 function startTestContainers() {
-  COMPOSE_FILE="-f docker-compose.yml"
+  COMPOSE_FILE="-f docker-compose${1}.yml"
   if [ "${START_LOCAL}" == "true" ]; then
     # check if local docker compose file is present and use it
     # else log and and continue without it
-    if [ ! -f "docker-compose.local.yml" ]; then
+    if [ ! -f "docker-compose${1}.local.yml" ]; then
       echo "Local docker compose file not found!"
     else
         echo "Local docker compose file found, add to the execution!"
@@ -111,10 +112,9 @@ function initOracleDatabaseConfiguration() {
   : "${1?"Need to set Database user as first parameter non-empty!"}"
   : "${2?"Need to set Database user password as second parameter non-empty!"}"
   : "${3?"Need to set Database script folder as third parameter non-empty!"}"
-  : "${4?"Need to set WebLogic init script folder as third parameter non-empty!"}"
   : "${SMP_INIT_DATABASE?"Need to set init Database script SMP_INIT_DATABASE as variable non-empty!"}"
   : "${SMP_INIT_DATABASE_DATA?"Need to set init-data Database script SMP_INIT_DATABASE as variable non-empty!"}"
-  : "${SMP_JDBC_URL?"Need to set SMP_JDBC_URL as variable non-empty!"}"
+  : "${SMP_DB_URL?"Need to set SMP_DB_URL as variable non-empty!"}"
 
 
   echo "Create file [$3]/01_create_user.sql to recreate schema/user [$1]!"
@@ -145,19 +145,21 @@ function initOracleDatabaseConfiguration() {
   else
     # copy artefact to docker build folder
     echo "CONNECT ${1}/${2}@//localhost:1521/${ORA_SERVICE};" > "${3}/03_oracle10g-data.sql"
-    cat  "${SMP_INIT_DATABASE_DATA}" >>  "${3}/03_oracle10g-data.sql"
+    cat   "${SMP_INIT_DATABASE_DATA}" >>  "${3}/03_oracle10g-data.sql"
   fi
 
-  # create  database init script from weblogic as well
-  echo "Create file [$4]/datasource.properties to recreate datasource configuration!"
-  {
-    echo "dsname=eDeliverySmpDs"
-    echo "dsdbname=eDeliverySmpDs"
-    echo "dsjndiname=jdbc/eDeliverySmpDs"
-    echo "dsdriver=oracle.jdbc.OracleDriver"
-    echo "dsurl=${SMP_JDBC_URL}"
-    echo "dsusername=${1}"
-    echo "dspassword=${2}"
-    echo "dstestquery=SQL SELECT 1 FROM DUAL"
-  }  > "$4/datasource.properties"
+  # if $4 is given then create datasource configuration
+  if [ -n "${4}" ]; then
+    echo "Create file [$4]/datasource.properties to recreate datasource configuration!"
+    {
+      echo "dsname=eDeliverySmpDs"
+      echo "dsdbname=eDeliverySmpDs"
+      echo "dsjndiname=jdbc/eDeliverySmpDs"
+      echo "dsdriver=oracle.jdbc.OracleDriver"
+      echo "dsurl=${SMP_DB_URL}"
+      echo "dsusername=${1}"
+      echo "dspassword=${2}"
+      echo "dstestquery=SQL SELECT 1 FROM DUAL"
+    }  > "$4/datasource.properties"
+  fi
 }
