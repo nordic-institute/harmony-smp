@@ -148,6 +148,12 @@ function initOracleDatabaseConfiguration() {
     cat   "${SMP_INIT_DATABASE_DATA}" >>  "${3}/03_oracle10g-data.sql"
   fi
 
+  if [ -f "${SMP_MIGRATE_DATABASE}" ]; then
+    echo "Create migrate file ${SMP_MIGRATE_DATABASE}"
+    echo "CONNECT ${1}/${2}@//localhost:1521/${ORA_SERVICE};" > "${3}/04_oracle-migration.sql"
+    cat  "${SMP_MIGRATE_DATABASE}" >> "${3}/04_oracle-migration.sql"
+  fi
+
   # if $4 is given then create datasource configuration
   if [ -n "${4}" ]; then
     echo "Create file [$4]/datasource.properties to recreate datasource configuration!"

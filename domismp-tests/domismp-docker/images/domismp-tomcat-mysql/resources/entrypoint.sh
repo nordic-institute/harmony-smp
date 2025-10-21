@@ -176,9 +176,9 @@ init_mysql() {
     echo 'Create smp database'
     mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';CREATE USER 'root'@'%' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';drop schema if exists $SMP_DB_SCHEMA;DROP USER IF EXISTS $SMP_DB_USER;  create schema $SMP_DB_SCHEMA;alter database $SMP_DB_SCHEMA charset=utf8; create user $SMP_DB_USER identified by '$SMP_DB_USER_PASSWORD';grant all on $SMP_DB_SCHEMA.* to $SMP_DB_USER;"
 
-    if [ -f "/tmp/custom-data/mysql5innodb.sql" ]; then
+    if [ -f "/tmp/custom-data/mysql5innodb.ddl" ]; then
       echo "Use custom database script! "
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"tmp/custom-data/mysql5innodb.ddl"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/custom-data/mysql5innodb.ddl"
     else
       echo "Use default database ddl script!"
       mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/smp-setup/database-scripts/mysql5innodb.ddl"
@@ -190,6 +190,13 @@ init_mysql() {
     else
       echo "Use default init script!"
       mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/smp-setup/database-scripts/mysql5innodb-data.sql"
+    fi
+
+    if [ -f "/tmp/custom-data/mysql-migrate.sql" ]; then
+      echo "[INFO] Execute the migration script mysql-migrate.sql"
+      mysql -h localhost -u root --password=${MYSQL_ROOT_PASSWORD} $SMP_DB_SCHEMA < "/tmp/custom-data/mysql-migrate.sql"
+    else
+      echo "Migration script /tmp/custom-data/mysql-migrate.sql does not exist"
     fi
   fi
 

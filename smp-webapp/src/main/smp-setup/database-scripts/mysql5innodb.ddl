@@ -760,9 +760,6 @@
        add constraint UKk7l5fili2mmhgslv77afg4myo unique (IDENTIFIER);
 
     alter table SMP_RESOURCE_DEF 
-       add constraint UK3kytx3r10tyeut386xw108ipt unique (URL_SEGMENT_OPTIONAL);
-
-    alter table SMP_RESOURCE_DEF 
        add constraint UKjjbctkhd4h0u9whb1i9wbxwoe unique (URL_SEGMENT);
 
     alter table SMP_RESOURCE_MEMBER 
@@ -782,9 +779,6 @@
 
     alter table SMP_SUBRESOURCE_DEF 
        add constraint SMP_RESDEF_UNIQ_IDENTIFIER unique (IDENTIFIER);
-
-    alter table SMP_SUBRESOURCE_DEF 
-       add constraint UKt6eohbg6l0hx3ad07go5hra9q unique (URL_SEGMENT_OPTIONAL);
 
     alter table SMP_USER 
        add constraint UKrt1f0anklfo05lt0my05fqq6 unique (USERNAME);

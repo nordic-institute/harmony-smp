@@ -83,7 +83,7 @@ public class DBSubresourceDef extends BaseEntity {
     @ColumnDescription(comment = "Subresources are published under url_segment. It must be unique for resource type")
     private String urlSegment;
 
-    @Column(name = "URL_SEGMENT_OPTIONAL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128, unique = true)
+    @Column(name = "URL_SEGMENT_OPTIONAL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
     @ColumnDescription(comment = "Comma separated optional subresources url_segment.")
     String optionalUrlSegment;
 

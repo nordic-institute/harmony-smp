@@ -1,7 +1,100 @@
--- 1. Change datetime columns to datetime(6)
+-- 1. add new tables
+CREATE TABLE IF NOT EXISTS SMP_PERIODICAL_ALERT (
+    ID bigint NOT NULL AUTO_INCREMENT COMMENT 'Unique periodical alert id',
+    CREATED_ON datetime(6) NOT NULL,
+    LAST_UPDATED_ON datetime(6) NOT NULL,
+    ALERT_SCOPE enum('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
+    ENTITY_IDENTIFIER varchar(255) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Entity identifier for which the alert is sent, credential database id, certificate alias, etc.',
+    ENTITY_TYPE enum('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
+    LAST_ALERT_ON datetime(6),
+    PRIMARY KEY (ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS SMP_PERIODICAL_ALERT_AUD (
+    ID bigint NOT NULL,
+    REV bigint NOT NULL,
+    REVTYPE tinyint,
+    CREATED_ON datetime(6),
+    LAST_UPDATED_ON datetime(6),
+    ALERT_SCOPE enum('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
+    ENTITY_IDENTIFIER varchar(255) CHARACTER SET utf8 COLLATE utf8_bin,
+    ENTITY_TYPE enum('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
+    LAST_ALERT_ON datetime(6),
+    PRIMARY KEY (REV, ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 2. Change varchar columns to enum where needed (ALTER COLUMN ... CHANGE ... TYPE)
+CREATE TABLE IF NOT EXISTS SMP_DOMAIN_DOC_TMPL (
+    ID bigint NOT NULL AUTO_INCREMENT COMMENT 'Unique domain document template id',
+    CREATED_ON datetime(6) NOT NULL,
+    LAST_UPDATED_ON datetime(6) NOT NULL,
+    DOCUMENT_LEVEL enum('RESOURCE','SUBRESOURCE') NOT NULL COMMENT 'Document level type - resource or subresource',
+    FK_DOCUMENT_ID bigint NOT NULL,
+    FK_DOREDEF_ID bigint NOT NULL,
+    FK_SUREDEF_ID bigint,
+    PRIMARY KEY (ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS SMP_DOMAIN_DOC_TMPL_AUD (
+    ID bigint NOT NULL,
+    REV bigint NOT NULL,
+    REVTYPE tinyint,
+    CREATED_ON datetime(6),
+    LAST_UPDATED_ON datetime(6),
+    DOCUMENT_LEVEL enum('RESOURCE','SUBRESOURCE'),
+    FK_DOCUMENT_ID bigint,
+    FK_DOREDEF_ID bigint,
+    FK_SUREDEF_ID bigint,
+    PRIMARY KEY (REV, ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS SMP_DOCUMENT_CERTIFICATE (
+    ID bigint NOT NULL COMMENT 'Shared primary key with master table SMP_DOC_PROP_SEQ',
+    CREATED_ON datetime(6) NOT NULL,
+    LAST_UPDATED_ON datetime(6) NOT NULL,
+    CERTIFICATE_ID varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Formatted Certificate id using tags: cn, o, c and serialNumber',
+    ISSUER varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Certificate issuer (canonical form)',
+    PEM_ENCODED_CERT longtext COMMENT 'PEM encoded certificate',
+    SERIALNUMBER varchar(128) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Certificate serial number',
+    SUBJECT varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Certificate subject (canonical form)',
+    VALID_FROM datetime(6) COMMENT 'Certificate valid from date.',
+    VALID_TO datetime(6) COMMENT 'Certificate valid to date.',
+    PRIMARY KEY (ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS SMP_DOCUMENT_CERTIFICATE_AUD (
+    ID bigint NOT NULL,
+    REV bigint NOT NULL,
+    REVTYPE tinyint,
+    CREATED_ON datetime(6),
+    LAST_UPDATED_ON datetime(6),
+    CERTIFICATE_ID varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin,
+    ISSUER varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin,
+    PEM_ENCODED_CERT longtext,
+    SERIALNUMBER varchar(128) CHARACTER SET utf8 COLLATE utf8_bin,
+    SUBJECT varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin,
+    VALID_FROM datetime(6),
+    VALID_TO datetime(6),
+    PRIMARY KEY (REV, ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 2. Add new columns to existing tables
+ALTER TABLE SMP_DOMAIN ADD COLUMN ENABLE_DOMAIN_TRUSTSTORE bit AFTER DOMAIN_CODE;
+ALTER TABLE SMP_DOMAIN ADD COLUMN SML_CLIENT_KEY_CHANGE_ALIAS varchar(255) CHARACTER SET utf8 COLLATE utf8_bin AFTER SML_CLIENT_KEY_ALIAS;
+ALTER TABLE SMP_DOMAIN ADD COLUMN SML_CLIENT_KEY_CHANGE_DATE datetime(6) AFTER SML_CLIENT_KEY_CHANGE_ALIAS;
+ALTER TABLE SMP_DOMAIN ADD COLUMN SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit AFTER SML_SUBDOMAIN;
+-- SMP_DOMAIN_AUD
+ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN ENABLE_DOMAIN_TRUSTSTORE bit AFTER DOMAIN_CODE;
+ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN SML_CLIENT_KEY_CHANGE_ALIAS varchar(255) CHARACTER SET utf8 COLLATE utf8_bin AFTER SML_CLIENT_KEY_ALIAS;
+ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN SML_CLIENT_KEY_CHANGE_DATE datetime(6) AFTER SML_CLIENT_KEY_CHANGE_ALIAS;
+ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit AFTER SML_SUBDOMAIN;
+-- SMP_RESOURCE_DEF
+ALTER TABLE SMP_RESOURCE_DEF ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
+ALTER TABLE SMP_RESOURCE_DEF_AUD ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
+-- SMP_SUBRESOURCE_DEF
+ALTER TABLE SMP_SUBRESOURCE_DEF ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
+ALTER TABLE SMP_SUBRESOURCE_DEF_AUD ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
+
+-- 3. Change varchar columns to enum where needed (ALTER COLUMN ... CHANGE ... TYPE)
 -- ALERT table
 ALTER TABLE SMP_ALERT MODIFY ALERT_LEVEL enum('HIGH','LOW','MEDIUM');
 ALTER TABLE SMP_ALERT MODIFY ALERT_STATUS enum('FAILED','PROCESS','SUCCESS');
@@ -42,125 +135,16 @@ ALTER TABLE SMP_GROUP_MEMBER_AUD MODIFY MEMBERSHIP_ROLE enum('ADMIN','VIEWER');
 ALTER TABLE SMP_USER MODIFY APPLICATION_ROLE enum('SYSTEM_ADMIN','USER');
 ALTER TABLE SMP_USER_AUD MODIFY APPLICATION_ROLE enum('SYSTEM_ADMIN','USER');
 
--- 3. Add new columns as needed (e.g. ENABLE_DOMAIN_TRUSTSTORE, SML_CLIENT_KEY_CHANGE_DATE, SML_ENABLE_URL_DOMAIN_CODE_SUFFIX, SML_ENABLE_URL_DOMAIN_CODE_SUFFIX, etc.)
-ALTER TABLE SMP_DOMAIN ADD COLUMN ENABLE_DOMAIN_TRUSTSTORE bit AFTER DOMAIN_CODE;
-ALTER TABLE SMP_DOMAIN ADD COLUMN SML_ENABLE_URL_DOMAIN_CODE_SUFFIX varchar(255) CHARACTER SET utf8 COLLATE utf8_bin AFTER SML_CLIENT_KEY_ALIAS;
-ALTER TABLE SMP_DOMAIN ADD COLUMN SML_CLIENT_KEY_CHANGE_DATE datetime(6) AFTER SML_ENABLE_URL_DOMAIN_CODE_SUFFIX;
-ALTER TABLE SMP_DOMAIN ADD COLUMN SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit AFTER SML_SUBDOMAIN;
--- SMP_DOMAIN_AUD
-ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN ENABLE_DOMAIN_TRUSTSTORE bit AFTER DOMAIN_CODE;
-ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN SML_ENABLE_URL_DOMAIN_CODE_SUFFIX varchar(255) CHARACTER SET utf8 COLLATE utf8_bin AFTER SML_CLIENT_KEY_ALIAS;
-ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN SML_CLIENT_KEY_CHANGE_DATE datetime(6) AFTER SML_ENABLE_URL_DOMAIN_CODE_SUFFIX;
-ALTER TABLE SMP_DOMAIN_AUD ADD COLUMN SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit AFTER SML_SUBDOMAIN;
--- SMP_RESOURCE_DEF
-ALTER TABLE SMP_RESOURCE_DEF ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
-ALTER TABLE SMP_RESOURCE_DEF_AUD ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
--- SMP_SUBRESOURCE_DEF
-ALTER TABLE SMP_SUBRESOURCE_DEF ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
-ALTER TABLE SMP_SUBRESOURCE_DEF_AUD ADD COLUMN URL_SEGMENT_OPTIONAL varchar(128) CHARACTER SET utf8 COLLATE utf8_bin AFTER NAME;
-
--- 4. Add new tables (if not present)
-CREATE TABLE IF NOT EXISTS SMP_PERIODICAL_ALERT (
-                                                    ID bigint NOT NULL AUTO_INCREMENT COMMENT 'Unique periodical alert id',
-                                                    CREATED_ON datetime(6) NOT NULL,
-    LAST_UPDATED_ON datetime(6) NOT NULL,
-    ALERT_SCOPE enum('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
-    ENTITY_IDENTIFIER varchar(255) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Entity identifier for which the alert is sent, credential database id, certificate alias, etc.',
-    ENTITY_TYPE enum('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
-    LAST_ALERT_ON datetime(6),
-    PRIMARY KEY (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS SMP_PERIODICAL_ALERT_AUD (
-                                                        ID bigint NOT NULL,
-                                                        REV bigint NOT NULL,
-                                                        REVTYPE tinyint,
-                                                        CREATED_ON datetime(6),
-    LAST_UPDATED_ON datetime(6),
-    ALERT_SCOPE enum('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
-    ENTITY_IDENTIFIER varchar(255) CHARACTER SET utf8 COLLATE utf8_bin,
-    ENTITY_TYPE enum('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
-    LAST_ALERT_ON datetime(6),
-    PRIMARY KEY (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS SMP_DOMAIN_DOC_TMPL (
-                                                   ID bigint NOT NULL AUTO_INCREMENT COMMENT 'Unique domain document template id',
-                                                   CREATED_ON datetime(6) NOT NULL,
-    LAST_UPDATED_ON datetime(6) NOT NULL,
-    DOCUMENT_LEVEL enum('RESOURCE','SUBRESOURCE') NOT NULL COMMENT 'Document level type - resource or subresource',
-    FK_DOCUMENT_ID bigint NOT NULL,
-    FK_DOREDEF_ID bigint NOT NULL,
-    FK_SUREDEF_ID bigint,
-    PRIMARY KEY (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS SMP_DOMAIN_DOC_TMPL_AUD (
-                                                       ID bigint NOT NULL,
-                                                       REV bigint NOT NULL,
-                                                       REVTYPE tinyint,
-                                                       CREATED_ON datetime(6),
-    LAST_UPDATED_ON datetime(6),
-    DOCUMENT_LEVEL enum('RESOURCE','SUBRESOURCE'),
-    FK_DOCUMENT_ID bigint,
-    FK_DOREDEF_ID bigint,
-    FK_SUREDEF_ID bigint,
-    PRIMARY KEY (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS SMP_DOCUMENT_CERTIFICATE (
-                                                        ID bigint NOT NULL COMMENT 'Shared primary key with master table SMP_DOC_PROP_SEQ',
-                                                        CREATED_ON datetime(6) NOT NULL,
-    LAST_UPDATED_ON datetime(6) NOT NULL,
-    CERTIFICATE_ID varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Formatted Certificate id using tags: cn, o, c and serialNumber',
-    ISSUER varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Certificate issuer (canonical form)',
-    PEM_ENCODED_CERT longtext COMMENT 'PEM encoded certificate',
-    SERIALNUMBER varchar(128) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Certificate serial number',
-    SUBJECT varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'Certificate subject (canonical form)',
-    VALID_FROM datetime(6) COMMENT 'Certificate valid from date.',
-    VALID_TO datetime(6) COMMENT 'Certificate valid to date.',
-    PRIMARY KEY (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS SMP_DOCUMENT_CERTIFICATE_AUD (
-                                                            ID bigint NOT NULL,
-                                                            REV bigint NOT NULL,
-                                                            REVTYPE tinyint,
-                                                            CREATED_ON datetime(6),
-    LAST_UPDATED_ON datetime(6),
-    CERTIFICATE_ID varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin,
-    ISSUER varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin,
-    PEM_ENCODED_CERT longtext,
-    SERIALNUMBER varchar(128) CHARACTER SET utf8 COLLATE utf8_bin,
-    SUBJECT varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin,
-    VALID_FROM datetime(6),
-    VALID_TO datetime(6),
-    PRIMARY KEY (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 5. Add new unique constraints and indexes
+-- 4. Add new unique constraints and indexes
 ALTER TABLE SMP_DOCUMENT_CERTIFICATE ADD CONSTRAINT UK7gl0tu846ixaiplii4tku1cqc UNIQUE (CERTIFICATE_ID);
 ALTER TABLE SMP_PERIODICAL_ALERT ADD CONSTRAINT SMP_ALERT_COMPOSITE_IDX UNIQUE (ENTITY_IDENTIFIER, ENTITY_TYPE, ALERT_SCOPE);
-ALTER TABLE SMP_RESOURCE_DEF ADD CONSTRAINT UK3kytx3r10tyeut386xw108ipt UNIQUE (URL_SEGMENT_OPTIONAL);
-ALTER TABLE SMP_SUBRESOURCE_DEF ADD CONSTRAINT UKt6eohbg6l0hx3ad07go5hra9q UNIQUE (URL_SEGMENT_OPTIONAL);
 ALTER TABLE SMP_SUBRESOURCE_DEF ADD CONSTRAINT SMP_RESDEF_UNIQ_IDENTIFIER UNIQUE (IDENTIFIER);
 
--- 6. Update primary keys if needed (e.g. AUD tables now have PK(REV,ID) instead of PK(ID,REV))
--- Change primary keys for all affected AUD tables (only if needed)
-
-
--- 7. Add new foreign key relationships (see target script)
+-- 5. Add new foreign key relationships (see target script)
 ALTER TABLE SMP_DOCUMENT_CERTIFICATE ADD CONSTRAINT FKdo996u5n5vqp9950jbrd32tpv FOREIGN KEY (ID) REFERENCES SMP_DOCUMENT_PROPERTY (ID);
 ALTER TABLE SMP_DOCUMENT_CERTIFICATE_AUD ADD CONSTRAINT FKlfwn1ehct3domxnwc1dr3mx4g FOREIGN KEY (REV) REFERENCES SMP_REV_INFO (id);
-
--- 8. Remove columns which are no longer present (if required)
--- (Review carefully and DROP columns that are no longer needed)
-
--- 9. Any other changes not covered above (indexes, constraints, etc.)
--- (Add here if needed based on full diff review)
-
--- NOTE: Make sure to review if any columns need to be dropped, renamed, or migrated in data.
--- NOTE: This DDL does not cover DML for converting existing data, e.g. from varchar to enum.
--- If you have production data, you may need to migrate values before changing columns to enum. 
-
--- Backup your database before running this script!
+ALTER TABLE SMP_DOMAIN_DOC_TMPL ADD CONSTRAINT FKg4ci2nee5nvm2tbdbpkeom53m FOREIGN KEY (FK_DOCUMENT_ID) REFERENCES SMP_DOCUMENT (ID);
+ALTER TABLE SMP_DOMAIN_DOC_TMPL ADD CONSTRAINT FK8dwm6w0x0rdiouvt74i07s9u5 FOREIGN KEY (FK_DOREDEF_ID) REFERENCES SMP_DOMAIN_RESOURCE_DEF (ID);
+ALTER TABLE SMP_DOMAIN_DOC_TMPL ADD CONSTRAINT FK45eaf7nmo1dem40af2dw27jh5 FOREIGN KEY (FK_SUREDEF_ID) REFERENCES SMP_SUBRESOURCE_DEF (ID);
+ALTER TABLE SMP_DOMAIN_DOC_TMPL_AUD ADD CONSTRAINT FKb1dw4r0rpj3jdtff4jc7gn046 FOREIGN KEY (REV) REFERENCES SMP_REV_INFO (id);
+ALTER TABLE SMP_PERIODICAL_ALERT_AUD ADD CONSTRAINT FK7qyb720heygkwc5mmpaer2iou FOREIGN KEY (REV) REFERENCES SMP_REV_INFO (id);

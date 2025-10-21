@@ -15,6 +15,13 @@ START_LOCAL="false"
 SMP_INIT_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
 #SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql"
 SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/domismp-tests/domismp-tests-api/groovy/mysql-4.1_integration_test_data.sql"
+SMP_MIGRATE_DATABASE=
+
+# example to test migration from 5.1 to 5.1
+# SMP_INIT_DATABASE="/cef/code/tmp/smp/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
+# SMP_INIT_DATABASE_DATA="/cef/code/tmp/smp/domismp-tests/domismp-tests-api/groovy/mysql-4.1_integration_test_data.sql"
+# SMP_MIGRATE_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/migration from 5.1 to 5.2/mysql5innoDb-5.1_to_5.2.sql"
+
 # READ arguments
 while getopts i:v:l: option
 do
@@ -41,6 +48,10 @@ DB_SCRIPT_FOLDER="./properties/db-scripts"
 # create  database init script from l
 cp  "${SMP_INIT_DATABASE}" ./properties/db-scripts/mysql5innodb.ddl
 cp  "${SMP_INIT_DATABASE_DATA}" ./properties/db-scripts/mysql5innodb-data.sql
+if [ -f "${SMP_MIGRATE_DATABASE}" ]; then
+  echo "Copy migrate file ${SMP_MIGRATE_DATABASE}"
+  cp  "${SMP_MIGRATE_DATABASE}" ./properties/db-scripts/mysql-migrate.sql
+fi
 
 echo "Clear old containers"
 stopAndClearTestContainers

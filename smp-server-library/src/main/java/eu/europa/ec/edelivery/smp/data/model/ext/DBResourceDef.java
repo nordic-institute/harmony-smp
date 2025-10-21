@@ -106,7 +106,7 @@ public class DBResourceDef extends BaseEntity {
     @ColumnDescription(comment = "resources are published under url_segment.")
     String urlSegment;
 
-    @Column(name = "URL_SEGMENT_OPTIONAL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128, unique = true)
+    @Column(name = "URL_SEGMENT_OPTIONAL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
     @ColumnDescription(comment = "Comma separated optional resources url_segment.")
     String optionalUrlSegment;
 
