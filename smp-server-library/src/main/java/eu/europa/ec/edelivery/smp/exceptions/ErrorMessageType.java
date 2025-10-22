@@ -149,7 +149,7 @@ public enum ErrorMessageType implements IErrorCodeType {
     INVALID_PROPERTY_DATETIME(PROPERTY_VALIDATION_ERROR, "error.invalid.property.datetime", "Property value must be less than 2000 characters", ErrorMessageArgument.PROPERTY_NAME),
     INVALID_PROPERTY_EMAIL(PROPERTY_VALIDATION_ERROR, "error.invalid.property.email", "Property value: [{{propertyValue}}] is not valid Email address type!", ErrorMessageArgument.PROPERTY_NAME),
     INVALID_PROPERTY_FILENAME(PROPERTY_VALIDATION_ERROR, "error.invalid.property.filename", "Property value: [{{propertyValue}}] is not valid Filename type or it does not exists", ErrorMessageArgument.PROPERTY_NAME),
-    INVALID_PROPERTY_INTEGER(PROPERTY_VALIDATION_ERROR, "error.invalid.property.integer", "Property value: [{{propertyValue}}] is not valid Integer and it must have less tha 10 digits", ErrorMessageArgument.PROPERTY_NAME),
+    INVALID_PROPERTY_INTEGER(PROPERTY_VALIDATION_ERROR, "error.invalid.property.integer", "Property value: [{{propertyValue}}] is not valid Integer and it must have less than 10 digits", ErrorMessageArgument.PROPERTY_NAME),
     INVALID_PROPERTY_LIST_STRING(PROPERTY_VALIDATION_ERROR, "error.invalid.property.list.string", "Property value: [{{propertyValue}}] is not valid LIST_STRING type", ErrorMessageArgument.PROPERTY_NAME),
     INVALID_PROPERTY_MAP_STRING(PROPERTY_VALIDATION_ERROR, "error.invalid.property.map.string", "Property value: [{{propertyValue}}] is not valid MAP_STRING type", ErrorMessageArgument.PROPERTY_NAME),
     INVALID_PROPERTY_MISSING(CONFIGURATION_ERROR, "error.invalid.property.missing", "Property [{{propertyName}}] is mandatory and must not be NULL OR empty", ErrorMessageArgument.PROPERTY_NAME),
