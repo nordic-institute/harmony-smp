@@ -31,7 +31,7 @@ public enum SMPPropertyTypeEnum {
     DATETIME(".{0,2000}", "error.invalid.property.datetime"),
     LIST_STRING(".{0,2000}", "error.invalid.property.list.string"),
     MAP_STRING(".{0,2000}", "error.invalid.property.map.string"),
-    INTEGER("^\\d{0,9}$", "error.invalid.property.integer"),
+    INTEGER("^-?\\d{1,9}$", "error.invalid.property.integer"),
     BOOLEAN("true|false", "error.invalid.property.boolean"),
     REGEXP("^.{0,2000}$", "error.invalid.property.regexp"),
     CRON_EXPRESSION("^([\\d\\*\\/\\-,]+\\s){5}[\\d\\*\\/\\-,]+$", "error.invalid.property.cron.expression"),
