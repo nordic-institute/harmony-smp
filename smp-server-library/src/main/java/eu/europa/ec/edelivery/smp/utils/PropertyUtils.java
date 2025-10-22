@@ -124,7 +124,6 @@ public class PropertyUtils {
         if (StringUtils.isBlank(value)) {
             return null;
         }
-
         if (StringUtils.length(value) > 2000) {
             throw new SMPRuntimeException(CONFIGURATION_INVALID_LENGTH);
         }
@@ -156,6 +155,11 @@ public class PropertyUtils {
                 }
             case INTEGER:
                 try {
+                    if (!type.getDefValidationPattern().matcher(value).matches()) {
+                        throw new SMPRuntimeException(CONFIGURATION_INVALID_INTEGER)
+                                .addParam(PROPERTY_VALUE, value)
+                                .addParam(ERROR_MESSAGE_CODE, type.getErrorMessageCode());
+                    }
                     return Integer.parseInt(value);
                 } catch (NumberFormatException ex) {
                     throw new SMPRuntimeException(CONFIGURATION_INVALID_INTEGER, ex)
