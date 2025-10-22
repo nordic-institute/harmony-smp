@@ -29,6 +29,7 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.mail.prop.DocumentActionProperties;
 import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.utils.DateTimeUtils;
+import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,7 @@ public class DocumentMailService {
         Map<String, Object> data = new HashMap<>();
         // add common mail data
         data.put(MailDataModel.CommonProperties.SMP_INSTANCE_NAME.name(), configurationService.getSMPInstanceName());
+        data.put(MailDataModel.CommonProperties.SERVER_NAME.name(), HttpUtils.getServerAddress());
 
         // generate mail data
         data.put(DocumentActionProperties.DOCUMENT_NAME.name(), documentName);
@@ -115,6 +117,7 @@ public class DocumentMailService {
             }
 
             data.put(MailDataModel.CommonProperties.CURRENT_DATETIME.name(), DateTimeUtils.formatOffsetDateTimeWithLocal(now, mailRecipients.getSmpLocale()));
+
             MailDataModel mailDataModel = new MailDataModel(mailRecipients.getSmpLocale(),
                     alertType,
                     data);
