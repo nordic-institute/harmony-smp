@@ -352,18 +352,21 @@
   "domain.template.template.dialog.button.close": "Close",
   "domain.template.template.dialog.button.save": "Save",
   "domain.template.template.dialog.description": "To create a new document template, choose the document level type and specify the extension document identifier(s). Note that only one template can be assigned to an extension document.",
-
+  "domain.template.template.dialog.label.dialog.title": "Document Template for Domain [{{domainCode}}]",
   "domain.template.template.dialog.label.document.level": "Document level type",
   "domain.template.template.dialog.placeholder.document.level": "Select document level type",
   "domain.template.template.dialog.tooltip.document.level": "The document level determines whether it applies to a resource or a subresource.",
-
+  "domain.template.template.dialog.hint.document.level": "Choose document level type to specify if template document is resource of subresource.",
   "domain.template.template.dialog.label.resourcedef.identifier": "Resource document type",
   "domain.template.template.dialog.placeholder.resourcedef.identifier": "Select Resource document type",
   "domain.template.template.dialog.tooltip.resourcedef.identifier": "The resource document type for the template.",
+  "domain.template.template.dialog.hint.resourcedef.identifier": "Choose the resource document type for the template.",
 
   "domain.template.template.dialog.label.subresourcedef.identifier": "Subresource document type",
   "domain.template.template.dialog.placeholder.subresourcedef.identifier": "Select Subresource document type",
   "domain.template.template.dialog.tooltip.subresourcedef.identifier": "The Subresource document type for the template.",
+  "domain.template.template.dialog.hint.subresourcedef.identifier": "Choose the subresource document type for the template.",
+  "domain.template.template.dialog.error.no.subresources": "Cannot create template because there are no subresource definitions for resource type!",
 
 
   "edit.domain.label.configuration": "Configuration",
@@ -1038,7 +1041,7 @@
   "toolbar.component.label.user.role": "SMP user",
 
   "expandable.panel.label.expand.collapse": "Expand/Collapse",
-  "expandable.panel.tooltip.expand.collapse": "Expand/Collapse property panel",
+  "expandable.panel.tooltip.expand.collapse": "Expand/Collapse panel",
 
   "app.component.button.collapse": "Collapse sidebar",
   "app.component.tooltip.collapse": "Collapse",

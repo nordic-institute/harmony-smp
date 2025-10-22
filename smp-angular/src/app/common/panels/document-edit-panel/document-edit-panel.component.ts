@@ -289,7 +289,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
 
 
     // set the editor mode
-    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+    if (this.isDocumentTemplateMode) {
       this.initFromDomainDocumentTemplate();
     } else if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
       this.initFromDocumentReview();
@@ -305,7 +305,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     }
      */
     // load the document to show
-    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+    if (this.isDocumentTemplateMode) {
       console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion ")
       this.loadDomainDocumentTemplateForVersion();
     } else if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR) {
@@ -327,7 +327,6 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       }
     });
   }
-
 
   @Input() set document(value: DocumentRo) {
     this._document = value;
@@ -484,7 +483,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
       this.documentForm.controls['payload'].setValue("");
       this.documentForm.markAsPristine();
       this.updateTextToEditor();
-    } else if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+    } else if (this.isDocumentTemplateMode) {
       this.loadDomainDocumentTemplateForVersion(currentVersion);
     } else {
       console.log("DocumentEditPanelComponent loadDocumentForVersion 3")
@@ -499,7 +498,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
 
   onSaveButtonClicked(): void {
     let onSaveObservable: Observable<DocumentRo>;
-    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+    if (this.isDocumentTemplateMode) {
       onSaveObservable = this.editResourceService.saveDomainDocumentTemplateObservable(this.domain, this.domainDocumentTemplateRo, this.document);
     } else {
       onSaveObservable = this.isResourceDocument ?
@@ -531,7 +530,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     } as DocumentRo;
 
     let onDeleteObservable: Observable<DocumentRo>;
-    if (this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR) {
+    if (this.isDocumentTemplateMode) {
       onDeleteObservable = this.editResourceService.deleteDomainDocumentTemplateObservable(this.domain, this.domainDocumentTemplateRo, this.document);
     } else {
       onDeleteObservable = this.isResourceDocument ?
@@ -880,6 +879,10 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   get documentEditable(): boolean {
     let status = this.documentForm.controls['documentVersionStatus']?.value
     return !!this.editableDocStatusList.find(i => i === status) && !this.showReference;
+  }
+
+  get isDocumentTemplateMode():boolean {
+    return this.editorMode === SmpDocumentEditorType.TEMPLATE_EDITOR;
   }
 
   get documentSubmitReviewAllowed(): boolean {
