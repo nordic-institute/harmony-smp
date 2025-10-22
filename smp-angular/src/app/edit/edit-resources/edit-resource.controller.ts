@@ -214,6 +214,12 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   refreshDomainsResourceDefinitions() {
+    let domain = this.selectedDomain;
+    if (!domain || domain.domainId == null) {
+      this._selectedDomainResourceDefs = [];
+      return;
+    }
+
     this.domainService.getDomainResourceDefinitionsObservable(this.selectedDomain)
       .subscribe({
         next: (result: ResourceDefinitionRo[]) => {

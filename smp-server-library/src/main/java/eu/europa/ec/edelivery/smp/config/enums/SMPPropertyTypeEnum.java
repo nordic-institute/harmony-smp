@@ -18,6 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.config.enums;
 
+import java.util.regex.Pattern;
+
 /**
  * DomiSMP application properties types
  *
@@ -29,7 +31,7 @@ public enum SMPPropertyTypeEnum {
     DATETIME(".{0,2000}", "error.invalid.property.datetime"),
     LIST_STRING(".{0,2000}", "error.invalid.property.list.string"),
     MAP_STRING(".{0,2000}", "error.invalid.property.map.string"),
-    INTEGER("^\\d{0,12}$", "error.invalid.property.integer"),
+    INTEGER("^\\d{0,9}$", "error.invalid.property.integer"),
     BOOLEAN("true|false", "error.invalid.property.boolean"),
     REGEXP("^.{0,2000}$", "error.invalid.property.regexp"),
     CRON_EXPRESSION("^([\\d\\*\\/\\-,]+\\s){5}[\\d\\*\\/\\-,]+$", "error.invalid.property.cron.expression"),
@@ -41,14 +43,23 @@ public enum SMPPropertyTypeEnum {
     ;
 
     final String defValidationRegExp;
+    final Pattern defValidationPattern;
     final String errorMessageCode;
 
     SMPPropertyTypeEnum(String defValidationRegExp, String errorMessageCode) {
         this.defValidationRegExp = defValidationRegExp;
         this.errorMessageCode = errorMessageCode;
+        this.defValidationPattern = Pattern.compile(defValidationRegExp);
     }
 
     public String getErrorMessageCode() {
         return errorMessageCode;
+    }
+
+    public String getDefValidationRegExp() {
+        return defValidationRegExp;
+    }
+    public Pattern getDefValidationPattern() {
+        return defValidationPattern;
     }
 }

@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  Component, ElementRef,
-  EventEmitter,
-  Input,
-  Output, TemplateRef,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, TemplateRef, ViewChild} from '@angular/core';
 import {MatTable, MatTableDataSource} from "@angular/material/table";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {SmpTableColDef} from "./smp-table-coldef.model";
@@ -13,10 +6,10 @@ import {EntityStatus} from "../../enums/entity-status.enum";
 
 
 @Component({
-    selector: 'smp-table',
-    templateUrl: './smp-table.component.html',
-    styleUrls: ['./smp-table.component.css'],
-    standalone: false
+  selector: 'smp-table',
+  templateUrl: './smp-table.component.html',
+  styleUrls: ['./smp-table.component.css'],
+  standalone: false
 })
 export class SmpTableComponent implements AfterViewInit {
   @Output() onFilterChanged: EventEmitter<string> = new EventEmitter<string>();
@@ -25,10 +18,9 @@ export class SmpTableComponent implements AfterViewInit {
   @Output() onRowDoubleClicked: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild(MatTable) table: MatTable<any>;
-  @ViewChild("tableFilter")  tableFilterField: ElementRef<HTMLInputElement>;
+  @ViewChild("tableFilter") tableFilterField: ElementRef<HTMLInputElement>;
   @Input() filterLabel: string;
   @Input() filterPlaceholder: string;
-  @Input() filterValue: string;
   @Input() noResultLabel: string;
   @Input() noResultForFilterLabel: string;
   @Input() disabledFilter: boolean;
@@ -47,12 +39,14 @@ export class SmpTableComponent implements AfterViewInit {
 
   _pageSizeOptions: number[] = [5, 10, 20, 50, 100];
   _pageSize: number = 10;
+  _filterValue: string = "";
 
   @Input() set pageSizeOptions(value: number[]) {
     if (value && value.length > 0) {
       this._pageSizeOptions = value;
     }
   }
+
   get pageSizeOptions(): number[] {
     return this._pageSizeOptions;
   }
@@ -63,6 +57,7 @@ export class SmpTableComponent implements AfterViewInit {
       this.paginator.pageSize = value;
     }
   }
+
   get pageSize(): number {
     return this._pageSize;
   }
@@ -80,8 +75,8 @@ export class SmpTableComponent implements AfterViewInit {
   isLoadingResults = false;
 
   constructor() {
-    if (this.filterValue === undefined) {
-      this.filterValue = '';
+    if (this._filterValue === undefined) {
+      this._filterValue = '';
     }
   }
 
@@ -89,7 +84,7 @@ export class SmpTableComponent implements AfterViewInit {
     // do not bind paginator here, it will be done in parent component
     // because internal paginator has its own paginator which is limited only to page.
     if (!this.isLoadableTable) {
-       this.dataSource.paginator = this.paginator;
+      this.dataSource.paginator = this.paginator;
     }
   }
 
@@ -97,7 +92,8 @@ export class SmpTableComponent implements AfterViewInit {
     let value: string = (event.target as HTMLInputElement).value;
     this.onFilterChanged.emit(value);
   }
-  clearFilter(){
+
+  clearFilter() {
     this.setFilterValue("")
   }
 
@@ -125,6 +121,14 @@ export class SmpTableComponent implements AfterViewInit {
     return this.selected;
   }
 
+  @Input() set filterValue(value: any) {
+    this._filterValue = !value ? "" : value;
+  }
+
+  get filterValue(): any {
+    return this._filterValue;
+  }
+
   onPageChangedEvent(page: PageEvent): void {
     this.onPageChanged.emit(page);
   }
@@ -137,7 +141,7 @@ export class SmpTableComponent implements AfterViewInit {
     return this.isLoadingResults;
   }
 
-  get paginator() : MatPaginator {
+  get paginator(): MatPaginator {
     return this._paginator;
   }
 
@@ -159,7 +163,7 @@ export class SmpTableComponent implements AfterViewInit {
   }
 
   firstPage(): void {
-      this.paginator.firstPage();
+    this.paginator.firstPage();
   }
 
   lastPage(): void {
@@ -170,7 +174,7 @@ export class SmpTableComponent implements AfterViewInit {
     if (!col) {
       return '';
     }
-    return ( col?.style?col.style:'') + ' '  +( col?.headerStyle?col.headerStyle:'') ;
+    return (col?.style ? col.style : '') + ' ' + (col?.headerStyle ? col.headerStyle : '');
   }
 
   getRowClass(row, oddRow: boolean) {
