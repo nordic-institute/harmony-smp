@@ -147,7 +147,7 @@ public class PeppolSMPSubresourceHandler extends AbstractPeppolSMPHandler {
         Document docEnvelopedMetadata;
         try {
             byte[] bytearray = readFromInputStream(resourceData.getResourceInputStream());
-            docEnvelopedMetadata = DomUtils.toSignedSubresource10Document(bytearray);
+            docEnvelopedMetadata = DomUtils.toSignedSubresourcePeppolDocument(bytearray);
         } catch (IOException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: ["
                     + resourceIdentifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
@@ -204,14 +204,14 @@ public class PeppolSMPSubresourceHandler extends AbstractPeppolSMPHandler {
             bytearray = readFromInputStream(resourceData.getResourceInputStream());
             PeppolSmpSchemaValidator.validatePeppolSMPSchema(bytearray);
         } catch (IOException | XmlInvalidAgainstSchemaException e) {
-            throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
+            throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Peppol SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
 
         ServiceMetadata subresource;
         try {
             subresource = (ServiceMetadata) reader.parseNativeAny(new ByteArrayInputStream(bytearray));
         } catch (TechnicalException e) {
-            throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
+            throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Peppol SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         serviceMetadataValidator.validate(
                 resourceData.getDomainCode(),
