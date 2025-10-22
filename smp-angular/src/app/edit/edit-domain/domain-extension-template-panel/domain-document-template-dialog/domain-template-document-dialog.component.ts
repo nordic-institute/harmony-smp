@@ -9,7 +9,6 @@ import {DomainDocumentTemplateRo} from "../../../../common/model/domain-document
 import {ResourceDefinitionRo} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
 import {SubresourceDefinitionRo} from "../../../../system-settings/admin-extension/subresource-definition-ro.model";
 
-
 @Component({
   templateUrl: './domain-template-document-dialog.component.html',
   styleUrls: ['./domain-template-document-dialog.component.css'],
@@ -47,7 +46,7 @@ export class DomainDocumentTemplateDialog {
     this.templateForm = formBuilder.group({
       'documentLevel': new FormControl({value: null}, Validators.required),
       'resourceDefIdentifier': new FormControl({value: null}, Validators.required),
-      'subresourceDefIdentifier': new FormControl({value: null}),
+      'subresourceDefIdentifier': new FormControl({value: null}, Validators.required),
     });
     this.template = data.template;
   }
@@ -80,6 +79,7 @@ export class DomainDocumentTemplateDialog {
     }
     this.templateForm.markAsPristine();
   }
+
   get template(): DomainDocumentTemplateRo {
     let template = {...this._template};
     template.documentLevel = this.templateForm.get('documentLevel').value;
@@ -91,24 +91,41 @@ export class DomainDocumentTemplateDialog {
   onDocumentTypeChanged(documentLevelType: DocumentLevelType) {
     if (documentLevelType === DocumentLevelType.RESOURCE) {
       this.templateForm.controls['subresourceDefIdentifier'].setValue("");
-      this.templateForm.controls['subresourceDefIdentifier'].disable();
-    } else {
-      this.templateForm.controls['subresourceDefIdentifier'].enable();
     }
+    this.validateSubresourceError();
   }
+
+  get showSubresourceDefField(): boolean {
+    return this.templateForm.get('documentLevel')?.value === DocumentLevelType.SUBRESOURCE;
+  }
+
 
   onResourceDefChanged(resourceDefIdentifier: string) {
     this._selectedResourceDef = this.domainResourceDefs.find(rd => rd.identifier === resourceDefIdentifier);
-    if (this._selectedResourceDef) {
-      if (this._selectedResourceDef.subresourceDefinitions?.length > 0 && this.templateForm.get('documentLevel').value === DocumentLevelType.SUBRESOURCE) {
-        this.templateForm.controls['subresourceDefIdentifier'].enable();
-      } else {
-        this.templateForm.controls['subresourceDefIdentifier'].setValue("");
-        this.templateForm.controls['subresourceDefIdentifier'].disable();
-      }
+    // reset subresource def
+    this.templateForm.controls['subresourceDefIdentifier'].setValue("");
+    this.validateSubresourceError();
+  }
+
+  validateSubresourceError() {
+    let subCtrl = this.templateForm.controls['subresourceDefIdentifier'];
+    let isSubresource = this.templateForm.get('documentLevel').value === DocumentLevelType.SUBRESOURCE;
+
+
+    if (!isSubresource && !this._selectedResourceDef) {
+      subCtrl.setValue("");
+      subCtrl.disable();
+      subCtrl.setErrors(null);
+      return;
+    }
+
+    if (this._selectedResourceDef.subresourceDefinitions?.length > 0) {
+      subCtrl.enable();
+      subCtrl.setErrors({noSubresourceDef: false});
     } else {
-      this.templateForm.controls['subresourceDefIdentifier'].setValue("");
-      this.templateForm.controls['subresourceDefIdentifier'].disable();
+      subCtrl.setValue("");
+      subCtrl.disable();
+      subCtrl.setErrors({noSubresourceDef: true});
     }
   }
 
@@ -136,7 +153,7 @@ export class DomainDocumentTemplateDialog {
   }
 
   get submitButtonEnabled(): boolean {
-    return this.templateForm.valid && this.templateForm.dirty;
+    return this.templateForm.valid && this.templateForm.dirty && !this.inputDataError("subresourceDefIdentifier", "noSubresourceDef");
   }
 
   public onSaveButtonClicked() {
@@ -162,6 +179,4 @@ export class DomainDocumentTemplateDialog {
   public inputDataError = (controlName: string, errorName: string) => {
     return this.templateForm.controls[controlName].hasError(errorName);
   }
-
-
 }
