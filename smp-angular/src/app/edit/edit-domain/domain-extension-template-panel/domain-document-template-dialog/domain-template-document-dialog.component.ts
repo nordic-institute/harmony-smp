@@ -112,14 +112,7 @@ export class DomainDocumentTemplateDialog {
     let isSubresource = this.templateForm.get('documentLevel').value === DocumentLevelType.SUBRESOURCE;
 
 
-    if (!isSubresource) {
-      subCtrl.setValue("");
-      subCtrl.disable();
-      subCtrl.setErrors(null);
-      return;
-    }
-
-    if (!this._selectedResourceDef) {
+    if (!isSubresource && !this._selectedResourceDef) {
       subCtrl.setValue("");
       subCtrl.disable();
       subCtrl.setErrors(null);
