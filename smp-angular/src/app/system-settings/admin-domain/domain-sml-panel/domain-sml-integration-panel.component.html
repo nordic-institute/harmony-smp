@@ -83,10 +83,10 @@
       </select>
     </mat-form-field>
     @if (changeCertificateAliasSet) {
-      <smp-warning-panel
+      <smp-warning-panel [ngClass]="'certificate-change-note'"
         type="desc"
         icon="info"
-        label="{{ 'domain.sml.integration.panel.confirm.change.certificate.note.description' | translate:{alias: this.changeCertificate?.certificateAlias, changeDate: this.changeCertificate?.changeDateTime | date:dateTimeFormat, }  }}"
+        htmlContent="{{ 'domain.sml.integration.panel.confirm.change.certificate.note.description' | translate:{alias: this.changeCertificate?.certificateAlias, changeDate: this.changeCertificate?.changeDateTime | date:dateTimeFormat, }  }}"
       ></smp-warning-panel>
     }
     <mat-slide-toggle style="width:100%"

@@ -249,6 +249,13 @@ a:hover {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
 }
 
+.smp-warning-panel-no-border {
+  display:flex;
+  flex-direction: row;
+  gap:0.7em;
+  align-items: center;
+}
+
 .smp-warning-panel-padding {
   padding: 0.5em;
 }
