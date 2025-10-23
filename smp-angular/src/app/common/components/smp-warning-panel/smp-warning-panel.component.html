@@ -1,5 +1,6 @@
 <div
-  [ngClass]="{ 'smp-warning-panel': label,
+  [ngClass]="{ 'smp-warning-panel': label ,
+  'smp-warning-panel-no-border': htmlContent,
   'smp-warning-panel-padding': padding && !!label,
    'alert-info': type === 'info',
   'alert-success': type === 'success',

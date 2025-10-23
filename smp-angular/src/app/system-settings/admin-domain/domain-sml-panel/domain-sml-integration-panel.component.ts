@@ -23,7 +23,7 @@ import {DateTimeService} from "../../../common/services/date-time.service";
 @Component({
   selector: 'domain-sml-integration-panel',
   templateUrl: './domain-sml-integration-panel.component.html',
-  styleUrls: ['./domain-sml-integration-panel.component.scss'],
+  styleUrls: ['./domain-sml-integration-panel.component.css'],
   standalone: false
 })
 export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
