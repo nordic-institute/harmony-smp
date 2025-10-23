@@ -230,6 +230,10 @@ public class UIDocumentService {
 
     public DocumentRO deleteDocumentVersion(DBDocument document, int version, List<DocumentPropertyRO> initialProperties) {
 
+        if (document.getDocumentVersions().size() < 2) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_CANNOT_DELETE_LAST_VERSION);
+        }
+
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
