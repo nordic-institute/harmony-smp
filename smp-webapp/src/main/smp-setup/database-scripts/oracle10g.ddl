@@ -1,5 +1,5 @@
 -- This is [CREATE] database script for DomiSML version: [5.2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.30.Final] with dialect [org.hibernate.dialect.OracleDialect].
+-- This file was generated using hibernate version [6.6.33.Final] with dialect [org.hibernate.dialect.OracleDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     create sequence SMP_ALERT_PROP_SEQ start with 1 increment by 1;

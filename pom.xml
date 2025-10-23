@@ -49,14 +49,14 @@ See the Licence for the specific language governing permissions and limitations 
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>2.1-SNAPSHOT</edelivery.ssl-auth.version>
-        <edelivery.dynamic-discovery-client.version>3.1-SNAPSHOT</edelivery.dynamic-discovery-client.version>
-        <edelivery-vault.version>2.1-SNAPSHOT</edelivery-vault.version>
+        <edelivery.ssl-auth.version>2.1</edelivery.ssl-auth.version>
+        <edelivery.dynamic-discovery-client.version>3.1</edelivery.dynamic-discovery-client.version>
+        <edelivery-vault.version>2.1</edelivery-vault.version>
         <bdmsl-api.version>5.0</bdmsl-api.version>
         <!-- plugin versions -->
-        <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>12.1.6</plugin.dependency-check-maven.version>
-        <plugin.jacoco-maven-plugin.version>0.8.13</plugin.jacoco-maven-plugin.version>
+        <plugin.jacoco-maven-plugin.version>0.8.14</plugin.jacoco-maven-plugin.version>
         <plugin.sonar-maven-plugin.version>5.2.0.4988</plugin.sonar-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
@@ -89,9 +89,9 @@ See the Licence for the specific language governing permissions and limitations 
         <fasterxml.classmate.version>1.7.1</fasterxml.classmate.version>
         <h2.version>2.4.240</h2.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <hibernate-tools-orm.version>6.6.30.Final</hibernate-tools-orm.version>
+        <hibernate-tools-orm.version>6.6.33.Final</hibernate-tools-orm.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
-        <hibernate.version>6.6.30.Final</hibernate.version>
+        <hibernate.version>6.6.33.Final</hibernate.version>
         <httpclient5.version>5.5.1</httpclient5.version>
         <jackson.version>2.20.0</jackson.version>
         <jakarta.activation-api.version>2.1.4</jakarta.activation-api.version>
@@ -108,21 +108,21 @@ See the Licence for the specific language governing permissions and limitations 
         <junit-jupiter.version>5.13.4</junit-jupiter.version>
         <junit-platform-surefire-provider.version>1.3.2</junit-platform-surefire-provider.version>
         <junitparams.version>1.1.1</junitparams.version>
-        <logback.version>1.5.18</logback.version>
+        <logback.version>1.5.20</logback.version>
         <metro.version>2.2.1-1</metro.version>
 
         <mockito.version>5.20.0</mockito.version>
         <mysql.jdbc.version>9.4.0</mysql.jdbc.version>
         <org.glassfish.jaxb.jaxb-runtime.version>4.0.6</org.glassfish.jaxb.jaxb-runtime.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <spring-boot.tomcat.version>10.1.46</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>10.1.48</spring-boot.tomcat.version>
         <spring-boot.version>3.5.6</spring-boot.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring.security.version>6.5.5</spring.security.version>
+        <spring.security.version>6.5.6</spring.security.version>
         <!--When upgrading  spring.security the nimbus version is provided to avoid detected vulnerability issues  -->
         <nimbus-jose-jwt.version>10.5</nimbus-jose-jwt.version>
         <com.google.crypto.tink.version>1.18.0</com.google.crypto.tink.version>
-        <spring.version>6.2.11</spring.version>
+        <spring.version>6.2.12</spring.version>
         <xmlunit.version>2.10.4</xmlunit.version>
 
         <!-- plugins -->
