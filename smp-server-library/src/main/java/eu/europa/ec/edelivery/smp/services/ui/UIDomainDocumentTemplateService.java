@@ -130,9 +130,10 @@ public class UIDomainDocumentTemplateService {
 
     /**
      * Creates the DBDomainDocumentTemplate entity from the DomainDocumentTemplateRO
-     * @param templateRO the DomainDocumentTemplateRO
+     *
+     * @param templateRO        the DomainDocumentTemplateRO
      * @param domainResourceDef the DBDomainResourceDef
-     * @param dbSubresourceDef the DBSubresourceDef, can be null
+     * @param dbSubresourceDef  the DBSubresourceDef, can be null
      * @return the DBDomainDocumentTemplate entity
      */
     private static DBDomainDocumentTemplate createDBDomainDocumentTemplate(DomainDocumentTemplateRO templateRO, DBDomainResourceDef domainResourceDef, DBSubresourceDef dbSubresourceDef) {
@@ -168,7 +169,7 @@ public class UIDomainDocumentTemplateService {
         LOG.info("Delete Document version For Domain [{}], template [{}], version [{}]", domainId, templateId, version);
         DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
 
-        return uiDocumentService.deleteDocumentVersion(template.getDocument(), version,  new ArrayList<>());
+        return uiDocumentService.deleteDocumentVersion(template.getDocument(), version, new ArrayList<>());
     }
 
     private DBDomainDocumentTemplate getDomainDocumentTemplate(long domainId, long templateId) {
