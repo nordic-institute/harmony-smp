@@ -3,102 +3,161 @@ CREATE SEQUENCE SMP_DOMAIN_DOC_TMPL_SEQ START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE SMP_PERIODICAL_ALERT_SEQ START WITH 1 INCREMENT BY 1;
 
 -- 2. Add new tables
-
-CREATE TABLE SMP_DOMAIN_DOC_TMPL (
-                                     ID NUMBER(19,0) NOT NULL,
-                                     CREATED_ON TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-                                     LAST_UPDATED_ON TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-                                     DOCUMENT_LEVEL VARCHAR2(255 CHAR) NOT NULL CHECK (DOCUMENT_LEVEL IN ('RESOURCE','SUBRESOURCE')),
-                                     FK_DOCUMENT_ID NUMBER(19,0) NOT NULL,
-                                     FK_DOREDEF_ID NUMBER(19,0) NOT NULL,
-                                     FK_SUREDEF_ID NUMBER(19,0),
-                                     PRIMARY KEY (ID)
+create table SMP_DOCUMENT_CERTIFICATE (
+      ID number(19,0) not null,
+      CREATED_ON timestamp(6) with time zone not null,
+      LAST_UPDATED_ON timestamp(6) with time zone not null,
+      CERTIFICATE_ID varchar2(1024 char) unique,
+      ISSUER varchar2(1024 char),
+      PEM_ENCODED_CERT clob,
+      SERIALNUMBER varchar2(128 char),
+      SUBJECT varchar2(1024 char),
+      VALID_FROM timestamp(6) with time zone,
+      VALID_TO timestamp(6) with time zone,
+      primary key (ID)
 );
 
-CREATE TABLE SMP_DOMAIN_DOC_TMPL_AUD (
-                                         ID NUMBER(19,0) NOT NULL,
-                                         REV NUMBER(19,0) NOT NULL,
-                                         REVTYPE NUMBER(3,0),
-                                         CREATED_ON TIMESTAMP(6) WITH TIME ZONE,
-                                         LAST_UPDATED_ON TIMESTAMP(6) WITH TIME ZONE,
-                                         DOCUMENT_LEVEL VARCHAR2(255 CHAR) CHECK (DOCUMENT_LEVEL IN ('RESOURCE','SUBRESOURCE')),
-                                         FK_DOCUMENT_ID NUMBER(19,0),
-                                         FK_DOREDEF_ID NUMBER(19,0),
-                                         FK_SUREDEF_ID NUMBER(19,0),
-                                         PRIMARY KEY (REV, ID)
+comment on column SMP_DOCUMENT_CERTIFICATE.ID is
+        'Shared primary key with master table SMP_DOC_PROP_SEQ';
+
+comment on column SMP_DOCUMENT_CERTIFICATE.CERTIFICATE_ID is
+    'Formatted Certificate id using tags: cn, o, c and serialNumber';
+
+comment on column SMP_DOCUMENT_CERTIFICATE.ISSUER is
+    'Certificate issuer (canonical form)';
+
+comment on column SMP_DOCUMENT_CERTIFICATE.PEM_ENCODED_CERT is
+    'PEM encoded certificate';
+
+comment on column SMP_DOCUMENT_CERTIFICATE.SERIALNUMBER is
+    'Certificate serial number';
+
+comment on column SMP_DOCUMENT_CERTIFICATE.SUBJECT is
+    'Certificate subject (canonical form)';
+
+comment on column SMP_DOCUMENT_CERTIFICATE.VALID_FROM is
+    'Certificate valid from date.';
+
+comment on column SMP_DOCUMENT_CERTIFICATE.VALID_TO is
+    'Certificate valid to date.';
+
+create table SMP_DOCUMENT_CERTIFICATE_AUD (
+      ID number(19,0) not null,
+      REV number(19,0) not null,
+      REVTYPE number(3,0),
+      CREATED_ON timestamp(6) with time zone,
+      LAST_UPDATED_ON timestamp(6) with time zone,
+      CERTIFICATE_ID varchar2(1024 char),
+      ISSUER varchar2(1024 char),
+      PEM_ENCODED_CERT clob,
+      SERIALNUMBER varchar2(128 char),
+      SUBJECT varchar2(1024 char),
+      VALID_FROM timestamp(6) with time zone,
+      VALID_TO timestamp(6) with time zone,
+      primary key (REV, ID)
 );
 
-CREATE TABLE SMP_PERIODICAL_ALERT (
-                                      ID NUMBER(19,0) NOT NULL,
-                                      CREATED_ON TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-                                      LAST_UPDATED_ON TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-                                      ALERT_SCOPE VARCHAR2(255 CHAR) CHECK (ALERT_SCOPE IN ('USER_CREDENTIAL','SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
-                                      ENTITY_IDENTIFIER VARCHAR2(255 CHAR),
-                                      ENTITY_TYPE VARCHAR2(255 CHAR) CHECK (ENTITY_TYPE IN ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
-                                      LAST_ALERT_ON TIMESTAMP(6) WITH TIME ZONE,
-                                      PRIMARY KEY (ID),
-                                      CONSTRAINT SMP_ALERT_COMPOSITE_IDX UNIQUE (ENTITY_IDENTIFIER, ENTITY_TYPE, ALERT_SCOPE)
+create table SMP_DOMAIN_DOC_TMPL (
+     ID number(19,0) not null,
+     CREATED_ON timestamp(6) with time zone not null,
+     LAST_UPDATED_ON timestamp(6) with time zone not null,
+     DOCUMENT_LEVEL varchar2(255 char) not null check (DOCUMENT_LEVEL in ('RESOURCE','SUBRESOURCE')),
+     FK_DOCUMENT_ID number(19,0) not null,
+     FK_DOREDEF_ID number(19,0) not null,
+     FK_SUREDEF_ID number(19,0),
+     primary key (ID)
 );
 
-CREATE TABLE SMP_PERIODICAL_ALERT_AUD (
-                                          ID NUMBER(19,0) NOT NULL,
-                                          REV NUMBER(19,0) NOT NULL,
-                                          REVTYPE NUMBER(3,0),
-                                          CREATED_ON TIMESTAMP(6) WITH TIME ZONE,
-                                          LAST_UPDATED_ON TIMESTAMP(6) WITH TIME ZONE,
-                                          ALERT_SCOPE VARCHAR2(255 CHAR) CHECK (ALERT_SCOPE IN ('USER_CREDENTIAL','SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
-                                          ENTITY_IDENTIFIER VARCHAR2(255 CHAR),
-                                          ENTITY_TYPE VARCHAR2(255 CHAR) CHECK (ENTITY_TYPE IN ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
-                                          LAST_ALERT_ON TIMESTAMP(6) WITH TIME ZONE,
-                                          PRIMARY KEY (REV, ID)
+comment on column SMP_DOMAIN_DOC_TMPL.ID is
+    'Unique domain document template id';
+
+comment on column SMP_DOMAIN_DOC_TMPL.DOCUMENT_LEVEL is
+    'Document level type - resource or subresource';
+
+create table SMP_DOMAIN_DOC_TMPL_AUD (
+    ID number(19,0) not null,
+    REV number(19,0) not null,
+    REVTYPE number(3,0),
+    CREATED_ON timestamp(6) with time zone,
+    LAST_UPDATED_ON timestamp(6) with time zone,
+    DOCUMENT_LEVEL varchar2(255 char) check (DOCUMENT_LEVEL in ('RESOURCE','SUBRESOURCE')),
+    FK_DOCUMENT_ID number(19,0),
+    FK_DOREDEF_ID number(19,0),
+    FK_SUREDEF_ID number(19,0),
+    primary key (REV, ID)
 );
 
-CREATE TABLE SMP_DOCUMENT_CERTIFICATE (
-                                          ID NUMBER(19,0) NOT NULL,
-                                          CREATED_ON TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-                                          LAST_UPDATED_ON TIMESTAMP(6) WITH TIME ZONE NOT NULL,
-                                          CERTIFICATE_ID VARCHAR2(1024 CHAR) UNIQUE,
-                                          ISSUER VARCHAR2(1024 CHAR),
-                                          PEM_ENCODED_CERT CLOB,
-                                          SERIALNUMBER VARCHAR2(128 CHAR),
-                                          SUBJECT VARCHAR2(1024 CHAR),
-                                          VALID_FROM TIMESTAMP(6) WITH TIME ZONE,
-                                          VALID_TO TIMESTAMP(6) WITH TIME ZONE,
-                                          PRIMARY KEY (ID)
+create table SMP_PERIODICAL_ALERT (
+    ID number(19,0) not null,
+    CREATED_ON timestamp(6) with time zone not null,
+    LAST_UPDATED_ON timestamp(6) with time zone not null,
+    ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('USER_CREDENTIAL','SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
+    ENTITY_IDENTIFIER varchar2(255 char),
+    ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
+    LAST_ALERT_ON timestamp(6) with time zone,
+    primary key (ID),
+    constraint SMP_ALERT_COMPOSITE_IDX unique (ENTITY_IDENTIFIER, ENTITY_TYPE, ALERT_SCOPE)
 );
 
-CREATE TABLE SMP_DOCUMENT_CERTIFICATE_AUD (
-                                              ID NUMBER(19,0) NOT NULL,
-                                              REV NUMBER(19,0) NOT NULL,
-                                              REVTYPE NUMBER(3,0),
-                                              CREATED_ON TIMESTAMP(6) WITH TIME ZONE,
-                                              LAST_UPDATED_ON TIMESTAMP(6) WITH TIME ZONE,
-                                              CERTIFICATE_ID VARCHAR2(1024 CHAR),
-                                              ISSUER VARCHAR2(1024 CHAR),
-                                              PEM_ENCODED_CERT CLOB,
-                                              SERIALNUMBER VARCHAR2(128 CHAR),
-                                              SUBJECT VARCHAR2(1024 CHAR),
-                                              VALID_FROM TIMESTAMP(6) WITH TIME ZONE,
-                                              VALID_TO TIMESTAMP(6) WITH TIME ZONE,
-                                              PRIMARY KEY (REV, ID)
+comment on column SMP_PERIODICAL_ALERT.ID is
+    'Unique periodical alert id';
+
+comment on column SMP_PERIODICAL_ALERT.ENTITY_IDENTIFIER is
+    'Entity identifier for which the alert is sent, credential database id, certificate alias, etc.';
+
+comment on column SMP_PERIODICAL_ALERT.LAST_ALERT_ON is
+    'Date and time when the last alert was sent for this entity';
+
+create table SMP_PERIODICAL_ALERT_AUD (
+    ID number(19,0) not null,
+    REV number(19,0) not null,
+    REVTYPE number(3,0),
+    CREATED_ON timestamp(6) with time zone,
+    LAST_UPDATED_ON timestamp(6) with time zone,
+    ALERT_SCOPE varchar2(255 char) check (ALERT_SCOPE in ('USER_CREDENTIAL','SYSTEM_TRUSTSTORE','SYSTEM_KEYSTORE')),
+    ENTITY_IDENTIFIER varchar2(255 char),
+    ENTITY_TYPE varchar2(255 char) check (ENTITY_TYPE in ('USERNAME_PASSWORD','ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE')),
+    LAST_ALERT_ON timestamp(6) with time zone,
+    primary key (REV, ID)
 );
 
 -- 3. Add new columns to existing tables
-
 ALTER TABLE SMP_DOMAIN ADD (
-    ENABLE_DOMAIN_TRUSTSTORE NUMBER(1,0) CHECK (ENABLE_DOMAIN_TRUSTSTORE IN (0,1)),
-    SML_CLIENT_KEY_CHANGE_ALIAS VARCHAR2(255 CHAR),
-    SML_CLIENT_KEY_CHANGE_DATE TIMESTAMP(6) WITH TIME ZONE,
-    SML_ENABLE_URL_DOMAIN_CODE_SUFFIX NUMBER(1,0) CHECK (SML_ENABLE_URL_DOMAIN_CODE_SUFFIX IN (0,1))
+    ENABLE_DOMAIN_TRUSTSTORE number(1,0) check (ENABLE_DOMAIN_TRUSTSTORE in (0,1)),
+    SML_CLIENT_KEY_CHANGE_ALIAS varchar2(255 char),
+    SML_CLIENT_KEY_CHANGE_DATE timestamp(6) with time zone,
+    SML_ENABLE_URL_DOMAIN_CODE_SUFFIX number(1,0) check (SML_ENABLE_URL_DOMAIN_CODE_SUFFIX in (0,1))
 );
 
--- 5. Add/replace CHECK constraints
+ALTER TABLE SMP_DOMAIN_AUD ADD (
+    ENABLE_DOMAIN_TRUSTSTORE number(1,0),
+    SML_CLIENT_KEY_CHANGE_ALIAS VARCHAR2(255 CHAR),
+    SML_CLIENT_KEY_CHANGE_DATE timestamp(6) WITH TIME ZONE,
+    SML_ENABLE_URL_DOMAIN_CODE_SUFFIX number(1,0)
+);
 
+ALTER TABLE SMP_RESOURCE_DEF ADD (
+    URL_SEGMENT_OPTIONAL varchar2(128 char)
+);
+
+ALTER TABLE SMP_RESOURCE_DEF_AUD ADD (
+    URL_SEGMENT_OPTIONAL varchar2(128 char)
+);
+
+ALTER TABLE SMP_SUBRESOURCE_DEF ADD (
+    URL_SEGMENT_OPTIONAL varchar2(128 char)
+);
+
+ALTER TABLE SMP_SUBRESOURCE_DEF_AUD ADD (
+    URL_SEGMENT_OPTIONAL varchar2(128 char)
+);
+
+-- 4. Add/replace CHECK constraints
 ALTER TABLE SMP_ALERT MODIFY (
     ALERT_LEVEL VARCHAR2(255 CHAR) CHECK (ALERT_LEVEL IN ('HIGH','MEDIUM','LOW')),
     ALERT_STATUS VARCHAR2(255 CHAR) CHECK (ALERT_STATUS IN ('PROCESS','SUCCESS','FAILED')),
     ALERT_TYPE VARCHAR2(255 CHAR) CHECK (ALERT_TYPE IN ('TEST_ALERT','CREDENTIAL_IMMINENT_EXPIRATION','CREDENTIAL_EXPIRED','CREDENTIAL_SUSPENDED','CREDENTIAL_VERIFICATION_FAILED','CREDENTIAL_REQUEST_RESET','CREDENTIAL_CHANGED','SYSTEM_CERTIFICATE_IMMINENT_EXPIRATION','SYSTEM_CERTIFICATE_EXPIRED','USER_CREATED_CONFIRMATION','USER_CREATED','USER_UPDATED','USER_CREATED_EU_LOGIN','RESOURCE_DOCUMENT_ACTION','SUBRESOURCE_DOCUMENT_ACTION','RESOURCE_DOCUMENT_REVIEW_ACTION','SUBRESOURCE_DOCUMENT_REVIEW_ACTION'))
-    );
+);
 
 ALTER TABLE SMP_ALERT_AUD MODIFY (
     ALERT_LEVEL VARCHAR2(255 CHAR) CHECK (ALERT_LEVEL IN ('HIGH','MEDIUM','LOW')),
@@ -206,14 +265,6 @@ ALTER TABLE SMP_RESOURCE_MEMBER_AUD MODIFY (
     MEMBERSHIP_ROLE VARCHAR2(64 CHAR) CHECK (MEMBERSHIP_ROLE IN ('VIEWER','ADMIN'))
     );
 
-ALTER TABLE SMP_SUBRESOURCE_DEF MODIFY (
-    URL_SEGMENT_OPTIONAL VARCHAR2(128 CHAR) UNIQUE
-    );
-
-ALTER TABLE SMP_SUBRESOURCE_DEF_AUD MODIFY (
-    URL_SEGMENT_OPTIONAL VARCHAR2(128 CHAR)
-    );
-
 ALTER TABLE SMP_USER MODIFY (
     ACTIVE NUMBER(1,0) CHECK (ACTIVE IN (0,1)),
     APPLICATION_ROLE VARCHAR2(256 CHAR) CHECK (APPLICATION_ROLE IN ('USER','SYSTEM_ADMIN'))
@@ -224,34 +275,25 @@ ALTER TABLE SMP_USER_AUD MODIFY (
     APPLICATION_ROLE VARCHAR2(256 CHAR) CHECK (APPLICATION_ROLE IN ('USER','SYSTEM_ADMIN'))
     );
 
--- 6. Add/replace UNIQUE constraints (if not already present)
+-- 5. Add/replace UNIQUE constraints (if not already present)
+-- Step 1: Drop the existing unique constraint
+ALTER TABLE SMP_CERTIFICATE DROP CONSTRAINT UK_3x3rvf6hkim9fg16caurkgg6f;
+ALTER TABLE SMP_EXTENSION DROP CONSTRAINT UK_p4vfhgs7fvuo6uebjsuqxrglg;
+ALTER TABLE SMP_RESOURCE_DEF DROP CONSTRAINT UK_k7l5fili2mmhgslv77afg4myo;
+ALTER TABLE SMP_RESOURCE_DEF DROP CONSTRAINT UK_jjbctkhd4h0u9whb1i9wbxwoe;
+ALTER TABLE SMP_SUBRESOURCE_DEF DROP CONSTRAINT UK_pmdcnfwm5in2q9ky0b6dlgqvi;
+ALTER TABLE SMP_USER DROP CONSTRAINT UK_rt1f0anklfo05lt0my05fqq6;
 
-ALTER TABLE SMP_CERTIFICATE ADD CONSTRAINT UK_SMP_CERTIFICATE_CERT_ID UNIQUE (CERTIFICATE_ID);
+-- Step 2: Modify the column to include inline UNIQUE constraint
+ALTER TABLE SMP_CERTIFICATE MODIFY CERTIFICATE_ID VARCHAR2(1024 CHAR) UNIQUE;
+ALTER TABLE SMP_EXTENSION MODIFY IDENTIFIER varchar2(128 char) UNIQUE;
+ALTER TABLE SMP_RESOURCE_DEF MODIFY IDENTIFIER varchar2(128 char) UNIQUE;
+ALTER TABLE SMP_RESOURCE_DEF MODIFY URL_SEGMENT varchar2(128 char) UNIQUE;
+ALTER TABLE SMP_SUBRESOURCE_DEF MODIFY IDENTIFIER varchar2(128 char) UNIQUE;
+ALTER TABLE SMP_USER MODIFY USERNAME varchar2(64 char) UNIQUE;
 
-ALTER TABLE SMP_EXTENSION ADD CONSTRAINT SMP_EXT_UNIQ_NAME_IDX UNIQUE (IMPLEMENTATION_NAME);
 
-ALTER TABLE SMP_EXTENSION ADD CONSTRAINT UK_SMP_EXTENSION_IDENTIFIER UNIQUE (IDENTIFIER);
-
-ALTER TABLE SMP_GROUP ADD CONSTRAINT SMP_GRP_UNIQ_DOM_IDX UNIQUE (NAME, FK_DOMAIN_ID);
-
-ALTER TABLE SMP_RESOURCE_DEF ADD CONSTRAINT UK_SMP_RESOURCE_DEF_IDENTIFIER UNIQUE (IDENTIFIER);
-ALTER TABLE SMP_RESOURCE_DEF ADD CONSTRAINT UK_SMP_RESOURCE_DEF_URL_SEGMENT UNIQUE (URL_SEGMENT);
-
-ALTER TABLE SMP_SUBRESOURCE_DEF ADD CONSTRAINT UK_SMP_SUBRESOURCE_DEF_IDENTIFIER UNIQUE (IDENTIFIER);
-
-ALTER TABLE SMP_USER ADD CONSTRAINT UK_SMP_USER_USERNAME UNIQUE (USERNAME);
-
--- 7. Add new indexes
-
-CREATE INDEX SMP_DOCVER_DOCUMENT_IDX ON SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
-CREATE INDEX SMP_DOCVEREVNT_DOCVER_IDX ON SMP_DOCUMENT_VERSION_EVENT (FK_DOCUMENT_VERSION_ID);
-CREATE INDEX SMP_RS_ID_IDX ON SMP_RESOURCE (IDENTIFIER_VALUE);
-CREATE INDEX SMP_RS_SCH_IDX ON SMP_RESOURCE (IDENTIFIER_SCHEME);
-CREATE INDEX SMP_SMD_DOC_ID_IDX ON SMP_SUBRESOURCE (IDENTIFIER_VALUE);
-CREATE INDEX SMP_SMD_DOC_SCH_IDX ON SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
-
--- 8. Add new foreign keys
-
+-- 6. Add new foreign keys
 ALTER TABLE SMP_DOCUMENT_CERTIFICATE
     ADD CONSTRAINT FKdo996u5n5vqp9950jbrd32tpv FOREIGN KEY (ID) REFERENCES SMP_DOCUMENT_PROPERTY;
 
@@ -260,8 +302,10 @@ ALTER TABLE SMP_DOCUMENT_CERTIFICATE_AUD
 
 ALTER TABLE SMP_DOMAIN_DOC_TMPL
     ADD CONSTRAINT FKg4ci2nee5nvm2tbdbpkeom53m FOREIGN KEY (FK_DOCUMENT_ID) REFERENCES SMP_DOCUMENT;
+
 ALTER TABLE SMP_DOMAIN_DOC_TMPL
     ADD CONSTRAINT FK8dwm6w0x0rdiouvt74i07s9u5 FOREIGN KEY (FK_DOREDEF_ID) REFERENCES SMP_DOMAIN_RESOURCE_DEF;
+
 ALTER TABLE SMP_DOMAIN_DOC_TMPL
     ADD CONSTRAINT FK45eaf7nmo1dem40af2dw27jh5 FOREIGN KEY (FK_SUREDEF_ID) REFERENCES SMP_SUBRESOURCE_DEF;
 
