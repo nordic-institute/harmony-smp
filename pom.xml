@@ -17,7 +17,7 @@ See the Licence for the specific language governing permissions and limitations 
     <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
     <name>SMP</name>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.2-RC1</version>
     <licenses>
         <license>
             <name>EUPL-2.1</name>
@@ -150,7 +150,7 @@ See the Licence for the specific language governing permissions and limitations 
     <scm>
         <developerConnection>scm:git:https://ec.europa.eu/digital-building-blocks/code/scm/edelivery/smp.git
         </developerConnection>
-        <tag>HEAD</tag>
+        <tag>5.2-RC1</tag>
     </scm>
 
     <repositories>
