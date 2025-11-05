@@ -73,7 +73,7 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.frontend-maven-plugin.version>1.15.4</plugin.frontend-maven-plugin.version>
         <plugin.versions-maven-plugin.version>2.19.1</plugin.versions-maven-plugin.version>
 
-        <aspectj.version>1.9.24</aspectj.version>
+        <aspectj.version>1.9.25</aspectj.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>20040616</commons-collections.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
@@ -81,7 +81,7 @@ See the Licence for the specific language governing permissions and limitations 
         <commons-lang3.version>3.19.0</commons-lang3.version>
         <commons-net.version>3.12.0</commons-net.version>
         <commons-validator.version>1.10.0</commons-validator.version>
-        <cxf-xjc-runtime.version>4.1.0</cxf-xjc-runtime.version>
+        <cxf-xjc-runtime.version>4.1.1</cxf-xjc-runtime.version>
         <cxf.version>4.1.3</cxf.version>
         <!-- dependant library of cxf  -->
         <org.eclipse.angus-mail.version>2.0.4</org.eclipse.angus-mail.version>
@@ -89,11 +89,11 @@ See the Licence for the specific language governing permissions and limitations 
         <fasterxml.classmate.version>1.7.1</fasterxml.classmate.version>
         <h2.version>2.4.240</h2.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <hibernate-tools-orm.version>6.6.33.Final</hibernate-tools-orm.version>
+        <hibernate-tools-orm.version>6.6.34.Final</hibernate-tools-orm.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
-        <hibernate.version>6.6.33.Final</hibernate.version>
+        <hibernate.version>6.6.34.Final</hibernate.version>
         <httpclient5.version>5.5.1</httpclient5.version>
-        <jackson.version>2.20.0</jackson.version>
+        <jackson.version>2.20.1</jackson.version>
         <jakarta.activation-api.version>2.1.4</jakarta.activation-api.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
@@ -116,7 +116,7 @@ See the Licence for the specific language governing permissions and limitations 
         <org.glassfish.jaxb.jaxb-runtime.version>4.0.6</org.glassfish.jaxb.jaxb-runtime.version>
         <slf4j.version>2.0.17</slf4j.version>
         <spring-boot.tomcat.version>10.1.48</spring-boot.tomcat.version>
-        <spring-boot.version>3.5.6</spring-boot.version>
+        <spring-boot.version>3.5.7</spring-boot.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring.security.version>6.5.6</spring.security.version>
         <!--When upgrading  spring.security the nimbus version is provided to avoid detected vulnerability issues  -->
