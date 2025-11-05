@@ -19,7 +19,7 @@ limitations under the License.
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-modules</artifactId>
-        <version>5.2-SNAPSHOT</version>
+        <version>5.2-RC2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>smp-springboot</artifactId>
@@ -48,13 +48,11 @@ limitations under the License.
                                 <!-- delete logback due to classloader class ch.qos.logback.classic.spi.Configurator service error
                                 Caused by: java.util.ServiceConfigurationError: ch.qos.logback.classic.spi.Configurator: org.springframework.boot.logging.logback.RootLogLevelConfigurator not a subtype
                                 -->
-                                <unzip src="../smp-webapp/target/smp.war"
-                                dest="${project.build.directory}/domismp"/>
+                                <unzip src="../smp-webapp/target/smp.war" dest="${project.build.directory}/domismp" />
                                 <delete>
-                                    <fileset dir="${project.build.directory}/domismp/WEB-INF/lib/" includes="logback-*.jar"/>
+                                    <fileset dir="${project.build.directory}/domismp/WEB-INF/lib/" includes="logback-*.jar" />
                                 </delete>
-                                <zip destfile="${project.build.directory}/classes/domismp.war"
-                                     basedir="${project.build.directory}/domismp" />
+                                <zip destfile="${project.build.directory}/classes/domismp.war" basedir="${project.build.directory}/domismp" />
                             </target>
                         </configuration>
                     </execution>
