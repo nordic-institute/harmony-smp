@@ -34,6 +34,26 @@
                                  [domain]="selected"
         ></domain-properties-panel>
       </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <smp-label icon="extension" label="{{ 'edit.domain.label.extension.documents' | translate }}"></smp-label>
+        </ng-template>
+        <domain-extension-document
+          #domainExtensionDocumentPanelComponent
+          [domain]="selected"
+        ></domain-extension-document>
+      </mat-tab>
+      @if (selected?.domainTrustStoreEnabled) {
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <smp-label icon="key" label="{{ 'admin.domain.label.custom.truststore' | translate }}"></smp-label>
+          </ng-template>
+          <domain-truststore-panel #truststorePanelComponent
+                                   [domain]="selected"
+          ></domain-truststore-panel>
+        </mat-tab>
+      }
     </mat-tab-group>
   </data-panel>
   <ng-template #noUserAdminGroupsDataFound>

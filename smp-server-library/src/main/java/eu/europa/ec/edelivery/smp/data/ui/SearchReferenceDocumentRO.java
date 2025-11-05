@@ -18,7 +18,9 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import eu.europa.ec.edelivery.smp.data.enums.DocumentReferenceType;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentLevelType;
+
+import java.io.Serial;
 
 /**
  *
@@ -28,13 +30,14 @@ import eu.europa.ec.edelivery.smp.data.enums.DocumentReferenceType;
  */
 public class SearchReferenceDocumentRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630041L;
 
     private String documentId;
     private String resourceId;
     private String subresourceId;
 
-    private DocumentReferenceType referenceType;
+    private DocumentLevelType referenceType;
     private String referenceUrl;
     private String documentName;
     private String resourceValue;
@@ -75,11 +78,11 @@ public class SearchReferenceDocumentRO extends BaseRO {
         this.referenceUrl = referenceUrl;
     }
 
-    public DocumentReferenceType getReferenceType() {
+    public DocumentLevelType getReferenceType() {
         return referenceType;
     }
 
-    public void setReferenceType(DocumentReferenceType referenceType) {
+    public void setReferenceType(DocumentLevelType referenceType) {
         this.referenceType = referenceType;
     }
 

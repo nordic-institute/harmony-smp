@@ -31,6 +31,14 @@ copyExternalImageResources() {
       cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./artefacts/smp-spi-payload-validation-example.jar
     fi
 
+    if [[ ! -d "${SMP_DOCUMENT_EXT_EXAMPLE}" ]]; then
+      echo "SMP SPI reesource plugin '${SMP_DOCUMENT_EXT_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
+      ls -ltr ${SMP_ARTEFACTS}
+      cp "${SMP_ARTEFACTS}/resource-spi-example-$SMP_VERSION.jar" ./artefacts/resource-spi-example.jar
+    else
+      cp "${SMP_DOCUMENT_EXT_EXAMPLE}/resource-spi-example-$SMP_VERSION.jar" ./artefacts/resource-spi-example.jar
+    fi
+
     if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]; then
       echo "SMP artefact '${SMP_ARTEFACTS}/smp.war' not found. Was project built?"
       exit 1

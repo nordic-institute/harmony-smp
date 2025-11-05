@@ -7,9 +7,10 @@ import {
 } from "../../../common/panels/document-edit-panel/document-edit-panel.component";
 
 @Component({
-  templateUrl: './subresource-document-panel.component.html',
-  styleUrls: ['./subresource-document-panel.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    templateUrl: './subresource-document-panel.component.html',
+    styleUrls: ['./subresource-document-panel.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class SubresourceDocumentPanelComponent implements BeforeLeaveGuard {
 

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,18 +20,20 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
+import eu.europa.ec.edelivery.security.utils.X509ExtensionDescription;
+import eu.europa.ec.edelivery.smp.data.ui.CertificateExtensionRO;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.logging.SMPLogger;
-import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import org.slf4j.Logger;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -39,9 +41,10 @@ import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
-import java.util.Base64;
 import java.util.List;
 import java.util.TimeZone;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * @author Joze Rihtarsic
@@ -49,6 +52,9 @@ import java.util.TimeZone;
  */
 @Component
 public class X509CertificateToCertificateROConverter implements Converter<X509Certificate, CertificateRO> {
+    Logger LOG = org.slf4j.LoggerFactory.getLogger(X509CertificateToCertificateROConverter.class);
+
+    
     /**
      * Current support for EdEC key is limited and some JCE providers retun OID
      * instead of SunJCE key name (which was added in JDK 16+).
@@ -76,7 +82,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
 
         public static KeyType getKeyTypeByOid(String oid) {
             for (KeyType kt : KeyType.values()) {
-                if (StringUtils.equals(kt.getKeyOid(), oid)) {
+                if (Strings.CI.equals(kt.getKeyOid(), oid)) {
                     return kt;
                 }
             }
@@ -84,12 +90,10 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         }
     }
 
-
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(X509CertificateToCertificateROConverter.class);
     private static final String S_CLIENT_CERT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
     // the GMT date format for the Client-Cert header generation!
     private static final ThreadLocal<DateFormat> dateFormatGMT = ThreadLocal.withInitial(() -> {
-                SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT);
+                SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT, java.util.Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
                 return sdf;
             }
@@ -98,49 +102,98 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
 
     @Override
     public CertificateRO convert(X509Certificate cert) {
-
         PreAuthenticatedCertificatePrincipal data = X509CertificateUtils.extractPrincipalFromCertificate(cert);
         String subject = data.getSubjectOriginalDN();
         String issuer = data.getIssuerOriginalDN();
         String serial = data.getCertSerial();
         String certId = data.getName();
-        List<String> certPolicyIdentifiers = null;
-
-        try {
-            certPolicyIdentifiers = X509CertificateUtils.getCertificatePolicyIdentifiers(cert);
-        } catch (CertificateException cex) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
-                    "Error occurred while retrieving certPolicyIdentifiers " + subject, cex.getMessage(), cex);
-        }
-
-
+        List<String> certPolicyIdentifiers = extractCertPolicyOIDs(cert, subject);
         String url = X509CertificateUtils.getCrlDistributionUrl(cert);
+        
 
         CertificateRO cro = new CertificateRO();
         cro.setCertificateId(certId);
         cro.setSubject(subject);
         cro.setIssuer(issuer);
-        cro.setPublicKeyType(getKeyAlgorithm(cert.getPublicKey()));
-        cro.setCrlUrl(url);
-        if (certPolicyIdentifiers!=null && !certPolicyIdentifiers.isEmpty()) {
-            cro.getCertificatePolicies().addAll(certPolicyIdentifiers);
-        }
         // set serial as HEX
         cro.setSerialNumber(serial);
+        cro.setPublicKeyType(getKeyAlgorithm(cert.getPublicKey()));
+        cro.setCrlUrl(url);
+        if (certPolicyIdentifiers != null) {
+            cro.getCertificatePolicies().addAll(certPolicyIdentifiers);
+        }
         if (cert.getNotBefore() != null) {
             cro.setValidFrom(cert.getNotBefore().toInstant().atOffset(ZoneOffset.UTC));
         }
         if (cert.getNotAfter() != null) {
             cro.setValidTo(cert.getNotAfter().toInstant().atOffset(ZoneOffset.UTC));
         }
-        try {
-            cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
-        } catch (CertificateEncodingException cex) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
-                    "Error occurred while decoding certificate " + subject, cex.getMessage(), cex);
+        cro.setEncodedValue(toCertificatePemEncoding(cert));
+        cro.setClientCertHeader(buildClientCertHeader(cert, serial, subject, issuer));
 
+        List<CertificateExtensionRO> extensions = extractCertificateExtensions(cert);
+        cro.getExtensions().addAll(extensions);
+        return cro;
+    }
+
+    private List<CertificateExtensionRO>  extractCertificateExtensions(X509Certificate cert) {
+        try {
+            List<X509ExtensionDescription> extensions = X509CertificateUtils.getExtensionDescriptions(cert);
+            return extensions.stream().map(
+                            ext -> {
+                                CertificateExtensionRO extensionRO = new CertificateExtensionRO();
+                                extensionRO.setOid(ext.getOid());
+                                extensionRO.setCritical(ext.isCritical());
+                                extensionRO.setName(ext.getDescription());
+                                extensionRO.setValue(ext.getValue());
+                                return extensionRO;
+                            })
+                    .toList();
+        } catch (CertificateException e) {
+            LOG.warn("Error occurred while reading the extensions", e);
         }
-        // generate clientCertHeader header
+        return List.of();
+    }
+
+    private static List<String> extractCertPolicyOIDs(X509Certificate cert, String subject) {
+        List<String> certPolicyIdentifiers;
+        try {
+            certPolicyIdentifiers = X509CertificateUtils.getCertificatePolicyIdentifiers(cert);
+        } catch (CertificateException cex) {
+            throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CANNOT_GET_POLICY_IDENTIFIER, cex)
+                    .addParam(ErrorMessageArgument.CERTIFICATE, subject)
+                    .addParam(ErrorMessageArgument.ERROR, cex.getMessage());
+        }
+        return certPolicyIdentifiers;
+    }
+
+    /**
+     * Convert X509Certificate to PEM encoding string 
+     * @param cert the certificate to convert
+     * @return the PEM encoding string
+     */
+    private static String toCertificatePemEncoding(X509Certificate cert) {
+        try {
+            return X509CertificateUtils.toPemEncoding(cert);
+        } catch (CertificateEncodingException cex) {
+            throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CANNOT_DECODE, cex)
+                    .addParam(ErrorMessageArgument.CERTIFICATE, cert.getSubjectX500Principal().getName())
+                    .addParam(ErrorMessageArgument.ERROR, cex.getMessage());
+        }
+    }
+
+    /**
+     * Build the Client-Cert header value from certificate details. The format is:
+     * sno={serial}&subject={subject}&validfrom={validfrom}&validto={validto}&issuer={issuer}
+     * where validfrom and validto are in format "MMM dd HH:mm:ss yyyy GMT"
+     * and all values are URL encoded.
+     * @param cert the certificate to extract details from 
+     * @param serial hex serial number of the certificate
+     * @param subject Certificate subject DN
+     * @param issuer Certificate issuer DN
+     * @return the Client-Cert header value
+     */
+    private String buildClientCertHeader(X509Certificate cert, String serial, String subject, String issuer) {
         DateFormat sdf = dateFormatGMT.get();
         StringWriter sw = new StringWriter();
         sw.write("sno=");
@@ -153,28 +206,22 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         sw.write(urlEncodeString(sdf.format(cert.getNotAfter()) + " GMT"));
         sw.write("&issuer=");
         sw.write(urlEncodeString(issuer));
-        cro.setClientCertHeader(sw.toString());
-        return cro;
+        return sw.toString();
     }
+    
 
     private String urlEncodeString(String val) {
-        if (StringUtils.isBlank(val)) {
+        if (isBlank(val)) {
             return "";
-        } else {
-            try {
-                return URLEncoder.encode(val, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                LOG.error("Error occurred while url encoding the certificate string:" + val, e);
-            }
         }
-        return "";
+        return URLEncoder.encode(val, StandardCharsets.UTF_8);
     }
 
     /**
      * Get key algorithm from key. Some JCE providers return OID instead of SunJCE key name.
      * This method tries to map OID to key name.
      *
-     * @param key
+     * @param key the key to get algorithm from
      * @return JCE key algorithm name
      */
     public String getKeyAlgorithm(Key key) {

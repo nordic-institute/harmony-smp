@@ -16,30 +16,30 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType.toList;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
 /**
  * @author gutowpa
@@ -54,7 +54,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      * Returns Optional.empty() if there is more than 1 record present.
      *
      * @return the only single record from smp_domain table
-     * @throws IllegalStateException if no domain is configured
+     * @throws SMPRuntimeException if no domain is configured
      */
     public Optional<DBDomain> getTheOnlyDomain() {
         try {
@@ -62,9 +62,10 @@ public class DomainDao extends BaseDao<DBDomain> {
             TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
+            LOG.warn("More than one domain is configured in the system. Can not return it as default domain.");
             return Optional.empty();
         } catch (NoResultException e) {
-            throw new IllegalStateException(ErrorCode.NO_DOMAIN.getMessage());
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NONE_CONFIGURED);
         }
     }
 
@@ -72,11 +73,9 @@ public class DomainDao extends BaseDao<DBDomain> {
      * Returns domain records from smp_domain table.
      *
      * @return the list of domain records from smp_domain table
-     * @throws IllegalStateException if no domain is configured
      */
     public List<DBDomain> getAllDomains() {
         TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
-
         return query.getResultList();
     }
 
@@ -102,6 +101,15 @@ public class DomainDao extends BaseDao<DBDomain> {
         return getDomainByQueryWithParam(domainCode, QUERY_DOMAIN_CODE, PARAM_DOMAIN_CODE);
     }
 
+
+    public List<String> getExistingDomainCodes(List<String> domainCodes) {
+        TypedQuery<String> query = memEManager.createNamedQuery(QUERY_DOMAIN_CODES_FILTER, String.class);
+        // convert to lower case for case insensitive search
+        List<String> domainParameter = domainCodes.stream().map(String::toLowerCase).toList();
+        query.setParameter(PARAM_DOMAIN_CODES, domainParameter);
+        return query.getResultList();
+    }
+
     public Optional<DBDomain> getDomainBySmlSmpId(String smlSmpId) {
         return getDomainByQueryWithParam(smlSmpId, QUERY_DOMAIN_SMP_SML_ID, PARAM_DOMAIN_SML_SMP_ID);
     }
@@ -109,23 +117,24 @@ public class DomainDao extends BaseDao<DBDomain> {
     /**
      * Returns the Optional DBDomain from database. The domain is searched by domain parameter and queryDomainCode.
      *
-     * @param domainParameter - parameter value to search for
-     * @param queryName       - The named DBDomain query
-     * @param queryParamName  the parameter name in the query
+     * @param domainCode     - parameter value to search for
+     * @param queryName      - The named DBDomain query
+     * @param queryParamName the parameter name in the query
      * @return Optional DBDomain
      */
-    private Optional<DBDomain> getDomainByQueryWithParam(String domainParameter, String queryName, String queryParamName) {
-        if (StringUtils.isEmpty(domainParameter)) {
+    private Optional<DBDomain> getDomainByQueryWithParam(String domainCode, String queryName, String queryParamName) {
+        if (StringUtils.isEmpty(domainCode)) {
             return Optional.empty();
         }
         try {
             TypedQuery<DBDomain> query = memEManager.createNamedQuery(queryName, DBDomain.class);
-            query.setParameter(queryParamName, domainParameter);
+            query.setParameter(queryParamName, domainCode);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(domainParameter));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
     }
 
@@ -188,7 +197,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.
      * If code is null or blank - then null is returned.
      *
-     * @param domainCode  - domain code to be validated
+     * @param domainCode - domain code to be validated
      * @return DBDomain - domain if exists
      * @throws SMPRuntimeException if domain does not exist
      */
@@ -199,7 +208,8 @@ public class DomainDao extends BaseDao<DBDomain> {
             if (od.isPresent()) {
                 domain = od.get();
             } else {
-                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, domainCode);
+                throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
             }
         }
         return domain;
@@ -226,11 +236,11 @@ public class DomainDao extends BaseDao<DBDomain> {
      * and have some resources assigned. See the EDELIVERY-13793
      * If user is null then only public domains are returned.
      *
-     * @param user - user to search for
-     *             if null only public domains are returned
+     * @param user     - user to search for
+     *                 if null only public domains are returned
+     * @param page     - page number
+     * @param pageSize - page size
      * @return list of domains
-     * @Param page - page number
-     * @Param pageSize - page size
      */
     public List<DBDomain> getAllDomainsForUser(DBUser user, int page, int pageSize) {
         TypedQuery<DBDomain> query = createAllDomainsForUserQuery(DBDomain.class, user);
@@ -251,5 +261,11 @@ public class DomainDao extends BaseDao<DBDomain> {
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
         query.setParameter(PARAM_DOMAIN_VISIBILITY, VisibilityType.PUBLIC);
         return query;
+    }
+
+    public List<DBDomain.DBDomainExpiringCertificateMapping> getDomainsWithExpiringCertificates(Set<String> expiredCertificateAliases) {
+        TypedQuery<DBDomain.DBDomainExpiringCertificateMapping> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES, DBDomain.DBDomainExpiringCertificateMapping.class);
+        query.setParameter(PARAM_DOMAIN_EXPIRED_CERTIFICATE_ALIASES, expiredCertificateAliases);
+        return query.getResultList();
     }
 }

@@ -21,13 +21,12 @@ package eu.europa.ec.edelivery.smp.monitor;
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,7 +52,7 @@ public class MonitorController {
     }
 
     @GetMapping(path = "/is-alive")
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_WS_SYSTEM_ADMIN})
+    @PreAuthorize("@smpAuthorizationService.isSMPUserMatchingAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_WS_SYSTEM_ADMIN)")
     public ResponseEntity isAlive() {
         boolean suc = false;
 

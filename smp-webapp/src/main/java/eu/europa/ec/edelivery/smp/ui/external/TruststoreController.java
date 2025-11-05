@@ -52,7 +52,7 @@ public class TruststoreController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PostMapping(path = "/{user-id}/validate-certificate", consumes = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public CertificateRO validateCertificate(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId, @RequestBody byte[] data) {
-        LOG.info("Got certificate data size: {}", data.length);
+        LOG.info("Got certificate to validate");
         // validate uploaded content
         payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(data), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
         return uiTruststoreService.getCertificateData(data, true, true);

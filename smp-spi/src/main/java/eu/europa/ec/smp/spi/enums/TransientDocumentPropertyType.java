@@ -28,6 +28,8 @@ import static org.apache.commons.lang3.StringUtils.trim;
  * @since 5.1
  */
 public enum TransientDocumentPropertyType {
+    RESOURCE_URL_SEGMENT("resource.url.segment", "Request Resource URL path segment"),
+    SUBRESOURCE_URL_SEGMENT("subresource.url.segment", "Request Resource URL path segment"),
     RESOURCE_IDENTIFIER_VALUE("resource.identifier.value", "Resource Identifier Value"),
     RESOURCE_IDENTIFIER_SCHEME("resource.identifier.scheme", "Resource Identifier Scheme"),
     SUBRESOURCE_IDENTIFIER_VALUE("subresource.identifier.value", "Subresource Identifier Value"),
@@ -37,8 +39,8 @@ public enum TransientDocumentPropertyType {
     DOCUMENT_VERSION("document.version", "Document Version"),
     ;
 
-    String propertyName;
-    String propertyDescription;
+    final String propertyName;
+    final String propertyDescription;
 
     TransientDocumentPropertyType(String propertyName, String propertyDescription) {
         this.propertyName = propertyName;

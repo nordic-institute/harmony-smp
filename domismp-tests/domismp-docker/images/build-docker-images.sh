@@ -37,6 +37,7 @@ SMP_PROJECT_FOLDER=$(readlink -e "${WORKDIR}/../../..")
 SMP_ARTEFACTS="${SMP_PROJECT_FOLDER}/smp-webapp/target"
 SMP_SPRINGBOOT_ARTEFACTS="${SMP_PROJECT_FOLDER}/smp-springboot/target"
 SMP_PLUGIN_EXAMPLE="${SMP_PROJECT_FOLDER}/smp-examples/smp-spi-payload-validation-example/target"
+SMP_DOCUMENT_EXT_EXAMPLE="${SMP_PROJECT_FOLDER}/smp-examples/resource-spi-example/target/"
 SMP_ARTEFACTS_CLEAR="false"
 
 SMP_IMAGE_PUBLISH="false"
@@ -65,6 +66,7 @@ echo "*****************************************************************"
 echo "* SMP artefact folders: [$SMP_ARTEFACTS], (Clear folder after build: [$SMP_ARTEFACTS_CLEAR] )"
 echo "* SMP artefact springboot folders: [$SMP_SPRINGBOOT_ARTEFACTS]"
 echo "* SMP Plugin example: [$SMP_PLUGIN_EXAMPLE] "
+echo "* SMP resource example: [$SMP_DOCUMENT_EXT_EXAMPLE] "
 echo "* Build SMP image for version [$SMP_VERSION]"
 echo "* Oracle artefact folders: [$ORACLE_ARTEFACTS]"
 echo "*****************************************************************"
@@ -74,6 +76,7 @@ export SMP_VERSION
 export SMP_PROJECT_FOLDER
 export SMP_ARTEFACTS
 export SMP_PLUGIN_EXAMPLE
+export SMP_DOCUMENT_EXT_EXAMPLE
 export SMP_SPRINGBOOT_ARTEFACTS
 export ORACLE_ARTEFACTS
 
@@ -112,10 +115,10 @@ validateAndPrepareArtefacts() {
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
-  buildOracleDatabaseImage
+ # buildOracleDatabaseImage
   buildUtils
-  buildImage "${IMAGE_SMP_WEBLOGIC122}"
-  buildImage "${IMAGE_SMP_WEBLOGIC141}"
+#  buildImage "${IMAGE_SMP_WEBLOGIC122}"
+#  buildImage "${IMAGE_SMP_WEBLOGIC141}"
   buildImage "${IMAGE_SMP_TOMCAT_MYSQL}"
   buildImage "${IMAGE_SMP_SPRINGBOOT_MYSQL}"
   buildImage "${IMAGE_SMP_TESTS}"
@@ -162,9 +165,10 @@ function pushImageToDockerhub() {
     docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
     pushImageIfExisting "${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_SMP_SPRINGBOOT_MYSQL}:${SMP_VERSION}"
+    #pushImageIfExisting "${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}"
+    #pushImageIfExisting "${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}"
+    #pushImageIfExisting "${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}"
     pushImageIfExisting "${IMAGE_SMP_TESTS}:${SMP_VERSION}"
   fi
 }

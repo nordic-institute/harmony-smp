@@ -22,16 +22,15 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,14 +43,12 @@ class AuthenticationResourceTest {
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     SMPCookieWriter smpCookieWriter = Mockito.mock(SMPCookieWriter.class);
     CsrfTokenRepository csrfTokenRepository = Mockito.mock(CsrfTokenRepository.class);
-    UIUserService uiUserService = Mockito.mock(UIUserService.class);
 
     AuthenticationController testInstance = new AuthenticationController(authenticationService,
             authorizationService,
             configurationService,
             smpCookieWriter,
-            csrfTokenRepository,
-            uiUserService);
+            csrfTokenRepository);
 
     @Test
     void logout() {

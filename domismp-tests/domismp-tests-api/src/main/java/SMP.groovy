@@ -1804,7 +1804,7 @@ class SMP implements  AutoCloseable
 		xsrf_token=returnXsfrToken(log, context, authenticationUser, authenticationPwd)
 		userIdent=USERID
 		urlToSMP=getSoapUiCustomProperty(log, context, "url", "project",false)
-		urlExt="/ui/internal/rest/$userIdent/domain"
+		urlExt="/ui/internal/rest/$userIdent/domain?page=0&pageSize=2000&filter="
 		
 		commandString=["curl", urlToSMP+urlExt,
                                     "--cookie", context.expand('${projectDir}') + File.separator + "cookie.txt",
@@ -1828,7 +1828,7 @@ class SMP implements  AutoCloseable
 		
 		def dataMap=jsonSlurper.parseText(getAllDomainsMetadata(log, context, authenticationUser, authenticationPwd))
 		
-		dataMap.each{ dom ->
+		dataMap.serviceEntities.each{ dom ->
 			if(dom.domainCode.toLowerCase().equals(domainCode.toLowerCase())){
 				debugLog("  getDomainMetadata  [][]  Domain \"$domainCode\" found.", log)
 				domMeta=dom
@@ -1857,7 +1857,7 @@ class SMP implements  AutoCloseable
 		def jsonSlurper = new JsonSlurper()
 		
 		def dataMap=jsonSlurper.parseText(getAllDomainsMetadata(log, context, authenticationUser, authenticationPwd))
-		dataMap.each{ dom ->
+		dataMap.serviceEntities.each{ dom ->
 			domList<<dom.domainCode
 		}		
 		return domList

@@ -42,7 +42,7 @@ public class DBReviewDocumentVersionMapping {
     private String resourceIdentifierScheme;
     private String subresourceIdentifierValue;
     private String subresourceIdentifierScheme;
-    private String target;
+    private String documentLevel;
     private OffsetDateTime lastUpdatedOn;
 
     public DBReviewDocumentVersionMapping() {
@@ -59,7 +59,7 @@ public class DBReviewDocumentVersionMapping {
             String resourceIdentifierScheme,
             String subresourceIdentifierValue,
             String subresourceIdentifierScheme,
-            String target,
+            String documentLevel,
             OffsetDateTime lastUpdatedOn) {
         this.documentId = documentId;
         this.documentVersionId = id;
@@ -71,7 +71,7 @@ public class DBReviewDocumentVersionMapping {
         this.resourceIdentifierScheme = resourceIdentifierScheme;
         this.subresourceIdentifierValue = subresourceIdentifierValue;
         this.subresourceIdentifierScheme = subresourceIdentifierScheme;
-        this.target = target;
+        this.documentLevel = documentLevel;
         this.lastUpdatedOn = lastUpdatedOn;
     }
 
@@ -163,11 +163,11 @@ public class DBReviewDocumentVersionMapping {
         this.subresourceIdentifierScheme = subresourceIdentifierScheme;
     }
 
-    public String getTarget() {
-        return target;
+    public String getDocumentLevel() {
+        return documentLevel;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
+    public void setDocumentLevel(String documentLevel) {
+        this.documentLevel = documentLevel;
     }
 }

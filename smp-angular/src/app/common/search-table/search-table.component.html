@@ -1,6 +1,6 @@
 <div fxLayout="column" fxFill="100" style=" top: 5px; bottom: 5px; left: 5px; right: 5px;">
   <spinner [show]="showSpinner" [size]="150"></spinner>
-  <div *ngIf="showSearchPanel" fxFlex="170px" class="selectionCriteria">
+  <div *ngIf="showSearchParametersPanel" fxFlex="170px" class="selectionCriteria">
     <mat-card>
       <mat-card-content>
         <div class="panel">
@@ -23,70 +23,46 @@
 
   <form class="panel" fxFlex fxLayout="column" name="tableForm" #tableForm="ngForm">
     <ng-container *ngTemplateOutlet="tableTitle"></ng-container>
-    <div class="group-filter-button" fxFlex="50px">
-      <span class="row-button">
-        <app-row-limiter [pageSizes]="rowLimiter.pageSizes"
-                         (onPageSizeChanged)="changePageSize($event.value)"></app-row-limiter>
-      </span>
-      <!-- span class="column-filter-button">
-        <app-column-picker [allColumns]="columnPicker.allColumns" [selectedColumns]="columnPicker.selectedColumns"
-                           (onSelectedColumnsChanged)="columnPicker.changeSelectedColumns($event)"></app-column-picker>
-      </span -->
-    </div>
-    <ngx-datatable #searchTable fxFlex id="searchTable"
-                   class="expandable"
-                   [messages]="datatableMessages"
-                   [rowClass]="getRowClass"
-                   [rows]="rows"
-                   [columns]="columnPicker.selectedColumns"
-                   [columnMode]="'force'"
-                   [headerHeight]="38"
-                   [footerHeight]="32"
-                   [scrollbarH]="true"
-                   [scrollbarV]="true"
-                   [virtualization]="false"
-                   [externalPaging]="true"
-                   [externalSorting]="true"
-                   [loadingIndicator]="loading"
-                   [count]="count"
-                   [offset]="offset"
-                   [limit]="rowLimiter.pageSize"
-                   (page)="onPage($event)"
-                   (sort)="onSort($event)"
-                   [selected]="selected"
-                   [selectionType]="'single'"
-                   (activate)="onActivate($event)"
-                   (select)="onSelect($event)"
+    <smp-table class="mat-elevation-z2" id="smp-table"
+               [filterLabel]="filterLabel"
+               [filterPlaceholder]="filterPlaceholder"
+               [noResultLabel]="noResultLabel"
+               [noResultForFilterLabel]="noResultForFilterLabel"
+               [tableRowDetailContainer]="tableRowDetailContainer"
+               [showFilter]="showSimpleFilter"
+               [isLoadableTable] ="true"
+               [multiTemplateDataRows]="true"
+               [isLoading]="loading"
+               [pageSize]="pageSize"
+               [pageIndex]="pageIndex"
+               [dataLength]="totalRowCount"
+               [dataSource]="dataSource"
+               [selectedRow]="currentRow"
+               [columnDefList]="columns"
+               [displayedColumns]="displayedColumnIds"
+               (onFilterChanged)="applyTableFilter($event)"
+               (onRowClicked)="onRowSelected($event)"
+               (onRowDoubleClicked)="onRowDoubleClicked($event)"
+               (onPageChanged)="onPageChanged($event)"
     >
-      <!-- Row Detail Template -->
-      <ngx-datatable-row-detail id="rowDetail" [rowHeight]="'auto'"
-                                (toggle)="onDetailToggle($event)">
-        <ng-template let-row="row" let-expanded="expanded" let-enabled="enabled" ngx-datatable-row-detail-template>
-          <ng-container [ngTemplateOutlet]="tableRowDetailContainer"
-                        [ngTemplateOutletContext]="{row:row}"></ng-container>
-        </ng-template>
-      </ngx-datatable-row-detail>
+    </smp-table>
 
-    </ngx-datatable>
-
-    <ng-template #rowIndex let-row="row" ngx-datatable-cell-template>
-      <span>{{row.index + 1}}</span>
+    <!-- Define cell templates for specific columns -->
+    <ng-template #rowIndex let-row="row" >
+      <span>{{ row.index + 1 }}</span>
     </ng-template>
-
-
-    <ng-template #rowExpand let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+    <ng-template #rowExpand let-row="row" >
       <a
         href="javascript:void(0)"
 
         title="Expand/Collapse Row"
-        (click)="toggleExpandRow(row)">
+        (click)="onToggleExpandRow(row)">
         <mat-icon>
-          {{expanded ? 'expand_more' : 'chevron_right'}}
+          {{ row.expanded ? 'expand_more' : 'chevron_right' }}
         </mat-icon>
       </a>
     </ng-template>
-
-    <ng-template #rowActions let-row="row" ngx-datatable-cell-template>
+    <ng-template #rowActions let-row="row">
       <div>
         <ng-container [ngTemplateOutlet]="additionalRowActionButtons"
                       [ngTemplateOutletContext]="{row:row}"></ng-container>

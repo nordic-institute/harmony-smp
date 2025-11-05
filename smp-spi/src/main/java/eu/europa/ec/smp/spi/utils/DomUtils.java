@@ -24,6 +24,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -58,7 +59,9 @@ public final class DomUtils {
     }
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
+    private static final String PEPPOL_NS = "http://busdox.org/serviceMetadata/publishing/1.0/";
     private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\"" + NS + "\"/>";
+    private static final String DOC_SIGNED_SERVICE_METADATA_PEPPOL_EMPTY = "<SignedServiceMetadata xmlns=\"" + PEPPOL_NS + "\"/>";
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
     private static final Logger LOG = LoggerFactory.getLogger(DomUtils.class);
 
@@ -81,6 +84,24 @@ public final class DomUtils {
         }
     }
 
+    /**
+     * Method parses serviceMetadata XML and envelopes it to SignedServiceMetadata.
+     *
+     * @param serviceMetadataXml
+     * @return w3d dom element
+     */
+    public static Document toSignedSubresourcePeppolDocument(byte[] serviceMetadataXml) throws ResourceException {
+        LOG.debug("toSignedSubresource10Document");
+        try {
+            Document docServiceMetadata = parse(serviceMetadataXml);
+            Document root = parse(DOC_SIGNED_SERVICE_METADATA_PEPPOL_EMPTY.getBytes());
+            Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
+            root.getDocumentElement().appendChild(imported);
+            return root;
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            throw new ResourceException(INVALID_RESOURCE, "Invalid Signed serviceMetadataXml with error: " + ExceptionUtils.getRootCauseMessage(ex), ex);
+        }
+    }
 
     public static Document parse(byte[] subresourceXml) throws SAXException, IOException, ParserConfigurationException, ResourceException {
         if (subresourceXml == null) {
@@ -109,6 +130,11 @@ public final class DomUtils {
     public static void serialize(Document doc, OutputStream outputStream) throws TransformerException {
         Transformer transformer = createNewSecureTransformer();
         transformer.transform(new DOMSource(doc), new StreamResult(outputStream));
+    }
+
+    public static void serialize(Element element, OutputStream outputStream) throws TransformerException {
+        Transformer transformer = createNewSecureTransformer();
+        transformer.transform(new DOMSource(element), new StreamResult(outputStream));
     }
 
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {

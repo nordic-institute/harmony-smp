@@ -19,6 +19,8 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -28,17 +30,19 @@ import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,8 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.*;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
@@ -87,34 +89,34 @@ public class ResourceController {
     }
 
     @RequestMapping(produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1) {
         LOG.info("Resolver path segment [{}]", parameter1);
 
         handleRequest(httpReq, httpRes, Collections.singletonList(parameter1));
     }
 
     @RequestMapping(path = "{parameter2}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2) {
 
         LOG.info("Resolver paths [{}],[{}]", parameter1, parameter2);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2));
     }
 
     @RequestMapping(path = "{parameter2}/{parameter3}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2, @PathVariable String parameter3) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2, @PathVariable("parameter3") String parameter3) {
         LOG.info("Resolver paths [{}],[{}],[{}]", parameter1, parameter2, parameter3);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2, parameter3));
     }
 
     @RequestMapping(path = "{parameter2}/{parameter3}/{parameter4}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2, @PathVariable String parameter3, @PathVariable String parameter4) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2, @PathVariable("parameter3") String parameter3, @PathVariable("parameter4") String parameter4) {
         LOG.info("Resolver paths [{}],[{}],[{}],[{}]", parameter1, parameter2, parameter3, parameter4);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2, parameter3, parameter4));
 
     }
 
     @RequestMapping(path = "{parameter2}/{parameter3}/{parameter4}/{parameter5}", produces = "text/xml; charset=UTF-8", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable String parameter1, @PathVariable String parameter2, @PathVariable String parameter3, @PathVariable String parameter4, @PathVariable String parameter5) {
+    public void getResource(HttpServletRequest httpReq, HttpServletResponse httpRes, @PathVariable("parameter1") String parameter1, @PathVariable("parameter2") String parameter2, @PathVariable("parameter3") String parameter3, @PathVariable("parameter4") String parameter4, @PathVariable("parameter5") String parameter5) {
         LOG.info("Resolver paths [{}],[{}],[{}],[{}],[{}]", parameter1, parameter2, parameter3, parameter4, parameter5);
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2, parameter3, parameter4, parameter5));
     }
@@ -127,6 +129,17 @@ public class ResourceController {
      * @param pathParameters path parameters
      */
     protected void handleRequest(HttpServletRequest httpReq, HttpServletResponse httpRes, List<String> pathParameters) {
+
+        Authentication authentication = (Authentication) httpReq.getUserPrincipal();
+
+        if (authentication instanceof JwtAuthenticationToken token) {
+            String scope = token.getToken().getClaimAsString("scope");
+            LOG.info("JwtAuthenticationToken access. Scope [{}] is authenticated with JWT token.", scope);
+        } else if (authentication != null) {
+            LOG.info("User [{}] is authenticated with [{}] token.", authentication.getName(), authentication.getClass().getSimpleName());
+        } else {
+            LOG.info("Unauthorized access.");
+        }
 
         ResourceRequest resourceRequest = fromServletRequest(httpReq, pathParameters);
         LOG.debug("Got resource request [{}]", resourceRequest);
@@ -169,11 +182,12 @@ public class ResourceController {
     protected ResourceRequest fromServletRequest(HttpServletRequest httpReq, List<String> pathParameters) {
         ResourceAction resourceAction = ResourceAction.resolveForHeader(httpReq.getMethod());
         if (resourceAction == null) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Missing or invalid HTTP request method: [" + httpReq.getMethod() + "]!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_METHOD)
+                    .addParam(ErrorMessageArgument.HTTP_METHOD,  httpReq.getMethod());
         }
 
         if (pathParameters.isEmpty()) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "At least one path parameter must be provided!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_URI_VARIABLE);
         }
         InputStream inputStream = getInputStreamFromRequest(httpReq, resourceAction);
 
@@ -189,7 +203,9 @@ public class ResourceController {
         try {
             return header == null ? null : URLDecoder.decode(header, UTF_8);
         } catch (UnsupportedEncodingException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, "DecodeHeader", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_DETAILED)
+                    .addParam(ErrorMessageArgument.SCOPE, "DecodeHeader")
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -214,7 +230,7 @@ public class ResourceController {
         try {
             return new BufferedInputStream(httpReq.getInputStream());
         } catch (IOException e) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Can not read input stream!", e);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_REQUEST_INPUT_STREAM, e);
         }
     }
 }

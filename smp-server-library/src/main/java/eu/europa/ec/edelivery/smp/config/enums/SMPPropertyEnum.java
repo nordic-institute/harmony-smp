@@ -8,17 +8,15 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
 package eu.europa.ec.edelivery.smp.config.enums;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnumConstants.*;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum.*;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 /**
  * DomiSMP application properties
@@ -75,11 +74,11 @@ public enum SMPPropertyEnum {
             "^(?i)(urn:ehealth(:.*)?|mailto(:.*)?)\\s*$", "Regular expression to detect if this is template identifiers. If the party identifier schema (or identifier it self if scheme is null ) matches the regexp. Then Identifier is processed as the template identifier. Example: ^(?i)(urn:)|(mailto:).*$",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP("identifiersBehaviour.template.split.regexp", "^\\s*(::)?(?<scheme>urn:ehealth:[a-zA-Z]{2}|mailto)::?(?<identifier>.+)$",
-            "Regular expression with groups <scheme> and <identifier> for splitting the identifiers to scheme and identifier part!",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
+            "Regular expression with groups <scheme> and <identifier> for splitting the identifiers to scheme and identifier part!", OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     RESOURCE_IDENTIFIER_TMPL_CONCATENATE("identifiersBehaviour.template.concatenate", "${scheme}:${identifier}",
-            "Format which defines how sheme and identifier should be concatenated in to the single string value",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+            "Format which defines how sheme and identifier should be concatenated in to the single string value", OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME("identifiersBehaviour.template.concatenate.null-scheme", "${identifier}",
-            "Format which defines how identifier should be formated without scheme!",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+            "Format which defines how identifier should be formated without scheme!", OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     RESOURCE_CASE_SENSITIVE_SCHEMES("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
     SUBRESOURCE_CASE_SENSITIVE_SCHEMES("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.",
@@ -105,8 +104,6 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     SML_CUSTOM_NAPTR_SERVICE_PARAMS("bdmsl.integration.naptr_service.map", "edelivery-oasis-cppa-3.0-cpp:meta:cppa3", "naptr service for resource type as key:value properties separated with '|'. Ex edelivery-oasis-cppa3-extension:meta:cppa3  ",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
-    SML_DNS_ZONE("bdmsl.integration.dns.zone", "acc.edelivery.tech.ec.europa.eu", "DBS top domain or DNS zone. Data is used for DNS lookup of SMP domain",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
 
     // keystore truststore
     KEYSTORE_PASSWORD("smp.keystore.password", "", "Encrypted keystore (and keys) password ",
@@ -129,7 +126,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
-    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs", "", "List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension",
+    CERTIFICATE_ALLOWED_CERT_POLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs", "", "List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
     CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex", ".*", "Regular expression to validate subject of the certificate",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
@@ -199,10 +196,32 @@ public enum SMPPropertyEnum {
 
     // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
-    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "TOKEN|CERTIFICATE",
-            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported TOKEN, CERTIFICATE: ex. TOKEN|CERTIFICATE",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, LIST_STRING),
+    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "BASIC_TOKEN|CERTIFICATE",
+            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported BASIC_TOKEN, CERTIFICATE, JWT: ex. BASIC_TOKEN|CERTIFICATE|JWT",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, LIST_STRING
+    ),
+
+    AUTOMATION_AUTHORIZATION_JWT_ISSUER("smp.authorization.jwt.issuer", "",
+            "Validate issuer of the JWT token. If empty, no validation is done. If set, the issuer must match the value of the JWT token's 'iss' claim.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
+    ),
+    AUTOMATION_AUTHORIZATION_JWT_MTLS_CERT_BOUND("smp.authorization.jwt.tls.client.certificate.bound", "false",
+            "Validate OAuth 2.0 Mutual TLS Certificate Bound to Access Token cnf.x5t#S256.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, BOOLEAN
+    ),
+    AUTOMATION_AUTHORIZATION_JWT_AUDIENCE("smp.authorization.jwt.audience", "",
+            "Validate audience of the JWT token. If empty, no validation is done. If set, the audience must match the value of the JWT token's 'aud' claim.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
+    ),
+    AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_KEY("smp.authorization.jwt.key", "",
+            "The base64 signature key used to verify the JWT token.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
+    ),
+
+    AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_ALGORITHM("smp.authorization.jwt.algorithm", "RS256",
+            "The signature algorithm used to verify the JWT token e.g.: RS256, HS256, ES256, PS256.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
     ),
 
     EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
@@ -236,7 +255,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
     SSO_CAS_AUTOMATIC_REGISTRATION_CONFIRMATION("smp.sso.cas.registration.confirmation.mandatory", "false", "If true - user must be activated by system administrator. If false - user is activated automatically",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    SSO_CAS_AUTOMATIC_REGISTRATION_PROPERTY_MAPPING("smp.sso.cas.registration.mapping", "EMAIL:${email}|FULL_NAME:${firstName} ${lastName}","The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'",
+    SSO_CAS_AUTOMATIC_REGISTRATION_PROPERTY_MAPPING("smp.sso.cas.registration.mapping", "EMAIL:${email}|FULL_NAME:${firstName} ${lastName}", "The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
 
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.",
@@ -261,7 +280,7 @@ public enum SMPPropertyEnum {
     ALERT_USER_LOGIN_FAILURE_LEVEL("smp.alert.user.login_failure.level",
             "LOW", "Alert level for login failure. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.login.failure.level"),
 
     ALERT_USER_SUSPENDED_ENABLED("smp.alert.user.suspended.enabled",
             "true", "Enable/disable the login suspended alert of the authentication module.",
@@ -269,10 +288,10 @@ public enum SMPPropertyEnum {
     ALERT_USER_SUSPENDED_LEVEL("smp.alert.user.suspended.level",
             "HIGH", "Alert level for login suspended. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
-     ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.suspended.level"),
+    ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
             "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will submit mail for all logon attempts to suspended account, WHEN_BLOCKED: An alert will be triggered only the first time when the account got suspended.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "Allowed values are: AT_LOGON,WHEN_BLOCKED"),
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "error.invalid.property.alert.user.suspended.moment"),
 
     ALERT_PASSWORD_BEFORE_EXPIRATION_ENABLED("smp.alert.password.imminent_expiration.enabled",
             "true", "Enable/disable the imminent password expiration alert",
@@ -286,7 +305,7 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_BEFORE_EXPIRATION_LEVEL("smp.alert.password.imminent_expiration.level",
             "LOW", "Password imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.password.before.expiration.level"),
 
     ALERT_PASSWORD_EXPIRED_ENABLED("smp.alert.password.expired.enabled",
             "true", "Enable/disable the password expiration alert",
@@ -300,7 +319,7 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_EXPIRED_LEVEL("smp.alert.password.expired.level",
             "LOW", "Password expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.password.expired.level"),
 
 
     ALERT_USER_CREATED_ENABLED("smp.alert.user.created.enabled",
@@ -309,7 +328,7 @@ public enum SMPPropertyEnum {
     ALERT_USER_CREATED_LEVEL("smp.alert.user.created.level",
             "HIGH", "User creation alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.created.level"),
 
     ALERT_USER_UPDATED_ENABLED("smp.alert.user.updated.enabled",
             "true", "Enable/disable the user update alert",
@@ -317,7 +336,7 @@ public enum SMPPropertyEnum {
     ALERT_USER_UPDATED_LEVEL("smp.alert.user.updated.level",
             "HIGH", "User update alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.user.updated.level"),
 
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_ENABLED("smp.alert.accessToken.imminent_expiration.enabled",
             "true", "Enable/disable the imminent accessToken expiration alert",
@@ -331,7 +350,7 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_LEVEL("smp.alert.accessToken.imminent_expiration.level",
             "LOW", "AccessToken imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.access.token.before.expiration.level"),
 
     ALERT_ACCESS_TOKEN_EXPIRED_ENABLED("smp.alert.accessToken.expired.enabled",
             "true", "Enable/disable the accessToken expiration alert",
@@ -345,7 +364,7 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_EXPIRED_LEVEL("smp.alert.accessToken.expired.level",
             "LOW", "Access Token expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.access.token.expired.level"),
 
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_ENABLED("smp.alert.certificate.imminent_expiration.enabled",
             "true", "Enable/disable the imminent certificate expiration alert",
@@ -357,9 +376,9 @@ public enum SMPPropertyEnum {
             "5", "Frequency in days between alerts.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_LEVEL("smp.alert.certificate.imminent_expiration.level",
-            "LOW", "certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
+            "LOW", "Certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.certificate.before.expiration.level"),
 
     ALERT_CERTIFICATE_EXPIRED_ENABLED("smp.alert.certificate.expired.enabled",
             "true", "Enable/disable the certificate expiration alert",
@@ -373,13 +392,45 @@ public enum SMPPropertyEnum {
     ALERT_CERTIFICATE_EXPIRED_LEVEL("smp.alert.certificate.expired.level",
             "LOW", "Certificate expiration alert level. Values: {LOW, MEDIUM, HIGH}",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
-            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.certificate.expired.level"),
 
-    SMP_ALERT_CREDENTIALS_CRON("smp.alert.credentials.cronJobExpression", "0 52 4 */1 * *", "Property cron expression for triggering alert messages !",
+    SMP_ALERT_CREDENTIALS_CRON("smp.alert.credentials.cronJobExpression", "0 52 4 */1 * *", "Property cron expression for triggering alert messages about credentials!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, CRON_EXPRESSION),
+
+    ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_ENABLED("smp.alert.system.certificate.imminent_expiration.enabled",
+            "true", "Enable/disable the imminent system certificate expiration alert",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_PERIOD("smp.alert.system.certificate.imminent_expiration.delay_days",
+            "15", "Number of days before expiration as for how long before expiration the system should send alerts.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
+    ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_INTERVAL("smp.alert.system.certificate.imminent_expiration.frequency_days",
+            "5", "Frequency in days between alerts.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
+    ALERT_SYSTEM_CERTIFICATE_BEFORE_EXPIRATION_LEVEL("smp.alert.system.certificate.imminent_expiration.level",
+            "LOW", "System certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.system.certificate.before.expiration.level"),
+
+    ALERT_SYSTEM_CERTIFICATE_EXPIRED_ENABLED("smp.alert.system.certificate.expired.enabled",
+            "true", "Enable/disable the system certificate expiration alert",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    ALERT_SYSTEM_CERTIFICATE_EXPIRED_PERIOD("smp.alert.system.certificate.expired.delay_days",
+            "30", "Number of days after expiration as for how long the system should send alerts.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
+    ALERT_SYSTEM_CERTIFICATE_EXPIRED_INTERVAL("smp.alert.system.certificate.expired.frequency_days",
+            "5", "Frequency in days between alerts.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
+    ALERT_SYSTEM_CERTIFICATE_EXPIRED_LEVEL("smp.alert.system.certificate.expired.level",
+            "LOW", "System certificate expiration alert level. Values: {LOW, MEDIUM, HIGH}",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "error.invalid.property.alert.system.certificate.expired.level"),
+
+    SMP_ALERT_SYSTEM_CERTIFICATES_CRON("smp.alert.system.certificates.cronJobExpression", "0 42 4 */1 * *", "Property cron expression for triggering alert messages about system certificates!",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, CRON_EXPRESSION),
+
     SMP_ALERT_CREDENTIALS_SERVER("smp.alert.credentials.serverInstance", "localhost", "If smp.cluster.enabled is set to true then then instance (hostname) to generate report.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
-    SMP_ALERT_BATCH_SIZE("smp.alert.credentials.batch.size", "200", "Max alertes generated in a batch for the type",
+    SMP_ALERT_BATCH_SIZE("smp.alert.credentials.batch.size", "200", "Max count of alerts generated in a batch",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SMP_ALERT_MAIL_FROM("smp.alert.mail.from", "test@alert-send-mail.eu", "Alert send mail",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, EMAIL),
@@ -394,6 +445,20 @@ public enum SMPPropertyEnum {
     CREDENTIALS_RESET_POLICY_VALID_DAYS("smp.credentials.reset_request.url.validMinutes", "90", "Number of minutes token is valid",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
 
+    VAULT_ENABLED("smp.vault.enabled", Boolean.FALSE.toString(),  "When using vault, encrypted data will be store in Vault instead of the database",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    VAULT_PERMISSION_WRITE_ENABLED("smp.vault.write.enabled", Boolean.TRUE.toString(), "If write enabled, the data can be updated in vault using the SMP. It also populates missing data from database when vault enabled. If disabled, the data can only be read from vault",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+
+    VAULT_IMPLEMENTATION_CLASSNAME("smp.vault.implementation.classname", "", "The full class name of the Vault implementation e.g. eu.europa.ec.edelivery.vault.MyVault",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+    VAULT_CONFIGURATION("smp.vault.configuration", "",  "The list of vault properties separated by ';' e.g.: hashicorp-vault.url:http://vault-service:8200/;hashicorp-vault.token:domisml-valut-test-token",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
+    VAULT_AUTHENTICATION_TYPE("smp.vault.authentication.type", "token",  "The authentication type. e.g. token, username. The value depends on the vault implementation",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+    VAULT_AUTHENTICATION_VALUE("smp.vault.authentication.value", "",  "The authentication value and format depends on the vault implementation",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+
     // deprecated properties
     // property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled
     CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled",
@@ -402,22 +467,20 @@ public enum SMPPropertyEnum {
     PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate", "false",
             "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-
     ;
-
 
     private final String property;
     private final String defValue;
     private final String desc;
     private final Pattern valuePattern;
-    private final String errorValueMessage;
+    private final String errorMessageCode;
     private final boolean isEncrypted;
     private final boolean isMandatory;
     private final boolean restartNeeded;
     private final SMPPropertyTypeEnum propertyType;
 
     SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded,
-                    SMPPropertyTypeEnum propertyType, String valuePattern, String errorValueMessage) {
+                    SMPPropertyTypeEnum propertyType, String valuePattern, String errorMessageCode) {
         this.property = property;
         this.defValue = defValue;
         this.desc = desc;
@@ -426,11 +489,11 @@ public enum SMPPropertyEnum {
         this.restartNeeded = restartNeeded;
         this.propertyType = propertyType;
         this.valuePattern = Pattern.compile(valuePattern);
-        this.errorValueMessage = errorValueMessage;
+        this.errorMessageCode = errorMessageCode;
     }
 
     SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded, SMPPropertyTypeEnum propertyType) {
-        this(property, defValue, desc, isMandatory, isEncrypted, restartNeeded, propertyType, propertyType.defValidationRegExp, propertyType.getErrorMessage(property));
+        this(property, defValue, desc, isMandatory, isEncrypted, restartNeeded, propertyType, propertyType.defValidationRegExp, propertyType.getErrorMessageCode());
 
     }
 
@@ -463,7 +526,7 @@ public enum SMPPropertyEnum {
     }
 
     public static Optional<SMPPropertyEnum> getByProperty(String key) {
-        String keyTrim = StringUtils.trimToNull(key);
+        String keyTrim = trimToNull(key);
         if (keyTrim == null) {
             return Optional.empty();
         }
@@ -478,8 +541,8 @@ public enum SMPPropertyEnum {
         return valuePattern;
     }
 
-    public String getErrorValueMessage() {
-        return this.errorValueMessage;
+    public String getErrorMessageCode() {
+        return this.errorMessageCode;
     }
 }
 

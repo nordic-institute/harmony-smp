@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
@@ -19,26 +18,31 @@ import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {firstValueFrom, lastValueFrom} from "rxjs";
 import {UserRo} from "../../common/model/user-ro.model";
 import {TranslateService} from "@ngx-translate/core";
+import {MatTableDataSource} from "@angular/material/table";
+import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
+import {PageEvent} from "@angular/material/paginator";
+import {SmpTableComponent} from "../../common/components/smp-table/smp-table.component";
 
 
 @Component({
   templateUrl: './admin-user.component.html',
-  styleUrls: ['./admin-user.component.css']
+  styleUrls: ['./admin-user.component.css'],
+  standalone: false
 })
 export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['username', 'fullName'];
-
-  selected?: SearchUserRo;
-
-  managedUserData?: UserRo;
-
+  dataSource: MatTableDataSource<SearchUserRo> = new MatTableDataSource();
   userData: SearchUserRo[];
-  filter: string;
+  selected?: SearchUserRo;
+  managedUserData?: UserRo;
+  columns: SmpTableColDef[];
+
+  filterValue: string;
   resultsLength: number = 0;
+  pageSize: number = 10;
+  pageIndex: number = 0;
   isLoadingResults: boolean = false;
-
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('smpTableComponent') smpTableComponent: SmpTableComponent;
 
   constructor(private adminUserService: AdminUserService,
               private httpErrorHandlerService: HttpErrorHandlerService,
@@ -46,47 +50,59 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
-
+    this.columns = [
+      {
+        columnDef: 'username',
+        header: 'admin.user.label.username',
+        tooltip: (row: SearchUserRo) => row.username,
+        cell: (row: SearchUserRo) => row.username
+      } as SmpTableColDef,
+      {
+        columnDef: 'fullName',
+        header: 'admin.user.label.full.name',
+        tooltip: (row: SearchUserRo) => row.username,
+        cell: (row: SearchUserRo) => row.fullName
+      } as SmpTableColDef,
+    ];
   }
 
   ngAfterViewInit() {
     this.loadTableData();
   }
 
-  onPageChanged(page: PageEvent) {
+  applyUserFilter(filterValue: string) {
+    this.filterValue= filterValue?.trim().toLowerCase();
     this.loadTableData();
   }
 
-  applyUserFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    if (this.filter === filterValue) {
-      return;
-    }
-    this.filter = filterValue;
+  onPageChanged(page: PageEvent) {
+    this.pageIndex = page.pageIndex;
+    this.pageSize = page.pageSize;
     this.loadTableData();
   }
 
   loadTableData(selectUsername: string = null) {
-
     this.isLoadingResults = true;
 
-    this.adminUserService.getUsersObservable(this.filter, this.paginator.pageIndex, this.paginator.pageSize)
+    this.adminUserService.getUsersObservable(this.filterValue, this.pageIndex, this.pageSize)
       .pipe(
         finalize(() => {
           this.isLoadingResults = false;
         }))
       .subscribe((result: TableResult<SearchUserRo>) => {
           this.userData = [...result.serviceEntities];
+          this.dataSource.data = this.userData;
           this.resultsLength = result.count;
+          this.pageIndex = result.page;
+          this.pageSize = result.pageSize;
           this.isLoadingResults = false;
 
           if (selectUsername) {
-            this.userSelected(this.userData.find(user => user.username === selectUsername));
+            this.onUserSelected(this.userData.find(user => user.username === selectUsername));
           }
         }
       );
   }
-
 
   onCreateUserClicked() {
     this.selected = null;
@@ -97,13 +113,12 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
     }
   }
 
-
   onDiscardNew() {
     this.selected = null;
     this.managedUserData = null;
   }
 
-  public userSelected(userSelected: SearchUserRo) {
+  public onUserSelected(userSelected: SearchUserRo) {
     if (this.selected === userSelected) {
       return;
     }
@@ -119,7 +134,6 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
       this.selectAndRetrieveUserData(userSelected);
     }
   }
-
 
   public selectAndRetrieveUserData(selectUser: SearchUserRo) {
     // clear old data
@@ -151,7 +165,6 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   }
 
   updateUserData(user: UserRo) {
-
     // capture this to variable because of async call 'this' inside targets the wrong object
     const thatAdminUserComponent = this;
     // change only allowed data
@@ -182,6 +195,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         if (user) {
           thatAdminUserComponent.selected = null;
           thatAdminUserComponent.managedUserData = null;
+          thatAdminUserComponent.filterValue = user.username;
           thatAdminUserComponent.loadTableData(user.username);
           thatAdminUserComponent.alertService.success(await lastValueFrom(thatAdminUserComponent.translateService.get("admin.user.success.create", {username: user.username})));
         }
@@ -228,7 +242,6 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         thatAdminUserComponent.alertService.error(error.error?.errorDescription)
       }
     });
-
   }
 
   changeUserPasswordEvent(user: UserRo) {
@@ -252,7 +265,6 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
     return this.dialog.open(PasswordChangeDialogComponent, this.convertConfig(config));
   }
 
-
   private convertConfig(config) {
     return (config?.data)
       ? {
@@ -268,7 +280,6 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   isDirty(): boolean {
     return false;
   }
-
 
   isNew(): boolean {
     return !this.selected && !this.selected?.userId

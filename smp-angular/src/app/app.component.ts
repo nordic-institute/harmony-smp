@@ -17,9 +17,10 @@ import {WindowSpinnerService} from "./common/services/window-spinner.service";
 
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    standalone: false
 })
 export class AppComponent {
 
@@ -79,15 +80,6 @@ export class AppComponent {
     this.windowToolbar.showExpanded(this.fullMenu);
 
     window.dispatchEvent(new Event('resize'));
-    /*
-    setTimeout(() => {
-      var evt = document.createEvent("HTMLEvents");
-      evt.initEvent('resize', true, false);
-      window.dispatchEvent(evt);
-    }, 200)*/
-    //ugly hack but otherwise the ng-datatable doesn't resize when collapsing the menu
-    //alternatively this can be tried (https://github.com/swimlane/ngx-datatable/issues/193) but one has to implement it on every page
-    //containing a ng-datatable and it only works after one clicks inside the table
   }
 
   clearWarning() {

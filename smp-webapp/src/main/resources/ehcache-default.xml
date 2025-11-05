@@ -34,6 +34,7 @@
     <cache uses-template="ttl-60-heap-500" alias="domain-resource-identifier-formatter"/>
     <cache uses-template="ttl-60-heap-500" alias="domain-subresource-identifier-formatter"/>
     <cache uses-template="ttl-3600-heap-5000" alias="mail-templates-translations"/>
+    <cache uses-template="ttl-3600-heap-5000" alias="error-translations"/>
 
     <!-- cache definitions ends here -->
     <cache-template name="ttl-60-heap-500">

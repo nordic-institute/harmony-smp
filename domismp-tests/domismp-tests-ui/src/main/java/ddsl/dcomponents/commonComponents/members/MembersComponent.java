@@ -3,7 +3,6 @@ package ddsl.dcomponents.commonComponents.members;
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.MatSmallGrid;
-import ddsl.dobjects.DButton;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,14 +33,9 @@ public class MembersComponent extends DComponent {
         return new MatSmallGrid(driver, sidePanel);
     }
 
-    public InviteMembersPopup getInviteMembersPopup() {
+    private InviteMembersPopup getInviteMembersPopup() {
         return new InviteMembersPopup(driver);
     }
-
-    public DButton getInviteMemberBtn() {
-        return weToDButton(inviteMemberBtn);
-    }
-
     public void removeUser(String username){
         getMembersGrid().searchAndGetElementInColumn("Username", username).click();
         weToDButton(removeMemberBtn).click();
@@ -53,8 +47,11 @@ public class MembersComponent extends DComponent {
         getMembersGrid().searchAndGetElementInColumn("Username", username).click();
         weToDButton(sidePanel.findElement(By.id("editButton"))).click();
         getInviteMembersPopup().changeRole(newRole);
+    }
 
-
+    public InviteMembersPopup clickOnInviteMemberBtn() {
+        weToDButton(inviteMemberBtn).click();
+        return getInviteMembersPopup();
     }
 
 }

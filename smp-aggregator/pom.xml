@@ -37,6 +37,9 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+                </configuration>
                 <executions>
                     <execution>
                         <id>report-aggregate</id>

@@ -19,4 +19,9 @@ public class ResourceTab extends SubcategoryTabComponent {
         create();
         return new CreateResourceDetailsDialog(driver);
     }
+
+    public void deleteResource(String resourceIdentifier) throws ElementNotInteractableException {
+        delete("Identifier", resourceIdentifier);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
+    }
 }

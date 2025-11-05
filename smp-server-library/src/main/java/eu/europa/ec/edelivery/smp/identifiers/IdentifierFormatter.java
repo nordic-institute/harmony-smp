@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,12 +19,8 @@
 package eu.europa.ec.edelivery.smp.identifiers;
 
 import eu.europa.ec.dynamicdiscovery.model.identifiers.AbstractIdentifierFormatter;
-import eu.europa.ec.dynamicdiscovery.model.identifiers.types.AbstractFormatterType;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.FormatterType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -34,8 +30,12 @@ import java.util.regex.Pattern;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier> {
+public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier, IdentifierFormatter> {
 
+    protected IdentifierFormatter(Builder builder) {
+        super(builder);
+        setSchemeValidationPattern(builder.schemeValidationPattern);
+    }
 
     @Override
     protected String getSchemeFromObject(Identifier object) {
@@ -61,20 +61,14 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
         identifierObject.setValue(identifier);
     }
 
-    public static class Builder{
-        public static Builder create(){
+    public static class Builder extends AbstractBuilder<IdentifierFormatter> {
+        public static Builder create() {
             return new Builder();
         }
 
-        private Builder() {
-        }
 
         boolean schemeMandatory = false;
         Pattern schemeValidationPattern;
-        List<String> caseSensitiveSchemas;
-        List<FormatterType> formatterTypes = null;
-
-        AbstractFormatterType defaultFormatter;
 
         public Builder schemeMandatory(boolean schemeMandatory) {
             this.schemeMandatory = schemeMandatory;
@@ -86,38 +80,14 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
             return this;
         }
 
-        public Builder addCaseSensitiveSchemas(String ... caseSensitiveSchemas) {
-            if (this.caseSensitiveSchemas == null) {
-                this.caseSensitiveSchemas = new ArrayList<>();
-            }
-            this.caseSensitiveSchemas.addAll(Arrays.asList(caseSensitiveSchemas));
+        @Override
+        public Builder addFormatterTypes(FormatterType... formatterTypes) {
+            super.addFormatterTypes(formatterTypes);
             return this;
         }
 
-        public Builder addFormatterTypes(FormatterType ... formatterTypes) {
-            if (this.formatterTypes == null) {
-                this.formatterTypes = new ArrayList<>();
-            }
-            this.formatterTypes.addAll(Arrays.asList(formatterTypes));;
-            return this;
-        }
-
-        public void setDefaultFormatter(AbstractFormatterType defaultFormatter) {
-            this.defaultFormatter = defaultFormatter;
-        }
-
-        public IdentifierFormatter build(){
-            IdentifierFormatter identifierFormatter = new IdentifierFormatter();
-            identifierFormatter.setSchemeMandatory(schemeMandatory);
-            identifierFormatter.setCaseSensitiveSchemas(caseSensitiveSchemas);
-            identifierFormatter.setSchemeValidationPattern(schemeValidationPattern);
-            if (formatterTypes!=null) {
-                identifierFormatter.addFormatterTypes(formatterTypes.toArray(new FormatterType[0]));
-            }
-            if (defaultFormatter != null) {
-                identifierFormatter.setDefaultFormatter(defaultFormatter);
-            }
-            return identifierFormatter;
+        public IdentifierFormatter build() {
+            return new IdentifierFormatter(this);
         }
     }
 }

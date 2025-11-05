@@ -24,14 +24,14 @@ import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_DOMAIN_CODE;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 
 /**
@@ -52,10 +52,11 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 @Service
 public class DomainResolverService {
 
+
     /**
      * Domain pattern as defined in documentation since SMP 3.0.0
      */
-    public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
+    public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("^[^-._+0-9][-._+a-zA-Z0-9]{1,63}$");
     final DomainDao domainDao;
     final GroupDao groupDao;
     final ConfigurationService configurationService;
@@ -71,39 +72,70 @@ public class DomainResolverService {
     /**
      * DomiSMP resolves the domain in the following order.
      * <ol>
-     * <li>If only one domain is registered, it sets it by default (legacy).</li>
-     * <li>The next attempt is to determine it via HTTP Header "domain." If the header is set with the invalid "domain code," it throws the error.</li>
-     * <li>The next attempt is with the first path parameter (must be at least two path parameters).</li>
-     * <li>The next attempt is to set the default domain configured in DomiSMP configuration properties.</li>
-     * <li>If the default domain is not set, it uses the first registered domain to the DomiSMP.</li>
-     * <li>Throws Resource not found error</li>
+     *   <li>If "domain" header exists attempt to determine domain via HTTP Header
+     *     <ul>
+     *       <li>If present and valid, use it.</li>
+     *       <li>If the domain code is invalid/domain with code not exists, throw an error.</li>
+     *     </ul>
+     *   </li>
+     *   <li>Check if only one domain is registered
+     *     <ul>
+     *       <li>If true, set it as the default domain (legacy behavior).</li>
+     *     </ul>
+     *   </li>
+     *   <li>Attempt to determine domain from URL path parameters
+     *     <ul>
+     *       <li>Check if there are at least two path parameters.</li>
+     *       <li>If so, use the first path parameter as the domain.</li>
+     *     </ul>
+     *   </li>
+     *   <li>Attempt to use the default domain from DomiSMP configuration
+     *     <ul>
+     *       <li>If a default domain is configured, use it.</li>
+     *     </ul>
+     *   </li>
+     *   <li>Fallback to the first registered domain in DomiSMP
+     *     <ul>
+     *       <li>If no default is configured, use the first available domain.</li>
+     *     </ul>
+     *   </li>
+     *   <li>If all steps fail
+     *     <ul>
+     *       <li>Throw a “Domain not found” error.</li>
+     *     </ul>
+     *   </li>
      * </ol>
+     *
      * <p>
      * NOTE: To allow the domain path parameter and the HTTP header to be used together, the first path parameter is skipped if it matches a resolved domain with an HTTP parameter or "single domain condition" and if there are more than two path parameters.
      * <p/>
      *
-     * @param headerParameter the http header
-     * @return true if path parameter  matched the domain code and the resolving should continue with the next parameter
+     * @param headerParameter the domain code from  http header
+     * @param pathParameter   the first path parameter which can potentially be the domain code
+     * @return DBDomain from the database if found, otherwise throws an exception.
+     * @throws SMPRuntimeException if no domain is found or the domain code is invalid.
      */
     public DBDomain resolveDomain(String headerParameter, String pathParameter) {
         LOG.info("Resolve domain for HTTP header [{}] and path parameter [{}]", headerParameter, pathParameter);
 
-
         // get single domain
-        Optional<DBDomain> optDomain = domainDao.getTheOnlyDomain();
-        if (optDomain.isPresent()) {
-            LOG.debug("Only one domain is registered to DomiSmp [{}]", optDomain.get().getDomainCode());
-            return optDomain.get();
-        }
+        Optional<DBDomain> optDomain;
         // get
-        if (StringUtils.isNotBlank(headerParameter)) {
+        if (isNotBlank(headerParameter)) {
             optDomain = validatedAndReturnDomainByCode(headerParameter);
             if (optDomain.isPresent()) {
                 LOG.debug("Located domain by the http header [{}]", headerParameter);
                 return optDomain.get();
             } else {
-                throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, headerParameter);
+                throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, headerParameter);
             }
+        }
+
+        optDomain = domainDao.getTheOnlyDomain();
+        if (optDomain.isPresent()) {
+            LOG.debug("Only one domain is registered to DomiSmp [{}]", optDomain.get().getDomainCode());
+            return optDomain.get();
         }
 
         optDomain = domainDao.getDomainByCode(pathParameter);
@@ -118,20 +150,23 @@ public class DomainResolverService {
             LOG.debug("Located domain by DomiSMP configuration [{}] value [{}]", SMPPropertyEnum.DEFAULT_DOMAIN.getProperty(), domainCode);
             return optDomain.get();
         }
+
         optDomain = domainDao.getFirstDomain();
         if (optDomain.isPresent()) {
             DBDomain domain = optDomain.get();
-            LOG.info("Can not locate the domain, user the registered domain [{}]", domain.getDomainCode());
+            LOG.info("Can not locate the domain, use the first registered domain [{}]", domain.getDomainCode());
             return domain;
         }
-        throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "No domain is configured for the DomiSMP instance!");
+        throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_NO_DOMAINS);
     }
 
     public Optional<DBDomain> validatedAndReturnDomainByCode(final String domain) {
 
-        // else test if domain is ok.
+        // the test if domain is ok.
         if (!DOMAIN_ID_PATTERN.matcher(domain).matches()) {
-            throw new SMPRuntimeException(INVALID_DOMAIN_CODE, domain, DOMAIN_ID_PATTERN);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_INVALID_DOMAIN_CODE)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain)
+                    .addParam(ErrorMessageArgument.PATTERN, DOMAIN_ID_PATTERN);
         }
         // get domain by code
         return domainDao.getDomainByCode(domain);
@@ -166,22 +201,25 @@ public class DomainResolverService {
         List<DBGroup> authorizedGroup = groupDao.getAllGroupsForDomain(domain);
 
 
-        if (StringUtils.isBlank(domainGroup)) {
+        if (isBlank(domainGroup)) {
             // if no group is provided, return the first group
             LOG.debug("No group is provided, can not determine the group, return al domain authorized groups");
             return authorizedGroup;
         }
 
-        if (authorizedGroup.stream().filter(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup)).count() == 0) {
-            throw new SMPRuntimeException(ErrorCode.GROUP_NOT_EXISTS, domainGroup);
+        if (authorizedGroup.stream().noneMatch(entity -> Strings.CI.equals(entity.getGroupName(), domainGroup))) {
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_GROUP_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.GROUP_NAME, domainGroup);
         }
 
         DBGroup group = authorizedGroup.stream()
-                .filter(entity -> equalsIgnoreCase(entity.getGroupName(), domainGroup))
+                .filter(entity -> Strings.CI.equals(entity.getGroupName(), domainGroup))
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.UNAUTHORIZED,
-                        "User [" + username + "] is not authorized for group ["
-                                + domainGroup + "] in domain [" + domainCode + "]"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.UNAUTHORIZED_USER_FOR_GROUP)
+                        .addParam(ErrorMessageArgument.USERNAME, username)
+                        .addParam(ErrorMessageArgument.DOMAIN_GROUP, domainGroup)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode));
+
         return Collections.singletonList(group);
 
     }

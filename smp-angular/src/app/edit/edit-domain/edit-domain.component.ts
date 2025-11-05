@@ -18,13 +18,15 @@ import {
 } from "../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
-  templateUrl: './edit-domain.component.html',
-  styleUrls: ['./edit-domain.component.css']
+    templateUrl: './edit-domain.component.html',
+    styleUrls: ['./edit-domain.component.css'],
+    standalone: false
 })
 export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
 
   membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
+
   selected: DomainRo;
   domainList: DomainRo[] = [];
   currenTabIndex: number = 0;
@@ -118,7 +120,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   }
 
   updateDomainList(domainList: DomainRo[]) {
-    this.domainList = domainList
+    this.domainList = domainList.sort((a, b) => a.domainCode.localeCompare(b.domainCode));
     this.dataSource.data = this.domainList;
 
     if (!!this.domainList && this.domainList.length > 0) {

@@ -20,6 +20,8 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 /**
  * Class represents RO for the document version for the review
@@ -27,7 +29,9 @@ import java.time.OffsetDateTime;
  * @since 5.1
  * @author Joze RIHARSIC
  */
-public class ReviewDocumentVersionRO {
+public class ReviewDocumentVersionRO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9008583888835630047L;
 
     private String documentId;
     private String documentVersionId;
@@ -39,7 +43,7 @@ public class ReviewDocumentVersionRO {
     private String resourceIdentifierScheme;
     private String subresourceIdentifierValue;
     private String subresourceIdentifierScheme;
-    private String target;
+    private String documentLevel;
     private OffsetDateTime lastUpdatedOn;
 
 
@@ -124,12 +128,12 @@ public class ReviewDocumentVersionRO {
         this.subresourceIdentifierScheme = subresourceIdentifierScheme;
     }
 
-    public String getTarget() {
-        return target;
+    public String getDocumentLevel() {
+        return documentLevel;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
+    public void setDocumentLevel(String documentLevel) {
+        this.documentLevel = documentLevel;
     }
 
     public OffsetDateTime getLastUpdatedOn() {

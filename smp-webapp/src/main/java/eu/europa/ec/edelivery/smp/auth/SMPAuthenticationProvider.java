@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,20 +19,21 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.smp.auth.jwt.SMPBearerTokenAuthenticationConverter;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.cas.web.CasAuthenticationFilter;
+import org.springframework.core.annotation.Order;
+import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
-
 import java.util.Collections;
 
 /**
@@ -47,16 +48,19 @@ import java.util.Collections;
  * @since 4.1
  */
 @Component
+@Order(2)
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
+    protected final CredentialService credentialService;
+    protected final SMPBearerTokenAuthenticationConverter bearerTokenAuthenticationConverter;
 
-    final CredentialService credentialService;
 
     @Autowired
-    public SMPAuthenticationProvider(CredentialService credentialService) {
+    public SMPAuthenticationProvider(CredentialService credentialService,  @Nullable SMPBearerTokenAuthenticationConverter  jwtAuthenticationConverter) {
 
         this.credentialService = credentialService;
+        this.bearerTokenAuthenticationConverter = jwtAuthenticationConverter;
     }
 
     @Override
@@ -72,14 +76,12 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             } else {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: [{}]", principal);
             }
-        } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
+        }  else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
             LOG.info("try to authentication Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
-            if (CasAuthenticationFilter.CAS_STATEFUL_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())
-                    || CasAuthenticationFilter.CAS_STATELESS_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())) {
-                LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
-                return null;
-            }
             authentication = authenticateByAuthenticationToken((UsernamePasswordAuthenticationToken) authenticationToken);
+        } else if (authenticationToken instanceof BearerTokenAuthenticationToken) {
+            LOG.info("try to authentication Bearer Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
+            authentication = authenticateByBareTokenAuthenticationToken((BearerTokenAuthenticationToken) authenticationToken);
         }
 
         // set anonymous token
@@ -88,8 +90,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                     Collections.singleton(SMPAuthority.S_AUTHORITY_ANONYMOUS));
             authentication.setAuthenticated(false);
         }
-
-
         return authentication;
     }
 
@@ -102,6 +102,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      */
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
+
         return credentialService.authenticateByCertificateToken(principal);
     }
 
@@ -112,10 +113,29 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         return credentialService.authenticateByAuthenticationToken(auth.getName(), auth.getCredentials().toString());
     }
 
+    public Authentication authenticateByBareTokenAuthenticationToken(BearerTokenAuthenticationToken authBearer)
+            throws AuthenticationException {
+        if (this.bearerTokenAuthenticationConverter == null) {
+            LOG.warn("SMP does not support Bearer token authentication. No SMPBearerTokenAuthenticationConverter is configured.");
+            throw new AuthenticationServiceException("SMP does not support Bearer token authentication.");
+        }
+        // validate the token and return the authentication
+        SMPAuthenticationToken token = this.bearerTokenAuthenticationConverter.convert(authBearer);
+        if (token.getDetails() == null) {
+            token.setDetails(authBearer.getDetails());
+        }
+        LOG.info("Authenticated token [{}]",  token);
+        return token;
+    }
+
     @Override
     public boolean supports(Class<?> auth) {
         LOG.info("Support authentication: [{}].", auth);
-        boolean supportAuthentication = auth.equals(UsernamePasswordAuthenticationToken.class) || auth.equals(PreAuthenticatedAuthenticationToken.class);
+        boolean supportAuthentication = auth.equals(UsernamePasswordAuthenticationToken.class)
+                || auth.equals(PreAuthenticatedAuthenticationToken.class)
+                || auth.equals(BearerTokenAuthenticationToken.class)
+                ;
+
         if (!supportAuthentication) {
             LOG.warn("SMP does not support authentication type: [{}].", auth);
         }

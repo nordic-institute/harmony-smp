@@ -23,12 +23,12 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -37,8 +37,8 @@ import java.util.StringJoiner;
 /**
  * Document property entity
  *
- * @since 5.1
  * @author Joze Rihtarsic
+ * @since 5.1
  */
 
 @Entity
@@ -50,7 +50,9 @@ public class DBDocumentProperty extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOC_PROP_SEQ")
-    @GenericGenerator(name = "SMP_DOC_PROP_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOC_PROP_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique document property id")
     Long id;
@@ -74,6 +76,12 @@ public class DBDocumentProperty extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "FK_DOCUMENT_ID")
     private DBDocument document;
+
+    @OneToOne(mappedBy = "documentProperty",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
+    private DBDocumentCertificate certificate;
 
     public DBDocumentProperty() {
     }
@@ -129,6 +137,14 @@ public class DBDocumentProperty extends BaseEntity {
 
     public void setType(SMPPropertyTypeEnum type) {
         this.type = type;
+    }
+
+    public DBDocumentCertificate getDocumentCertificate() {
+        return certificate;
+    }
+
+    public void setDocumentCertificate(DBDocumentCertificate certificate) {
+        this.certificate = certificate;
     }
 
     @Transient

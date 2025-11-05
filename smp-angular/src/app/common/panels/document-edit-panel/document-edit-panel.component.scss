@@ -23,6 +23,10 @@
   min-height: 150px;
 }
 
+.document-editor-container.smp-disabled {
+  background: lightgray;
+}
+
 .CodeMirror {
   height: auto;
 }

@@ -169,6 +169,32 @@ public class DocumentEditController {
         return uiDocumentService.publishDocumentVersionForSubresource(subresourceId, resourceId, documentId, document.getPayloadVersion());
     }
 
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE_DELETE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
+            "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
+    public DocumentRO deleteResourceDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                     @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                                     @RequestBody DocumentRO document) {
+        logAdminAccess("deleteResourceDocument");
+        Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
+        Long documentId = SessionSecurityUtils.decryptEntityId(document.getDocumentId());
+        return uiDocumentService.deleteDocumentVersionForResource(resourceId, documentId, document.getPayloadVersion());
+    }
+
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_DELETE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
+            "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
+    public DocumentRO deleteSubresourceDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                        @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                                        @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,
+                                                        @RequestBody DocumentRO document) {
+        logAdminAccess("deleteSubresourceDocument");
+        Long subresourceId = SessionSecurityUtils.decryptEntityId(subresourceEncId);
+        Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
+        Long documentId = SessionSecurityUtils.decryptEntityId(document.getDocumentId());
+        return uiDocumentService.deleteDocumentVersionForSubresource(subresourceId, resourceId, documentId, document.getPayloadVersion());
+    }
+
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_RESOURCE_REVIEW, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
@@ -211,7 +237,7 @@ public class DocumentEditController {
 
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_APPROVE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
+            "and @smpAuthorizationService.isResourceReviewer(#resourceEncId)")
     public DocumentRO approveSubresourceDocumentVersion(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                         @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                                         @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId,

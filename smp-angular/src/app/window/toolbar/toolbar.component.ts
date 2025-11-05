@@ -19,9 +19,10 @@ import {SecurityEventService} from "../../security/security-event.service";
  * @since 5.0
  */
 @Component({
-  selector: 'window-toolbar',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss']
+    selector: 'window-toolbar',
+    templateUrl: './toolbar.component.html',
+    styleUrls: ['./toolbar.component.scss'],
+    standalone: false
 })
 
 export class ToolbarComponent implements OnDestroy{

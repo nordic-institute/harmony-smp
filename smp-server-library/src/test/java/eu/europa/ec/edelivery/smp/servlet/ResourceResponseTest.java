@@ -21,7 +21,7 @@ package eu.europa.ec.edelivery.smp.servlet;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

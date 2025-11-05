@@ -26,6 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
@@ -45,13 +46,14 @@ import java.util.UUID;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOC_SCHEMA_2;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @ContextConfiguration(classes = {ResourceResolverService.class, ConversionTestConfig.class})
 public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest {
 
-
     @Autowired
     protected ResourceResolverService testInstance;
+
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach
     public void prepareDatabase() {
@@ -62,12 +64,11 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
 
     @Test
     void tesValidateRequestDataInvalid() {
-
         List<Object[]> faileTestData = Arrays.asList(
-                new Object[]{new ResourceRequest(null, null, null, null), "Resource Location vector coordinates must not be null"},
-                new Object[]{new ResourceRequest(null, null, Collections.emptyList(), null), "Resource Location vector coordinates must not be null"},
-                new Object[]{new ResourceRequest(null, null, Arrays.asList("1", "2", "3", "4", "5", "6"), null), "More than max. count (5) of Resource Location vector coordinates!"},
-                new Object[]{new ResourceRequest(null, null, Arrays.asList("1", "2", "3"), null), "Can not resolve resource for unknown domain!"}
+                new Object[]{new ResourceRequest(null, null, null, null), "No path parameters provided to locate the resource"},
+                new Object[]{new ResourceRequest(null, null, Collections.emptyList(), null), "No path parameters provided to locate the resource"},
+                new Object[]{new ResourceRequest(null, null, Arrays.asList("1", "2", "3", "4", "5", "6"), null), "More than the maximum count of 5 path parameters provided to locate the resource"},
+                new Object[]{new ResourceRequest(null, null, Arrays.asList("1", "2", "3"), null), "Could not resolve resource for unknown domain!"}
         );
 
         for (Object[] testData : faileTestData) {
@@ -75,7 +76,7 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
             String expectedMessage = (String) testData[1];
 
             SMPRuntimeException runtimeException = assertThrows(SMPRuntimeException.class, () -> testInstance.validateRequestData(req));
-            MatcherAssert.assertThat(runtimeException.getMessage(), CoreMatchers.containsString(expectedMessage));
+            MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(runtimeException.getMessageCode()), CoreMatchers.containsStringIgnoringCase(expectedMessage));
         }
     }
 

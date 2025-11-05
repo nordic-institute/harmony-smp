@@ -27,18 +27,17 @@ import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Entity
 @Audited
-@Table(name = "SMP_CREDENTIAL",
+@Table(name = "SMP_CREDENTIAL", comment = "Credentials for the users",
         indexes = {
             @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true)
 })
-@org.hibernate.annotations.Table(appliesTo = "SMP_CREDENTIAL", comment = "Credentials for the users")
 @NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u")
 @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
         "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target")
@@ -54,19 +53,24 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_CREDENTIAL_BY_CI_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE upper(u.certificate.certificateId) = upper(:certificate_identifier)")
 
 @NamedQuery(name = QUERY_CREDENTIAL_BEFORE_EXPIRE,
-        query = "SELECT distinct c FROM DBCredential c WHERE c.credentialType=:credential_type  " +
-                " AND c.expireOn IS NOT NULL" +
-                " AND c.expireOn <= :start_alert_send_date " +
-                " AND c.expireOn > :expire_test_date" +
-                " AND (c.expireAlertOn IS NULL OR c.expireAlertOn < :lastSendAlertDate )")
+        query = "SELECT distinct c FROM DBCredential c LEFT JOIN DBPeriodicalAlert alert " +
+                "   ON CAST(c.id AS string) = alert.entityIdentifier AND alert.alertScope=:alert_scope AND alert.entityType = :entity_type " +
+                " WHERE c.credentialType=:credential_type " +
+                "  AND c.expireOn IS NOT NULL " +
+                "  AND c.expireOn <= :start_alert_send_date " +
+                "  AND c.expireOn > :expire_test_date" +
+                "  AND (alert.lastAlertOn IS NULL OR alert.lastAlertOn < :last_send_alert_date )"
+)
 @NamedQuery(name = QUERY_CREDENTIAL_EXPIRED,
-        query = "SELECT distinct c FROM DBCredential c WHERE  c.credentialType=:credential_type" +
-                " AND  c.expireOn IS NOT NULL" +
-                " AND c.expireOn > :endAlertDate " +
-                " AND c.expireOn <= :expire_test_date" +
-                " AND (c.expireAlertOn IS NULL " +
-                "   OR c.expireAlertOn <= c.expireOn " +
-                "   OR c.expireAlertOn < :lastSendAlertDate )")
+        query = "SELECT distinct c FROM DBCredential c LEFT JOIN DBPeriodicalAlert alert " +
+                "   ON CAST(c.id AS string) = alert.entityIdentifier AND alert.alertScope=:alert_scope AND alert.entityType = :entity_type " +
+                " WHERE  c.credentialType=:credential_type " +
+                "  AND  c.expireOn IS NOT NULL " +
+                "  AND c.expireOn > :endAlertDate " +
+                "  AND c.expireOn <= :expire_test_date"+
+                " AND (alert.lastAlertOn IS NULL " +
+                "   OR alert.lastAlertOn  <= c.expireOn " +
+                "   OR alert.lastAlertOn  < :last_send_alert_date )")
 // native queries to validate if user is owner of the credential
 @NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",
         resultSetMapping = "DBCredentialDeleteValidationMapping",
@@ -88,7 +92,9 @@ public class DBCredential extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_CREDENTIAL_SEQ")
-    @GenericGenerator(name = "SMP_CREDENTIAL_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_CREDENTIAL_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique id")
     Long id;
@@ -122,6 +128,8 @@ public class DBCredential extends BaseEntity {
     @Column(name = "EXPIRE_ON")
     @ColumnDescription(comment = "Date when password will expire")
     private OffsetDateTime expireOn;
+    // Column is just for database backward compatibility to allow 5.1 and 5.2 versions to workon same database during upgrade
+    // not used anymore since 5.2 where it was  replaced by periodical alert
     @Column(name = "LAST_ALERT_ON")
     @ColumnDescription(comment = "Generated last password expire alert")
     private OffsetDateTime expireAlertOn;

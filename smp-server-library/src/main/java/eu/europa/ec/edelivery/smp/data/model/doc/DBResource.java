@@ -29,7 +29,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,12 +39,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_RESOURCE",
+@Table(name = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme",
         indexes = {@Index(name = "SMP_RS_UNIQ_IDENT_DOREDEF_IDX", columnList = "IDENTIFIER_SCHEME, IDENTIFIER_VALUE, FK_DOREDEF_ID", unique = true),
                 @Index(name = "SMP_RS_ID_IDX", columnList = "IDENTIFIER_VALUE"),
                 @Index(name = "SMP_RS_SCH_IDX", columnList = "IDENTIFIER_SCHEME")
         })
-@org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme")
 @NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
         " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
         " AND lower(d.identifierValue) = lower(:identifier_value) " +
@@ -65,7 +64,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
         " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
         " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
-        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter))) "
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) ESCAPE '\\' " +
+        "         OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter) ESCAPE '\\')" +
+        ") "
 )
 @NamedQuery(name = QUERY_RESOURCE_FILTER, query = "SELECT r FROM  DBResource r " +
         " JOIN DBDomainResourceDef dr ON dr.id = r.domainResourceDef.id  " +
@@ -73,42 +74,17 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
         " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
         " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
-        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter)) )" +
-        "order by r.id asc")
-@NamedQuery(name = "DBResource.getServiceGroupByID", query = "SELECT d FROM DBResource d WHERE d.id = :id")
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter)  ESCAPE '\\'" +
+        "     OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter) ESCAPE '\\')" +
+        " ) order by r.id asc")
 @NamedQuery(name = "DBResource.getServiceGroupByIdentifier", query = "SELECT d FROM DBResource d WHERE d.identifierValue = :participantIdentifier " +
         " AND (:participantScheme IS NULL AND d.identifierScheme IS NULL " +
         " OR d.identifierScheme = :participantScheme)")
-@NamedQuery(name = "DBResource.deleteById", query = "DELETE FROM DBResource d WHERE d.id = :id")
-
-@NamedNativeQuery(name = "DBResource.deleteAllOwnerships", query = "DELETE FROM SMP_RESOURCE_MEMBER WHERE FK_SG_ID=:serviceGroupId")
-
-// get All public
-@NamedQuery(name = "DBResource.getPublicSearch2", query = "SELECT r FROM  DBResource r WHERE r.group.visibility='PUBLIC' " +
-        " AND (r.group.domain.visibility='PUBLIC' " +
-        "    OR :user_id IS NOT NULL " +
-        "     AND ( (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
-        "      OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
-        "      OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        "     ) " +
-        "  ) " +
-        " AND (r.group.visibility='PUBLIC' " +
-        "    OR  (:user_id IS NOT NULL " +
-        "     AND ( (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.id = r.group.id) > 0 " +
-        "      OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.id = r.group.id) > 0 " +
-        "     ) )" +
-        "  ) " +
-        " AND ( r.visibility = 'PUBLIC' " +
-        "   OR (:user_id IS NOT NULL " +
-        "     AND (select count(id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0 )) " +
-        " AND (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier )" +
-        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) order by r.identifierScheme, r.identifierValue"
-)
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r, r.domainResourceDef.domain.domainCode as domainCode, " +
         "   r.domainResourceDef.resourceDef.urlSegment as urlSegment, r.domainResourceDef.resourceDef.name as documentType " +
         "FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
-        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
-        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
+        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier ESCAPE '\\') " +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme ESCAPE '\\') " +
         " AND ( :user_id IS NOT NULL AND rm.user.id = :user_id "  +
         " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
         "   AND (:user_id IS NOT NULL " +
@@ -125,8 +101,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " ORDER BY r.identifierScheme, r.identifierValue"
 )
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER_COUNT, query = "SELECT count(distinct r.id) FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
-        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
-        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
+        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier ESCAPE '\\') " +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme ESCAPE '\\') " +
         " AND (:user_id IS NOT NULL AND rm.user.id = :user_id "  +
         " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
         "   AND (:user_id IS NOT NULL " +
@@ -141,11 +117,29 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:domain_code IS NULL OR r.domainResourceDef.domain.domainCode = :domain_code) " +
         " AND (:document_type IS NULL OR r.domainResourceDef.resourceDef.name = :document_type) "
 )
+@NamedQuery(name = QUERY_RESOURCE_REFERENCE_DATA,
+        query = "SELECT new eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData(" +
+                "    r.document.id as documentId," +
+                "    r.document.sharingEnabled as sharingEnabled," +
+                "    COUNT(d2.id) as referencedByCount," +
+                "    r.document.referenceDocument.id as referencedDocumentId," +
+                "    r.document.referenceDocumentUrl as referenceUrlPath" +
+                 " ) " +
+                " FROM DBResource r" +
+                " LEFT JOIN DBDocument d2 ON d2.referenceDocument = r.document" +
+                " WHERE r.id = :resource_id" +
+                " GROUP BY" +
+                "    r.document.id," +
+                "    r.document.sharingEnabled," +
+                "    r.document.referenceDocument.id," +
+                "    r.document.referenceDocumentUrl")
 public class DBResource extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_RESOURCE_SEQ")
-    @GenericGenerator(name = "SMP_RESOURCE_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_RESOURCE_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique ServiceGroup id")
     Long id;
@@ -168,7 +162,7 @@ public class DBResource extends BaseEntity {
 
     // The domain group list which handles the resource
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FK_GROUP_ID", nullable = true)
+    @JoinColumn(name = "FK_GROUP_ID")
     private DBGroup group;
 
     // The domain to which the resource belongs
@@ -288,10 +282,10 @@ public class DBResource extends BaseEntity {
     }
 
     /**
-     * Id is database suragete id + natural key!
+     * Id is database surrogate id + natural key!
      *
-     * @param o
-     * @return
+     * @param o other object to compare
+     * @return true if equal
      */
     @Override
     public boolean equals(Object o) {

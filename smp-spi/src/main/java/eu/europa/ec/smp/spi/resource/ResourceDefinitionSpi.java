@@ -46,18 +46,30 @@ public interface ResourceDefinitionSpi {
      */
     String defaultUrlSegment();
 
+    /**
+     * Optional url segments for the resource. The segments can trigger different processing in the resource handler.
+     * For example if defaultUrlSegment is "smp-1" and optionalUrlSegments are ["extension","contact"]
+     * then when the url for the resource will be http://<host>:<port>/<context>/smp-1/<identifier> it will be handled as default resource
+     * when the url for the resource will be http://<host>:<port>/<context>/extension/<identifier> it will be return just extension information
+     * The url segment part is provided to the resource handler as property 'resource.url.segment'/'subresource.url.segment' and the handler can decide how to process the request
+     * @return list of optional url segments
+     */
+    default List<String> optionalUrlSegments(){
+        return List.of();
+    }
+
     String name();
     String description();
 
     /**
      * Mimetype of the resource
-     * @return
+     * @return mimetype of the resource
      */
     String mimeType();
 
     /**
      * All subresouce types for the resource
-     * @return
+     * @return list of subresource definitions
      */
 
     List<SubresourceDefinitionSpi> getSubresourceSpiList();

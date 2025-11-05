@@ -5,9 +5,10 @@ import {DnsQueryRo} from "../../../common/model/dns-query-ro.model";
  * This is a generic dns query panel component for previewing dns results
  */
 @Component({
-  selector: 'dns-query-panel',
-  templateUrl: './dns-query-panel.component.html',
-  styleUrls: ['./dns-query-panel.component.css']
+    selector: 'dns-query-panel',
+    templateUrl: './dns-query-panel.component.html',
+    styleUrls: ['./dns-query-panel.component.css'],
+    standalone: false
 })
 export class DnsQueryPanelComponent {
 

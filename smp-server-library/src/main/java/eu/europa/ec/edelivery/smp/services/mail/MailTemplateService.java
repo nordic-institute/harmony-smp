@@ -18,7 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.services.mail;
 
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
@@ -54,7 +55,6 @@ public class MailTemplateService {
         this.smpLanguageResourceService = smpLanguageResourceService;
     }
 
-
     public String getMailHtmlContent(MailDataModel model) {
         InputStream templateIS = MailTemplateService.class.getResourceAsStream(MAIL_TEMPLATE);
         try {
@@ -65,7 +65,8 @@ public class MailTemplateService {
             modelData.put(MAIL_CONTENT, getMailBody(model));
             return StringNamedSubstitutor.resolve(templateIS, modelData, MAIL_TEMPLATE_CHARSET);
         } catch (IOException e) {
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error reading mail template", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_CANNOT_READ_MAIL_TEMPLATE)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -84,7 +85,6 @@ public class MailTemplateService {
     public String getMailBody(MailDataModel model) {
         return getMailData(model, "mail." + model.getMailType().getTemplate() + ".content");
     }
-
 
     public String getMailData(MailDataModel model, String key) {
         Properties translations = smpLanguageResourceService.getMailProperties(model.getLanguage());

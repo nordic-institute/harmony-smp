@@ -20,7 +20,7 @@
 package eu.europa.ec.smp.spi.converter;
 
 import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis10.OasisSMP10ServiceGroupReader;
-import eu.europa.ec.dynamicdiscovery.exception.BindException;
+import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.smp.spi.testutils.XmlTestUtils;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceGroup;
 import org.hamcrest.CoreMatchers;
@@ -60,7 +60,7 @@ class ResourceConverterTest {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ResourceWithDOCTYPE.xml");
         //when then
-        BindException result = Assertions.assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
+        TechnicalException result = Assertions.assertThrows(TechnicalException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
         MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));
     }
 }

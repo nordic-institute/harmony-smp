@@ -27,15 +27,16 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPBadCredentialsException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,12 +45,12 @@ import org.springframework.stereotype.Service;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_USER;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -74,7 +75,8 @@ public class SMPAuthorizationService {
                                    GroupMemberDao groupMemberDao,
                                    ResourceMemberDao resourceMemberDao,
                                    ConversionService conversionService,
-                                   ConfigurationService configurationService) {
+                                   ConfigurationService configurationService,
+                                   SMPExceptionLanguageService smpExceptionLanguageService) {
         this.userDao = userDao;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
@@ -84,10 +86,7 @@ public class SMPAuthorizationService {
     }
 
     public boolean isSystemAdministrator() {
-        SMPUserDetails userDetails = getAndValidateUserDetails();
-        boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SYSTEM_ADMIN, userDetails);
-        LOG.debug("Logged user [{}] is system administrator role [{}]", userDetails.getUsername(), hasSystemRole);
-        return hasSystemRole;
+        return isSMPUserMatchingAnyAuthority(S_AUTHORITY_TOKEN_SYSTEM_ADMIN);
     }
 
     public boolean isDomainAdministrator(String domainEncId) {
@@ -97,7 +96,7 @@ public class SMPAuthorizationService {
             domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         } catch (SMPRuntimeException | NumberFormatException ex) {
             LOG.error("Error occurred while decrypting domain-id:[" + domainEncId + "]", ex);
-            throw new BadCredentialsException("Login failed; Invalid userID or password");
+            throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_INVALID_USERNAME_PASSWORD);
         }
         return domainMemberDao.isUserDomainMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(domainId), MembershipRoleType.ADMIN);
     }
@@ -165,14 +164,24 @@ public class SMPAuthorizationService {
         return domainMemberDao.isUserResourceAdministrator(userDetails.getUser().getId());
     }
 
-    public boolean isSMPAdministrator() {
+    public boolean isSMPUserMatchingAnyAuthority(String... authorities) {
+        if (authorities == null || authorities.length == 0) {
+            LOG.debug("No authorities provided for SMP authorization");
+            return false;
+        }
+
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails);
-        LOG.debug("Logged user [{}] is SMP administrator role [{}]", userDetails.getUsername(), hasRole);
+        boolean hasRole = Arrays.stream(authorities)
+                .anyMatch(authority -> hasSessionUserRole(authority, userDetails));
+        LOG.debug("User [{}] matching at least one of the provided SMP authorities {}: [{}]", userDetails.getUsername(), Arrays.toString(authorities), hasRole);
         return hasRole;
     }
 
     public boolean isCurrentlyLoggedIn(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            LOG.warn("User ID is null or empty, cannot validate logged in user.");
+            return false;
+        }
         SMPUserDetails userDetails = getAndValidateUserDetails();
         Long entityId = getIdFromEncryptedString(userId, true);
         return entityId.equals(userDetails.getUser().getId());
@@ -243,7 +252,7 @@ public class SMPAuthorizationService {
 
         userRO.setForceChangePassword(userRO.isPasswordExpired() && configurationService.getPasswordPolicyForceChangeIfExpired());
         // set cas authentication data
-        if (configurationService.getUIAuthenticationTypes().contains(SMPUserAuthenticationTypes.SSO.name())) {
+        if (configurationService.getUIAuthenticationTypes().contains(SMPUserAuthenticationTypes.SSO)) {
             URL casUrlData = configurationService.getCasUserDataURL();
             userRO.setCasUserDataUrl(casUrlData != null ? casUrlData.toString() : null);
         }
@@ -260,9 +269,9 @@ public class SMPAuthorizationService {
         } catch (SMPRuntimeException | NumberFormatException ex) {
             LOG.error("Error occurred while decrypting entity-id:[" + entityId + "]", ex);
             if (userEntity) {
-                throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USER_IDENTIFIER.getMessage());
+                throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_UNAUTHORIZED_INVALID_USER_IDENTIFIER);
             }
-            throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_IDENTIFIER.getMessage());
+            throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_UNAUTHORIZED_INVALID_IDENTIFIER);
         }
     }
 }

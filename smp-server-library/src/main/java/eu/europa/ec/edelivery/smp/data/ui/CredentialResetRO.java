@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 
+import java.io.Serial;
 import java.util.StringJoiner;
 
 import static eu.europa.ec.edelivery.smp.utils.PropertyUtils.getMaskedData;
@@ -33,6 +34,7 @@ import static eu.europa.ec.edelivery.smp.utils.PropertyUtils.getMaskedData;
  */
 public class CredentialResetRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630031L;
 
     String credentialName;

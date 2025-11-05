@@ -390,7 +390,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   public navigateToLogin(): void {
-    this.securityService.clearLocalStorage()
+    this.securityService.clearLocalStorage();
     this.reset();
     let node: NavigationNode = this.createLoginNode();
     this.rootNode.children.push(node);
@@ -411,7 +411,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   public navigateToUserDetails(): void {
-    this.setNavigationTreeByPath(['user-settings', 'user-profile'], this.rootNode)
+    this.setNavigationTreeByPath(['user-settings', 'user-profile'], this.rootNode);
+  }
+
+  public navigateToEditResourceSubresources(): void {
+    this.setNavigationTreeByPath(['edit', 'edit-resource'], this.rootNode);
   }
 
   public createLoginNode(): NavigationNode {
@@ -424,7 +428,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       selected: true,
       tooltipI18n: "",
       transient: true
-    }
+    };
   }
 
 }

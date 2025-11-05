@@ -27,10 +27,9 @@ import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
-
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;

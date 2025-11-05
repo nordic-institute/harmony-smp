@@ -1,136 +1,44 @@
 package pages.administration.editResourcesPage.editResourceDocumentPage;
 
-import ddsl.DomiSMPPage;
-import ddsl.dcomponents.ConfirmationDialog;
-import ddsl.dobjects.DButton;
+import ddsl.commonPages.commonDocumentPage.CommonExtendedEditDocumentPage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Page object for the Edit resource document page. This contains the locators of the page and the methods for the behaviour of the page
  */
-public class EditResourceDocumentPage extends DomiSMPPage {
+public class EditResourceDocumentPage extends CommonExtendedEditDocumentPage {
     private final static Logger LOG = LoggerFactory.getLogger(EditResourceDocumentPage.class);
-    @FindBy(id = "newVersion_id")
-    private WebElement newVersionBtn;
-    @FindBy(id = "GenerateResource_id")
-    private WebElement generateBtn;
-    @FindBy(id = "validateResource_id")
-    private WebElement validateBtn;
-    @FindBy(id = "documentWizard_id")
-    private WebElement documentWizardBtn;
-    @FindBy(css = "smp-titled-label[title=\"Resource identifier:\"] div.smp-tl-value")
-    private WebElement resourceIdentifierLbl;
-    @FindBy(css = "smp-titled-label[title=\"Resource scheme:\"] div.smp-tl-value")
-    private WebElement resourceSchemeLbl;
-    @FindBy(css = "smp-titled-label[title=\"Document name:\"] div.smp-tl-value")
-    private WebElement documentNameLbl;
-    @FindBy(css = "smp-titled-label[title=\"Document mimeType:\"] div.smp-tl-value")
-    private WebElement documentMimeTypeLbl;
-    @FindBy(css = "smp-titled-label[title=\"Current document version:\"] div.smp-tl-value")
-    private WebElement currentDocumentVersionLbl;
-    @FindBy(id = "saveResource_id")
-    private WebElement saveBtn;
-    @FindBy(id = "cancel_id")
-    private WebElement cancelBtn;
-    @FindBy(id = "document-version_id")
-    public WebElement versionDdl;
-    @FindBy(id = "status_id")
-    public WebElement statusLbl;
-    @FindBy(id = "reviewResource_id")
-    private WebElement reviewRequestBtn;
-
-    @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(8)")
-    private WebElement approveBtn;
-    @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(9)")
-    private WebElement rejectBtn;
-
-    @FindBy(id = "publishResource_id")
-    private WebElement publishBtn;
-
-    @FindBy(css = "ngx-codemirror[formcontrolname= \"payload\"] div textarea")
-    private WebElement codeEditorSendValueElement;
-
-    @FindBy(css = "div.cm-line")
-    private List<WebElement> codeEditorReadValueElement;
-
 
     public EditResourceDocumentPage(WebDriver driver) {
         super(driver);
-        LOG.debug("Loading Edit resource document page.");
     }
-
-    public String getDocumentValue() {
-        ArrayList<String> document = new ArrayList<>();
-        for (WebElement el : codeEditorReadValueElement) {
-            document.add(el.getText());
-        }
-
-        String formatedDoc = document.toString();
-
-        formatedDoc
-                = formatedDoc.replace("[", "")
-                .replace("]", "")
-                .replace(",", "");
-
-
-        return formatedDoc;
-    }
-    public void clickOnNewVersion() {
-        weToDButton(newVersionBtn).click();
-    }
-    public void clickOnGenerate() {
-        weToDButton(generateBtn).click();
-    }
-    public void clickOnSave() {
-        weToDButton(saveBtn).click();
-    }
-
-    public DButton getRequestReviewBtn() {
-        return weToDButton(reviewRequestBtn);
-    }
-
-    public DButton getApproveBtn() {
-        return weToDButton(approveBtn);
-    }
-
-    public DButton getPublishBtn() {
-        return weToDButton(publishBtn);
-    }
-
-    public String getStatusValue() {
-        return weToDInput(statusLbl).getText();
-    }
-
-    public void clickOnValidate() {
-        weToDButton(validateBtn).click();
-    }
-
-    public void clickOnApproveAndConfirm() {
-        weToDButton(approveBtn).click();
-        new ConfirmationDialog(driver).confirm();
-    }
-
-    public void clickOnPublishAndConfirm() {
-        weToDButton(publishBtn).click();
-        new ConfirmationDialog(driver).confirm();
-    }
-
-    public void selectVersion(int version) {
-        weToMatSelect(versionDdl).selectByVisibleText(String.valueOf(version));
-    }
-
-
-
 
     public EditResourceDocumentWizardDialog clickOnDocumentWizard() {
-            weToDButton(documentWizardBtn).click();
-            return new EditResourceDocumentWizardDialog(driver);
+        weToDButton(documentWizardBtn).click();
+        return new EditResourceDocumentWizardDialog(driver);
     }
+
+    public ResourceDocumentConfigurationSection getDocumentConfigurationSection() {
+        weToDButton(documentConfigurationMenuBtn).click();
+        //Click again to remove the tooltip of the button
+        weToDButton(documentConfigurationMenuBtn).click();
+
+        return new
+                ResourceDocumentConfigurationSection(driver);
+    }
+
+    public ResourceDocumentConfigurationSection getDocumentPropertiesSection() {
+        wait.forXMillis(500);
+        weToDButton(documentPropertiesnMenuBtn).click();
+        //Click again to remove the tooltip of the button
+        weToDButton(documentPropertiesnMenuBtn).click();
+        LOG.debug("Opening Document properties section.");
+        return new ResourceDocumentConfigurationSection(driver);
+    }
+
+
+
+
 }

@@ -32,18 +32,22 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPRole;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -113,22 +117,20 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         return super.getTableList(page, pageSize, sortField, sortOrder, filter);
     }
 
-    @Transactional
-    public List<DomainRO> getAllDomains() {
-        List<DBDomain> domains = domainDao.getAllDomains();
-        return domains.stream().map(domain -> conversionService.convert(domain, DomainRO.class))
-                .collect(Collectors.toList());
+    @Override
+    public DomainRO convertToRo(DBDomain domain) {
+        return conversionService.convert(domain, DomainRO.class);
     }
-
 
     @Transactional
     public void createDomainData(DomainRO data) {
         if (StringUtils.isBlank(data.getDomainCode())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain code must not be empty!");
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_DOMAIN_CODE_EMPTY);
         }
 
         if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain with code [" + data.getDomainCode() + "] already exists!");
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_DOMAIN_CODE_ALREADY_EXISTS)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, data.getDomainCode());
         }
         DBDomain domain = new DBDomain();
         domain.setDomainCode(data.getDomainCode());
@@ -150,40 +152,46 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not update domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         domain.setDomainCode(data.getDomainCode());
         domain.setDefaultResourceTypeIdentifier(data.getDefaultResourceTypeIdentifier());
         domain.setSignatureKeyAlias(data.getSignatureKeyAlias());
         domain.setVisibility(data.getVisibility());
+        domain.setSmlUrlDomainCodeSuffixEnabled(data.isSmlUrlDomainCodeSuffixEnabled());
+        domain.setDomainTrustStoreEnabled(data.isDomainTrustStoreEnabled());
     }
 
     @Transactional
     public void updateDomainSmlIntegrationData(Long domainId, DomainRO data) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
-        if (domain.isSmlRegistered() && !StringUtils.equals(data.getSmlSmpId(), domain.getSmlSmpId())) {
+        if (domain.isSmlRegistered() && !Strings.CS.equals(data.getSmlSmpId(), domain.getSmlSmpId())) {
             String msg = "SMP-SML identifier must not change for registered domain [" + domain.getDomainCode() + "]!";
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
+            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                    .addParam(ErrorMessageArgument.ERROR, msg);
         }
 
         Optional<DBDomain> domainBySmlSmpId = domainDao.getDomainBySmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         if (domainBySmlSmpId.isPresent() && !Objects.equals(domainBySmlSmpId.get().getId(), domain.getId())) {
             String msg = "SMP-SML identifier must unique. The SmlSmpId [" + data.getSmlSmpId() + "] is already used by other domains!";
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
+            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                    .addParam(ErrorMessageArgument.ERROR, msg);
         }
 
         domain.setSmlSubdomain(data.getSmlSubdomain());
         domain.setSmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         domain.setSmlClientKeyAlias(data.getSmlClientKeyAlias());
         domain.setSmlClientCertAuth(data.isSmlClientCertAuth());
+        domain.setSmlUrlDomainCodeSuffixEnabled(data.isSmlUrlDomainCodeSuffixEnabled());
 
         // if registered, validate the updated domain to ensure its SML integration certificate is valid
         if (domain.isSmlRegistered() && !smlIntegrationService.isDomainValid(domain)) {
             String msg = "The SML-SMP certificate for domain [" + domain.getDomainCode() + "] is not valid!";
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
+            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                    .addParam(ErrorMessageArgument.ERROR, msg);
         }
     }
 
@@ -193,22 +201,25 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         LOG.info("add resources: [{}]", resourceDefIds);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND,DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
 
         //filter and validate resources to be removed
         List<DBDomainResourceDef> removedDoReDef = domain.getDomainResourceDefs().stream()
                 .filter(doredef -> !resourceDefIds.contains(doredef.getResourceDef().getIdentifier())
                         && validateRemoveDomainResourceDef(domain, doredef.getResourceDef())
-                ).collect(Collectors.toList());
+                ).toList();
 
         removedDoReDef.forEach(domainResourceDef -> domain.getDomainResourceDefs().remove(domainResourceDef));
-        List<String> currentIdentifiers = domain.getDomainResourceDefs().stream().map(domainResourceDef -> domainResourceDef.getResourceDef().getIdentifier()).collect(Collectors.toList());
+        List<String> currentIdentifiers = domain.getDomainResourceDefs().stream()
+                .map(domainResourceDef -> domainResourceDef.getResourceDef().getIdentifier())
+                .toList();
 
         resourceDefIds.stream()
                 .filter(identifier -> !currentIdentifiers.contains(identifier))
                 .map(identifier -> resourceDefDao.getResourceDefByIdentifier(identifier)
-                        .orElseThrow(() -> new BadRequestException(ErrorBusinessCode.INVALID_INPUT_DATA, "Identifier [" + identifier + "] does not exists")))
+                        .orElseThrow(() -> new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                                .addParam(ErrorMessageArgument.ERROR, "Identifier [" + identifier + "] does not exists")))
                 .forEach(resourceDef ->
                         domainResourceDefDao.create(domain, resourceDef)
                 );
@@ -236,7 +247,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public List<DomainPropertyRO> getDomainProperties(Long domainId) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND,DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         return domainConfigurationDao.getDomainPropertiesForRole(domain, SMPRole.SYSTEM_ADMIN).stream()
                 .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
@@ -247,10 +258,10 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public List<DomainPropertyRO> updateDomainProperties(Long domainId, List<DomainPropertyRO> domainProperties) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         return domainConfigurationDao.updateDomainPropertiesForRole(domain, domainProperties, SMPRole.SYSTEM_ADMIN)
-        .stream()
+                .stream()
                 .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
                 .collect(Collectors.toList());
     }
@@ -261,7 +272,8 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         if (count > 0) {
             String msg = "Can not remove resource definition [" + resourceDef.getIdentifier() + "] from domain [" + domain.getDomainCode()
                     + "], because it has resources. Resource count [" + count + "]!";
-            throw new BadRequestException(ErrorBusinessCode.INVALID_INPUT_DATA, msg);
+            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                    .addParam(ErrorMessageArgument.ERROR, msg);
         }
         return true;
     }
@@ -272,17 +284,21 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, DOMAIN_DOES_NOT_EXIST_IN_DATABASE);
+            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         if (domain.isSmlRegistered()) {
             LOG.info("Can not delete domain for ID [{}], is registered to SML!", domainId);
-            throw new BadRequestException(ErrorBusinessCode.INVALID_INPUT_DATA, "Can not delete domain because it is registered to SML service! Unregister domain from SML service!");
+            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                    .addParam(ErrorMessageArgument.ERROR,
+                            "Can not delete domain because it is registered to SML service! Unregister domain from SML service!");
         }
 
         Long count = domainDao.getResourceCountForDomain(domainId);
         if (count > 0) {
             LOG.info("Can not delete domain for ID [{}], because it has resources. Resource count [{}]!", domainId, count);
-            throw new BadRequestException(ErrorBusinessCode.INVALID_INPUT_DATA, "Can not delete domain because it has resources [" + count + "]! Delete resources first!");
+            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                    .addParam(ErrorMessageArgument.ERROR,
+                            "Can not delete domain because it has resources [" + count + "]! Delete resources first!");
         }
 
         // if there are no resources  / just "unpin" the members and the groups
@@ -299,7 +315,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         // finally remove the domain
         domainDao.remove(domain);
         DomainRO domainRO = conversionService.convert(domain, DomainRO.class);
-        domainRO.setStatus(EntityROStatus.REMOVED.getStatusNumber());
+        Objects.requireNonNull(domainRO, "Convertion of the DBDomain returned null").setStatus(EntityROStatus.REMOVED.getStatusNumber());
         return domainRO;
     }
 

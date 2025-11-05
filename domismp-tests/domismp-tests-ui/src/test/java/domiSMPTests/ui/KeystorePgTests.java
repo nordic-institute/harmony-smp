@@ -4,6 +4,7 @@ import ddsl.DomiSMPPage;
 import ddsl.enums.KeyStoreTypes;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
+import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -14,6 +15,8 @@ import pages.systemSettings.keyStorePage.KeystorePage;
 import rest.models.UserModel;
 import utils.FileUtils;
 import utils.Utils;
+
+import java.util.Objects;
 
 public class KeystorePgTests extends SeleniumTest {
 
@@ -50,7 +53,7 @@ public class KeystorePgTests extends SeleniumTest {
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
-        String value = keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertMessageAndClose();
         String alias = Utils.getAliasFromMessage(value);
         keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", alias);
         soft.assertEquals(keystorePage.getPublicKeyTypeValue(), "RSA");
@@ -74,7 +77,7 @@ public class KeystorePgTests extends SeleniumTest {
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "wrongPassword");
         keyStoreImportDialog.clickImport();
 
-        String value = keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertMessageAndClose();
         sofAssertThatContains("Error occurred while importing keystore", value);
         soft.assertAll();
     }
@@ -86,26 +89,142 @@ public class KeystorePgTests extends SeleniumTest {
             keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "blue_gw");
             keystorePage.deleteandConfirm();
         } catch (Exception e) {
-
+            LOG.debug("Keystore was not present. Continue with the test");
         }
 
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
-        String value = keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertMessageAndClose();
+
         String alias = Utils.getAliasFromMessage(value);
-        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", alias));
+        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", alias), "The import certificate message is not present");
 
         keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
 
-        String duplicatedAlertMessage = keystorePage.getAlertArea().getAlertMessage();
-        soft.assertTrue(duplicatedAlertMessage.contains("The following aliases have been ignored because they were already present in the current keystore:") );
+        String duplicatedAlertMessage = keystorePage.getAlertMessageAndClose();
+        soft.assertTrue(duplicatedAlertMessage.contains("The following aliases have been ignored because they were already present in the current keystore:"), "The duplicated certificate message is not present");
 
         soft.assertAll();
     }
+
+    @Test(description = "KEYS-06 System admin is able to import expired keystores")
+    public void systemAdminIsAbleToImportExpiredKeystores() {
+        String path = FileUtils.getAbsoluteKeystorePath("expired_keystore_JKS.jks");
+
+        try {
+            keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "blue_gw");
+            keystorePage.deleteandConfirm();
+        } catch (Exception e) {
+            LOG.debug("Keystore was not present. Continue with the test");
+        }
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test1234");
+        keyStoreImportDialog.clickImport();
+        keystorePage.getAlertMessageAndClose();
+
+        WebElement aliasElement = keystorePage.getLeftSideGrid().searchAndGetElementInColumn("Alias", "blue_gw");
+        soft.assertTrue(Objects.requireNonNull(aliasElement.getDomAttribute("class")).contains("datatable-row-error"));
+
+        keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "blue_gw");
+        soft.assertEquals(keystorePage.getExpiredWarningValue(),
+                "Invalid certificate: Certificate is expired!", "Expired certificate warning is wrong or not present");
+
+        soft.assertAll();
+
+    }
+
+
+    @Test(description = "KEYS-07 System admin is able to delete keystore")
+    public void systemAdminIsAbleToDeleteKeystore() {
+        String path = FileUtils.getAbsoluteKeystorePath("keystore_black.jks");
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test1234");
+        keyStoreImportDialog.clickImport();
+        keystorePage.getAlertMessageAndClose();
+
+        keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "black_gw");
+        keystorePage.deleteandConfirm();
+        String deletemsg = keystorePage.getAlertMessageAndClose();
+        soft.assertEquals(deletemsg, "Certificates deleted [black_gw]");
+        soft.assertFalse(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", "black_gw"), "Deleted certificate it is present in the grid");
+        soft.assertAll();
+
+    }
+
+    @Test(description = "KEYS-08 System admin is not able to import invalid keys")
+    public void systemAdminIsNotAbleToImportInvalidKeys() {
+        String path = FileUtils.getAbsoluteKeystorePath("corrupted.jks");
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
+        keyStoreImportDialog.clickImport();
+        String errorMessage = keystorePage.getAlertMessageAndClose();
+        soft.assertEquals(errorMessage, "Error occurred while importing keystore: corrupted.jks java.io.IOException occurred while reading the keystore: Invalid keystore format");
+
+        soft.assertAll();
+
+    }
+
+    @Test(description = "KEYS-09 Importing keystore with wrong password will trigger errors")
+    public void importingKeystoreWithWrongPassWordWillTriggerErrors() {
+        String path = FileUtils.getAbsoluteKeystorePath("keystore_black.jks");
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test12345");
+        keyStoreImportDialog.clickImport();
+        String errorMessage = keystorePage.getAlertMessageAndClose();
+        soft.assertEquals(errorMessage, "Error occurred while importing keystore: keystore_black.jks java.io.IOException occurred while reading the keystore: keystore password was incorrect");
+
+        soft.assertAll();
+
+    }
+
+    @Test(description = "KEYS-10 - Importing JKS keystore when keystore type selected is PKCS12 will trigger error")
+    public void importingJKSKeystoreWhenKeystoreTypeSelectedIsPKS12WillTriggerError() {
+        String path = FileUtils.getAbsoluteKeystorePath("keystore_black.jks");
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.PKCS12, "test12345");
+        keyStoreImportDialog.clickImport();
+        String errorMessage = keystorePage.getAlertMessageAndClose();
+        soft.assertEquals(errorMessage, "Error occurred while importing keystore: keystore_black.jks java.io.IOException occurred while reading the keystore: keystore password was incorrect");
+
+        soft.assertAll();
+
+    }
+
+    @Test(description = "KEYS-11- Importing keystore that contains keys with special characters")
+    public void importingKeystoreThatContainsKeysWithSpecialCharacters() {
+        String path = FileUtils.getAbsoluteKeystorePath("àøýßĉæãäħ.jks");
+        try {
+            keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "àøýßĉæãäħ");
+            keystorePage.deleteandConfirm();
+        } catch (Exception e) {
+            LOG.debug("Keystore was not present. Continue with the test");
+        }
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.PKCS12, "test123");
+        keyStoreImportDialog.clickImport();
+        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", "àøýßĉæãäħ"), "The import certificate message is not present");
+
+        keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", "àøýßĉæãäħ");
+        soft.assertEquals(keystorePage.getPublicKeyTypeValue(), "RSA");
+        soft.assertEquals(keystorePage.getSmpCertificateIdValue(), "CN=aøyßcæaaħ,O=aøyßcæaaħ,C=be:000000005f196764");
+        soft.assertEquals(keystorePage.getSubjectNameValue(), "CN=àøýßĉæãäħ,OU=àøýßĉæãäħ,O=àøýßĉæãäħ,L=àøýßĉæãäħ,ST=àøýßĉæãäħ,C=be");
+        soft.assertEquals(keystorePage.getIssuerValue(), "CN=àøýßĉæãäħ,OU=àøýßĉæãäħ,O=àøýßĉæãäħ,L=àøýßĉæãäħ,ST=àøýßĉæãäħ,C=be");
+        soft.assertEquals(keystorePage.getSerialNumberValue(), "5f196764");
+
+
+        soft.assertAll();
+
+    }
+
 
     private void sofAssertThatContains(String contains, String value) {
         soft.assertTrue(value.contains(contains), "Expected to contain: ["+contains+"] but the value was: ["+value+"]");

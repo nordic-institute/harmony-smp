@@ -23,8 +23,8 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;

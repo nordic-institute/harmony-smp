@@ -5,7 +5,7 @@
   %%
   Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
   %%
-  Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+  Licensed under the EUPL, Version 1.2 or â€“ as soon they will be approved by the European Commission - subsequent
   versions of the EUPL (the "Licence");
   You may not use this work except in compliance with the Licence.
   You may obtain a copy of the Licence at:
@@ -22,7 +22,7 @@
         <prefer-application-packages>
             <package-name>org.bouncycastle.*</package-name>
             <!-- used by Hibernate and JPA -->
-            <package-name>javax.persistence.*</package-name>
+            <package-name>jakarta.persistence.*</package-name>
             <package-name>javassist.*</package-name>
             <package-name>org.hibernate.*</package-name>
             <package-name>org.springframework.*</package-name>
@@ -32,7 +32,7 @@
             <package-name>org.apache.commons.*</package-name>
 
             <!-- used to switch off bean validation which resulted in failing Spring context to load -->
-            <package-name>javax.validation.*</package-name>
+            <package-name>jakarta.validation.*</package-name>
             <!-- use smp fasterxml because weblogic version is too old -->
             <package-name>com.fasterxml.*</package-name>
 

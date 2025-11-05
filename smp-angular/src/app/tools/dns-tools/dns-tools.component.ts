@@ -8,8 +8,9 @@ import {
 } from "../../common/alert-message/alert-message.service";
 
 @Component({
-  templateUrl: './dns-tools.component.html',
-  styleUrls: ['./dns-tools.component.css']
+    templateUrl: './dns-tools.component.html',
+    styleUrls: ['./dns-tools.component.css'],
+    standalone: false
 })
 export class DnsToolsComponent {
 

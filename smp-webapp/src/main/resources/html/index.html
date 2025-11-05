@@ -1,38 +1,69 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  #START_LICENSE#
-  smp-webapp
-  %%
-  Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
-  %%
-  Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
-  versions of the EUPL (the "Licence");
-  You may not use this work except in compliance with the Licence.
-  You may obtain a copy of the Licence at:
-
-  [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
-
-  Unless required by applicable law or agreed to in writing, software distributed under the Licence is
-  distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the Licence for the specific language governing permissions and limitations under the Licence.
-  #END_LICENSE#
-  -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>DomiSMP</title>
-    <link rel="icon" type="image/x-ico" href="favicon.ico">
-    <style type="text/css">
-    body { font-family: Arial, Helvetica, sans-serif; }
-    a, a:link, a:visited, a:hover, a:active { color: blue; }
-    </style>
-  </head>
-  <body>
-    <h1>SMP (Service Metadata Publishing)</h1>
-    <h2>Version: ${project.version}</h2>
-    <h6>Build timestamp: ${buildtimestamp}</h6>
-    <h6>Specification: <a href="http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/bdx-smp-v1.0.html" target="_blank">http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/bdx-smp-v1.0.html</a></h6>
-    <h6>UI: <a href="ui/index.html" target="_blank">DomiSMP</a></h6>
-  </body>
+<!--
+(C) Copyright 2023 - European Commission | CEF eDelivery
+
+Licensed under the EUPL, Version 1.2 (the "License");
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+\BDMSL\bdmsl-parent-pom\LICENSE-EUPL-v1.2.pdf or https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/eupl_v1.2_en.pdf
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <title>eDelivery DomiSMP Service</title>
+  <link rel="icon" type="image/x-icon"
+        href="images/favicon.ico"/>
+  <link rel="stylesheet" href="styles/domismp.css"/>
+
+  <script type="text/javascript">
+
+    function toggleToolbar() {
+      const toolbar = document.getElementById('toolbar');
+      const content = document.getElementById('content');
+      toolbar.classList.toggle('tb-collapsed');
+      content.classList.toggle('tb-collapsed');
+    }
+  </script>
+</head>
+<body>
+<div class="toolbar" id="toolbar">
+  <div class="logo-div">
+    <div class="logo" >&nbsp;</div>
+  </div>
+  <h2>Toolbar</h2>
+  <a href="ui/index.html" title="DomiSML UI page">
+    <span class="action-icon">&#x2302;</span>
+    <span class="action-label">DomiSML UI</span></a>
+  <a href="https://ec.europa.eu/digital-building-blocks/sites/display/DIGITAL/eDelivery+SMP" target="_blank"  title="eDelivery SMP specification">
+    <span class="action-icon icon-ec-logo">&nbsp;</span>
+    <span class="action-label">eDelivery SMP</span></a>
+  <a href="https://docs.oasis-open.org/bdxr/bdx-smp/v2.0/bdx-smp-v2.0.html" target="_blank"  title="Oasis SMP 2.0 specification">
+    <span class="action-icon icon-oasis-logo">&nbsp;</span>
+    <span class="action-label">Oasis SMP 2.0</span></a>
+  <a href="https://docs.oasis-open.org/bdxr/bdx-smp/v1.0/bdx-smp-v1.0.html" target="_blank"  title="Oasis SMP 1.0 specification">
+    <span class="action-icon icon-oasis-logo-old">&nbsp;</span>
+    <span class="action-label">Oasis SMP 1.0</span></a>
+
+  <button class="toggle-button" onclick="toggleToolbar()">
+    <span id="expanded">&#x2770;</span>
+    <span id="collapsed">&#x2771;</span>
+  </button>
+</div>
+<div class="content" id="content">
+  <div class="app-info">
+    <h1>eDelivery DomiSMP (Service Metadata Publisher) is waiting for you</h1>
+    <p>Version: ${project.version}</p>
+    <p>Build time: ${buildtimestamp}</p>
+  </div>
+</div>
+</body>
 </html>

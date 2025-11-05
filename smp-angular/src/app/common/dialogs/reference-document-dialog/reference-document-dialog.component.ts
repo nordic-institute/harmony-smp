@@ -16,7 +16,7 @@ import {
   EditResourceService
 } from "../../../edit/edit-resources/edit-resource.service";
 import {ResourceRo} from "../../model/resource-ro.model";
-import {DocumentReferenceType} from "../../enums/documetn-reference-type.enum";
+import {DocumentLevelType} from "../../enums/documetn-reference-type.enum";
 import {TableResult} from "../../model/table-result.model";
 import {SubresourceRo} from "../../model/subresource-ro.model";
 
@@ -27,8 +27,9 @@ import {SubresourceRo} from "../../model/subresource-ro.model";
  * @author Joze RIHTARSIC
  */
 @Component({
-  templateUrl: './reference-document-dialog.component.html',
-  styleUrls: ['./reference-document-dialog.component.css']
+    templateUrl: './reference-document-dialog.component.html',
+    styleUrls: ['./reference-document-dialog.component.css'],
+    standalone: false
 })
 export class ReferenceDocumentDialogComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -42,7 +43,7 @@ export class ReferenceDocumentDialogComponent implements OnInit {
   _contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
   targetResource: ResourceRo
   targetSubresource: SubresourceRo
-  targetType: DocumentReferenceType = DocumentReferenceType.RESOURCE;
+  targetType: DocumentLevelType = DocumentLevelType.RESOURCE;
   selectedRow: SearchReferenceDocument;
 
   // ----
@@ -101,7 +102,7 @@ export class ReferenceDocumentDialogComponent implements OnInit {
   }
 
   get showSubresourceFields(): boolean {
-    return this.targetType === DocumentReferenceType.SUBRESOURCE;
+    return this.targetType === DocumentLevelType.SUBRESOURCE;
   }
 
   createURL(row: SearchReferenceDocument) {
@@ -119,7 +120,7 @@ export class ReferenceDocumentDialogComponent implements OnInit {
   onSearchButtonClicked() {
     // submit form data as a filter.
     let filter = this.filterForm.value;
-    if (this.targetType === DocumentReferenceType.RESOURCE) {
+    if (this.targetType === DocumentLevelType.RESOURCE) {
       this.referenceDocumentService.getSearchResourceDocumentReferencesObservable$(filter, this.targetResource)
         .subscribe(this.loadReferenceDocumentsObserver);
     } else {

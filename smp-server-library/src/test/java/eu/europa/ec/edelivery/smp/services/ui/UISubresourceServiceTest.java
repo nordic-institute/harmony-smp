@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.ui.SubresourceRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -33,6 +34,7 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(classes = UIDomainEditService.class)
@@ -40,6 +42,9 @@ class UISubresourceServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
     UISubresourceService testInstance;
+
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach
     public void prepareDatabase() {
@@ -78,7 +83,8 @@ class UISubresourceServiceTest extends AbstractJunit5BaseDao {
                 () -> testInstance.deleteSubresourceFromResource(testUtilsDao.getSubresourceD1G1RD1_S1().getId(), -1L));
 
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Resource does not exist"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                containsStringIgnoringCase("Resource does not exist"));
     }
 
     @Test
@@ -87,7 +93,8 @@ class UISubresourceServiceTest extends AbstractJunit5BaseDao {
                 () -> testInstance.deleteSubresourceFromResource(-1L, testUtilsDao.getResourceD1G1RD1().getId()));
 
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Subresource does not exist!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                containsStringIgnoringCase("Subresource does not exist!"));
     }
 
     @Test
@@ -97,12 +104,12 @@ class UISubresourceServiceTest extends AbstractJunit5BaseDao {
                         testUtilsDao.getResourceD1G1RD1().getId()));
 
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Subresource does not belong to the resource!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                containsStringIgnoringCase("Subresource does not belong to the resource!"));
     }
 
     @Test
     void testDeleteSubresourceFromResourceFailedSubResourceOK() {
-
         SubresourceRO result = testInstance.deleteSubresourceFromResource(
                     testUtilsDao.getSubresourceD1G1RD1_S1().getId(),
                       testUtilsDao.getResourceD1G1RD1().getId());
@@ -136,7 +143,8 @@ class UISubresourceServiceTest extends AbstractJunit5BaseDao {
                 () -> testInstance.createSubresourceForResource(subresourceRO, -1L));
 
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Resource does not exist"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                containsStringIgnoringCase("Resource does not exist"));
     }
 
     @Test
@@ -149,6 +157,7 @@ class UISubresourceServiceTest extends AbstractJunit5BaseDao {
                 () -> testInstance.createSubresourceForResource(subresourceRO, testUtilsDao.getResourceD1G1RD1().getId()));
 
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Subresource definition ["+def+"] does not exist"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+                containsStringIgnoringCase("Subresource definition ["+def+"] does not exist"));
     }
 }

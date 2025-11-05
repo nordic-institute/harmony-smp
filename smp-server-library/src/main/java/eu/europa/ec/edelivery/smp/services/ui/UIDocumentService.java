@@ -20,25 +20,34 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDocumentTemplateDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentLevelType;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainDocumentTemplate;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
+import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
+import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiResponseData;
+import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.smp.spi.api.model.RequestData;
+import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
@@ -49,11 +58,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 
@@ -67,33 +73,35 @@ import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
 public class UIDocumentService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDocumentService.class);
-    private static final List<DocumentVersionStatusType> REVIEW_STATUSES = Arrays.asList(DocumentVersionStatusType.UNDER_REVIEW, DocumentVersionStatusType.APPROVED, DocumentVersionStatusType.REJECTED);
-    public static final String DOCUMENT_VERSION_NOT_FOUND = "Document version not found";
-    public static final String DOCUMENT_VERSION_NOT_FOUND_TAG = "DocumentVersionNotFound";
-    public static final String DOCUMENT_ID_MISMATCH_TAG = "DocumentIdMismatch";
-    public static final String DOCUMENT_ID_MISMATCH = "Document id does not match the resource document id";
-
-
+    private static final List<DocumentVersionStatusType> REVIEW_STATUSES = Arrays.asList(DocumentVersionStatusType.UNDER_REVIEW,
+            DocumentVersionStatusType.APPROVED,
+            DocumentVersionStatusType.REJECTED);
 
     final ResourceDao resourceDao;
     final SubresourceDao subresourceDao;
+    final DomainDocumentTemplateDao domainDocumentTemplateDao;
     final DocumentDao documentDao;
     final ResourceHandlerService resourceHandlerService;
     final DocumentVersionService documentVersionService;
     final ConversionService conversionService;
+    final DocumentMailService mailService;
 
     public UIDocumentService(ResourceDao resourceDao,
                              SubresourceDao subresourceDao,
+                             DomainDocumentTemplateDao domainDocumentTemplateDao,
                              DocumentDao documentDao,
                              ResourceHandlerService resourceHandlerService,
                              DocumentVersionService documentVersionService,
-                             ConversionService conversionService) {
+                             ConversionService conversionService,
+                             DocumentMailService mailService) {
         this.resourceDao = resourceDao;
         this.subresourceDao = subresourceDao;
+        this.domainDocumentTemplateDao = domainDocumentTemplateDao;
         this.documentDao = documentDao;
         this.resourceHandlerService = resourceHandlerService;
         this.documentVersionService = documentVersionService;
         this.conversionService = conversionService;
+        this.mailService = mailService;
     }
 
     @Transactional
@@ -101,11 +109,13 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
-        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(), resource, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
+        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(), resource,
+                new ByteArrayInputStream(documentRo.getPayload().getBytes()), Map.of());
         try {
             resourceHandler.validateResource(data);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ResourceValidation", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_RESOURCE)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -118,7 +128,8 @@ public class UIDocumentService {
         try {
             resourceHandler.validateResource(data);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ResourceValidation", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_SUBRESOURCE)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -129,9 +140,14 @@ public class UIDocumentService {
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
             LOG.warn("Document id [{}] does not match the resource document id [{}]", documentId, document.getId());
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
         }
-        return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+        DocumentRO doc = publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.PUBLISHED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
+
     }
 
     @Transactional
@@ -142,22 +158,60 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
         }
-        return publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        DocumentRO doc = publishDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.PUBLISHED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
+    }
+
+    @Transactional
+    public DocumentRO deleteDocumentVersionForResource(Long resourceId, Long documentId, int version) {
+        LOG.info("Delete Document For Resource [{}], document [{}], version [{}]", resourceId, documentId, version);
+        DBResource resource = resourceDao.find(resourceId);
+        DBDocument document = resource.getDocument();
+        if (!Objects.equals(document.getId(), documentId)) {
+            LOG.warn("Document id [{}] does not match the resource document id [{}]", documentId, document.getId());
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
+        }
+        DocumentRO doc = deleteDocumentVersion(document, version, getInitialProperties(resource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.DELETED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
+
+    }
+
+    @Transactional
+    public DocumentRO deleteDocumentVersionForSubresource(Long subresourceId, Long resourceId, Long documentId, int version) {
+        LOG.info("Delete Document For subresource [{}], resource [{}], version [{}]", subresourceId, resourceId, version);
+
+        DBSubresource subresource = subresourceDao.find(subresourceId);
+        DBResource resource = resourceDao.find(resourceId);
+        DBDocument document = subresource.getDocument();
+        if (!Objects.equals(document.getId(), documentId)) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
+        }
+        DocumentRO doc = deleteDocumentVersion(document, version, getInitialProperties(subresource));
+        // send email notification that document is published
+        mailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.DELETED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return doc;
     }
 
 
-    private DocumentRO publishDocumentVersion(DBDocument document, int version, boolean isReviewEnabled, List<DocumentPropertyRO> initialProperties) {
+    public DocumentRO publishDocumentVersion(DBDocument document, int version, boolean isReviewEnabled, List<DocumentPropertyRO> initialProperties) {
 
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
         }
         if (isReviewEnabled && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentVersionAlreadyPublished", "Document version has wrong status");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_ALREADY_PUBLISHED);
         }
         if (document.getDocumentVersions() != null && document.getCurrentVersion() == version) {
             LOG.warn("Document version [{}] is already current version for the document [{}]", version, document.getId());
@@ -174,15 +228,47 @@ public class UIDocumentService {
         return convertWithVersion(document, version, initialProperties);
     }
 
+    public DocumentRO deleteDocumentVersion(DBDocument document, int version, List<DocumentPropertyRO> initialProperties) {
+
+        if (document.getDocumentVersions().size() < 2) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_CANNOT_DELETE_LAST_VERSION);
+        }
+
+        DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
+                .filter(dv -> dv.getVersion() == version)
+                .findFirst().orElse(null);
+        if (documentVersion == null) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
+        }
+        if (documentVersion.getStatus() == DocumentVersionStatusType.PUBLISHED) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_WRONG_STATUS);
+        }
+        if (document.getDocumentVersions() != null && document.getCurrentVersion() == version) {
+            LOG.warn("Document version [{}] is already current version for the document [{}]", version, document.getId());
+            // set last document as current version
+            document.setCurrentVersion(document.getDocumentVersions().size());
+        }
+        document.setCurrentVersion(documentVersion.getVersion());
+        documentVersionService.deleteDocumentVersion(documentVersion, document);
+        // return the document with the new version
+        return convertWithVersion(document, version, initialProperties);
+    }
+
     @Transactional
     public DocumentRO requestReviewDocumentVersionForResource(Long resourceId, Long documentId, int version) {
         LOG.info("Request review Document For Resource [{}], version [{}]", resourceId, version);
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_RESOURCE_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, "Document id does not match the resource document id");
         }
-        return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+
+        DocumentRO documentRO = requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(resource));
+
+        mailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.REVIEW_REQUESTED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return documentRO;
     }
 
     @Transactional
@@ -192,9 +278,13 @@ public class UIDocumentService {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_SUBRESOURCE_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, "Document id does not match the subresource document id");
         }
-        return requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        DocumentRO documentRO = requestReviewDocumentVersion(document, version, resource.isReviewEnabled(), getInitialProperties(subresource));
+        mailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.REVIEW_REQUESTED, version, document.getName(),
+                SessionSecurityUtils.getSessionUserDetails());
+        return documentRO;
     }
 
 
@@ -203,16 +293,16 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
         }
 
         if (!isReviewEnabled) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewNotEnabled", "Document Review is not enabled for the document");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_NOT_ENABLED);
         }
 
         if (documentVersion.getStatus() == DocumentVersionStatusType.PUBLISHED) {
             LOG.warn("Document version [{}] request review action for document [{}] is not allowed. Wrong status", version, document.getId());
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewNotAllowed", "Document Review is not allowed for the document");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_NOT_ALLOWED);
         }
 
         if (documentVersion.getStatus() == DocumentVersionStatusType.UNDER_REVIEW) {
@@ -232,9 +322,18 @@ public class UIDocumentService {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, DOCUMENT_ID_MISMATCH);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_RESOURCE_TAG);
         }
-        return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(resource));
+        DocumentRO documentRO = reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(resource));
+        // send email notification that document is published
+        if (action == DocumentVersionEventType.APPROVE || action == DocumentVersionEventType.REJECT) {
+            // if the approved version is not current version then it is published
+            MailDocumentActionType actionType = action == DocumentVersionEventType.APPROVE ? MailDocumentActionType.REVIEW_APPROVED :
+                    MailDocumentActionType.REVIEW_REJECTED;
+            mailService.sendDocumentActionNotification(resource, null, actionType, version, document.getName(),
+                    SessionSecurityUtils.getSessionUserDetails());
+        }
+        return documentRO;
     }
 
     @Transactional
@@ -244,9 +343,18 @@ public class UIDocumentService {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
         if (!Objects.equals(document.getId(), documentId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_ID_MISMATCH_TAG, "Document id does not match the subresource document id");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_ID_MISMATCH_SUBRESOURCE_TAG);
         }
-        return reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(subresource));
+        DocumentRO documentRO = reviewActionDocumentVersion(document, version, resource.isReviewEnabled(), action, message, getInitialProperties(subresource));
+        // send email notification that document is published
+        if (action == DocumentVersionEventType.APPROVE || action == DocumentVersionEventType.REJECT) {
+            // if the approved version is not current version then it is published
+            MailDocumentActionType actionType = action == DocumentVersionEventType.APPROVE ? MailDocumentActionType.REVIEW_APPROVED :
+                    MailDocumentActionType.REVIEW_REJECTED;
+            mailService.sendDocumentActionNotification(resource, subresource, actionType, version, document.getName(),
+                    SessionSecurityUtils.getSessionUserDetails());
+        }
+        return documentRO;
     }
 
 
@@ -260,16 +368,16 @@ public class UIDocumentService {
         DBDocumentVersion documentVersion = document.getDocumentVersions().stream()
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND));
 
         if (!reviewEnabled) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewNotEnabled", "Document Review is not enabled for the document");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_NOT_ENABLED);
         }
 
         if (documentVersion.getStatus() != DocumentVersionStatusType.UNDER_REVIEW
                 && documentVersion.getStatus() != DocumentVersionStatusType.APPROVED) {
             LOG.warn("Document version [{}]  action for document [{}] not allowed. Wrong status", version, initialProperties);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewActionNotAllowed", "Document Review action is not allowed for the document");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_ACTION_NOT_ALLOWED);
         }
 
         if (action == DocumentVersionEventType.APPROVE) {
@@ -277,7 +385,7 @@ public class UIDocumentService {
         } else if (action == DocumentVersionEventType.REJECT) {
             documentVersionService.rejectDocumentVersion(documentVersion, EventSourceType.UI, message);
         } else {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReviewActionNotAllowed", "Document Review action is not allowed for the document");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REVIEW_ACTION_NOT_ALLOWED);
         }
         // return the document with the new version
         return convertWithVersion(document, version, initialProperties);
@@ -293,20 +401,141 @@ public class UIDocumentService {
 
         String genDoc = bos.toString();
         DocumentRO result = new DocumentRO();
+        result.setPayloadStatus(EntityROStatus.NEW.getStatusNumber());
         result.setDocumentConfiguration(new DocumentConfigurationRO());
         result.setPayload(genDoc);
         return result;
     }
 
+    /**
+     * Method generates template document for the given domain resource definition. If dbSubresourceDef is null it provides
+     * document for the resource level (esourceDef) otherwise for the subresource level. The method uses
+     * ResourceHandlerSpi to generate the document with dummy resource identifiers.
+     *
+     * @param domainResourceDef domain resource definition to generate the template document for.
+     * @param dbSubresourceDef  optional subresource definition to generate the template document for, can be null.
+     * @return generated document RO.
+     */
+    @Transactional
+    public DocumentRO generateTemplateDocument(DBDomainResourceDef domainResourceDef, DBSubresourceDef dbSubresourceDef) {
+        LOG.info("generate Document For DomainResourceDef");
+
+        // generate document and write to output stream
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            if (dbSubresourceDef == null) {
+                generateDocumentForDomainResourceDef(domainResourceDef,
+                        SPIUtils.createTemplateResourceIdentifier(),
+                        Collections.emptyMap(), bos);
+            } else {
+                generateDocumentForDomainSubresourceDef(domainResourceDef,
+                        dbSubresourceDef,
+                        SPIUtils.createTemplateResourceIdentifier(),
+                        SPIUtils.createTemplateSubresourceIdentifier(),
+                        Collections.emptyMap(), bos);
+            }
+
+        } catch (IOException e) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_GENERATION)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
+        }
+
+        String genDoc = bos.toString();
+        DocumentRO result = new DocumentRO();
+        result.setDocumentConfiguration(new DocumentConfigurationRO());
+        result.setPayloadStatus(EntityROStatus.NEW.getStatusNumber());
+        result.setPayload(genDoc);
+        return result;
+    }
+
     public void generateDocumentForResource(DBResource resource, OutputStream outputStream) {
-        LOG.info("generate new Document For domainResourceDef");
+        LOG.info("generate new Document For resource");
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
 
+        if (generateDocumentFromTemplate(domainResourceDef, null, DocumentLevelType.RESOURCE, outputStream)) {
+            LOG.info("Document generated from template, skipping ResourceHandlerSpi generation");
+            return;
+        }
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
                 resource, null);
 
         generateDocumentWithHandler(resourceHandler, data, outputStream);
+
+    }
+
+    public void generateDocumentForDomainResourceDef(DBDomainResourceDef domainResourceDef,
+                                                     ResourceIdentifier identifier,
+                                                     Map<String, String> docProp,
+                                                     OutputStream outputStream) throws IOException {
+        LOG.info("generate new Document For domainResourceDef: [{}]", domainResourceDef.getResourceDef().getIdentifier());
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
+        RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
+                identifier, null, docProp, null);
+        generateDocumentWithHandler(resourceHandler, data, outputStream);
+    }
+
+    /**
+     * Generate document for the given domain resource definition and subresource definition. The method uses
+     * ResourceHandlerSpi to generate the document with dummy resource identifiers.
+     *
+     * @param domainResourceDef domain resource definition
+     * @param subresourceDef    subresource definition
+     * @param outputStream      output stream to write the generated document to
+     */
+    public void generateDocumentForDomainSubresourceDef(DBDomainResourceDef domainResourceDef,
+                                                        DBSubresourceDef subresourceDef,
+                                                        ResourceIdentifier resourceIdentifier,
+                                                        ResourceIdentifier subresourceIdentifier,
+                                                        Map<String, String> docProp,
+                                                        OutputStream outputStream) {
+        LOG.info("Generate document for subresource def [{}]", subresourceDef.getIdentifier());
+        if (generateDocumentFromTemplate(domainResourceDef,
+                subresourceDef,
+                DocumentLevelType.SUBRESOURCE, outputStream)) {
+            LOG.info("Document for subresource was generated from template, skipping ResourceHandlerSpi generation");
+            return;
+        }
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
+        RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
+                resourceIdentifier,
+                subresourceIdentifier,
+                docProp, null);
+
+        generateDocumentWithHandler(resourceHandler, data, outputStream);
+
+    }
+
+    /**
+     * Generate document from the template if it is configured for the given domain resource definition and
+     * optional subresource definition. If the template is not configured or there is an error writing the template
+     * content to the output stream the method returns false.
+     *
+     * @param domainResourceDef the domain resource definition
+     * @param subresourceDef    optional subresource definition, can be null for resource level document
+     * @param documentLevelType the document level type
+     * @param outputStream      output stream to write the document content to
+     * @return true if the document was generated from the template, false otherwise
+     */
+    private boolean generateDocumentFromTemplate(DBDomainResourceDef domainResourceDef,
+                                                 DBSubresourceDef subresourceDef,
+                                                 DocumentLevelType documentLevelType,
+                                                 OutputStream outputStream) {
+        List<DBDomainDocumentTemplate> domainTemplates
+                = domainDocumentTemplateDao.getDomainDocumentTemplate(domainResourceDef, subresourceDef, documentLevelType);
+
+        if (domainTemplates != null && !domainTemplates.isEmpty()) {
+            Optional<DBDocumentVersion> version = documentDao.getCurrentDocumentVersionForDocument(domainTemplates.get(0).getDocument());
+            if (version.isPresent()) {
+                try {
+                    outputStream.write(version.get().getContent());
+                    return true;
+                } catch (IOException e) {
+                    LOG.warn("Error writing template document content to output stream: [{}]. Fallback to default document generation", ExceptionUtils.getRootCauseMessage(e));
+                }
+            }
+        }
+        return false;
     }
 
     @Transactional
@@ -320,6 +549,7 @@ public class UIDocumentService {
 
         String genDoc = bos.toString();
         DocumentRO result = new DocumentRO();
+        result.setPayloadStatus(EntityROStatus.NEW.getStatusNumber());
         result.setPayload(genDoc);
         return result;
     }
@@ -328,12 +558,13 @@ public class UIDocumentService {
         LOG.info("generate Document For Subresource");
         DBSubresourceDef subresourceDef = entity.getSubresourceDef();
 
-        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
-        RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(),
-                parentEntity, entity, null);
-
-        generateDocumentWithHandler(resourceHandler, data, outputStream);
+        generateDocumentForDomainSubresourceDef(parentEntity.getDomainResourceDef(),
+                subresourceDef,
+                SPIUtils.toUrlIdentifier(parentEntity),
+                SPIUtils.toUrlIdentifier(entity),
+                Collections.emptyMap(), outputStream);
     }
+
 
     /**
      * Generate document with ResourceHandlerSpi. Method invokes the given handler to generate the document.
@@ -347,7 +578,8 @@ public class UIDocumentService {
         try {
             resourceHandler.generateResource(data, responseData, Collections.emptyList());
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_GENERATION)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -358,7 +590,7 @@ public class UIDocumentService {
      * created.
      *
      * @param documentPropertyRO Document Property RO to persist
-     * @DBDocument db document to which the property belongs
+     * @param dbDocument         db document to which the property belongs
      */
     private void persistDocumentProperty(DocumentPropertyRO documentPropertyRO, DBDocument dbDocument) {
 
@@ -379,15 +611,46 @@ public class UIDocumentService {
                 }
                 break;
             case UPDATED:
+                PropertyUtils.parsePropertyType(documentPropertyRO.getType(), documentPropertyRO.getValue(), null);
                 if (dbDocumentProperty != null) {
                     dbDocumentProperty.setDescription(documentPropertyRO.getDesc());
                     dbDocumentProperty.setValue(documentPropertyRO.getValue());
+                    dbDocumentProperty.setType(documentPropertyRO.getType());
+                    if (documentPropertyRO.getType() == SMPPropertyTypeEnum.CERTIFICATE) {
+                        DBDocumentCertificate certificate = dbDocumentProperty.getDocumentCertificate();
+                        CertificateRO certRo = documentPropertyRO.getCertificate();
+                        if (certificate == null) {
+                            if (certRo != null) {
+                                certificate = createDocumentCertificate(documentPropertyRO);
+                                dbDocumentProperty.setDocumentCertificate(certificate);
+                                certificate.setDocumentProperty(dbDocumentProperty);
+                            } else {
+                                LOG.debug("Document property [{}] of type certificate does not have certificate object",
+                                        documentPropertyRO.getProperty());
+                            }
+                        } else {
+                            if (certRo != null) {
+                                // update existing certificate
+                                updateCertificate(certificate, certRo);
+                            } else {
+                                // remove existing certificate
+                                dbDocumentProperty.setDocumentCertificate(null);
+                            }
+                        }
+                    } else {
+                        // if the property type is changed from certificate to other and there is existing certificate remove it
+                        if (dbDocumentProperty.getDocumentCertificate() != null) {
+                            dbDocumentProperty.setDocumentCertificate(null);
+                        }
+                    }
+
                 } else {
                     LOG.warn("Document property [{}] not found for document [{}]. property is added", documentPropertyRO.getProperty(), dbDocument.getId());
                     addDocumentProperty(documentPropertyRO, dbDocument);
                 }
                 break;
             case NEW:
+                PropertyUtils.parsePropertyType(documentPropertyRO.getType(), documentPropertyRO.getValue(), null);
                 if (dbDocumentProperty == null) {
                     addDocumentProperty(documentPropertyRO, dbDocument);
                 } else {
@@ -404,6 +667,23 @@ public class UIDocumentService {
     }
 
     /**
+     * Method updates the certificate entity with the values from the certificate RO
+     *
+     * @param certificate certificate entity to update
+     * @param certRo      certificate RO with new values
+     */
+    protected void updateCertificate(DBDocumentCertificate certificate, CertificateRO certRo) {
+        certificate.setCertificateId(certRo.getCertificateId());
+        certificate.setIssuer(certRo.getCertificateId());
+        certificate.setSerialNumber(certRo.getSerialNumber());
+        certificate.setSubject(certRo.getSubject());
+        certificate.setValidFrom(certRo.getValidFrom());
+        certificate.setValidTo(certRo.getValidTo());
+        certificate.setPemEncoding(certRo.getEncodedValue());
+        certificate.setCertificateId(certRo.getCertificateId());
+    }
+
+    /**
      * Method adds new  Document Property to the DBDocument property list
      *
      * @param documentPropertyRO Document Property RO to persist
@@ -416,8 +696,20 @@ public class UIDocumentService {
         dbDocumentProperty.setValue(documentPropertyRO.getValue());
         dbDocumentProperty.setDescription(documentPropertyRO.getDesc());
         dbDocumentProperty.setType(documentPropertyRO.getType());
-
+        if (documentPropertyRO.getType() == SMPPropertyTypeEnum.CERTIFICATE
+                && documentPropertyRO.getCertificate() != null) {
+            DBDocumentCertificate certificate = createDocumentCertificate(documentPropertyRO);
+            dbDocumentProperty.setDocumentCertificate(certificate);
+            certificate.setDocumentProperty(dbDocumentProperty);
+        }
         dbDocument.getDocumentProperties().add(dbDocumentProperty);
+    }
+
+    private DBDocumentCertificate createDocumentCertificate(DocumentPropertyRO documentPropertyRO) {
+        DBDocumentCertificate certificate = new DBDocumentCertificate();
+        CertificateRO certRo = documentPropertyRO.getCertificate();
+        updateCertificate(certificate, certRo);
+        return certificate;
     }
 
     /**
@@ -451,13 +743,14 @@ public class UIDocumentService {
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(
                 domainResourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
-                resource, new ByteArrayInputStream(payload));
+                resource, new ByteArrayInputStream(payload), Map.of());
 
         ResponseData responseData = new SpiResponseData(baos);
         try {
             resourceHandler.storeResource(data, responseData);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_RESOURCE_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
 
         // create new version to document or update existing version
@@ -479,8 +772,26 @@ public class UIDocumentService {
         try {
             resourceHandler.storeResource(data, responseData);
         } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreSubresourceValidation", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_STORE_SUBRESOURCE_VALIDATION)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
+        // create new version to document or update existing version
+        return documentRo.getPayloadVersion() == null ?
+                createNewDocumentVersion(document, payload) :
+                updatedDocumentVersion(document, payload, documentRo.getPayloadVersion());
+    }
+
+    /**
+     * Method stores the payload for the given resource. If the resource has status New then new document version is created
+     * else the existing document version is updated with the new payload.
+     * <p>
+     * The method invokes the ResourceHandlerSpi to update/validate the payload before storing it to database.
+     *
+     * @param document   the resource database document entity
+     * @param documentRo document RO the with new payload
+     */
+    private DBDocumentVersion storeResourcePayload(DBDocument document, DocumentRO documentRo) {
+        byte[] payload = documentRo.getPayload().getBytes();
         // create new version to document or update existing version
         return documentRo.getPayloadVersion() == null ?
                 createNewDocumentVersion(document, payload) :
@@ -500,7 +811,7 @@ public class UIDocumentService {
                 .filter(dv -> dv.getVersion() == version)
                 .findFirst().orElse(null);
         if (documentVersion == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, DOCUMENT_VERSION_NOT_FOUND_TAG, DOCUMENT_VERSION_NOT_FOUND);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_VERSION_NOT_FOUND);
         }
         documentVersion.setContent(payload);
 
@@ -537,6 +848,15 @@ public class UIDocumentService {
 
     }
 
+    @Transactional
+    public DocumentRO saveDocumentForTemplate(Long templateId, DocumentRO documentRo) {
+
+        final DBDomainDocumentTemplate tmpl = domainDocumentTemplateDao.find(templateId);
+        final DBDocument document = tmpl.getDocument();
+        return saveDocument(tmpl, document, documentRo);
+
+    }
+
     /**
      * Method saves the document for resource or  subresource. if the subresource is null then it is resource document
      * otherwise it is subresource document.
@@ -565,10 +885,23 @@ public class UIDocumentService {
 
         }
 
+        saveDocumentPropertiesAndSettings(document, documentRo);
+
+        List<DocumentPropertyRO> initialProperties = subresource == null ? getInitialProperties(resource) : getInitialProperties(subresource);
+        return convertWithVersion(document, returnDocVersion, initialProperties);
+    }
+
+    /**
+     * Method updates the document properties amd settings: eg. name, referemce  from the document RO to the DBDocument entity
+     *
+     * @param document   database document entity
+     * @param documentRo document RO from the request
+     */
+    private void saveDocumentPropertiesAndSettings(DBDocument document, DocumentRO documentRo) {
         if (isDocumentPropertiesChanged(documentRo)) {
             // persist non-transient properties
-            documentRo.getProperties().stream().filter(p ->
-                            TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
+            documentRo.getProperties().stream()
+                    .filter(p -> TransientDocumentPropertyType.fromPropertyName(p.getProperty()) == null)
                     .forEach(p -> persistDocumentProperty(p, document));
         }
 
@@ -576,7 +909,14 @@ public class UIDocumentService {
         if (docConfig != null) {
 
             if (Boolean.TRUE.equals(docConfig.getSharingEnabled()) && StringUtils.isNotBlank(docConfig.getReferenceDocumentId())) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentSharingNotAllowed", "Document sharing is not allowed for the document with reference document");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_SHARING_NOT_ALLOWED);
+            }
+
+            if (document.getSharingEnabled() &&
+                    (docConfig.getSharingEnabled() == null || !docConfig.getSharingEnabled())) {
+                // if sharing is disabled then remove the document from all documents which are referencing to this document
+                LOG.info("Document sharing is disabled. Unlink the reference document for document [{}]", document.getId());
+                documentDao.unlinkDocument(document);
             }
             document.setSharingEnabled(docConfig.getSharingEnabled());
             document.setName(docConfig.getName());
@@ -584,8 +924,36 @@ public class UIDocumentService {
             // update document reference
             updateDocumentReferenceToDocument(document, docConfig);
         }
+    }
 
-        List<DocumentPropertyRO> initialProperties = subresource == null ? getInitialProperties(resource) : getInitialProperties(subresource);
+    /**
+     * Method saves the document for template. If the subresource is null then it is saved as resource document
+     * otherwise it is subresource document.
+     *
+     * @param template
+     * @param document
+     * @param documentRo
+     * @return
+     */
+    public DocumentRO saveDocument(DBDomainDocumentTemplate template, DBDocument document, DocumentRO documentRo) {
+
+        // check if the document is new or existing document. If payload version is not null then
+        // return the current payload version otherwise return the current version
+        int returnDocVersion = documentRo.getPayloadVersion() != null ?
+                documentRo.getPayloadVersion() :
+                document.getCurrentVersion();
+
+        boolean isPayloadChanged = documentRo.getPayloadStatus() != EntityROStatus.PERSISTED.getStatusNumber();
+        if (isPayloadChanged) {
+            LOG.debug("Store (sub) resource payload for template [{}]", template);
+            DBDocumentVersion docVersion = storeResourcePayload(document, documentRo);
+            returnDocVersion = docVersion.getVersion();
+
+        }
+
+        saveDocumentPropertiesAndSettings(document, documentRo);
+
+        List<DocumentPropertyRO> initialProperties = Collections.emptyList();
         return convertWithVersion(document, returnDocVersion, initialProperties);
     }
 
@@ -607,20 +975,20 @@ public class UIDocumentService {
 
         if (documentReferenceId != null) {
             if (Objects.equals(documentReferenceId, document.getId())) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotAllowed", "Document reference cannot be the same as the document id");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_NOT_ALLOWED);
             }
             DBDocument documentReferenceEntity = documentDao.find(documentReferenceId);
             if (documentReferenceEntity == null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotFound", "Document reference not found");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_NOT_FOUND);
             }
 
             // compare Boolean.TRUE to catch null values
             if (!Boolean.TRUE.equals(documentReferenceEntity.getSharingEnabled())) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to not shared document");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_HAVING_NO_SHARING);
             }
 
             if (documentReferenceEntity.getReferenceDocument() != null) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DocumentReferenceNotValid", "Can not reference to a document that already has a reference");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_DOCUMENT_REFERENCE_ALREADY_REFERENCED);
             }
             document.setReferenceDocument(documentReferenceEntity);
             LOG.info("Document [{}] is referencing to document [{}] and reference url [{}]", document.getId(), documentReferenceEntity.getId(), documentConfigurationRO.getReferenceDocumentUrl());
@@ -662,6 +1030,13 @@ public class UIDocumentService {
         return convertWithVersion(document, version, getInitialProperties(subresource));
     }
 
+    @Transactional
+    public DocumentRO getDocumentForTemplate(Long templateId, int version) {
+        DBDomainDocumentTemplate template = domainDocumentTemplateDao.find(templateId);
+        DBDocument document = template.getDocument();
+        return convertWithVersion(document, version, new ArrayList<>());
+    }
+
 
     /**
      * Method returns the list of reference documents for the given resource and filter paramters
@@ -680,7 +1055,7 @@ public class UIDocumentService {
         ServiceResult<SearchReferenceDocumentRO> result = new ServiceResult<>();
         result.setPage(page);
         result.setPageSize(pageSize);
-        Long count = documentDao.getSearchReferenceDocumentResourcesCount(targetResource, searchResourceIdentifier, searchResourceScheme);
+        long count = documentDao.getSearchReferenceDocumentResourcesCount(targetResource, searchResourceIdentifier, searchResourceScheme);
         if (count < 1) {
             result.setCount(0L);
             return result;
@@ -689,13 +1064,13 @@ public class UIDocumentService {
         List<SearchReferenceDocumentRO> refList = documentDao.getSearchReferenceDocumentResources(targetResource,
                         searchResourceIdentifier, searchResourceScheme, page, pageSize).stream()
                 .map(doc -> conversionService.convert(doc, SearchReferenceDocumentRO.class))
-                .collect(Collectors.toList());
+                .toList();
         result.getServiceEntities().addAll(refList);
         return result;
     }
 
     /**
-     * Method returns the list of reference documents for the given subresource and filter paramters by searchResourceIdentifier and searchResourceScheme
+     * Method returns the list of reference documents for the given subresource and filter parameters by searchResourceIdentifier and searchResourceScheme
      * and searchSubresourceIdentifier and searchSubresourceScheme.
      *
      * @param targetSubresourceId         the subresource id for which the reference documents are searched
@@ -713,12 +1088,12 @@ public class UIDocumentService {
                                                                                                  String searchSubresourceIdentifier, String searchSubresourceScheme) {
         DBSubresource targetResource = subresourceDao.find(targetSubresourceId);
         if (!Objects.equals(targetResource.getResource().getId(), resourceId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ResourceMismatch", "Resource id does not match the subresource resource id");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_SEARCH_IDENTIFIERS_MISMATCH);
         }
         ServiceResult<SearchReferenceDocumentRO> result = new ServiceResult<>();
         result.setPage(page);
         result.setPageSize(pageSize);
-        Long count = documentDao.getSearchReferenceDocumentSubresourceCount(targetResource, searchResourceIdentifier,
+        long count = documentDao.getSearchReferenceDocumentSubresourceCount(targetResource, searchResourceIdentifier,
                 searchResourceScheme, searchSubresourceIdentifier, searchSubresourceScheme);
         if (count < 1) {
             result.setCount(0L);
@@ -728,7 +1103,7 @@ public class UIDocumentService {
         List<SearchReferenceDocumentRO> refList = documentDao.getSearchReferenceDocumentSubresource(targetResource,
                         searchResourceIdentifier, searchResourceScheme, searchSubresourceIdentifier, searchSubresourceScheme, page, pageSize).stream()
                 .map(doc -> conversionService.convert(doc, SearchReferenceDocumentRO.class))
-                .collect(Collectors.toList());
+                .toList();
         result.getServiceEntities().addAll(refList);
         return result;
     }
@@ -805,6 +1180,10 @@ public class UIDocumentService {
             // allways get default version for referenced document
             DBDocumentVersion referencedVersion = getDocumentVersionOrCurrentVersion(document.getReferenceDocument(), -1);
             documentRo.setReferencePayload(new String(referencedVersion.getContent()));
+        } else if (StringUtils.isNotBlank(document.getReferenceDocumentUrl())) {
+            // if the document has reference url but the referenced document is deleted
+            docConfigRo.setReferenceDocumentUrl(document.getReferenceDocumentUrl());
+            docConfigRo.setReferenceDocumentAccessible(false);
         }
 
         docConfigRo.setSharingEnabled(document.getSharingEnabled());
@@ -813,7 +1192,7 @@ public class UIDocumentService {
         docConfigRo.setName(document.getName());
         // set list of versions
         document.getDocumentVersions().forEach(dv ->
-            docConfigRo.getAllVersions().add(dv.getVersion()));
+                docConfigRo.getAllVersions().add(dv.getVersion()));
         documentRo.setDocumentConfiguration(docConfigRo);
 
         document.getDocumentVersions().forEach(dv -> {
@@ -822,16 +1201,10 @@ public class UIDocumentService {
         });
         documentRo.setMimeType(document.getMimeType());
         documentRo.setName(document.getName());
-        documentRo.setCurrentResourceVersion(document.getCurrentVersion());
+        documentRo.setCurrentVersion(document.getCurrentVersion());
         // set list of versions
-        document.getDocumentProperties().stream()
-                .forEach(p -> {
-                    documentRo.addProperty(p.getProperty(),
-                            p.getValue(),
-                            p.getDescription(),
-                            p.getType(), false);
-                    LOG.info("Document property [{}] added to document [{}]", p);
-                });
+        document.getDocumentProperties()
+                .forEach(p -> documentRo.addProperty(convert(p)));
 
         docConfigRo.setMimeType(document.getMimeType());
 
@@ -841,7 +1214,7 @@ public class UIDocumentService {
             documentRo.setPayload(new String(version.getContent()));
             documentRo.setDocumentVersionStatus(version.getStatus());
             // set ven
-            version.getDocumentVersionEvents().stream().forEach(e ->
+            version.getDocumentVersionEvents().forEach(e ->
                     documentRo.addDocumentVersionEvent(
                             conversionService.convert(e, DocumentVersionEventRO.class))
             );
@@ -850,10 +1223,36 @@ public class UIDocumentService {
     }
 
     /**
+     * Convert DBDocumentProperty to DocumentPropertyRO
+     *
+     * @param documentProperty to convert
+     * @return converted DocumentPropertyRO
+     */
+    protected DocumentPropertyRO convert(DBDocumentProperty documentProperty) {
+        DocumentPropertyRO documentPropertyRO = new DocumentPropertyRO();
+        documentPropertyRO.setProperty(documentProperty.getProperty());
+        documentPropertyRO.setValue(documentProperty.getValue());
+        documentPropertyRO.setDesc(documentProperty.getDescription());
+        documentPropertyRO.setType(documentProperty.getType());
+        if (documentProperty.getType() == SMPPropertyTypeEnum.CERTIFICATE && documentProperty.getDocumentCertificate() != null) {
+            DBDocumentCertificate cert = documentProperty.getDocumentCertificate();
+            CertificateRO certRo = new CertificateRO();
+            certRo.setCertificateId(cert.getCertificateId());
+            certRo.setEncodedValue(cert.getPemEncoding());
+            certRo.setIssuer(cert.getIssuer());
+            certRo.setSerialNumber(cert.getSerialNumber());
+            certRo.setSubject(cert.getSubject());
+            certRo.setValidFrom(cert.getValidFrom());
+            documentPropertyRO.setCertificate(certRo);
+        }
+        return documentPropertyRO;
+    }
+
+    /**
      * Method validates all document versions and updates version in review process
      * to NON REVIEW status. The change is logged as new event on version list.
      *
-     * @param document
+     * @param document document to update
      */
     public void updateToNonReviewStatuses(DBDocument document) {
         updateDocumentVersionStatus(document, DocumentVersionEventType.SETTINGS_CHANGE,
@@ -884,5 +1283,4 @@ public class UIDocumentService {
             }
         });
     }
-
 }

@@ -31,7 +31,6 @@ public class DriverManager {
         }
 
         driver.manage().window().setSize(new Dimension(1920, 1080));
-        driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
         return driver;
     }
@@ -68,9 +67,8 @@ public class DriverManager {
         if (data.enableHeadlessStart()) {
             options.addArguments("--headless");
         }
-
-
-        //code added for auto download
+//        options.addArguments("--width=1920");
+//        options.addArguments("--height=1080");        //code added for auto download
         options.addPreference("browser.download.folderList", 2);
         options.addPreference("browser.download.manager.showWhenStarting", false);
         options.addPreference("browser.download.dir", data.downloadFolderPath());

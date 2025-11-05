@@ -23,7 +23,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 /**
  * Updates locale files on the disk with locales provided by DomiSMP. Any existing locales on the disk matching the

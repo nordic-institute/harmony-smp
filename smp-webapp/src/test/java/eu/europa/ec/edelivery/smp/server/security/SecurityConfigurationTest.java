@@ -163,7 +163,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    void ClientCertHeaderNotAuthorizedForPutTest() throws Exception {
+    void clientCertHeaderNotAuthorizedForPutTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_NOT_AUTHORIZED_HEADER);
 

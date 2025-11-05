@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -54,17 +54,19 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
         " WHERE c.domain.id = :domain_id " +
         "  AND c.role in (:membership_roles)" +
-        "  AND (lower(c.user.fullName) like lower(:user_filter) " +
-        "    OR  lower(c.user.username) like lower(:user_filter))")
+        "  AND (lower(c.user.fullName) like lower(:user_filter) ESCAPE '\\'" +
+        "    OR  lower(c.user.username) like lower(:user_filter) ESCAPE '\\')")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER, query = "SELECT c FROM DBDomainMember c " +
         " WHERE c.domain.id = :domain_id  " +
-        " AND (lower(c.user.fullName) like lower(:user_filter) " +
-        "   OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
+        " AND (lower(c.user.fullName) like lower(:user_filter) ESCAPE '\\' " +
+        "   OR lower(c.user.username) like lower(:user_filter) ESCAPE '\\')  order by c.user.username")
 public class DBDomainMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_MEMBER_SEQ")
-    @GenericGenerator(name = "SMP_DOMAIN_MEMBER_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOMAIN_MEMBER_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     Long id;
 

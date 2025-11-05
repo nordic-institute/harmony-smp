@@ -19,25 +19,27 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponseType;
-import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
-import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
+import ec.services.wsdl.bdmsl.data._1.*;
 import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.handler.MessageContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.configuration.security.CertificateConstraintsType;
@@ -57,8 +59,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.MessageContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -138,7 +138,8 @@ public class SmlConnector implements ApplicationContextAware {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (InternalErrorFault | UnauthorizedFault e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -162,7 +163,8 @@ public class SmlConnector implements ApplicationContextAware {
             normalizedParticipantString = identifierService.formatParticipant(domain.getDomainCode(), normalizedParticipantId);
         } catch (MalformedIdentifierException e) {
             LOG.error("Invalid participant identifier: [{}].", e.getMessage());
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
 
         }
         if (!domain.isSmlRegistered()) {
@@ -173,14 +175,15 @@ public class SmlConnector implements ApplicationContextAware {
 
         LOG.debug("Checking if Participant: {} exists in domain: {}.", normalizedParticipantString, domain.getDomainCode());
         try {
-            ParticipantsType smlRequest = toParticipantsType(normalizedParticipantId, domain.getSmlSmpId());
-            ExistsParticipantResponseType existsParticipantResponseType = getBDMSLWSClient(domain).existsParticipantIdentifier(smlRequest);
+            ExistsParticipant smlRequest = toExistsParticipant(normalizedParticipantId, domain.getSmlSmpId());
+            ExistsParticipantResponse existsParticipantResponseType = getBDMSLWSClient(domain).existsParticipantIdentifier(smlRequest);
             return existsParticipantResponseType.isExist();
         } catch (BadRequestFault | NotFoundFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -192,14 +195,15 @@ public class SmlConnector implements ApplicationContextAware {
 
     protected void createCustomServiceNaptrDNSRecord(Identifier normalizedParticipantId, DBDomain domain, String customNaptrService) throws UnauthorizedFault, BadRequestFault, NotFoundFault, InternalErrorFault {
         LOG.debug("Set custom naptr service [{}] DNS record for Participant: [{}] and domain: [{}].", customNaptrService, normalizedParticipantId, domain.getDomainCode());
-        SMPAdvancedServiceForParticipantType smlRequest = toBDMSLAdvancedParticipantId(normalizedParticipantId, domain.getSmlSmpId(), customNaptrService);
+        SMPAdvancedServiceForParticipantService smlRequest = toBDMSLAdvancedParticipantId(normalizedParticipantId, domain.getSmlSmpId(), customNaptrService);
         getBDMSLWSClient(domain).createParticipantIdentifier(smlRequest);
     }
 
     protected boolean processSMLErrorMessage(Exception e, Identifier participantIdentifierType) {
         if (!isOkMessage(participantIdentifierType, e.getMessage())) {
             LOG.error(e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         LOG.warn(e.getMessage(), e);
         return true;
@@ -228,18 +232,19 @@ public class SmlConnector implements ApplicationContextAware {
      */
     public boolean registerDomain(DBDomain domain) {
         if (!configurationService.isSMLIntegrationEnabled()) {
+            LOG.info("Can not registering new Domain [{}] to SML because integration is disabled!", domain);
             return false;
         }
-        String smlSmpId = domain.getSmlSmpId();
-        LOG.info("Registering new Domain to SML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), smlSmpId);
+        LOG.info("Registering new Domain [{}] to SML", domain);
         try {
-            ServiceMetadataPublisherServiceType smlSmpRequest = getServiceMetadataPublisherServiceType(smlSmpId);
+            ServiceMetadataPublisherServiceType smlSmpRequest = createServiceMetadataPublisherServiceType(domain);
             getSMPManagerWSClient(domain).create(smlSmpRequest);
         } catch (BadRequestFault e) {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
-            LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            LOG.error("Domain registration failed with Error class type [{}] and message [{}]", e.getClass().getName(), ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         // if not error is thrown - the registration is done OK.
         return true;
@@ -255,24 +260,30 @@ public class SmlConnector implements ApplicationContextAware {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
-        String smlSmpId = domain.getSmlSmpId();
-        LOG.info("Validating Domain to SML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), smlSmpId);
+        LOG.info("Validating Domain [{}] on SML", domain);
         try {
-            ServiceMetadataPublisherServiceType smlSmpRequest = getServiceMetadataPublisherServiceType(smlSmpId);
+            ServiceMetadataPublisherServiceType smlSmpRequest = createServiceMetadataPublisherServiceType(domain);
             getSMPManagerWSClient(domain).read(smlSmpRequest);
         } catch (BadRequestFault | NotFoundFault e) {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         // if not error is thrown - the domain exists and is valid
         return true;
     }
 
-    private ServiceMetadataPublisherServiceType getServiceMetadataPublisherServiceType(String smlSmpId) {
-        String smpLogicalAddress = configurationService.getSMLIntegrationSMPLogicalAddress();
-        String smpPhysicalAddress = configurationService.getSMLIntegrationSMPPhysicalAddress();
+    protected ServiceMetadataPublisherServiceType createServiceMetadataPublisherServiceType(DBDomain domain) {
+        URL smpLogicalAddressURL = configurationService.getDomainSMLIntegrationSMPLogicalAddress(domain);
+        String smpLogicalAddress = smpLogicalAddressURL!=null ? smpLogicalAddressURL.toString() : null;
+        String smpPhysicalAddress = configurationService.getDomainSMLIntegrationSMPPhysicalAddress(domain);
+
+        String smlSmpId = domain.getSmlSmpId();
+        if (domain.isSmlUrlDomainCodeSuffixEnabled()) {
+            smpLogicalAddress =  Strings.CS.appendIfMissing(smpLogicalAddress , "/") + domain.getDomainCode();
+        }
 
         ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
         smlSmpRequest.setPublisherEndpoint(new PublisherEndpointType());
@@ -286,7 +297,8 @@ public class SmlConnector implements ApplicationContextAware {
     private void processSMLErrorMessage(Exception e, DBDomain domain) {
         if (!isOkMessage(domain, e.getMessage())) {
             LOG.error(e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         LOG.warn(e.getMessage(), e);
     }
@@ -338,7 +350,8 @@ public class SmlConnector implements ApplicationContextAware {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -353,12 +366,33 @@ public class SmlConnector implements ApplicationContextAware {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    public void prepareCertificateChange(DBDomain domain, String encoded, Calendar migrationDate) {
+        if (!configurationService.isSMLIntegrationEnabled()) {
+            return;
+        }
+
+        PrepareChangeCertificate prepareChangeCertificateType = new ObjectFactory().createPrepareChangeCertificate();
+        prepareChangeCertificateType.setNewCertificatePublicKey(encoded);
+        prepareChangeCertificateType.setMigrationDate(migrationDate);
+
+        LOG.info("Preparing the change for certificate [{}] scheduled on [{}] in SML for domain [{}]", encoded, migrationDate, domain.getDomainCode());
+        try {
+            getBDMSLWSClient(domain).prepareChangeCertificate(prepareChangeCertificateType);
+        } catch (BadRequestFault | NotFoundFault e) {
+            processSMLErrorMessage(e, domain);
+        } catch (Exception e) {
+            LOG.error(e.getClass().getName() + e.getMessage(), e);
+            throw new SMPRuntimeException(ErrorMessageType.DOMISML_INTEGRATION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
     private IManageParticipantIdentifierWS getParticipantWSClient(DBDomain domain) {
-
         IManageParticipantIdentifierWS iManageServiceMetadataWS = ctx.getBean(IManageParticipantIdentifierWS.class);
         // configure connection
         configureClient(IDENTIFIER_VALUE_CONTEXT, iManageServiceMetadataWS, domain);
@@ -367,7 +401,6 @@ public class SmlConnector implements ApplicationContextAware {
     }
 
     private IBDMSLServiceWS getBDMSLWSClient(DBDomain domain) {
-
         IBDMSLServiceWS bdmslServiceWS = ctx.getBean(IBDMSLServiceWS.class);
         // configure connection
         configureClient(BDMSL_CUSTOM_SERVICES_CONTEXT, bdmslServiceWS, domain);
@@ -399,19 +432,21 @@ public class SmlConnector implements ApplicationContextAware {
         String clientKeyAlias = getSmlClientKeyAliasForDomain(domain);
         boolean clientCertAuthentication = domain.isSmlClientCertAuth();
         Client client = ClientProxy.getClient(smlPort);
-        URL url = configurationService.getSMLIntegrationUrl();
+
+
+        URL url = configurationService.getDomainSMLIntegrationUrl(domain);
         if (url == null) {
             throw new IllegalArgumentException("Empty or null SML url. Check the configuration and set property: " + SMPPropertyEnum.SML_URL.getProperty());
         }
         URL urlSMPManagment;
         try {
-            urlSMPManagment = new URL(StringUtils.appendIfMissing(url.toString(), "/") + serviceEndpoint);
+            urlSMPManagment = new URL(Strings.CI.appendIfMissing(url.toString(), "/") + serviceEndpoint);
 
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Malformed SML URL: " + url, e);
         }
 
-        boolean useTLS = urlSMPManagment.getProtocol().equalsIgnoreCase("https");
+        boolean useTLS = Strings.CI.equals(urlSMPManagment.getProtocol(), "https");
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
 
@@ -441,7 +476,7 @@ public class SmlConnector implements ApplicationContextAware {
             throw new IllegalStateException("Invalid integration configuration. Missing Client cert configuration!");
         }
 
-        return list.stream().filter(cert -> StringUtils.equalsIgnoreCase(alias, cert.getAlias()))
+        return list.stream().filter(cert -> Strings.CI.equals(alias, cert.getAlias()))
                 .findFirst().orElseThrow(() -> new IllegalStateException("Invalid integration configuration. Missing Client cert configuration!"));
 
     }

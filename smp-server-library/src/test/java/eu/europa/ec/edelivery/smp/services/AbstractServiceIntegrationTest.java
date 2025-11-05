@@ -135,7 +135,7 @@ public abstract class AbstractServiceIntegrationTest extends AbstractBaseDao {
         domainDao.persistFlushDetach(testDomain01);
 
         DBUser u1 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
-        DBCredential c1 = TestDBUtils.createDBCredentialForUser(u1, null, null, null);
+        DBCredential c1 = TestDBUtils.createDBCredentialForUser(u1, null, null);
         c1.setValue(BCrypt.hashpw(USERNAME_1_PASSWORD, BCrypt.gensalt()));
         DBUser u2 = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_2);
         DBUser u3 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_2);

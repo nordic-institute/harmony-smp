@@ -31,9 +31,10 @@ import {
 
 
 @Component({
-  selector: 'resource-detail-panel',
-  templateUrl: './resource-details-panel.component.html',
-  styleUrls: ['./resource-details-panel.component.scss']
+    selector: 'resource-detail-panel',
+    templateUrl: './resource-details-panel.component.html',
+    styleUrls: ['./resource-details-panel.component.scss'],
+    standalone: false
 })
 export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
   readonly groupVisibilityOptions = Object.keys(VisibilityEnum)
@@ -107,7 +108,10 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
   async onShowButtonDocumentClicked() {
     // set selected resource
+    this.editResourceService.selectedDomain = this.domain;
     this.editResourceService.selectedResource = this.resource;
+    // clear selected subresource
+    this.editResourceService.selectedSubresource = null;
 
     let node: NavigationNode = await this.createNewDocumentNavigationNode();
     this.navigationService.selected.children = [node]
@@ -180,10 +184,21 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
   async onVisibilityChanged(event: any) {
     let showWarning: boolean = this._resource?.visibility === VisibilityEnum.Public && event.target.value === VisibilityEnum.Private;
     if (showWarning) {
+      let confirmationDescriptionKey:string = "resource.details.panel.visibility.change.confirmation.dialog.description";
+      let confirmationDescriptionParameters: any = {};
+
+      // check if resource is referenced by document references
+      if (this._resource.documentReferenceInfo &&
+        this._resource.documentReferenceInfo.sharingEnabled
+        && this._resource.documentReferenceInfo.referencedByCount > 0) {
+        confirmationDescriptionKey = "resource.details.panel.visibility.change.confirmation.dialog.description.referenced";
+        confirmationDescriptionParameters["referenceCount"] = this._resource.documentReferenceInfo.referencedByCount;
+      }
+
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
           title: await lastValueFrom(this.translateService.get("resource.details.panel.visibility.change.confirmation.dialog.title")),
-          description: await lastValueFrom(this.translateService.get("resource.details.panel.visibility.change.confirmation.dialog.description"))
+          description: await lastValueFrom(this.translateService.get(confirmationDescriptionKey, confirmationDescriptionParameters))
         }
       }).afterClosed().subscribe(result => {
         if (!result) {

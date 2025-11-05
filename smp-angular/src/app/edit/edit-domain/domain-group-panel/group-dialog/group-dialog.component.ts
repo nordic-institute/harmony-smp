@@ -12,8 +12,9 @@ import {
 
 
 @Component({
-  templateUrl: './group-dialog.component.html',
-  styleUrls: ['./group-dialog.component.css']
+    templateUrl: './group-dialog.component.html',
+    styleUrls: ['./group-dialog.component.css'],
+    standalone: false
 })
 export class GroupDialogComponent {
 
@@ -45,7 +46,6 @@ export class GroupDialogComponent {
       'name': new FormControl({value: null},  Validators.maxLength(512)),
       'description': new FormControl({value: null}, Validators.maxLength(1024)),
       'visibility': new FormControl({value: null}),
-      '': new FormControl({value: null})
     });
     this.group = data.group;
   }

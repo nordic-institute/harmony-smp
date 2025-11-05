@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,11 +27,15 @@ import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResultProperties;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +51,7 @@ import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_CLUSTER_ENABLED;
 import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_PROPERTY_REFRESH;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.time.DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT;
 
 /**
@@ -60,34 +65,39 @@ public class UIPropertyService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIPropertyService.class);
     ConfigurationDao configurationDao;
     final SMPDynamicCronTrigger refreshPropertiesTrigger;
+    final SMPExceptionLanguageService smpExceptionLanguageService;
 
     public UIPropertyService(ConfigurationDao configurationDao,
-                             @Qualifier(TRIGGER_BEAN_PROPERTY_REFRESH) SMPDynamicCronTrigger refreshPropertiesTrigger) {
+                             @Qualifier(TRIGGER_BEAN_PROPERTY_REFRESH) SMPDynamicCronTrigger refreshPropertiesTrigger,
+                             SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
         this.configurationDao = configurationDao;
         this.refreshPropertiesTrigger = refreshPropertiesTrigger;
     }
 
     /**
-     * Method returns Domain resource object list for page.
+     * Method returns system properties for the given page and filter. If vault is enabled, and vault write is disabled,
+     * skip secret properties as they can not be changed/managed via UI.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @param filterByProperty
-     * @return
+     * @param page   (page number, if -1 return all)
+     * @param pageSize  (page size, if -1 return all)
+     * @param sortField (sort field, can be null or empty)
+     * @param sortOrder (sort order ASC or DESC)
+     * @param filterByProperty filter by property name, case insensitive, can be null or empty
+     * @return ServiceResultProperties with list of PropertyRO for the givan page and filter
      */
     public ServiceResultProperties getTableList(int page, int pageSize,
                                                 String sortField,
                                                 String sortOrder, String filterByProperty) {
 
         LOG.debug("Get properties for page [{}], pageSize [{}] and filter [{}]", page, pageSize, filterByProperty);
-        List<SMPPropertyEnum> filteredProperties = Arrays.asList(SMPPropertyEnum.values()).stream()
-                .filter(prop -> StringUtils.isBlank(filterByProperty)
-                        || StringUtils.containsIgnoreCase(prop.getProperty(), filterByProperty))
-                .collect(Collectors.toList());
-        LOG.debug("Got filtered properties count [{}]", filteredProperties.size());
-
+        // if vault is enabled, but write is disabled, skip vault properties as they can not be changed/managed via UI
+        boolean skipSecretProperty = configurationDao.isVaultEnabled() && !configurationDao.isVaultWriteEnabled();
+        List<SMPPropertyEnum> filteredProperties = Arrays.stream(SMPPropertyEnum.values())
+                .filter(prop -> !(prop.isEncrypted() && skipSecretProperty)
+                        && (isBlank(filterByProperty) || Strings.CI.contains(prop.getProperty(), filterByProperty))
+                )
+                .toList();
         Map<String, DBConfiguration> changedProps = configurationDao.getPendingUpdateProperties().stream()
                 .collect(Collectors.toMap(DBConfiguration::getProperty, Function.identity()));
 
@@ -95,7 +105,7 @@ public class UIPropertyService {
                 .skip(page < 0 ? 0 : page * (long) pageSize)
                 .limit(pageSize < 0 ? SMPPropertyEnum.values().length : pageSize)
                 .map(prop -> createProperty(prop, changedProps))
-                .collect(Collectors.toList());
+                .toList();
 
         ServiceResultProperties result = new ServiceResultProperties();
         result.getServiceEntities().addAll(properties);
@@ -110,7 +120,7 @@ public class UIPropertyService {
     public PropertyRO createProperty(SMPPropertyEnum propertyType, Map<String, DBConfiguration> changedProps) {
 
         PropertyRO property = new PropertyRO(propertyType.getProperty(),
-                configurationDao.getCachedProperty(propertyType),
+                propertyType.isEncrypted()? PropertyUtils.MASKED_VALUE :configurationDao.getCachedProperty(propertyType),
                 propertyType.getPropertyType().name(),
                 propertyType.getDesc());
 
@@ -121,7 +131,7 @@ public class UIPropertyService {
 
         if (changedProps.containsKey(property.getProperty())) {
             String newVal = changedProps.get(propertyType.getProperty()).getValue();
-            if (!StringUtils.equals(newVal, property.getValue())) {
+            if (!Strings.CI.equals(newVal, property.getValue())) {
                 property.setNewValue(changedProps.get(propertyType.getProperty()).getValue());
                 property.setUpdateDate(refreshPropertiesTrigger.getNextExecutionDate());
             } else {
@@ -136,7 +146,7 @@ public class UIPropertyService {
         for (PropertyRO property : properties) {
             configurationDao.setPropertyToDatabase(property.getProperty(), property.getValue());
         }
-        Boolean isClusterEnabled = configurationDao.getCachedPropertyValue(SMP_CLUSTER_ENABLED);
+        Boolean isClusterEnabled = configurationDao.getPropertyValue(SMP_CLUSTER_ENABLED);
         if (isClusterEnabled) {
             LOG.info("Properties were updated in database. Changed properties will be activated to all cluster nodes at: [{}]!",
                     ISO_8601_EXTENDED_DATETIME_FORMAT.format(refreshPropertiesTrigger.getNextExecutionDate()));
@@ -152,16 +162,21 @@ public class UIPropertyService {
         propertyValidationRO.setValue(propertyRO.getValue());
 
         Optional<SMPPropertyEnum> optPropertyEnum = SMPPropertyEnum.getByProperty(propertyRO.getProperty());
-        if (!optPropertyEnum.isPresent()) {
-            LOG.debug("Property: [{}] is not SMP property!", propertyRO.getProperty());
-            propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] is not SMP property!");
+        if (optPropertyEnum.isEmpty()) {
+            LOG.warn("Property: [{}] is not SMP property!", propertyRO.getProperty());
+            ErrorMessageType msg = ErrorMessageType.INVALID_PROPERTY_UNKNOWN;
+            propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
+            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY_NAME, propertyRO.getProperty())));
             return propertyValidationRO;
         }
         SMPPropertyEnum propertyEnum = optPropertyEnum.get();
-        if (StringUtils.isBlank(propertyRO.getValue()) && propertyEnum.isMandatory()) {
-            propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] must not be NULL OR empty!");
+        if (isBlank(propertyRO.getValue()) && propertyEnum.isMandatory()) {
+            LOG.warn("Mandatory Property: [{}] must not be blank!", propertyRO.getProperty());
+            ErrorMessageType msg = ErrorMessageType.INVALID_PROPERTY_MISSING;
+            propertyValidationRO.setMessageCode(msg.getMessageCode());
             propertyValidationRO.setPropertyValid(false);
+            propertyValidationRO.setErrorMessage(msg.getMessageTranslation(Map.of(ErrorMessageArgument.PROPERTY_NAME, propertyRO.getProperty())));
             return propertyValidationRO;
         }
 
@@ -170,8 +185,11 @@ public class UIPropertyService {
             File confDir = Paths.get(SMPEnvironmentProperties.getInstance().getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
             PropertyUtils.parseProperty(propertyEnum, propertyRO.getValue(), confDir);
         } catch (SMPRuntimeException ex) {
-            propertyValidationRO.setErrorMessage(ex.getMessage());
+            String currentLocale = LocaleUtils.getCurrentLocale();
+            String message = smpExceptionLanguageService.getMessageTranslation(ex.getMessageCode(), ex.getMessageArgs(), currentLocale);
+            propertyValidationRO.setErrorMessage(message);
             propertyValidationRO.setPropertyValid(false);
+            propertyValidationRO.setMessageCode(ex.getMessageCode());
             return propertyValidationRO;
         }
 

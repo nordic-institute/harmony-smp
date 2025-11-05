@@ -26,9 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
-
-import java.util.Objects;
+import jakarta.persistence.*;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -64,14 +62,16 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_RESOURCE_MEMBERS, query = "SELECT c FROM DBResourceMember c " +
         " WHERE c.resource.id = :resource_id order by c.user.username")
 @NamedQuery(name = QUERY_RESOURCE_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
-        " WHERE c.resource.id = :resource_id AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))")
+        " WHERE c.resource.id = :resource_id AND (lower(c.user.fullName) like lower(:user_filter) ESCAPE '\\' OR lower(c.user.username) like lower(:user_filter) ESCAPE '\\')")
 @NamedQuery(name = QUERY_RESOURCE_MEMBERS_FILTER, query = "SELECT c FROM DBResourceMember c " +
-        " WHERE c.resource.id = :resource_id  AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
+        " WHERE c.resource.id = :resource_id  AND (lower(c.user.fullName) like lower(:user_filter) ESCAPE '\\' OR lower(c.user.username) like lower(:user_filter) ESCAPE '\\')  order by c.user.username")
 public class DBResourceMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_RESOURCE_MEMBER_SEQ")
-    @GenericGenerator(name = "SMP_RESOURCE_MEMBER_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_RESOURCE_MEMBER_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     Long id;
 

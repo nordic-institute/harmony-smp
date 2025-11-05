@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -26,10 +26,10 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,9 +44,28 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(GroupMemberDao.class);
 
     private final GroupDao groupDao;
+    private final ResourceMemberDao resourceMemberDao;
 
-    public GroupMemberDao(GroupDao groupDao) {
+    public GroupMemberDao(GroupDao groupDao, ResourceMemberDao resourceMemberDao) {
         this.groupDao = groupDao;
+        this.resourceMemberDao = resourceMemberDao;
+    }
+
+    /**
+     * Checks if the user is part of any domain group, or any  resource membership.
+     *
+     * @param user   the user to check
+     * @param domain the domain to check if user is a member of any domain's group or resource
+     * @return true if the user is part of the domain's groups or resources, false otherwise
+     */
+    public boolean isUserDomainGroupsOrResourceMember(DBUser user, DBDomain domain) {
+        LOG.debug("User [{}], Domain [{}]", user, domain);
+        if (user == null || domain == null) {
+            return false;
+        }
+
+        return isUserAnyDomainGroupResourceMember(user, domain)
+                || resourceMemberDao.isUserAnyDomainResourceMember(user, domain);
     }
 
     public boolean isUserGroupMember(DBUser user, List<DBGroup> groups) {
@@ -65,6 +84,10 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
 
     public boolean isUserAnyDomainGroupResourceMember(DBUser user, DBDomain domain) {
         LOG.debug("User [{}], domain [{}]", user, domain);
+        if (user == null || domain == null) {
+            LOG.debug("Cannot deduce if user is a member of any domain group resource because the user or the domain is null");
+            return false;
+        }
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_COUNT,
                 Long.class);
         query.setParameter(PARAM_USER_ID, user.getId());
@@ -89,7 +112,7 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
         LOG.debug("User [{}], Domain [{}], Role [{}]", userId, domainId, roleType);
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT,
                 Long.class);
-        query.setParameter(PARAM_USER_ID,userId);
+        query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         query.setParameter(PARAM_MEMBERSHIP_ROLE, roleType);
         return query.getSingleResult() > 0;
@@ -112,7 +135,7 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
         }
         query.setParameter(PARAM_GROUP_ID, groupId);
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter), "%"));
         }
         return query.getResultList();
     }
@@ -122,7 +145,7 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
         TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_GROUP_MEMBERS_FILTER_COUNT : QUERY_GROUP_MEMBERS_COUNT, Long.class);
         query.setParameter(PARAM_GROUP_ID, groupId);
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter), "%"));
         }
         return query.getSingleResult();
     }

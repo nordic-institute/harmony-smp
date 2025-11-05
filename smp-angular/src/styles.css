@@ -59,13 +59,8 @@ div.mat-mdc-tab-body-wrapper {
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
-  -o-user-select: text;
   user-select: text;
   word-wrap: break-word !important;
-}
-
-.ngx-datatable span {
-  word-wrap: break-word;
 }
 
 .buttonsRow {
@@ -219,7 +214,7 @@ a:hover {
 .panel {
   margin-bottom: 10px;
   padding: 10px;
-  width: 97%;
+  width: calc(100% - 4px);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
 }
 
@@ -252,6 +247,13 @@ a:hover {
   gap:0.7em;
   align-items: center;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
+
+.smp-warning-panel-no-border {
+  display:flex;
+  flex-direction: row;
+  gap:0.7em;
+  align-items: center;
 }
 
 .smp-warning-panel-padding {

@@ -38,6 +38,7 @@ import gen.eu.europa.ec.ddc.api.smp20.basic.ID;
 import gen.eu.europa.ec.ddc.api.smp20.basic.ParticipantID;
 import gen.eu.europa.ec.ddc.api.smp20.basic.SMPVersionID;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,10 +183,10 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
 
         } else {
             LOG.info("Update Resource/ServiceGroup identifier before saving. Old: [{}], New: [{}]", orgResourceId, nrmResourceId);
-            if (!StringUtils.equalsIgnoreCase(orgResourceId.getValue(), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+            if (!Strings.CI.equals(orgResourceId.getValue(), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
                 orgResourceId.setValue(nrmResourceId.getValue());
             }
-            if (!StringUtils.equalsIgnoreCase(orgResourceId.getSchemeID(), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+            if (!Strings.CI.equals(orgResourceId.getSchemeID(), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
                 orgResourceId.setSchemeID(nrmResourceId.getScheme());
             }
 

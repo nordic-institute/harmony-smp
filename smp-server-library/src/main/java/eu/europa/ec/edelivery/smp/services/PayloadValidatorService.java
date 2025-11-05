@@ -18,13 +18,12 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.smp.spi.PayloadValidatorSpi;
 import eu.europa.ec.smp.spi.exceptions.PayloadValidatorSpiException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -45,10 +44,15 @@ import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
 @Service
 public class PayloadValidatorService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PayloadValidatorService.class);
-    List<PayloadValidatorSpi> payloadValidatorSpiList;
 
-    public PayloadValidatorService(Optional<List<PayloadValidatorSpi>> optPayloadValidatorSpiList) {
+    private final List<PayloadValidatorSpi> payloadValidatorSpiList;
+
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public PayloadValidatorService(Optional<List<PayloadValidatorSpi>> optPayloadValidatorSpiList,
+                                   SMPExceptionLanguageService smpExceptionLanguageService) {
         this.payloadValidatorSpiList = optPayloadValidatorSpiList.isPresent() ? optPayloadValidatorSpiList.get() : Collections.emptyList();
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     /**
@@ -70,8 +74,8 @@ public class PayloadValidatorService {
                 validatorSpi.validatePayload(payload, mimeType);
             }
         } catch (PayloadValidatorSpiException e) {
-            LOG.error(SECURITY_MARKER, "Content validation failed: [" + ExceptionUtils.getRootCauseMessage(e) + "]", e);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Upload payload", "Content validation failed");
+            LOG.error(SECURITY_MARKER, "Content validation failed: [" + smpExceptionLanguageService.getMessageTranslation(e) + "]", smpExceptionLanguageService.getTranslated(e));
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_VALIDATE_PAYLOAD);
         }
     }
 }

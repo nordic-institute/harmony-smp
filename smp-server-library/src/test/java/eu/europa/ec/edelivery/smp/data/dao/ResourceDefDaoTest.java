@@ -18,13 +18,16 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +79,10 @@ class ResourceDefDaoTest extends AbstractBaseDao {
 
         // execute
         PersistenceException result = assertThrows(PersistenceException.class, () -> testInstance.persistFlushDetach(testData2));
-        assertEquals("org.hibernate.exception.ConstraintViolationException: could not execute statement", result.getMessage());
+        MatcherAssert.assertThat(
+                result.getCause().getMessage(),
+                CoreMatchers.containsString("Unique index or primary key violation")
+        );
     }
 
     @Test

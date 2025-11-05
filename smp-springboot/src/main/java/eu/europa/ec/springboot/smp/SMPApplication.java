@@ -21,6 +21,7 @@ package eu.europa.ec.springboot.smp;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.util.buf.EncodedSolidusHandling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -32,6 +33,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -51,7 +53,7 @@ import java.io.IOException;
         HibernateJpaAutoConfiguration.class})
 public class SMPApplication implements ApplicationRunner {
 
-    private static final String APPLICATION_NAME = "smp.war";
+    private static final String APPLICATION_NAME = "domismp.war";
 
     private static final Logger LOG = LoggerFactory.getLogger(SMPApplication.class);
 
@@ -78,6 +80,23 @@ public class SMPApplication implements ApplicationRunner {
         };
     }
 
+    /**
+     * Customizes the Tomcat connector to allow backslash and pass through encoded solidus handling. The pass through
+     * allows the encoded solidus ("/") to be treated as a normal character, which is useful for certain URL patterns.
+     *
+     *
+     * @return a WebServerFactoryCustomizer for TomcatServletWebServerFactory
+     */
+    @Bean
+    public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer()
+    {
+        return factory -> factory.addConnectorCustomizers(connector -> {
+            connector.setAllowBackslash(true);
+            connector.setEncodedSolidusHandling(
+                    EncodedSolidusHandling.PASS_THROUGH.getValue());
+        });
+    }
+
 
     /**
      * Entry point if the sprint boot application
@@ -87,7 +106,6 @@ public class SMPApplication implements ApplicationRunner {
     public static void main(String... args) {
         // validate parameters
         LOG.info("Start the SMP with parameters: [{}].", String.join(",", args));
-        System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
         // start spring boot application
         APPLICATION_CONTEXT = SpringApplication.run(SMPApplication.class, args);
     }

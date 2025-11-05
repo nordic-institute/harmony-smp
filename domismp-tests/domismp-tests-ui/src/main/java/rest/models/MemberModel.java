@@ -45,6 +45,10 @@ public class MemberModel {
         return memberId;
     }
 
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
     public String getUsername() {
         return username;
     }

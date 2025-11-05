@@ -20,11 +20,9 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.enums.*;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
-import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
@@ -33,17 +31,19 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType.PUBLISHED;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -130,6 +130,11 @@ public class TestUtilsDao {
     DBSubresource searchPrivPrivPubSubRes = null;
     DBSubresource searchPrivPrivPrivSubRes = null;
 
+    DBDomainDocumentTemplate domainDocumentTemplateD1T1;
+    DBDocument documentTemplateD1RT1;
+
+    DBDomainDocumentTemplate domainDocumentTemplateD1T1Sub;
+    DBDocument documentTemplateD1RT1Sub;
 
     /**
      * Database can be cleaned by script before the next test; clean also the objects
@@ -191,7 +196,10 @@ public class TestUtilsDao {
         searchPrivPrivPubSubRes = null;
         searchPrivPrivPrivSubRes = null;
 
-
+        domainDocumentTemplateD1T1 = null;
+        documentTemplateD1RT1 = null;
+        domainDocumentTemplateD1T1Sub = null;
+        documentTemplateD1RT1Sub = null;
     }
 
 
@@ -240,8 +248,12 @@ public class TestUtilsDao {
         }
         resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10_ID, TEST_RESOURCE_DEF_SMP10_URL);
         subresourceDefSmp =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10_ID, TEST_SUBRESOURCE_DEF_SMP10_URL, resourceDefSmp);
+        resourceDefSmp.getSubresources().add(subresourceDefSmp);
 
         resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP, TEST_RESOURCE_DEF_CPP);
+
+        persistFlushDetach(resourceDefSmp);
+        persistFlushDetach(resourceDefCpp);
 
         assertNotNull(resourceDefSmp.getId());
         assertNotNull(resourceDefCpp.getId());
@@ -276,14 +288,14 @@ public class TestUtilsDao {
             return;
         }
         user1 = createDBUserByUsername(USERNAME_1);
-        DBCredential c1 = TestDBUtils.createDBCredentialForUser(user1, null, null, null);
+        DBCredential c1 = TestDBUtils.createDBCredentialForUser(user1, null, null);
         c1.setValue(BCrypt.hashpw(USERNAME_1_PASSWORD, BCrypt.gensalt()));
         user1.getUserCredentials().add(c1);
 
         user2 = createDBUserByCertificate(USER_CERT_2);
 
         user3 = createDBUserByUsername(USERNAME_3);
-        DBCredential c3 = TestDBUtils.createDBCredentialForUserAccessToken(user3, null, null, null);
+        DBCredential c3 = TestDBUtils.createDBCredentialForUserAccessToken(user3, null, null);
         c3.setValue(BCrypt.hashpw(USERNAME_3_AT_PASSWORD, BCrypt.gensalt()));
         c3.setName(USERNAME_3_AT);
         DBCredential cCert3 = TestDBUtils.createDBCredential(user3, USER_CERT_3, "", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
@@ -310,7 +322,7 @@ public class TestUtilsDao {
     @Transactional
     public void deactivateUser(String username) {
         Optional<DBUser> userOpt = userDao.findUserByUsername(username);
-        if (!userOpt.isPresent()) {
+        if (userOpt.isEmpty()) {
             LOG.warn("User [{}] not found and cannot be deactivated!", username);
             return;
         }
@@ -359,7 +371,7 @@ public class TestUtilsDao {
         createUsers();
         createResources();
         resourceMemberU1R1_D2G1RD1_Admin = createResourceMembership(MembershipRoleType.ADMIN, user1, resourceD1G1RD1);
-        resourceMemberU1R2_D2G1RD1_Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceD2G1RD1);
+        resourceMemberU1R2_D2G1RD1_Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceD2G1RD1, true);
     }
 
     @Transactional
@@ -390,23 +402,23 @@ public class TestUtilsDao {
 
         createGroupMembership(MembershipRoleType.VIEWER, user4, privPrivGroup);
 
-        searchPubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, domainResourceDefD1R1,  groupD1G1);
-        searchPubPubPubSubRes = createSubresource(searchPubPubPubRes, "subres-pubPubPub", "s-1-1-1", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, domainResourceDefD1R1,  groupD1G1);
-        searchPubPubPrivSubRes = createSubresource(searchPubPubPrivRes, "subres-pubPubPriv", "s-2-2-2", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, domainResourceDefD1R1,  groupD1G2);
-        searchPubPrivPubSubRes = createSubresource(searchPubPrivPubRes, "subres-pubPrivPub", "s-3-3-3", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, domainResourceDefD1R1,  groupD1G2);
-        searchPubPrivPrivSubRes = createSubresource(searchPubPrivPrivRes, "subres-pubPrivPriv", "s-4-4-4", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, PUBLISHED,  domainResourceDefD1R1,  groupD1G1, true);
+        searchPubPubPubSubRes = createSubresource(searchPubPubPubRes, "subres-pubPubPub", "s-1-1-1", PUBLISHED, subresourceDefSmp, true);
+        searchPubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, PUBLISHED,domainResourceDefD1R1,  groupD1G1, true);
+        searchPubPubPrivSubRes = createSubresource(searchPubPubPrivRes, "subres-pubPubPriv", "s-2-2-2", PUBLISHED, subresourceDefSmp, true);
+        searchPubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, PUBLISHED, domainResourceDefD1R1,  groupD1G2, true);
+        searchPubPrivPubSubRes = createSubresource(searchPubPrivPubRes, "subres-pubPrivPub", "s-3-3-3", PUBLISHED, subresourceDefSmp, true);
+        searchPubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, PUBLISHED, domainResourceDefD1R1,  groupD1G2, true);
+        searchPubPrivPrivSubRes = createSubresource(searchPubPrivPrivRes, "subres-pubPrivPriv", "s-4-4-4", PUBLISHED, subresourceDefSmp, true);
 
-        searchPrivPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, domainResourceDefD2R1,  groupD2G1);
-        searchPrivPubPubSubRes = createSubresource(searchPrivPubPubRes, "subres-privPubPub", "s-5-5-5", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPrivPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, domainResourceDefD2R1,  groupD2G1);
-        searchPrivPubPrivSubRes = createSubresource(searchPrivPubPrivRes, "subres-privPubPriv", "s-6-6-6", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPrivPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, domainResourceDefD2R1,  privPrivGroup);
-        searchPrivPrivPubSubRes = createSubresource(searchPrivPrivPubRes, "subres-privPrivPub", "s-7-7-7", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
-        searchPrivPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, domainResourceDefD2R1,  privPrivGroup);
-        searchPrivPrivPrivSubRes = createSubresource(searchPrivPrivPrivRes, "subres-privPrivPriv", "s-8-8-8", DocumentVersionStatusType.PUBLISHED, subresourceDefSmp);
+        searchPrivPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, PUBLISHED, domainResourceDefD2R1,  groupD2G1, true);
+        searchPrivPubPubSubRes = createSubresource(searchPrivPubPubRes, "subres-privPubPub", "s-5-5-5", PUBLISHED, subresourceDefSmp, true);
+        searchPrivPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, PUBLISHED, domainResourceDefD2R1,  groupD2G1, true);
+        searchPrivPubPrivSubRes = createSubresource(searchPrivPubPrivRes, "subres-privPubPriv", "s-6-6-6", PUBLISHED, subresourceDefSmp, true);
+        searchPrivPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, PUBLISHED, domainResourceDefD2R1,  privPrivGroup, true);
+        searchPrivPrivPubSubRes = createSubresource(searchPrivPrivPubRes, "subres-privPrivPub", "s-7-7-7", PUBLISHED, subresourceDefSmp, true);
+        searchPrivPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, PUBLISHED, domainResourceDefD2R1,  privPrivGroup, true);
+        searchPrivPrivPrivSubRes = createSubresource(searchPrivPrivPrivRes, "subres-privPrivPriv", "s-8-8-8", PUBLISHED, subresourceDefSmp, true);
 
 
         createResourceMembership(MembershipRoleType.ADMIN, user1, searchPubPubPubRes);
@@ -500,6 +512,7 @@ public class TestUtilsDao {
 
         resourceD2G1RD1.setGroup(groupD2G1);
         resourceD2G1RD1.setDomainResourceDef(domainResourceDefD2R1);
+        resourceD2G1RD1.setReviewEnabled(true);
 
         persistFlushDetach(resourceD1G1RD1);
         persistFlushDetach(resourceD2G1RD1);
@@ -508,13 +521,43 @@ public class TestUtilsDao {
         assertNotNull(resourceD2G1RD1.getId());
     }
 
+
+    @Transactional
+    public void createDomainTemplates() {
+        if (domainDocumentTemplateD1T1 != null) {
+            LOG.trace("Domains templates are already initialized!");
+            return;
+        }
+        createGroups();
+        createResourceDefinitionsForDomains();
+        documentTemplateD1RT1 = createDocument(1,"${resource.identifier.value}", "${resource.identifier.scheme}");
+
+        domainDocumentTemplateD1T1 = new DBDomainDocumentTemplate();
+        domainDocumentTemplateD1T1.setDocumentLevelType( DocumentLevelType.RESOURCE);
+        domainDocumentTemplateD1T1.setDocument(documentTemplateD1RT1);
+        domainDocumentTemplateD1T1.setDomainResourceDef(domainResourceDefD1R1);
+        persistFlushDetach(domainDocumentTemplateD1T1);
+
+        documentTemplateD1RT1Sub = createDocument(1,"${resource.identifier.value}", "${resource.identifier.scheme}", "${subresource.identifier.value}", "${subresource.identifier.scheme}");
+
+        domainDocumentTemplateD1T1Sub = new DBDomainDocumentTemplate();
+        domainDocumentTemplateD1T1Sub.setDocumentLevelType( DocumentLevelType.SUBRESOURCE);
+        domainDocumentTemplateD1T1Sub.setDocument(documentTemplateD1RT1Sub);
+        domainDocumentTemplateD1T1Sub.setDomainResourceDef(domainResourceDefD1R1);
+        domainDocumentTemplateD1T1Sub.setSubresourceDef(domainResourceDefD1R1.getResourceDef().getSubresources().get(0));
+        persistFlushDetach(domainDocumentTemplateD1T1Sub);
+
+
+        assertNotNull(domainDocumentTemplateD1T1.getId());
+    }
+
     @Transactional
     public DBResource createResource(String identifier, String schema,
                                      VisibilityType visibilityType,
                                      DBDomainResourceDef domainResourceDef,
                                      DBGroup group) {
 
-        return createResource(identifier, schema, visibilityType, DocumentVersionStatusType.PUBLISHED, domainResourceDef, group);
+        return createResource(identifier, schema, visibilityType, PUBLISHED, domainResourceDef, group);
     }
 
     @Transactional
@@ -523,12 +566,55 @@ public class TestUtilsDao {
                                      DocumentVersionStatusType status,
                                      DBDomainResourceDef domainResourceDef,
                                      DBGroup group) {
+        return createResource(identifier, schema, visibilityType, status, domainResourceDef, group, false);
+    }
+
+    @Transactional
+    public DBResource createResource(String identifier, String schema,
+                                     VisibilityType visibilityType,
+                                     DocumentVersionStatusType status,
+                                     DBDomainResourceDef domainResourceDef,
+                                     DBGroup group,
+                                     boolean isSharingEnabled) {
 
         DBResource resource = TestDBUtils.createDBResource(identifier, schema, true, status);
         resource.setVisibility(visibilityType);
         resource.setGroup(group);
         resource.setDomainResourceDef(domainResourceDef);
         resource.setReviewEnabled(true);
+
+        DBDocument doc  = createDocument(1, resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                identifier, schema);
+        doc.getDocumentVersions().get(0).setStatus(status);
+        doc.setSharingEnabled(isSharingEnabled);
+        resource.setDocument(doc);
+
+        persistFlushDetach(resource);
+        assertNotNull(resource.getId());
+        return resource;
+    }
+
+    @Transactional
+    public DBResource createResource(String identifier, String schema,
+                                     VisibilityType visibilityType,
+                                     DocumentVersionStatusType status,
+                                     DBDomainResourceDef domainResourceDef,
+                                     DBGroup group,
+                                     DBDocument referenceDocument) {
+
+        DBResource resource = TestDBUtils.createDBResource(identifier, schema, true, status);
+        resource.setVisibility(visibilityType);
+        resource.setGroup(group);
+        resource.setDomainResourceDef(domainResourceDef);
+        resource.setReviewEnabled(true);
+
+        DBDocument doc  = createDocument(1, resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                identifier, schema);
+        doc.getDocumentVersions().get(0).setStatus(status);
+        doc.setSharingEnabled(false);
+        doc.setReferenceDocument(referenceDocument);
+        doc.setReferenceDocumentUrl("http://referencedocument");
+        resource.setDocument(doc);
 
         persistFlushDetach(resource);
         assertNotNull(resource.getId());
@@ -537,7 +623,14 @@ public class TestUtilsDao {
 
     @Transactional
     public DBSubresource createSubresource(DBResource resource, String identifier, String schema,
-                                     DocumentVersionStatusType status, DBSubresourceDef subresourceDefSmp) {
+                                           DocumentVersionStatusType status, DBSubresourceDef subresourceDefSmp) {
+        return createSubresource(resource, identifier, schema, status, subresourceDefSmp, false);
+    }
+
+
+    @Transactional
+    public DBSubresource createSubresource(DBResource resource, String identifier, String schema,
+                                     DocumentVersionStatusType status, DBSubresourceDef subresourceDefSmp, boolean sharingEnabled) {
 
         DBSubresource dbSubresource = TestDBUtils.createDBSubresource(
                 resource.getIdentifierValue(),resource.getIdentifierScheme(),
@@ -549,7 +642,33 @@ public class TestUtilsDao {
         DBDocument doc  = createDocument(1, resource.getIdentifierValue(), resource.getIdentifierScheme(),
                 identifier, schema);
         doc.getDocumentVersions().get(0).setStatus(status);
-        doc.setSharingEnabled(Boolean.TRUE);
+        doc.setSharingEnabled(sharingEnabled);
+        dbSubresource.setDocument(doc);
+        dbSubresource.setResource(resource);
+
+
+        persistFlushDetach(dbSubresource);
+        assertNotNull(dbSubresource.getId());
+        return dbSubresource;
+    }
+
+    @Transactional
+    public DBSubresource createSubresource(DBResource resource, String identifier, String schema,
+                                           DocumentVersionStatusType status, DBSubresourceDef subresourceDefSmp, DBDocument referenceDocument) {
+
+        DBSubresource dbSubresource = TestDBUtils.createDBSubresource(
+                resource.getIdentifierValue(),resource.getIdentifierScheme(),
+                identifier, schema);
+
+
+        dbSubresource.setSubresourceDef(subresourceDefSmp);
+
+        DBDocument doc  = createDocument(1, resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                identifier, schema);
+        doc.getDocumentVersions().get(0).setStatus(status);
+        doc.setSharingEnabled(false);
+        doc.setReferenceDocumentUrl("http://referencedocument");
+        doc.setReferenceDocument(referenceDocument);
         dbSubresource.setDocument(doc);
         dbSubresource.setResource(resource);
 
@@ -614,7 +733,7 @@ public class TestUtilsDao {
             assertNotNull(document.getDocumentVersions().get(i).getId());
         }
         // current version is first version all others are draft
-        assertEquals(1, document.getCurrentVersion());
+        assertEquals(2, document.getCurrentVersion());
 
         return document;
     }
@@ -623,8 +742,12 @@ public class TestUtilsDao {
         DBDocument document = createDBDocument();
         // add document versions to the document
         for (int i= 0; i< versions; i++ ) {
+            DBDocumentVersion dbDocumentVersion = createDBDocumentVersion(identifier, schema);
+            dbDocumentVersion.setVersion(i+1);
             document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema));
         }
+        document.getDocumentVersions().get(versions-1).setStatus(DocumentVersionStatusType.PUBLISHED);
+        document.setCurrentVersion(versions); // always set current version to first version
         return document;
     }
 
@@ -728,16 +851,13 @@ public class TestUtilsDao {
 
     @Transactional
     public DBResourceDef createResourceDefinition(String identifier, String urlContextDef) {
-        DBResourceDef d = TestDBUtils.createDBResourceDef(identifier, urlContextDef);
-        persistFlushDetach(d);
-        return d;
+        return TestDBUtils.createDBResourceDef(identifier, urlContextDef);
     }
 
     @Transactional
     public DBSubresourceDef createSubresourceDefinition(String identifier, String urlContextDef, DBResourceDef resourceDef) {
         DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(identifier, urlContextDef);
         d.setResourceDef(resourceDef);
-        persistFlushDetach(d);
         return d;
     }
 
@@ -861,6 +981,14 @@ public class TestUtilsDao {
 
     public DBSubresource getSubresourceD2G1RD1_S1() {
         return subresourceD2G1RD1_S1;
+    }
+
+    public DBDomainDocumentTemplate getDomainDocumentTemplateD1T1() {
+        return domainDocumentTemplateD1T1;
+    }
+
+    public DBDomainDocumentTemplate getDomainDocumentTemplateD1T1Sub() {
+        return domainDocumentTemplateD1T1Sub;
     }
 
     public DBResource getResourceD2G1RD1() {

@@ -39,9 +39,9 @@ public class PropertiesPage extends DomiSMPPage {
     public void propertySearch(String propertyname) {
         LOG.info("Search for property");
         wait.forElementToBeVisible(searchPropertyField).sendKeys(propertyname);
-        wait.forXMillis(500);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
         wait.forElementToBeClickable(searchBtn).click();
-        wait.forXMillis(500);
+        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
     }
 
     public PropertyPopup openEditPropertyPopupup(String propertyName) {

@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.services.spi;
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -29,6 +29,7 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -153,7 +154,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
             // Marshal, generate, and sign the enveloped signature
             signature.sign(domSignContext);
         } catch (Exception e) {
-            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, e);
+            throw new SMPRuntimeException(ErrorMessageType.XML_RESPONSE_SIGNING, e);
         }
     }
 
@@ -166,7 +167,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
                     null,
                     null);
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, e);
+            throw new SMPRuntimeException(ErrorMessageType.XML_RESPONSE_SIGNING, e);
         }
     }
 
@@ -185,15 +186,15 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
             return algorithm;
         }
 
-        if (StringUtils.equalsAnyIgnoreCase(key.getAlgorithm(), "1.3.101.112","ed25519")) {
+        if (Strings .CI.equalsAny(key.getAlgorithm(), "1.3.101.112","ed25519")) {
             return org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_EDDSA_ED25519;
         }
 
-        if (StringUtils.equalsAnyIgnoreCase(key.getAlgorithm(), "1.3.101.113","ed448")) {
+        if (Strings.CI.equalsAny(key.getAlgorithm(), "1.3.101.113","ed448")) {
             return org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_EDDSA_ED448;
         }
 
-        if (StringUtils.equalsIgnoreCase(key.getAlgorithm(), "ec")) {
+        if (Strings.CI.equals(key.getAlgorithm(), "ec")) {
             return org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA256;
         }
         return org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;

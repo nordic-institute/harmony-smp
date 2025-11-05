@@ -1,7 +1,8 @@
 package pages.systemSettings.domainsPage;
 
-import ddsl.CommonPageWithTabsAndGrid;
-import ddsl.dcomponents.Grid.SmallGrid;
+import ddsl.commonPages.CommonPageWithTabsAndGrid;
+import ddsl.dcomponents.ConfirmationDialog;
+import ddsl.dcomponents.Grid.MatSmallGrid;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,8 +35,13 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
     }
 
     @Override
-    public SmallGrid getLeftSideGrid() {
-        return new SmallGrid(driver, rightPanel);
+    public MatSmallGrid getLeftSideGrid() {
+        return new MatSmallGrid(driver, rightPanel);
+    }
+
+    public ResourceTypesTab getResourceTypesTab() {
+
+        return new ResourceTypesTab(driver);
     }
 
     public SMLIntegrationTab getSMLIntegrationTab() {
@@ -57,5 +63,23 @@ public class DomainsPage extends CommonPageWithTabsAndGrid {
         return warningLabel.getText();
     }
 
+    public void deleteandConfirm() {
+        weToDButton(deleteBtn).click();
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
+        confirmationDialog.confirm();
+    }
 
+    public DButton getDeleteBtn() {
+        return weToDButton(deleteBtn);
+    }
+
+    public void filterAndSelectDomain(String domainCode) {
+        weToDInput(filterInput).fill(domainCode);
+        getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainCode);
+    }
+
+    public boolean IsDomainInGrid(String domainCode) {
+        weToDInput(filterInput).fill(domainCode);
+        return getLeftSideGrid().isValuePresentInColumn("Domain code", domainCode);
+    }
 }

@@ -4,9 +4,10 @@ import {TranslateService} from "@ngx-translate/core";
 import {DateTimeService} from "../../services/date-time.service";
 
 @Component({
-  selector: 'object-properties-dialog',
-  templateUrl: './object-properties-dialog.component.html',
-  styleUrls: ['./object-properties-dialog.component.css']
+    selector: 'object-properties-dialog',
+    templateUrl: './object-properties-dialog.component.html',
+    styleUrls: ['./object-properties-dialog.component.css'],
+    standalone: false
 })
 export class ObjectPropertiesDialogComponent {
 

@@ -30,6 +30,7 @@ import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.slf4j.Logger;
@@ -221,7 +222,7 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
         }
 
         String identifierString = smpIdentifierApi.formatResourceIdentifier(domainCode, identifier);
-        if (!StringUtils.equalsIgnoreCase(entityRo.getIdentifier(), identifierString)) {
+        if (!Strings.CI.equals(entityRo.getIdentifier(), identifierString)) {
             throw new ResourceException(INVALID_RESOURCE, "Property: [identifier] does not match value for the resource [" + identifierString + "]");
         }
 

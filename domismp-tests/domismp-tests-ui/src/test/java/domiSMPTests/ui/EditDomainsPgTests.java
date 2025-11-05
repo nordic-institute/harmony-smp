@@ -1,7 +1,9 @@
 package domiSMPTests.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.commonComponents.domanPropertyEditDialog.DomainPropertyEditDialog;
+import ddsl.dcomponents.commonComponents.members.InviteMembersPopup;
 import ddsl.dcomponents.commonComponents.members.InviteMembersWithGridPopup;
 import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
@@ -35,6 +37,8 @@ public class EditDomainsPgTests extends SeleniumTest {
     UserModel normalUser;
     MemberModel memberAdmin;
     MemberModel memberUser;
+    MemberModel superMember;
+
 
     SoftAssert soft;
 
@@ -52,6 +56,10 @@ public class EditDomainsPgTests extends SeleniumTest {
         memberUser = new MemberModel();
         memberUser.setUsername(normalUser.getUsername());
         memberUser.setRoleType("ADMIN");
+
+        superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
 
         rest.users().createUser(adminUser);
         rest.users().createUser(normalUser);
@@ -74,8 +82,9 @@ public class EditDomainsPgTests extends SeleniumTest {
         rest.users().createUser(domainMember);
 
         //Add user
-        editDomainPage.getDomainMembersTab().getInviteMemberBtn().click();
-        editDomainPage.getDomainMembersTab().getInviteMembersPopup().selectMember(domainMember.getUsername(), "VIEWER");
+        editDomainPage.getDomainMembersTab()
+                .clickOnInviteMemberBtn()
+                .selectMember(domainMember.getUsername(), "VIEWER");
         soft.assertTrue(editDomainPage.getDomainMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
 
         //Change role of user
@@ -153,13 +162,108 @@ public class EditDomainsPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Test(description = "EDTDOM-05 Domain admins are not able to delete groups with resources")
+    public void domainAdminsAreNotAbleToDeleteGroupsWithResources() throws JsonProcessingException {
+
+        DomainModel domainModelGenerated = DomainModel.generatePublicDomainModelWithSML();
+        GroupModel currentGroupModel = GroupModel.generatePublicGroup();
+        ResourceModel currentResourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
+        currentResourceModel.setResourceTypeIdentifier(ResourceTypes.OASIS3.getName());
+
+        MemberModel superMember = new MemberModel();
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
+        superMember.setRoleType("ADMIN");
+
+        //create domain
+        DomainModel currentDomainModel = rest.domains().createDomain(domainModelGenerated);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(currentDomainModel, superMember);
+        rest.domains().addMembersToDomain(currentDomainModel, memberAdmin);
+
+        //add resources to domain
+        List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
+        currentDomainModel = rest.domains().addResourcesToDomain(currentDomainModel, resourcesToBeAdded);
+
+        //create group for domain
+        currentGroupModel = rest.domains().createGroupForDomain(currentDomainModel, currentGroupModel);
+
+        //add resource to group
+        rest.resources().createResourceForGroup(currentDomainModel, currentGroupModel, currentResourceModel);
+
+        editDomainPage.refreshPage();
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", currentDomainModel.getDomainCode()).click();
+        editDomainPage.goToTab("Group");
+        //  Thread.sleep(500);
+        editDomainPage.getGroupTab().deleteGroup(currentGroupModel.getGroupName());
+        String deleteMessage = editDomainPage.getAlertArea().getAlertMessage();
+        soft.assertEquals(deleteMessage, "Invalid request [DeleteGroup]. Error: Group has resources [1] and can not be deleted!");
+        soft.assertAll();
+    }
+
+    @Test(description = "DOM-06 Domain admins are able to delete groups with members")
+    public void domainAdminsAreAbleToDeleteGroupsWithMembers() throws JsonProcessingException {
+
+        DomainModel currentDomainModel = DomainModel.generatePublicDomainModelWithSML();
+        GroupModel groupModel = GroupModel.generatePublicGroup();
+
+        //create domain
+        currentDomainModel = rest.domains().createDomain(currentDomainModel);
+
+        //add users to domain
+        rest.domains().addMembersToDomain(currentDomainModel, memberAdmin);
+        rest.domains().addMembersToDomain(currentDomainModel, superMember);
+
+        //create group for domain
+        groupModel = rest.domains().createGroupForDomain(currentDomainModel, groupModel);
+
+        //add users to groups
+        rest.groups().addMembersToGroup(currentDomainModel, groupModel, memberAdmin);
+        rest.groups().addMembersToGroup(currentDomainModel, groupModel, memberUser);
+
+        editDomainPage.refreshPage();
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", currentDomainModel.getDomainCode()).click();
+        editDomainPage.goToTab("Group");
+        editDomainPage.getGroupTab().deleteGroup(groupModel.getGroupName());
+        String deleteGroupMessage = editDomainPage.getAlertMessageAndClose();
+        soft.assertEquals(deleteGroupMessage, "Domain group [" + groupModel.getGroupName() + "] deleted", "Delete group message is not correct!");
+        soft.assertFalse(editDomainPage.getGroupTab().getGrid().isValuePresentInColumn("Group name", groupModel.getGroupName()), "Deleted groups is still visible!");
+
+        soft.assertAll();
+    }
+
+    @Test(description = "EDTDOM-08 Domain admins are not able to invite the same user twice")
+    public void domainAdminsAreNotAbleToInviteTheSameUserTwice() {
+
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+
+        InviteMembersPopup inviteMembersPopup = editDomainPage.getDomainMembersTab().clickOnInviteMemberBtn();
+        inviteMembersPopup.selectMember(memberAdmin.getUsername(), "VIEWER");
+        String duplicatedUserErrorMessage = editDomainPage.getAlertMessageAndClose();
+        soft.assertEquals(duplicatedUserErrorMessage, "Invalid request [Add membership]. Error: User [" + memberAdmin.getUsername() + "] is already a member!!",
+                "Wrong error message when trying to add duplicated user with different role");
+        inviteMembersPopup.getCloseBtn().click();
+
+
+        inviteMembersPopup = editDomainPage.getDomainMembersTab().clickOnInviteMemberBtn();
+        inviteMembersPopup.selectMember(memberAdmin.getUsername(), "ADMIN");
+        String duplicatedUserSameRoleErrorMessage = editDomainPage.getAlertMessageAndClose();
+        soft.assertEquals(duplicatedUserSameRoleErrorMessage, "Invalid request [Add membership]. Error: User [" + memberAdmin.getUsername() + "] is already a member!!",
+                "Wrong error message when trying to add duplicated user with same role");
+
+        soft.assertAll();
+    }
+
+
+
     @Test(description = "EDTDOM-09 Domain admins are able to change default properties for domains")
     public void domainAdminsAreAbleToChangeDefaultPropertiesForDomains() throws Exception {
         DomainModel currentDomainModel = DomainModel.generatePublicDomainModelWithSML();
+
         //create domain
         currentDomainModel = rest.domains().createDomain(currentDomainModel);
-        //  rest.domains().addMembersToDomain(domainModel, adminMember);
         rest.domains().addMembersToDomain(currentDomainModel, memberUser);
+
         //add resources to domain
         List<ResourceTypes> resourcesToBeAdded = Arrays.asList(ResourceTypes.OASIS1, ResourceTypes.OASIS3, ResourceTypes.OASIS2);
         currentDomainModel = rest.domains().addResourcesToDomain(currentDomainModel, resourcesToBeAdded);
@@ -302,6 +406,9 @@ public class EditDomainsPgTests extends SeleniumTest {
         createResourceDetailsDialog.fillResourceDetails(resourceModel2);
         Boolean saveisDisabled = createResourceDetailsDialog.tryClickOnSave();
         soft.assertFalse(saveisDisabled, "Save action didn't worked");
+        if (!saveisDisabled) {
+            createResourceDetailsDialog.getCloseBtn().click();
+        }
         soft.assertFalse(editGroupsPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel2.getIdentifierValue()), "Resource is  present in the grid");
 
 

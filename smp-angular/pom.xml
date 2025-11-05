@@ -18,7 +18,7 @@
     <maven.deploy.skip>false</maven.deploy.skip>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!--  latest version supported by the build server -->
-    <node.version>v20.18.0</node.version>
+    <node.version>v20.19.4</node.version>
     <npm.version>10.8.2</npm.version>
     <!--  Currently last version not supported by the build server :(
     node.version>v18.18.2</node.version>

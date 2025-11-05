@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,7 +27,7 @@ import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.slf4j.Logger;
@@ -92,7 +92,7 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
             properties.setProperty(PROPERTY_URL, "http://example.local/test");
 
             properties.setProperty(PROPERTY_EMAIL, "test.address@example.local");
-            X509Certificate cert = createX509Certificate("CN="+identifierString+",O=edelivery,C=EU");
+            X509Certificate cert = createX509Certificate("CN=" + identifierString + ",O=edelivery,C=EU");
             properties.setProperty(PROPERTY_CERTIFICATE, Base64.getEncoder().encodeToString(cert.getEncoded()));
 
             properties.store(responseData.getOutputStream(), "DomiSMP property extension example");
@@ -189,30 +189,28 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while reading example property document: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(ex), ex);
         }
 
-        if ( !properties.containsKey(PROPERTY_IDENTIFIER)){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_IDENTIFIER + "]" );
+        if (!properties.containsKey(PROPERTY_IDENTIFIER)) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_IDENTIFIER + "]");
         }
-        if ( !properties.containsKey(PROPERTY_URL)){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_URL + "]" );
+        if (!properties.containsKey(PROPERTY_URL)) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_URL + "]");
         }
-        if ( !properties.containsKey(PROPERTY_EMAIL)){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_EMAIL + "]" );
+        if (!properties.containsKey(PROPERTY_EMAIL)) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_EMAIL + "]");
         }
-        if ( !properties.containsKey(PROPERTY_CERTIFICATE)){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_CERTIFICATE + "]" );
+        if (!properties.containsKey(PROPERTY_CERTIFICATE)) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_CERTIFICATE + "]");
         }
         String identifierString = smpIdentifierApi.formatResourceIdentifier(resourceData.getDomainCode(), identifier);
-        if (!StringUtils.equalsIgnoreCase(properties.getProperty(PROPERTY_IDENTIFIER),identifierString )){
-            throw new ResourceException(INVALID_RESOURCE, "Property: [" + PROPERTY_IDENTIFIER + "] does not match value for the resource ["+identifierString+"]" );
+        if (!Strings.CI.equals(properties.getProperty(PROPERTY_IDENTIFIER), identifierString)) {
+            throw new ResourceException(INVALID_RESOURCE, "Property: [" + PROPERTY_IDENTIFIER + "] does not match value for the resource [" + identifierString + "]");
         }
 
         try {
             new URL(properties.getProperty(PROPERTY_URL));
         } catch (MalformedURLException e) {
-            throw new ResourceException(INVALID_RESOURCE, "Bad property value: [" + PROPERTY_URL + "]!. Value ["+properties.getProperty(PROPERTY_URL)+"]  is not URL" );
+            throw new ResourceException(INVALID_RESOURCE, "Bad property value: [" + PROPERTY_URL + "]!. Value [" + properties.getProperty(PROPERTY_URL) + "]  is not URL");
         }
-
-
         return properties;
     }
 

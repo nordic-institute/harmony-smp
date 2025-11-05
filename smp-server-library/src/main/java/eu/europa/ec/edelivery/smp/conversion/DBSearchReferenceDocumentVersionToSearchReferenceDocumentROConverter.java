@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.enums.DocumentReferenceType;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentLevelType;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSearchReferenceDocumentMapping;
 import eu.europa.ec.edelivery.smp.data.ui.SearchReferenceDocumentRO;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
@@ -80,7 +80,7 @@ public class DBSearchReferenceDocumentVersionToSearchReferenceDocumentROConverte
         String ctx = URL_SEPARATOR + getUrlPart(source.getDomainCode()) + getUrlPart(source.getResourceDefUrlSegment());
         ctx += identifierService.urlEncodedFormatParticipant(source.getDomainCode(), new Identifier(source.getResourceValue(), source.getResourceScheme()));
 
-        if (source.getReferenceType() == DocumentReferenceType.SUBRESOURCE) {
+        if (source.getReferenceType() == DocumentLevelType.SUBRESOURCE) {
             ctx += URL_SEPARATOR + getUrlPart(source.getSubresourceDefUrlSegment())
                     + identifierService.urlEncodedFormatDocument(source.getDomainCode(), new Identifier(source.getSubresourceValue(), source.getSubresourceScheme()));
         }

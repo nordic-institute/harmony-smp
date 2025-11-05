@@ -1,8 +1,13 @@
 package pages.systemSettings.domainsPage;
 
 import ddsl.dcomponents.DComponent;
+import ddsl.dcomponents.mat.MatSelect;
+import ddsl.dobjects.DButton;
+import ddsl.dobjects.DInput;
+import ddsl.dobjects.DSelect;
 import ddsl.enums.ResponseCertificates;
 import org.apache.poi.util.StringUtil;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -22,6 +27,8 @@ public class DomainTab extends DComponent {
     private WebElement responseSignatureCertificateDdl;
     @FindBy(id = "domainVisibility_id")
     private WebElement visibilityOfDomainDdl;
+    @FindBy(id = "domainDefaultResourceType_id")
+    private WebElement defaultResourceTypeForDomainDdl;
     @FindBy(id = "saveButton")
     private WebElement saveBtn;
 
@@ -29,10 +36,6 @@ public class DomainTab extends DComponent {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
 
-    }
-
-    public WebElement getDomainIdInput() {
-        return domainIdInput;
     }
 
     public String getResponseSignatureCertificateSelectedValue() {
@@ -59,18 +62,43 @@ public class DomainTab extends DComponent {
         weToDSelect(visibilityOfDomainDdl).selectValue(domainModel.getVisibility());
     }
 
+    public void changeVisibility(String visibilityValue) {
+        String currentValue = getVisibilityOfDomainSelectedValue();
+        if (!currentValue.equals(visibilityValue)) {
+            weToDSelect(visibilityOfDomainDdl).selectValue(visibilityValue);
+        }
+    }
+
+    public MatSelect getResponseSigunatureCertificateDdl() {
+        return weToMatSelect(responseSignatureCertificateDdl);
+    }
+
+    public DSelect getDefaultResourceTypeDdl() {
+        return weToDSelect(defaultResourceTypeForDomainDdl);
+    }
+
+    public DInput getDomainCodeInput() {
+        return weToDInput(domainIdInput);
+    }
+
+    public DButton getSaveBtn() {
+        return weToDButton(saveBtn);
+    }
+
+    public String getDomainCodeValidationMessage() {
+        return domainIdInput.findElement(By.xpath("following-sibling::*[1]")).getText();
+    }
+
     public void saveChanges() {
-        if (saveBtn.isEnabled()) {
-            saveBtn.click();
+        if (weToDButton(saveBtn).isEnabled()) {
+            weToDButton(saveBtn).click();
             wait.forElementToBeDisabled(saveBtn);
-            try {
-                saveBtn.getAttribute("disabled").equals("true");
+
+            if (!(weToDButton(saveBtn).getAttribute("disabled") == null)) {
                 LOG.debug("Domain tab changes were succesfully saved");
-
-            } catch (NullPointerException e) {
-                LOG.debug("Domain tab changes were not saved");
+            } else {
+                LOG.error("Domain  tab changes were not saved");
             }
-
         }
     }
 

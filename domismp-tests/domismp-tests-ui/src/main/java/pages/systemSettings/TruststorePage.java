@@ -1,6 +1,6 @@
 package pages.systemSettings;
 
-import ddsl.CommonCertificatePage;
+import ddsl.commonPages.CommonCertificatePage;
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
@@ -34,7 +34,7 @@ public class TruststorePage extends CommonCertificatePage {
             return matcher.group(1);
         }
      else {
-        throw new NullPointerException("No alias found in the message: "+certificateAlias);
+            return certificateAlias;
     }
     }
 

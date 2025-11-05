@@ -1,4 +1,5 @@
 import {SearchTableEntity} from "../search-table/search-table-entity.model";
+import {DocumentLevelType} from "../enums/documetn-reference-type.enum";
 
 export interface ReviewDocumentVersionRo extends SearchTableEntity {
 
@@ -12,6 +13,6 @@ export interface ReviewDocumentVersionRo extends SearchTableEntity {
   resourceIdentifierScheme: string;
   subresourceIdentifierValue?: string;
   subresourceIdentifierScheme?: string;
-  target: string;
+  documentLevel: DocumentLevelType;
   lastUpdatedOn: Date;
 }

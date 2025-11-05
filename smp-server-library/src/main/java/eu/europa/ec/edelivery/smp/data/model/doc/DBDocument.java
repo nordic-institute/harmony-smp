@@ -27,7 +27,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,11 +44,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_DOCUMENT")
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
+@Table(name = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
 
 @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES, query =
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES, query =
         "SELECT new eu.europa.ec.edelivery.smp.data.model.doc.DBSearchReferenceDocumentMapping(" +
         "   d.id, " +
         "   r.id, " +
@@ -69,9 +68,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND r.visibility =:resource_visibility " +
         "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
         "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT, query = "SELECT count(d.id) " +
+        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\') " +
+        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')")
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES_COUNT, query = "SELECT count(d.id) " +
         " FROM DBResource r " +
         " INNER JOIN r.document d " +
         " INNER JOIN r.group gr" +
@@ -84,10 +83,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND r.visibility =:resource_visibility " +
         "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
         "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))")
+        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\')" +
+        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')")
 @NamedQuery(name = QUERY_DOCUMENT_FOR_SUBRESOURCE, query = "SELECT d FROM DBSubresource  sr JOIN sr.document d WHERE sr.id =:subresource_id")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES, query =
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES, query =
         "SELECT new eu.europa.ec.edelivery.smp.data.model.doc.DBSearchReferenceDocumentMapping(" +
                 "   d.id, " +
                 "   r.id, " +
@@ -115,11 +114,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                 "   AND r.visibility =:resource_visibility " +
                 "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
                 "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-                "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-                "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))" +
-                "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier))" +
-                "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme))")
-@NamedQuery(name = QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT, query = "SELECT count(d.id) " +
+                "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\')" +
+                "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')" +
+                "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier) ESCAPE '\\')" +
+                "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme) ESCAPE '\\')")
+@NamedQuery(name = QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES_COUNT, query = "SELECT count(d.id) " +
         " FROM DBSubresource sr " +
         " INNER JOIN sr.subresourceDef srdef " +
         " INNER JOIN sr.document d " +
@@ -135,17 +134,19 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "   AND r.visibility =:resource_visibility " +
         "   AND (gr.visibility=:group_visibility OR gr.id =:group_id)" +
         "   AND (dom.visibility=:domain_visibility OR dom.id =:domain_id)"  +
-        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier))" +
-        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme))" +
-        "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier))" +
-        "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme))")
+        "   AND (:resource_identifier IS NULL OR lower(r.identifierValue) like (:resource_identifier) ESCAPE '\\')" +
+        "   AND (:resource_scheme IS NULL OR lower(r.identifierScheme) like (:resource_scheme) ESCAPE '\\')" +
+        "   AND (:subresource_identifier IS NULL OR lower(sr.identifierValue) like (:subresource_identifier) ESCAPE '\\')" +
+        "   AND (:subresource_scheme IS NULL OR lower(sr.identifierScheme) like (:subresource_scheme) ESCAPE '\\')")
 
 @NamedQuery(name = QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, query = "SELECT d FROM DBDocument d WHERE d.referenceDocument.id =:document_id")
 public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOCUMENT_SEQ")
-    @GenericGenerator(name = "SMP_DOCUMENT_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOCUMENT_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique document id")
     Long id;

@@ -18,7 +18,11 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.io.Serial;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,7 @@ import java.util.List;
  */
 public class CertificateRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630004L;
 
     private String certificateId;
@@ -45,6 +50,7 @@ public class CertificateRO extends BaseRO {
     private boolean isContainingKey;
 
     private final List<String> certificatePolicies = new ArrayList<>();
+    private List<CertificateExtensionRO> extensions  = new ArrayList<>();
     private String invalidReason;
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
@@ -175,5 +181,22 @@ public class CertificateRO extends BaseRO {
 
     public List<String> getCertificatePolicies() {
         return certificatePolicies;
+    }
+
+    public List<CertificateExtensionRO> getExtensions() {
+        return extensions;
+    }
+
+    @JsonIgnore
+    public boolean isExpired() {
+        return expiringInDays(0);
+    }
+
+    public boolean expiringInDays(int days) {
+        return isExpired(OffsetDateTime.now(ZoneOffset.UTC).plusDays(days));
+    }
+
+    public boolean isExpired(OffsetDateTime expirationDate) {
+        return validTo.isBefore(expirationDate);
     }
 }

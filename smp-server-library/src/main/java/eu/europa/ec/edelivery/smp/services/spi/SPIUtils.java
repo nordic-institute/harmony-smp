@@ -23,6 +23,12 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 
+/**
+ * Utility class for SPI module. E.g conversion between internal and SPI identifiers.
+ *
+ * @author Joze Rihtarsic
+ * @since 5.0
+ */
 public class SPIUtils {
 
     public static ResourceIdentifier toUrlIdentifier(DBSubresource subresource) {
@@ -31,6 +37,14 @@ public class SPIUtils {
 
     public static ResourceIdentifier toUrlIdentifier(DBResource resource) {
         return new ResourceIdentifier(resource.getIdentifierValue(), resource.getIdentifierScheme());
+    }
+
+    public static ResourceIdentifier createTemplateSubresourceIdentifier() {
+        return new ResourceIdentifier("[RESOURCE-IDENTIFIER-VALUE]","[RESOURCE-IDENTIFIER-SCHEME]");
+    }
+
+    public static ResourceIdentifier createTemplateResourceIdentifier() {
+        return new ResourceIdentifier("[RESOURCE-IDENTIFIER-VALUE]","[RESOURCE-IDENTIFIER-SCHEME]");
     }
 
     public static Identifier toIdentifier(ResourceIdentifier identifier) {

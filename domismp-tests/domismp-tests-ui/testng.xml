@@ -1,18 +1,110 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="SELENIUM" parallel="classes" thread-count="1">
-    <test thread-count="1" name="domismp-tests-ui">
+    <test name="All UI Tests">
         <classes>
-            <class name="domiSMPTests.SeleniumTest"/>
-            <class name="domiSMPTests.ui.UsersPgTests"/>
-            <class name="domiSMPTests.ui.DomainsPgTests"/>
-            <class name="domiSMPTests.ui.ProfilePgTests"/>
+            <class name="domiSMPTests.ui.AccessTokensPgTests"/>
+            <class name="domiSMPTests.ui.AlertsPgTests">
+                <methods>
+                    <exclude
+                            name="pageListsFailedAlertsRelatedToLoginAttemptsUserEventsCredentialExpirationEvents"/>  <!-- Fails due to EDELIVERY-15227 My Alerts: Alerts status desc is populated with java error -->
+                </methods>
+            </class>
+            <class name="domiSMPTests.ui.CertificatesPgTests">
+                <methods>
+                    <exclude
+                            name="userIsAbleToDeleteCertificate"/> <!--  Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
+                    <exclude
+                            name="userIsAbleToDeleteCertificate"/>   <!-- Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
+                    <exclude
+                            name="userIsNotAbleToAddDuplicatedCertificate"/>  <!-- Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
+                    <exclude
+                            name="usersAreAbleToImportValidCertificate"/>  <!-- Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
+                </methods>
+            </class>
+            <class name="domiSMPTests.ui.DomainsPgTests">
+                <methods>
+                    <exclude name="systemAdminsAreAbleToChangeDefaultPropertiesForDomains"/>
+                </methods>
+            </class>
+            <class name="domiSMPTests.ui.EditDomainsPgTests">
+                <methods>
+                    <exclude name="groupAdminsAreAbleToDeleteAnyResource"/>
+                </methods>
+            </class>
+            <class name="domiSMPTests.ui.EditGroupsPgTests">
+                <methods>
+                    <exclude name="domainAdminsAreAbleToChangeDefaultPropertiesForDomains"/>
+                    <exclude
+                            name="domainAdminsAreNotAbleToCreateDuplicatedGroups"/>   <!--  Fails due to EDELIVERY-15493 Edit Domains - Alert message is not appearing when trying to create duplicated group -->
+                    <exclude
+                            name="domainAdminsAreNotAbleToDeleteGroupsWithResources"/> <!--  Fails due to EDELIVERY-15493 Edit Domains - Alert message is not appearing when trying to create duplicated group -->
+                    <exclude
+                            name="domainAdminsAreNotAbleToInviteTheSameUserTwice"/> <!--  Fails due to EDELIVERY-15493 Edit Domains - Alert message is not appearing when trying to create duplicated group -->
+
+                </methods>
+            </class>
+            <!--            <class name="domiSMPTests.ui.EditResourcePgTests"/>  Fails due to EDELIVERY-15494 Edit Groups - Resource schema validation is blocking valid values-->
             <class name="domiSMPTests.ui.KeystorePgTests"/>
-            <class name="domiSMPTests.ui.TrustorePgTests"/>
-            <class name="domiSMPTests.ui.EditGroupsPgTests"/>
+            <class name="domiSMPTests.ui.LoginPgTests">
+                <methods>
+                    <exclude
+                            name="creatingANewResetPasswordTokenInvalidatesPreviousTokens"/>  <!-- Fails due to EDELIVERY-15225 Emails are not sent in DomiSMP -->
+                    <exclude
+                            name="resetPasswordScreenAppliesPasswordComplexity"/> <!-- Fails due to EDELIVERY-15225 Emails are not sent in DomiSMP -->
+                    <exclude
+                            name="userIsAbleToResetPassword"/> <!-- Fails due to EDELIVERY-15225 Emails are not sent in DomiSMP -->
+                </methods>
+            </class>
+            <class name="domiSMPTests.ui.MyAlertsPgTests">
+                <methods>
+                    <exclude
+                            name="userIsAbleToSeeHisLoginAttemptsUserSuspendedChangeCredentialsEvents"/>  <!-- Fails due to EDELIVERY-15227 My Alerts: Alerts status desc is populated with java error -->
+                </methods>
+            </class>
+            <class name="domiSMPTests.ui.ProfilePgTests">
+                <methods>
+                    <exclude
+                            name="allLoggedUsersShouldAbleToUpdateProfilePage"/>   <!-- Fails due to EDELIVERY-15224 Error when trying to update info from Profile page -->
+                </methods>
+            </class>
             <class name="domiSMPTests.ui.PropertiesPgTests"/>
-            <class name="domiSMPTests.ui.EditDomainsPgTests"/>
-            <class name="domiSMPTests.ui.EditResourcePgTests"/>
+            <class name="domiSMPTests.ui.SearchResourcesOgTests"/>
+            <class name="domiSMPTests.ui.TrustorePgTests"/>
+            <class name="domiSMPTests.ui.UsersPgTests">
+                <methods>
+                    <exclude
+                            name="systemAdminIsNotAbleToCreateDuplicatedUser"/>   <!-- Fails due to EDELIVERY-15496 Users Page - Alert message is not appearing when trying to create duplicated user -->
+                </methods>
+            </class>
         </classes>
     </test> <!-- domismp-tests-ui -->
 
+    <test name="Properties">
+        <classes>
+            <class name="domiSMPTests.ui.PropertiesPgTests"/>
+        </classes>
+    </test>
+    <test name="DomainsTests">
+        <classes>
+            <class name="domiSMPTests.ui.DomainsPgTests">
+                <methods>
+                    <include name="systemAdminsAreAbleToChangeDefaultPropertiesForDomains"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="EditDomainsTests">
+        <classes>
+            <class name="domiSMPTests.ui.EditDomainsPgTests">
+                <methods>
+                    <include name="domainAdminsAreAbleToChangeDefaultPropertiesForDomains"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <listeners>
+        <listener class-name="domiSMPTests.AdvancedExtentReportListener"/>
+        <listener class-name="domiSMPTests.FailListener"/>
+
+    </listeners>
 </suite>
