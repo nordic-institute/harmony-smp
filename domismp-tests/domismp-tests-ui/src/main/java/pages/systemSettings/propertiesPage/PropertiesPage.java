@@ -14,14 +14,12 @@ import org.slf4j.LoggerFactory;
  */
 public class PropertiesPage extends DomiSMPPage {
     private final static Logger LOG = LoggerFactory.getLogger(PropertiesPage.class);
-    @FindBy(id = "searchTable")
+    @FindBy(css = "smp-search-table")
     private WebElement propertyTableContainer;
     @FindBy(id = "saveButton")
     private WebElement saveBtn;
-    @FindBy(id = "searchProperty")
+    @FindBy(css = "#smp-table-filter_id input")
     private WebElement searchPropertyField;
-    @FindBy(id = "searchbutton_id")
-    private WebElement searchBtn;
     @FindBy(css = "smp-search-table [id=\"editButton\"]")
     private WebElement editBtn;
 
@@ -39,8 +37,6 @@ public class PropertiesPage extends DomiSMPPage {
     public void propertySearch(String propertyname) {
         LOG.info("Search for property");
         wait.forElementToBeVisible(searchPropertyField).sendKeys(propertyname);
-        wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
-        wait.forElementToBeClickable(searchBtn).click();
         wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
     }
 

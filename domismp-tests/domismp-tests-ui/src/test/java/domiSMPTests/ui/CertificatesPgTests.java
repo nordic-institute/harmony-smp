@@ -54,7 +54,7 @@ public class CertificatesPgTests extends SeleniumTest {
 
         importNewCertificatesDialog.importCertificate(path);
         importNewCertificatesDialog.getSaveCertificateBtn().click();
-        certificatePage.getAlertArea().closeAlert();
+        certificatePage.getAlertArea().getAlertMessage();
         soft.assertTrue(certificatePage.isCertificatePresent(certificateId));
 
         HashMap<String, String> certificateInfo = certificatePage.getCertificateInfo(certificateId);
@@ -123,7 +123,8 @@ public class CertificatesPgTests extends SeleniumTest {
         importNewCertificatesDialog.getDescriptionInput().fill(description);
 
         importNewCertificatesDialog.importCertificate(path);
-        soft.assertEquals(importNewCertificatesDialog.getAlertMessage(), "Certificate with the same Subject is already registered!");
+        String alertMessage = importNewCertificatesDialog.getAlertMessage();
+        soft.assertEquals(alertMessage, "Certificate with the same Subject is already registered!");
         soft.assertFalse(importNewCertificatesDialog.getSaveCertificateBtn().isEnabled());
 
         soft.assertAll();

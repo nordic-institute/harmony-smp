@@ -147,7 +147,8 @@ public class LoginPgTests extends SeleniumTest {
         resetCredentialsPage.clickSetChangePasswordButton();
 
         //Login with new password for User
-        soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"), "Reset password message didn't appear");
+        soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"),
+                "Reset password message didn't appear");
         loginPage.login(newNormalUser.getUsername(), newPasswordAfterReset);
         try {
             homePage.logout();
@@ -168,7 +169,8 @@ public class LoginPgTests extends SeleniumTest {
 
         //Reset password User Role password
         String message = loginPage.resetPassword(newNormalUser.getUsername());
-        soft.assertEquals(message, "A confirmation email has been sent to your registered email address for user [" + newNormalUser.getUsername() + "]. Please follow the instructions in the email to complete the account reset process. If you did not receive mail try later or contact administrator");
+        soft.assertEquals(message, "A confirmation email has been sent to your registered email address for user [" + newNormalUser.getUsername() + "]. " +
+                "Please follow the instructions in the email to complete the account reset process. If you did not receive mail try later or contact administrator");
         String emailUserRoleUsername = newNormalUser.getEmailAddress().substring(0, 14);
 
         //Retrieve reset URL
@@ -179,8 +181,9 @@ public class LoginPgTests extends SeleniumTest {
         String secondResetUrl = restClient.getResetPasswordTokenFromLastEmailOfUser(emailUserRoleUsername);
 
         //Check if 1st token is invalid
-        driver.get(firstResetURL);
-        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "The reset token it is invalid or not active any more. Please try to reset your password again.", "Invalid token error message was not found");
+        driver.navigate().to(firstResetURL);
+        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "The reset token it is invalid or not active any more. Please try to reset your password again.",
+                "Invalid token error message was not found");
         soft.assertEquals(loginPage.getBreadcrump().getCurrentPage(), "Login");
 
         //Check if 2nd token is invalid
@@ -194,7 +197,8 @@ public class LoginPgTests extends SeleniumTest {
 
         //Login with new password for User
         new DWait(driver).equals(loginPage.getAlertArea());
-        soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"), "Reset password message didn't appear");
+        soft.assertTrue(loginPage.getAlertArea().getAlertMessage().contains("Password has been reset successfully. Please login with new password"),
+                "Reset password message didn't appear");
         loginPage.login(newNormalUser.getUsername(), newPasswordAfterReset);
         try {
             homePage.logout();
@@ -227,7 +231,8 @@ public class LoginPgTests extends SeleniumTest {
         //User is not able to set the same password again
         resetCredentialsPage.fillChangePasswordFields(user.getUsername(), data.getNewPassword(), data.getNewPassword());
         resetCredentialsPage.clickSetChangePasswordButton();
-        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(), "Password change failed. Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password");
+        soft.assertEquals(loginPage.getAlertArea().getAlertMessage(),
+                "Password change failed. [Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password]");
 
         //Check minim length of password
         driver.navigate().refresh();

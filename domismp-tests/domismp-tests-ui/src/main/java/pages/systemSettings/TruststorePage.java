@@ -2,7 +2,6 @@ package pages.systemSettings;
 
 import ddsl.commonPages.CommonCertificatePage;
 import ddsl.dcomponents.ConfirmationDialog;
-import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -20,14 +19,10 @@ public class TruststorePage extends CommonCertificatePage {
         super(driver);
     }
 
-    @Override
-    public SmallGrid getLeftSideGrid() {
-        return new SmallGrid(driver, rightPanel);
-    }
     public String addCertificateAndReturnAlias(String filePath) {
         uploadInput.sendKeys(filePath);
         String certificateAlias = getAlertMessageAndClose();
-        String regex =  "\\[[^\\]]*\\].*\\[([^\\]]+)\\]";
+        String regex = "\\[[^]]*].*\\[([^]]+)]";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(certificateAlias);
         if (matcher.find()) {
