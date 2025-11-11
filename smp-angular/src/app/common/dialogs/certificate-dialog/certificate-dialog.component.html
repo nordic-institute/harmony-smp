@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>{{ formTitle }}</h2>
-<mat-dialog-content style="height:600px;width:1100px">
+<mat-dialog-content style="height:650px;width:1100px">
   @if (message) {
     <div [ngClass]="{ 'alert-message': message, 'alert-message-success': messageType === 'success',
          'alert-message-error':messageType === 'error',
@@ -13,7 +13,9 @@
 
 <mat-dialog-actions>
   @if (enableCertificateImport) {
-    <button id="storeCertificateCredentialsButton"  mat-raised-button color="primary"
+    <button id="storeCertificateCredentialsButton"
+            [disabled]="!isCertificateChanged"
+            mat-raised-button color="primary"
             (click)="storeCertificateCredentials()">
       <mat-icon>key</mat-icon>
       <span>{{ "certificate.dialog.button.save" | translate }}</span>
@@ -21,8 +23,8 @@
   }
 
   <button id="closeDialogButton" mat-raised-button color="primary" mat-dialog-close>
-    <mat-icon>close</mat-icon>
-    <span>{{ "certificate.dialog.button.close" | translate }}</span>
+    <mat-icon>cancel</mat-icon>
+    <span>{{ "certificate.dialog.button.cancel" | translate }}</span>
   </button>
   @if (enableCertificateImport) {
     <tool-button-spacer [vertical]="true"></tool-button-spacer>
