@@ -68,7 +68,7 @@ public class ResourcesPage extends DomiSMPPage {
         weToDInput(resourceIdentifierInput).fill(resourceIdentifier);
         weToDInput(resourceSchemeInput).fill(resourceScheme);
         weToDButton(searchBtn).click();
-        getGrid().openSubresource("Upd.", "chevron_right", "Subresource identifier", subresourceIdentifier);
+        getGrid().openSubresource("Exp.", "chevron_right", "Subresource identifier", subresourceIdentifier);
         Set<String> handles = driver.getWindowHandles();
         Iterator<String> iterator = handles.iterator();
 

@@ -66,7 +66,7 @@ public class UsersPgTests extends SeleniumTest {
         usersPage.refreshPage();
         usersPage.getCreateUserBtn().click();
         String alertMessage = usersPage.fillNewUserDataAndSave(adminNewUserData);
-        soft.assertEquals(alertMessage, "Invalid request [CreateUser]. Error: User with username [" + adminNewUserData.getUsername() + "] already exists!!");
+        soft.assertEquals(alertMessage, "Invalid request [CreateUser]. Error: user with username [" + adminNewUserData.getUsername() + "] already exists!");
         soft.assertAll();
     }
 

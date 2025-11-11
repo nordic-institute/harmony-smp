@@ -19,7 +19,7 @@ public class CommonDocumentConfigurationComponent extends DComponent {
     private WebElement publishVersion;
     @FindBy(id = "sharingEnabled_id")
     private WebElement sharingEnableCheckBox;
-    @FindBy(css = "document-configuration-panel .mdc-button--unelevated")
+    @FindBy(css = "mat-toolbar.mat-toolbar:nth-child(5) > mat-toolbar-row:nth-child(1) > button:nth-child(1)")
     public WebElement selectReferenceBtn;
     @FindBy(id = "reference-document-name_id")
     private WebElement refereceDocumentName;

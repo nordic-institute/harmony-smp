@@ -141,7 +141,7 @@ public class EditDomainsPgTests extends SeleniumTest {
         isSaveSuccesfully = createGroupDetailsDialog.tryClickOnSave();
         String duplicateAlertMessage = createGroupDetailsDialog.getAlertArea().getAlertMessage();
         soft.assertTrue(isSaveSuccesfully);
-        soft.assertEquals(duplicateAlertMessage, String.format("Invalid request [CreateGroup]. Error: Group with name [%s] already exists!!", duplicatedGroup.getGroupName()));
+        soft.assertEquals(duplicateAlertMessage, String.format("Invalid request [CreateGroup]. Error: group with name [%s] already exists!", duplicatedGroup.getGroupName()));
         soft.assertAll();
     }
 
@@ -197,7 +197,7 @@ public class EditDomainsPgTests extends SeleniumTest {
         //  Thread.sleep(500);
         editDomainPage.getGroupTab().deleteGroup(currentGroupModel.getGroupName());
         String deleteMessage = editDomainPage.getAlertArea().getAlertMessage();
-        soft.assertEquals(deleteMessage, "Invalid request [DeleteGroup]. Error: Group has resources [1] and can not be deleted!");
+        soft.assertEquals(deleteMessage, "Invalid request [DeleteGroup]. Error: group has resources [1] and cannot be deleted!");
         soft.assertAll();
     }
 
@@ -240,7 +240,7 @@ public class EditDomainsPgTests extends SeleniumTest {
         InviteMembersPopup inviteMembersPopup = editDomainPage.getDomainMembersTab().clickOnInviteMemberBtn();
         inviteMembersPopup.selectMember(memberAdmin.getUsername(), "VIEWER");
         String duplicatedUserErrorMessage = editDomainPage.getAlertMessageAndClose();
-        soft.assertEquals(duplicatedUserErrorMessage, "Invalid request [Add membership]. Error: User [" + memberAdmin.getUsername() + "] is already a member!!",
+        soft.assertEquals(duplicatedUserErrorMessage, "Invalid request [AddMembership]. Error: user [" + memberAdmin.getUsername() + "] is already a member!",
                 "Wrong error message when trying to add duplicated user with different role");
         inviteMembersPopup.getCloseBtn().click();
 
@@ -248,7 +248,7 @@ public class EditDomainsPgTests extends SeleniumTest {
         inviteMembersPopup = editDomainPage.getDomainMembersTab().clickOnInviteMemberBtn();
         inviteMembersPopup.selectMember(memberAdmin.getUsername(), "ADMIN");
         String duplicatedUserSameRoleErrorMessage = editDomainPage.getAlertMessageAndClose();
-        soft.assertEquals(duplicatedUserSameRoleErrorMessage, "Invalid request [Add membership]. Error: User [" + memberAdmin.getUsername() + "] is already a member!!",
+        soft.assertEquals(duplicatedUserSameRoleErrorMessage, "Invalid request [AddMembership]. Error: user [" + memberAdmin.getUsername() + "] is already a member!",
                 "Wrong error message when trying to add duplicated user with same role");
 
         soft.assertAll();

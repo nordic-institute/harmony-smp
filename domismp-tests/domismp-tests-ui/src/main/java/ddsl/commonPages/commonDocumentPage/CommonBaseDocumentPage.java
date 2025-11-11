@@ -32,9 +32,9 @@ public class CommonBaseDocumentPage extends DomiSMPPage {
     private WebElement backBtn;
 
 
-    @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(8)")
+    @FindBy(id = "reviewApprove_id")
     private WebElement approveBtn;
-    @FindBy(css = "button.mat-mdc-tooltip-trigger:nth-child(9)")
+    @FindBy(id = "reviewReject_id")
     private WebElement rejectBtn;
     @FindBy(css = ".cm-content")
     private WebElement codeEditorSendValueElement;
@@ -71,7 +71,7 @@ public class CommonBaseDocumentPage extends DomiSMPPage {
         return formatedDoc;
     }
 
-    public void setDocumentValue(String documentValue) throws Exception {
+    public void setDocumentValue(String documentValue) {
         weToDInput(codeEditorSendValueElement).click();
         // Using JavaScriptExecutor to set the value in the CodeMirror editor
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) this.driver;

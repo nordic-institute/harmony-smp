@@ -89,18 +89,19 @@ public class PropertiesPgTests extends SeleniumTest {
         propertyEditPoup.editInputField(wrongValue1);
         propertyEditPoup.clickOK();
         String error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid URL address: [" + wrongValue1 + "]. Error:MalformedURLException: no protocol: " + wrongValue1 + "]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue1 + "] is not valid URL!]!");
 
 
         propertyEditPoup.editInputField(wrongValue2);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid URL address: [" + wrongValue2 + "]. Error:MalformedURLException: no protocol: " + wrongValue2 + "]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue2 + "] is not valid URL!]!");
+
 
         propertyEditPoup.editInputField(wrongValue3);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid URL address: [" + wrongValue3 + "]. Error:MalformedURLException: no protocol: " + wrongValue3 + "]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue3 + "] is not valid URL!]!");
 
         //Check if property value hasn't changed.
         propertyEditPoup.clickCancel();
@@ -129,18 +130,18 @@ public class PropertiesPgTests extends SeleniumTest {
         propertyEditPoup.editInputField(wrongValue1);
         propertyEditPoup.clickOK();
         String error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid email address: [" + wrongValue1 + "].]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue1 + "] is not valid Email address type!]!");
 
 
         propertyEditPoup.editInputField(wrongValue2);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid email address: [" + wrongValue2 + "].]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue2 + "] is not valid Email address type!]!");
 
         propertyEditPoup.editInputField(wrongValue3);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid email address: [" + wrongValue3 + "].]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue3 + "] is not valid Email address type!]!");
 
         //Check if property value hasn't changed.
         propertyEditPoup.clickCancel();
@@ -169,18 +170,18 @@ public class PropertiesPgTests extends SeleniumTest {
         propertyEditPoup.editInputField(wrongValue1);
         propertyEditPoup.clickOK();
         String error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [cron expression: [" + wrongValue1 + "]. Error:IllegalArgumentException: Cron expression must consist of 6 fields (found 1 in \"" + wrongValue1 + "\")]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue1 + "] is not valid Cron Expression type!]!");
 
 
         propertyEditPoup.editInputField(wrongValue2);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [cron expression: [" + wrongValue2 + "]. Error:IllegalArgumentException: Cron expression must consist of 6 fields (found 7 in \"" + wrongValue2 + "\")]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue2 + "] is not valid Cron Expression type!]!");
 
         propertyEditPoup.editInputField(wrongValue3);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [cron expression: [" + wrongValue3 + "]. Error:NumberFormatException: For input string: \"A\"]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue3 + "] is not valid Cron Expression type!]!");
 
         //Check if property value hasn't changed.
         propertyEditPoup.clickCancel();
@@ -209,18 +210,18 @@ public class PropertiesPgTests extends SeleniumTest {
         propertyEditPoup.editInputField(wrongValue1);
         propertyEditPoup.clickOK();
         String error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid integer: [" + wrongValue1 + "]. Error:NumberFormatException: For input string: \"" + wrongValue1 + "\"]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue1 + "] is not valid Integer!]!");
 
 
         propertyEditPoup.editInputField(wrongValue2);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid integer: [" + wrongValue2 + "]. Error:NumberFormatException: For input string: \"" + wrongValue2 + "\"]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue2 + "] is not valid Integer!]!");
 
         propertyEditPoup.editInputField(wrongValue3);
         propertyEditPoup.clickOK();
         error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid integer: [" + wrongValue3 + "]. Error:NumberFormatException: For input string: \"" + wrongValue3 + "\"]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value: [" + wrongValue3 + "] is not valid Integer!]!");
 
         //Check if property value hasn't changed.
         propertyEditPoup.clickCancel();
@@ -244,7 +245,23 @@ public class PropertiesPgTests extends SeleniumTest {
         propertyEditPoup.editInputField(longValue);
         propertyEditPoup.clickOK();
         String error = propertyEditPoup.getErrorMessage();
-        soft.assertEquals(error, "Configuration error: [Invalid property value! Error: Value to long. Max. allowed size 2000 characters!]!");
+        soft.assertEquals(error, "Configuration property [" + property + "] has error: [Property value must be less than 2000 characters!]!");
+
+        soft.assertAll();
+    }
+
+    @Test(description = "PRP-9 - Cancel button cancels all changes")
+    public void cancelButtonCancelsAllChanges() {
+
+        String property = "identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage";
+        String longValue = Generator.randomAlphaNumericValue(2001);
+
+        propertiesPage.propertySearch(property);
+        PropertyPopup propertyEditPoup = propertiesPage.openEditPropertyPopupup(property);
+        propertyEditPoup.editInputField(longValue);
+        propertyEditPoup.clickOK();
+        String error = propertyEditPoup.getErrorMessage();
+        soft.assertEquals(error, "Configuration property [identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage] has error: [Property value must be less than 2000 characters!]!");
 
         soft.assertAll();
     }

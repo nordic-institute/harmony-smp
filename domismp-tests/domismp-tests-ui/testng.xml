@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="SELENIUM" parallel="classes" thread-count="1">
+<suite name="SELENIUM" parallel="classes" thread-count="4">
     <test name="All UI Tests">
         <classes>
             <class name="domiSMPTests.ui.AccessTokensPgTests"/>
@@ -10,16 +10,6 @@
                 </methods>
             </class>
             <class name="domiSMPTests.ui.CertificatesPgTests">
-                <methods>
-                    <exclude
-                            name="userIsAbleToDeleteCertificate"/> <!--  Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
-                    <exclude
-                            name="userIsAbleToDeleteCertificate"/>   <!-- Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
-                    <exclude
-                            name="userIsNotAbleToAddDuplicatedCertificate"/>  <!-- Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
-                    <exclude
-                            name="usersAreAbleToImportValidCertificate"/>  <!-- Fails due to EDELIVERY-15226  Certificates: Error when trying to delete certificates -->
-                </methods>
             </class>
             <class name="domiSMPTests.ui.DomainsPgTests">
                 <methods>
@@ -34,48 +24,22 @@
             <class name="domiSMPTests.ui.EditGroupsPgTests">
                 <methods>
                     <exclude name="domainAdminsAreAbleToChangeDefaultPropertiesForDomains"/>
-                    <exclude
-                            name="domainAdminsAreNotAbleToCreateDuplicatedGroups"/>   <!--  Fails due to EDELIVERY-15493 Edit Domains - Alert message is not appearing when trying to create duplicated group -->
-                    <exclude
-                            name="domainAdminsAreNotAbleToDeleteGroupsWithResources"/> <!--  Fails due to EDELIVERY-15493 Edit Domains - Alert message is not appearing when trying to create duplicated group -->
-                    <exclude
-                            name="domainAdminsAreNotAbleToInviteTheSameUserTwice"/> <!--  Fails due to EDELIVERY-15493 Edit Domains - Alert message is not appearing when trying to create duplicated group -->
-
                 </methods>
             </class>
-            <!--            <class name="domiSMPTests.ui.EditResourcePgTests"/>  Fails due to EDELIVERY-15494 Edit Groups - Resource schema validation is blocking valid values-->
+            <class name="domiSMPTests.ui.EditResourcePgTests"/>
             <class name="domiSMPTests.ui.KeystorePgTests"/>
-            <class name="domiSMPTests.ui.LoginPgTests">
-                <methods>
-                    <exclude
-                            name="creatingANewResetPasswordTokenInvalidatesPreviousTokens"/>  <!-- Fails due to EDELIVERY-15225 Emails are not sent in DomiSMP -->
-                    <exclude
-                            name="resetPasswordScreenAppliesPasswordComplexity"/> <!-- Fails due to EDELIVERY-15225 Emails are not sent in DomiSMP -->
-                    <exclude
-                            name="userIsAbleToResetPassword"/> <!-- Fails due to EDELIVERY-15225 Emails are not sent in DomiSMP -->
-                </methods>
-            </class>
+            <class name="domiSMPTests.ui.LoginPgTests"/>
             <class name="domiSMPTests.ui.MyAlertsPgTests">
                 <methods>
                     <exclude
                             name="userIsAbleToSeeHisLoginAttemptsUserSuspendedChangeCredentialsEvents"/>  <!-- Fails due to EDELIVERY-15227 My Alerts: Alerts status desc is populated with java error -->
                 </methods>
             </class>
-            <class name="domiSMPTests.ui.ProfilePgTests">
-                <methods>
-                    <exclude
-                            name="allLoggedUsersShouldAbleToUpdateProfilePage"/>   <!-- Fails due to EDELIVERY-15224 Error when trying to update info from Profile page -->
-                </methods>
-            </class>
-            <class name="domiSMPTests.ui.PropertiesPgTests"/>
+            <class name="domiSMPTests.ui.ProfilePgTests"/>
             <class name="domiSMPTests.ui.SearchResourcesOgTests"/>
             <class name="domiSMPTests.ui.TrustorePgTests"/>
-            <class name="domiSMPTests.ui.UsersPgTests">
-                <methods>
-                    <exclude
-                            name="systemAdminIsNotAbleToCreateDuplicatedUser"/>   <!-- Fails due to EDELIVERY-15496 Users Page - Alert message is not appearing when trying to create duplicated user -->
-                </methods>
-            </class>
+            <class name="domiSMPTests.ui.UsersPgTests"/>
+
         </classes>
     </test> <!-- domismp-tests-ui -->
 

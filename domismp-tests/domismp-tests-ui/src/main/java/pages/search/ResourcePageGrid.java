@@ -15,8 +15,8 @@ import java.util.NoSuchElementException;
 
 
 public class ResourcePageGrid extends DComponent {
-    protected static final By gridHeadersLocator = By.cssSelector("datatable-header div.datatable-row-center datatable-header-cell");
-    protected static final By gridRowsLocator = By.cssSelector("datatable-body-row > div.datatable-row-center.datatable-row-group");
+    protected static final By gridHeadersLocator = By.cssSelector("mat-table mat-header-row mat-header-cell");
+    protected static final By gridRowsLocator = By.cssSelector("mat-table mat-row");
     private final static Logger LOG = LoggerFactory.getLogger(ResourcePageGrid.class);
     private final WebElement parentElement;
 
@@ -40,7 +40,7 @@ public class ResourcePageGrid extends DComponent {
     }
 
     private List<WebElement> getCells(WebElement row) {
-        return row.findElements(By.cssSelector("datatable-body-cell"));
+        return row.findElements(By.cssSelector("mat-cell"));
     }
 
     public void searchAndClickElementInColumn(String columnName, String value) {
@@ -189,8 +189,8 @@ public class ResourcePageGrid extends DComponent {
     }
 
     private void openURLSubresouce(WebElement resourceRow, String columnName, String value) {
-        WebElement parentRowElement = resourceRow.findElement(By.xpath("../following-sibling::*[1]"));
-        List<WebElement> rowHeaders = parentRowElement.findElements(gridHeadersLocator);
+        WebElement parentRowElement = resourceRow.findElement(By.xpath("./following-sibling::*[1]"));
+        List<WebElement> rowHeaders = parentRowElement.findElements(By.cssSelector("div.mat-mdc-header-cell"));
         int columnIndex = -1;
         for (int i = 0; i < rowHeaders.size(); i++) {
             if (rowHeaders.get(i).getText().equals(columnName)) {
@@ -203,14 +203,14 @@ public class ResourcePageGrid extends DComponent {
             throw new NoSuchElementException("Column not found");
         }
         boolean isElementPresent = false;
-        List<WebElement> rows = parentRowElement.findElements(gridRowsLocator);
+        List<WebElement> rows = parentRowElement.findElements(By.cssSelector("div.datatable-body-row"));
         for (WebElement row : rows) {
             List<WebElement> cells = getCells(row);
             WebElement currentCell = cells.get(columnIndex);
             if (currentCell.getText().equals(value)) {
                 LOG.debug("[{}] found on page", value);
                 isElementPresent = true;
-                WebElement urlCell = cells.get(2);
+                WebElement urlCell = cells.get(4);
                 urlCell.findElement(By.cssSelector("a")).click();
                 return;
             }

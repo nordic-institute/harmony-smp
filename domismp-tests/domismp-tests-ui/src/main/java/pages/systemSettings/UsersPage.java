@@ -2,7 +2,6 @@ package pages.systemSettings;
 
 import ddsl.commonPages.CommonPageWithTabsAndGrid;
 import ddsl.dcomponents.ConfirmationDialog;
-import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
 import ddsl.dobjects.DInput;
@@ -32,11 +31,6 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
         super(driver);
         userData = new UserDataCommonComponent(driver);
         LOG.debug("Loading Users page.");
-    }
-
-    @Override
-    public SmallGrid getLeftSideGrid() {
-        return new SmallGrid(driver, rightPanel);
     }
 
     public DButton getCreateUserBtn() {
@@ -130,13 +124,14 @@ public class UsersPage extends CommonPageWithTabsAndGrid {
             weToDChecked(isActiveCheckBox).uncheck();
 
         }
-        if (weToDButton(saveBtn).isEnabled()) ;
+        if (weToDButton(saveBtn).isEnabled())
         {
             LOG.debug("Changing active value of access token to: [{}]", isActive);
 
             weToDButton(saveBtn).click();
             return getAlertArea().getAlertMessage();
         }
+        return "";
     }
 
     public void filterAndSelectUsername(String username) {
