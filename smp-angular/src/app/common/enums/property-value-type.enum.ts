@@ -1,5 +1,6 @@
 export enum PropertyValueTypeEnum {
   STRING = 'STRING',
+  CRON_EXPRESSION = 'CRON_EXPRESSION',
   //LIST_STRING = 'LIST_STRING',
   //MAP_STRING = 'MAP_STRING',
   //FILENAME = 'FILENAME',

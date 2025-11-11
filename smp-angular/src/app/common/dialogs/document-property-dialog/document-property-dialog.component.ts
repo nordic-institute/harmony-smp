@@ -146,6 +146,8 @@ export class DocumentPropertyDialogComponent {
       // case PropertyValueTypeEnum.PATH:
         return 'text';
       case PropertyValueTypeEnum.INTEGER:
+        return 'number';
+      case PropertyValueTypeEnum.CRON_EXPRESSION:
         return 'text';
       case PropertyValueTypeEnum.BOOLEAN:
         return 'checkbox';
