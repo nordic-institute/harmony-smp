@@ -39,7 +39,6 @@ export class DocumentPropertyDialogComponent {
     }
 
     return (c: AbstractControl): { [key: string]: any } => {
-      console.log("Check if value is in list: " + c.value + " type: " + typeof c.value);
       let inputVal = typeof c?.value?.trim === "function" ? c.value.trim().toLowerCase() : c.value;
       if (inputVal && inputVal !== exception
         && list.includes(inputVal))
@@ -81,6 +80,10 @@ export class DocumentPropertyDialogComponent {
 
   get isNewItem(): boolean {
     return this.current?.status === EntityStatus.NEW;
+  }
+
+  get isEmptyValue(): boolean {
+    return !this.propertyForm.controls["value"]?.value;
   }
 
   get isReadOnly(): boolean {

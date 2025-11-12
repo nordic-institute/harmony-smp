@@ -77,6 +77,10 @@ export class CertificateDialogComponent {
     );
   }
 
+  get isCertificateChanged(): boolean {
+    return this.newCertFile != null;
+  }
+
   storeCertificateCredentials() {
     this.clearAlert();
     this.closeDialog(this.current)
