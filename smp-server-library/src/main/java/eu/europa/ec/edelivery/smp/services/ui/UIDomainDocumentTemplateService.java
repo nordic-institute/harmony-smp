@@ -150,6 +150,18 @@ public class UIDomainDocumentTemplateService {
     }
 
     @Transactional
+    public void validateTemplateForDomain(long domainId, long templateId, DocumentRO payload) {
+        DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
+        uiDocumentService.validateDocumentForTemplate(template, payload);
+    }
+
+    @Transactional
+    public DocumentRO generateTemplateForDomain(long domainId, long templateId) {
+        DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
+        return uiDocumentService.generateTemplateDocument(template.getDomainResourceDef(), template.getSubresourceDef());
+    }
+
+    @Transactional
     public DocumentRO updateTemplateForDomainVersion(long domainId, long templateId, DocumentRO payload) {
         DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
         return uiDocumentService.saveDocumentForTemplate(template.getId(), payload);

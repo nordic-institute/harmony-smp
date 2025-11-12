@@ -138,6 +138,11 @@ export class SmpConstants {
 
   public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
     + '/' + SmpConstants.PATH_RESOURCE_TYPE_VERSION;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_VALIDATE =  SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
+    + '/' + SmpConstants.PATH_ACTION_VALIDATE;
+  public static readonly REST_EDIT_DOMAIN_TEMPLATE_GENERATE =  SmpConstants.REST_EDIT_DOMAIN_TEMPLATE + '/' + SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID
+    + '/' + SmpConstants.PATH_ACTION_GENERATE;
+
   public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION_UPDATE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION + '/' + SmpConstants.PATH_ACTION_UPDATE;
   public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION_PUBLISH = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION + '/' + SmpConstants.PATH_ACTION_PUBLISH;
   public static readonly REST_EDIT_DOMAIN_TEMPLATE_VERSION_DELETE = SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION + '/' + SmpConstants.PATH_ACTION_DELETE;

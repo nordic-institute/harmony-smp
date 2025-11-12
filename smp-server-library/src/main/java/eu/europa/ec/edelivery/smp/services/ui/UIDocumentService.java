@@ -58,7 +58,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 import static eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType.*;
@@ -111,6 +114,47 @@ public class UIDocumentService {
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(), resource,
                 new ByteArrayInputStream(documentRo.getPayload().getBytes()), Map.of());
+        try {
+            resourceHandler.validateResource(data);
+        } catch (ResourceException e) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOCUMENT_VALIDATION_RESOURCE)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    /**
+     * A generic method to validate document for the given template (Resource or Subresource)
+     *
+     * @param template   the template to validate document against
+     * @param documentRo the document RO to validate
+     */
+    @Transactional
+    public void validateDocumentForTemplate(DBDomainDocumentTemplate template, DocumentRO documentRo) {
+
+        DBDomainResourceDef domainResourceDef = template.getDomainResourceDef();
+
+        ResourceIdentifier resourceIdentifier = SPIUtils.createTemplateResourceIdentifier();
+        Map<String, String> docProps = new HashMap<>();
+        docProps.put(RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resourceIdentifier.getValue());
+        docProps.put(RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resourceIdentifier.getScheme());
+
+        ResourceIdentifier subresourceIdentifier;
+        ResourceHandlerSpi resourceHandler;
+        if (template.getDocumentLevelType() == DocumentLevelType.SUBRESOURCE) {
+            subresourceIdentifier = SPIUtils.createTemplateSubresourceIdentifier();
+            docProps.put(SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(), subresourceIdentifier.getValue());
+            docProps.put(SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyName(), subresourceIdentifier.getScheme());
+            resourceHandler = resourceHandlerService.getSubresourceHandler(template.getSubresourceDef(), domainResourceDef.getResourceDef());
+        } else {
+            subresourceIdentifier = null;
+            resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
+        }
+
+        RequestData data = resourceHandlerService.buildRequestData(domainResourceDef.getDomain(),
+                resourceIdentifier,
+                subresourceIdentifier,
+                docProps,
+                new ByteArrayInputStream(documentRo.getPayload().getBytes()));
         try {
             resourceHandler.validateResource(data);
         } catch (ResourceException e) {
@@ -861,11 +905,11 @@ public class UIDocumentService {
      * Method saves the document for resource or  subresource. if the subresource is null then it is resource document
      * otherwise it is subresource document.
      *
-     * @param resource
-     * @param subresource
-     * @param document
-     * @param documentRo
-     * @return
+     * @param resource  database resource entity
+     * @param subresource database subresource entity
+     * @param document database document entity
+     * @param documentRo document to be saved for the (sub)resource
+     * @return saved document
      */
     public DocumentRO saveDocument(DBResource resource, DBSubresource subresource, DBDocument document, DocumentRO documentRo) {
 
