@@ -269,7 +269,7 @@ public enum ErrorMessageType implements IErrorCodeType {
     SUBRESOURCE_DOCUMENT_MISSING(SUBRESOURCE_DOCUMENT_ERROR, "error.subresource.document.missing", "Empty document for the subresource: (docId: [{{documentIdentifier}}], docSch.: [{{documentScheme}}]) of the resource (id: [{{identifier}}], sch.: [{{scheme}}])", DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME, IDENTIFIER, SCHEME),
     SUBRESOURCE_DOCUMENT_READING(SUBRESOURCE_DOCUMENT_ERROR, "error.subresource.document.reading", "Error occurred while reading the subresource document: : (docId: [{{documentIdentifier}}], docSch.: [{{documentScheme}}]] of the resource (id: [{{identifier}}], sch: [{{scheme}}])! Error: multiple documents for subresource!", DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME, IDENTIFIER, SCHEME),
     UI_ACCESS_DENIED_EXCEPTION(UNAUTHORIZED, "error.ui.access.denied.exception", "Unexpected access denies error occurred."),
-    UI_AUTHENTICATION_EXCEPTION(UNAUTHORIZED, "error.ui.authentication.exception", "Unexpected authentication error occurred."),
+    UI_AUTHENTICATION_EXCEPTION(UNAUTHORIZED, "error.ui.authentication.exception", "Access not authorized. Invalid credentials or credential type."),
     UI_BAD_REQUEST_EXCEPTION(INVALID_REQUEST, "error.ui.bad.request.exception", "Unexpected bad request error occurred."),
     UI_BAD_REQUEST_WITH_ERROR(INVALID_REQUEST, "error.ui.bad.request.with.error", "Bad request. Error: {{error}}", ERROR),
     UI_INTERNAL_ERROR(INTERNAL_ERROR, "error.ui.internal.error", "Unexpected technical error occurred."),

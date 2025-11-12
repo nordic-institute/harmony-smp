@@ -66,20 +66,18 @@ public class DomainGroupGuard {
     final DomainMemberDao domainMemberDao;
     final GroupMemberDao groupMemberDao;
     final ResourceMemberDao resourceMemberDao;
-    private final UITruststoreService uITruststoreService;
-    private final ConfigurationService configurationService;
+    final ConfigurationService configurationService;
 
     public DomainGroupGuard(DomainResolverService domainResolverService,
                             DomainMemberDao domainMemberDao,
                             GroupMemberDao groupMemberDao,
                             ResourceMemberDao resourceMemberDao,
-                            GroupDao groupDao, UITruststoreService uITruststoreService, ConfigurationService configurationService) {
+                            GroupDao groupDao, ConfigurationService configurationService) {
         this.domainResolverService = domainResolverService;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
         this.resourceMemberDao = resourceMemberDao;
         this.groupDao = groupDao;
-        this.uITruststoreService = uITruststoreService;
         this.configurationService = configurationService;
     }
 
@@ -138,6 +136,7 @@ public class DomainGroupGuard {
             return false;
         }
         List<SMPAutomationAuthenticationTypes> authorizationTypes = configurationService.getDomainConfigurationValue(domain, SMPDomainPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES);
+        authorizationTypes = authorizationTypes != null ? authorizationTypes : List.of();
 
         if (principal instanceof PreAuthenticatedCertificatePrincipal certificatePrincipal) {
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.CERTIFICATE)) {
@@ -153,7 +152,7 @@ public class DomainGroupGuard {
             }
             // check if certificate is in the domain truststore
             if (!isCertificateAuthorizedForDomain(domain, x509Certificate)) {
-                LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate with subjectDN [{}] is not in the domain [{}] truststore", x509Certificate.getSubjectDN(), domain.getDomainCode());
+                LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate with subjectDN [{}] is not in the domain [{}] truststore", x509Certificate.getSubjectX500Principal(), domain.getDomainCode());
                 return false;
             }
             return true;
