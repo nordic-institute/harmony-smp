@@ -12,9 +12,7 @@
         <mat-icon>add_circle</mat-icon>
         <span>{{ "document.edit.panel.button.version.new" | translate }}</span>
       </button>
-      @if (!isDocumentTemplateMode && isNotReviewMode) {
-
-
+      @if (isNotReviewMode) {
         <button id="validateResource_id" mat-raised-button
                 color="primary"
                 matTooltip="{{ 'document.edit.panel.tooltip.validate' | translate }}"
