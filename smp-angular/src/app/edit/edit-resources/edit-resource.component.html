@@ -1,61 +1,65 @@
 <div id="admin-resource-panel">
-  <data-panel id="admin-resource-data-panel"
-              title="{{ 'edit.resource.title' | translate }}"
-              text="{{ 'edit.resource.text' | translate }}"
-              [labelColumnContent]="searchGroupPanel">
+  @if (!dataSource.loadingResults) {
 
-    <mat-tab-group [selectedIndex]="getSelectedTabIndex()"
-                   *ngIf="hasResources;else noUserAdminGroupsDataFound"
-                   class="edit-resource-tab-group"
-                   >
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <smp-label icon="article" label="{{ 'edit.resource.label.resource.details' | translate }}"></smp-label>
-        </ng-template>
-        <resource-detail-panel
-          [domainResourceDefs]="selectedDomainResourceDefs"
-          [domain]="selectedDomain"
-          [group]="selectedGroup"
-          [resource]="selectedResource"
-        >
-        </resource-detail-panel>
-      </mat-tab>
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <smp-label icon="groups" label="{{ 'edit.resource.label.members' | translate }}"></smp-label>
-        </ng-template>
-        <domain-member-panel [membershipType]="groupMembershipType"
-                             [domain]="selectedDomain"
-                             [group]="selectedGroup"
-                             [resource]="selectedResource"
 
-        ></domain-member-panel>
-      </mat-tab>
-      <mat-tab *ngIf="hasSubResources">
-        <ng-template mat-tab-label>
-          <smp-label icon="description" label="{{ 'edit.resource.label.subresources' | translate }}"></smp-label>
-        </ng-template>
-        <subresource-panel
-          [domainResourceDefs]="selectedDomainResourceDefs"
-          [domain]="selectedDomain"
-          [group]="selectedGroup"
-          [resource]="selectedResource"
-        ></subresource-panel>
-      </mat-tab>
-    </mat-tab-group>
-  </data-panel>
-  <ng-template #noUserAdminGroupsDataFound>
-    <smp-warning-panel *ngIf="!isLoadingResults"
-                       class="smp-no-data-panel"
-                       icon="warning"
-                       type="warning"
-                       [label]="(filterResourceResults && !!domainList &&  domainList.length > 0 ? 'edit.resource.label.no.filter.results.admin': 'edit.resource.label.user.not.administrator') | translate"></smp-warning-panel>
-  </ng-template>
+    <data-panel id="admin-resource-data-panel"
+                title="{{ 'edit.resource.title' | translate }}"
+                text="{{ 'edit.resource.text' | translate }}"
+                [labelColumnContent]="searchGroupPanel">
+
+      <mat-tab-group [selectedIndex]="getSelectedTabIndex()"
+                     *ngIf="hasResources;else noUserAdminGroupsDataFound"
+                     class="edit-resource-tab-group"
+      >
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <smp-label icon="article" label="{{ 'edit.resource.label.resource.details' | translate }}"></smp-label>
+          </ng-template>
+          <resource-detail-panel
+            [domainResourceDefs]="selectedDomainResourceDefs"
+            [domain]="selectedDomain"
+            [group]="selectedGroup"
+            [resource]="selectedResource"
+          >
+          </resource-detail-panel>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <smp-label icon="groups" label="{{ 'edit.resource.label.members' | translate }}"></smp-label>
+          </ng-template>
+          <domain-member-panel [membershipType]="groupMembershipType"
+                               [domain]="selectedDomain"
+                               [group]="selectedGroup"
+                               [resource]="selectedResource"
+
+          ></domain-member-panel>
+        </mat-tab>
+        <mat-tab *ngIf="hasSubResources">
+          <ng-template mat-tab-label>
+            <smp-label icon="description" label="{{ 'edit.resource.label.subresources' | translate }}"></smp-label>
+          </ng-template>
+          <subresource-panel
+            [domainResourceDefs]="selectedDomainResourceDefs"
+            [domain]="selectedDomain"
+            [group]="selectedGroup"
+            [resource]="selectedResource"
+          ></subresource-panel>
+        </mat-tab>
+      </mat-tab-group>
+    </data-panel>
+    <ng-template #noUserAdminGroupsDataFound>
+      <smp-warning-panel *ngIf="!isLoadingResults"
+                         class="smp-no-data-panel"
+                         icon="warning"
+                         type="warning"
+                         [label]="(filterResourceResults && !!domainList &&  domainList.length > 0 ? 'edit.resource.label.no.filter.results.admin': 'edit.resource.label.user.not.administrator') | translate"></smp-warning-panel>
+    </ng-template>
+  }
 </div>
 
 <ng-template #searchGroupPanel>
   <div class="edit-resource-selection-panel"
-    *ngIf="!!domainList &&  domainList.length > 0 && (hasResources || filterResourceResults)"
+       *ngIf="!!domainList &&  domainList.length > 0 && (hasResources || filterResourceResults)"
   >
     <mat-form-field style="width:100%">
       <mat-label>{{ "edit.resource.label.selected.domain" | translate }}</mat-label>
@@ -67,7 +71,7 @@
         <mat-option *ngFor="let domain of domainList"
                     [value]="domain"
         >
-          {{domain.domainCode}}
+          {{ domain.domainCode }}
         </mat-option>
 
       </mat-select>
@@ -81,7 +85,8 @@
                   [(value)]="selectedGroup"
                   required>
         <mat-option *ngFor="let group of groupList"
-                    [value]="group">{{group.groupName}}</mat-option>
+                    [value]="group">{{ group.groupName }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -107,7 +112,7 @@
         (onFilterChanged)="onFilterChangedEvent($event)"
         (onPageChanged)="onPageChanged($event)"
         (onRowClicked)="onResourceSelected($event)"
-        >
+      >
       </smp-table>
     </div>
   </div>
