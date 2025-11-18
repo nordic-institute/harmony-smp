@@ -87,8 +87,8 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedDomainResourceDefs = [];
     this._selectedComponent = '';
     this.resourcesFilter = {};
-    this.loadingResults = false;
     this.updateResourceList([], 0, -1, -1);
+    this.loadingResults = false;
   }
 
   get selectedDomain(): DomainRo {
@@ -291,6 +291,24 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   get resourceCount(): number {
     return this._resourceCount;
+  }
+
+
+  /**
+   *  Set target resource for  domain, group
+   */
+  selectTargetResource(resource: ResourceRo, group: GroupRo, domain: DomainRo) {
+    // set selected domain, group and resource and then refresh data if needed
+    this.loadingResults = true;
+    let filterValue: string = resource.identifierValue;
+    this._selectedDomain = domain;
+    this._selectedGroup = group;
+    this._selectedResource = resource;
+    // set filter to find the resource
+    this.resourcesFilter["filter"] =    !filterValue ? '' : filterValue.trim().toLowerCase();
+    // refresh data and set data changed as false to avoid multiple refreshes
+    this.refreshDomains();
+    this.dataChanged = false;
   }
 
   /**

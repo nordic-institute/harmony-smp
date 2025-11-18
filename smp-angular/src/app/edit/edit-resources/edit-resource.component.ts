@@ -46,7 +46,6 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
-
     this.editResourceController.refreshDataOnDataChange();
 
     if (!this.selectedResource) {
