@@ -23,8 +23,12 @@
   min-height: 150px;
 }
 
-.document-editor-container.smp-disabled {
+.document-editor-container.smp-readonly {
   background: lightgray;
+}
+
+.smp-readonly {
+  opacity: 50%;
 }
 
 .CodeMirror {
