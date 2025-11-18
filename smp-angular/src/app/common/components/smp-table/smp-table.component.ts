@@ -146,7 +146,6 @@ export class SmpTableComponent implements AfterViewInit {
   }
 
   @Input() set dataLength(value: number) {
-    console.log("Setting paginator size: " + value);
     if (this.paginator) {
       this.paginator.length = value;
     }

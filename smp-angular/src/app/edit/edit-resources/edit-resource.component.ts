@@ -42,6 +42,8 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
         cell: (row: ResourceRo) => row.identifierValue
       } as SmpTableColDef
     ];
+    // set loading state, it will be triggered in ngAfterViewInit
+    this.dataSource.loadingResults = true
   }
 
   ngAfterViewInit() {
