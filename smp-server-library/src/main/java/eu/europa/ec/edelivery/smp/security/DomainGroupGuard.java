@@ -36,11 +36,12 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.resource.DomainResolverService;
-import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
@@ -159,16 +160,27 @@ public class DomainGroupGuard {
         } else if (principal instanceof Jwt) {
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.JWT)) {
                 LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
-                return true;
+                return false;
             }
+            //  get scop claim as string and split it into a list
+            String scopeClaim = ((Jwt)principal).getClaimAsString("scope");
+            if (StringUtils.isBlank(scopeClaim)) {
+                String message = "JWT does not contain 'scope' claim";
+                LOG.warn("Failed to authenticate since the JWT was invalid: [{}]", message);
+                throw new AuthenticationServiceException(message);
+            }
+            boolean hasDomainScope = Strings.CI.equalsAny(domain.getDomainCode(), scopeClaim.split(" "));
+            if (!hasDomainScope) {
+                LOG.warn(SMPLogger.SECURITY_MARKER, "JWT with scopes [{}] does not contain valid domain [{}] scope.", scopeClaim, domain.getDomainCode());
+            }
+            return hasDomainScope;
         } else {            // principal is not certificate or JWT, it must be username/password or anonymous
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.BASIC_TOKEN)) {
                 LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
                 return false;
             }
+            return true;
         }
-
-        return true;
     }
 
     private boolean isCertificateAuthorizedForDomain(DBDomain domain, X509Certificate x509Certificate) {

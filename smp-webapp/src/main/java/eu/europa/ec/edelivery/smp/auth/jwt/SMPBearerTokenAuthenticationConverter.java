@@ -94,7 +94,6 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
             throw new SMPBadCredentialsException(ErrorMessageType.UNAUTHORIZED_INVALID_BEARER_TOKEN);
         }
         List<SMPAuthority> authorities = getGrantedAuthorities(jwt);
-        String principalClaimValue = jwt.getClaimAsString(getPrincipalClaimName());
         String claimScope = jwt.getClaim("scope");
         if (StringUtils.isBlank(claimScope)) {
             LOG.warn("JWT does not contain 'scope' claim");
@@ -107,7 +106,7 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
                 authorities, scopes);
         userDetails.setJwtAuthenticated(true);
 
-        return new SMPAuthenticationToken(principalClaimValue, jwt, userDetails);
+        return new SMPAuthenticationToken(jwt, jwt, userDetails);
     }
 
 
