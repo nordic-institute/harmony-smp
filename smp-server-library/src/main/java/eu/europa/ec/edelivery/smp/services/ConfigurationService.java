@@ -283,6 +283,12 @@ public class ConfigurationService {
         return configurationDAO.getCachedProperty(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }
 
+    public boolean isURLRedirectionEnabled() {
+        Boolean value = configurationDAO.getPropertyValue(SML_URL_REDIRECTION_ENABLED);
+        // by default is not forced
+        return value != null && value;
+    }
+
     public Pattern getSMLIntegrationServerCertSubjectRegExp() {
         return configurationDAO.getPropertyValue(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }

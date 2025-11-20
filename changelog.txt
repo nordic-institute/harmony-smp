@@ -12,6 +12,7 @@ DomiSMP 5.2
         smp.vault.configuration: The list of vault configuration properties. The key names are specific to vault instance type.
         smp.vault.authentication.type: The authentication type. e.g. token, username. The value depends on the vault implementation
         smp.vault.authentication.value: The authentication value and format depends on the vault implementation
+        bdmsl.integration.url.redirection.enabled: Enable/Disable URL redirection for SML integration.
     - removed deprecated properties:
         bdmsl.integration.dns.zone: property has just informative value and is not used anywhere in the code
 
