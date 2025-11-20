@@ -68,7 +68,6 @@ export class DomainExtensionTemplateComponent implements OnInit, BeforeLeaveGuar
       } as SmpTableColDef,
 
     ];
-
     this.refreshDomainsResourceDefinitions()
   }
 

@@ -37,10 +37,14 @@ export class EditResourceService {
   }
 
   @Input() get selectedDomain(): DomainRo {
+    if (this._selectedDomain == null) {
+      this._selectedDomain = this.localStorageService.getSelectedDomain();
+    }
     return this._selectedDomain;
   }
 
   set selectedDomain(value: DomainRo) {
+    this.localStorageService.storeSelectedDomain(value);
     this._selectedDomain = value;
   }
 
@@ -421,6 +425,7 @@ export class EditResourceService {
 
   /**
    * Method returns observable for review reject of the document for resource on the server.
+   * @param subresource subresource for which document belongs to.
    * @param resource resource for which document belongs to.
    * @param document document to be rejected.
    */
@@ -434,7 +439,6 @@ export class EditResourceService {
    * @param resource  resource for which document belongs to.
    * @param document document to be sent.
    * @param reviewUrlTemplate url template for document action.
-   * @param httpAction http action to be used - POST, PUT, DELETE (default POST)
    * @returns observable of DocumentRo
    */
   public resourceDocumentActionObservable(resource: ResourceRo, document: DocumentRo, reviewUrlTemplate: string): Observable<DocumentRo> {
@@ -451,7 +455,6 @@ export class EditResourceService {
    * @param resource  resource for which document belongs to.
    * @param document document to be sent.
    * @param reviewUrlTemplate url template for document action.
-   * @param httpAction http action to be used - POST, PUT, DELETE (default POST)
    * @returns observable of DocumentRo
    */
   public subresourceDocumentActionObservable(subresource: SubresourceRo, resource: ResourceRo, document: DocumentRo, reviewUrlTemplate: string): Observable<DocumentRo> {

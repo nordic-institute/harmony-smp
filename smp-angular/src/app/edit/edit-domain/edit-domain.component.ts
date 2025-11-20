@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {EditDomainService} from "./edit-domain.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -16,6 +16,7 @@ import {
 import {
   SmpTableColDef
 } from "../../common/components/smp-table/smp-table-coldef.model";
+import {EditResourceService} from "../edit-resources/edit-resource.service";
 
 @Component({
     templateUrl: './edit-domain.component.html',
@@ -27,7 +28,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
 
-  selected: DomainRo;
   domainList: DomainRo[] = [];
   currenTabIndex: number = 0;
   handleTabClick: any;
@@ -39,6 +39,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   @ViewChild('domainTabs') domainTabs: MatTabGroup;
 
   constructor(private domainService: EditDomainService,
+              private editResourceService: EditResourceService,
               private httpErrorHandlerService: HttpErrorHandlerService,
               private dialog: MatDialog) {
     this.columns = [
@@ -73,6 +74,14 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     this.registerTabClick();
   }
 
+  get selected(): DomainRo {
+    // no changes for the domain data
+    return this.editResourceService.selectedDomain;
+  }
+  @Input()
+  set selected(value: DomainRo) {
+    this.editResourceService.selectedDomain = value;
+  }
 
   refreshDomains() {
     this.loading = true;
@@ -124,6 +133,14 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     this.dataSource.data = this.domainList;
 
     if (!!this.domainList && this.domainList.length > 0) {
+      // if selected domain exists check by domaincode if it is still  in list and set the reference else set the first
+      if (this.selected) {
+        let found = this.domainList.find(domain => domain.domainCode === this.selected.domainCode);
+        if (found) {
+          this.selected = found;
+          return;
+        }
+      }
       this.selected = this.domainList[0];
     }
   }

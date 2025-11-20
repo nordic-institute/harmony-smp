@@ -296,14 +296,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     } else {
       this.isResourceDocument = this.editorMode === SmpDocumentEditorType.RESOURCE_EDITOR;
     }
-    /*
-    if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR && !this.reviewDocument
-      || this.editorMode !== SmpDocumentEditorType.REVIEW_EDITOR && !this.resource) {
-      this.alertService.errorForTranslation("document.edit.panel.error.document.null");
-      this.navigationService.navigateUp();
-      return;
-    }
-     */
+
     // load the document to show
     if (this.isDocumentTemplateMode) {
       console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion ")
