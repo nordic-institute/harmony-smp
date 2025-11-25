@@ -1,5 +1,5 @@
 -- This is [CREATE] database script for DomiSML version: [5.2-RC2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.34.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
+-- This file was generated using hibernate version [6.6.37.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     create table SMP_ALERT (

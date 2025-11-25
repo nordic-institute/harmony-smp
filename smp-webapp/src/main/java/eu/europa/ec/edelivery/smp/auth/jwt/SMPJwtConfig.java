@@ -23,9 +23,13 @@ import eu.europa.ec.edelivery.smp.auth.enums.SMPAutomationAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.auth.jwt.validators.CertificateBindValidator;
 import eu.europa.ec.edelivery.smp.auth.jwt.validators.NotEmptyClaimValidator;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +41,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
+import java.net.URL;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -50,7 +55,7 @@ import java.util.Base64;
 import static org.apache.commons.lang3.StringUtils.*;
 
 /**
- * \
+ *
  * Configuration for JWT authorization. If JWT token authentication is enabled, the class provides the
  * JwtDecoder and a custom authentication converter for handling JWT tokens.
  * It also includes a custom claim validator to ensure that specific claims are present in the JWT.
@@ -68,22 +73,24 @@ public class SMPJwtConfig {
      *
      * @param configurationService the service to access configuration settings
      * @return a configured JwtDecoder or null if JWT authentication is not enabled
-     * @throws Exception if there is an error loading the RSA public key
      */
     @Bean
-    public JwtDecoder jwtDecoder(ConfigurationService configurationService) throws Exception {
+    public JwtDecoder jwtDecoder(ConfigurationService configurationService, UITruststoreService truststoreService) {
         if (!configurationService.getAutomationAuthenticationTypes().contains(SMPAutomationAuthenticationTypes.JWT)) {
             LOG.info("SMP JWT Authentication is not enabled. Skipping JWT decoder configuration.");
             return null; // No JWT authentication configured
         }
-        String jwtSignatureKey = configurationService.getJWTSignatureKey();
-        String sigJWTAlg = configurationService.getJWTSignatureAlgorithm();
-        JWSAlgorithm signatureAlgorithm = JWSAlgorithm.parse(sigJWTAlg);
-        PublicKey publicKey = loadPublicKey(jwtSignatureKey, sigJWTAlg);
-
-        NimbusJwtDecoder decoder = new SMPPublicKeyJwtDecoderBuilder(publicKey, signatureAlgorithm)
-                .validateType(false) // Disable type validation to allow custom claims at-jwt from  rfc9068
-                .build();
+        NimbusJwtDecoder decoder = getNimbusJwtDecoderWithPublicKey(configurationService);
+        if (decoder == null) {
+            decoder = getNimbusJwtDecoderWithJwksUri(configurationService, truststoreService);
+        }
+        if (decoder == null) {
+            decoder = getNimbusJwtDecoderWithIssuerLocation(configurationService, truststoreService);
+        }
+        if (decoder == null) {
+            LOG.error("Can not configure JWT authentication. Missing JWT public key or JWKS_URI or Issuer location");
+            return null;
+        }
 
         // Combine validators: default + your custom validator
         JwtValidators.AtJwtBuilder atJwtBuilder = JwtValidators.createAtJwtValidator();
@@ -103,10 +110,87 @@ public class SMPJwtConfig {
         atJwtBuilder.validators((v)
                 -> v.put("client_id", new NotEmptyClaimValidator("client_id")));
 
-        OAuth2TokenValidator<Jwt> validator = atJwtBuilder.build();
-        decoder.setJwtValidator(validator);
+        try {
+            OAuth2TokenValidator<Jwt> validator = atJwtBuilder.build();
+            decoder.setJwtValidator(validator);
+            return decoder;
+        } catch (IllegalArgumentException ex) {
+            LOG.error("Illegal JWT configuration [{}]. JWT decoder not configured!", ExceptionUtils.getRootCauseMessage(ex));
+        }
+        return null;
+    }
 
-        return decoder;
+    private static NimbusJwtDecoder getNimbusJwtDecoderWithIssuerLocation(ConfigurationService configurationService, UITruststoreService truststoreService) {
+        URL issuerLocationUri = configurationService.getJWTIssuerLocationUri();
+        String sigJWTAlg = configurationService.getJWTSignatureAlgorithm();
+
+        if (StringUtils.isBlank(sigJWTAlg)) {
+            LOG.debug("SMP JWT Signature Key is blank, skipping JWT decoder configuration based on public key.");
+            return null;
+        }
+
+        JWSAlgorithm signatureAlgorithm = JWSAlgorithm.parse(sigJWTAlg);
+        if (issuerLocationUri != null) {
+            LOG.info("Initiate JWT decoder using JWKS_URI [{}]", issuerLocationUri);
+            try {
+                return SMPJwtDecoderBuilder.withJWKIssuerLocation(issuerLocationUri, signatureAlgorithm)
+                        .validateType(false)  // Disable type validation to allow custom claims at-jwt from  rfc9068
+                        .truststoreManagers(truststoreService.getTrustManagers())
+                        .build();
+            } catch (SMPRuntimeException ex) {
+                LOG.error("Error configuring JWT decoder with issuer location [{}]: [{}]", issuerLocationUri, ExceptionUtils.getRootCauseMessage(ex));
+            }
+        }
+        return null;
+    }
+
+    private static NimbusJwtDecoder getNimbusJwtDecoderWithJwksUri(ConfigurationService configurationService, UITruststoreService truststoreService) {
+        URL jwksUri = configurationService.getJWTJwksUri();
+        String sigJWTAlg = configurationService.getJWTSignatureAlgorithm();
+
+        if (StringUtils.isBlank(sigJWTAlg)) {
+            LOG.debug("SMP JWT Signature Key is blank, skipping JWT decoder configuration based on public key.");
+            return null;
+        }
+
+        JWSAlgorithm signatureAlgorithm = JWSAlgorithm.parse(sigJWTAlg);
+        if (jwksUri != null) {
+            LOG.info("Initiate JWT decoder using JWKS_URI [{}]", jwksUri);
+            try {
+                return SMPJwtDecoderBuilder.withJwkSetUri(jwksUri, signatureAlgorithm)
+                        .validateType(false)  // Disable type validation to allow custom claims at-jwt from  rfc9068
+                        .truststoreManagers(truststoreService.getTrustManagers())
+                        .build();
+            } catch (SMPRuntimeException ex) {
+                LOG.error("Error configuring JWT decoder with JWKS location [{}]: [{}]", jwksUri, ExceptionUtils.getRootCauseMessage(ex));
+            }
+        }
+        return null;
+    }
+
+    private static NimbusJwtDecoder getNimbusJwtDecoderWithPublicKey(ConfigurationService configurationService) {
+        String jwtSignatureKey = configurationService.getJWTSignatureKey();
+        if (StringUtils.isBlank(jwtSignatureKey)) {
+            LOG.debug("SMP JWT Signature Key is blank, skipping JWT decoder configuration based on public key.");
+            return null;
+        }
+        String sigJWTAlg = configurationService.getJWTSignatureAlgorithm();
+        if (StringUtils.isBlank(sigJWTAlg)) {
+            LOG.debug("SMP JWT Signature Key is blank, skipping JWT decoder configuration based on public key.");
+            return null;
+        }
+        JWSAlgorithm signatureAlgorithm = JWSAlgorithm.parse(sigJWTAlg);
+        PublicKey publicKey;
+        try {
+            publicKey = loadPublicKey(jwtSignatureKey, sigJWTAlg);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | IllegalArgumentException e) {
+            LOG.error("Error occurred while loading/parsing JWT Public Key", e);
+            return null;
+        }
+
+        return SMPJwtDecoderBuilder.withPublicKey(publicKey, signatureAlgorithm)
+                .validateType(false) // Disable type validation to allow custom claims at-jwt from  rfc9068
+                .build();
     }
 
     /**

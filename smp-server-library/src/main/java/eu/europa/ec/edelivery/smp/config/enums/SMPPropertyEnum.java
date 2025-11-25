@@ -221,6 +221,16 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
     ),
 
+    AUTOMATION_AUTHORIZATION_JWT_JWKS_URI("smp.authorization.jwt.jwks.uri", "",
+            "The JWKS_URI address with authorization keys.  Note: The retrieving the EdDSA key is not supported.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, URL
+    ),
+
+    AUTOMATION_AUTHORIZATION_JWT_ISSUER_LOCATION("smp.authorization.jwt.issuer.location", "",
+            "The issuer location of the JWT token, to retrieve .well-known/openid-configuration. Note: the retrieving the EdDSA key is not supported.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, URL
+    ),
+
     AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_ALGORITHM("smp.authorization.jwt.algorithm", "RS256",
             "The signature algorithm used to verify the JWT token e.g.: RS256, HS256, ES256, PS256.",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING

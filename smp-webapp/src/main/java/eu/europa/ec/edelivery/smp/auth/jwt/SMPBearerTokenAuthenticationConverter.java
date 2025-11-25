@@ -28,6 +28,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPBadCredentialsException;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
@@ -122,10 +123,10 @@ public class SMPBearerTokenAuthenticationConverter implements Converter<BearerTo
         try {
             return this.jwtDecoder.decode(bearer.getToken());
         } catch (BadJwtException failed) {
-            LOG.info("Failed to authenticate since the JWT was invalid [{}]", failed.getMessage());
+            LOG.info("Failed to authenticate since the JWT is invalid [{}]", failed.getMessage());
             throw new InvalidBearerTokenException(failed.getMessage(), failed);
         } catch (JwtException failed) {
-            LOG.info("Failed to authenticate since the JWT was invalid: [{}]", failed.getMessage());
+            LOG.info("Failed to authenticate. The validation of JWT failed: [{}]", ExceptionUtils.getRootCauseMessage(failed));
             throw new AuthenticationServiceException(failed.getMessage(), failed);
         }
     }

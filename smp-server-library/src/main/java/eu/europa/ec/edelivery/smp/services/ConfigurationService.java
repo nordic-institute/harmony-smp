@@ -477,6 +477,14 @@ public class ConfigurationService {
         return configurationDAO.getPropertyValue(AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_KEY);
     }
 
+    public URL getJWTJwksUri() {
+        return configurationDAO.getPropertyValue(AUTOMATION_AUTHORIZATION_JWT_JWKS_URI);
+    }
+
+    public URL getJWTIssuerLocationUri() {
+        return configurationDAO.getPropertyValue(AUTOMATION_AUTHORIZATION_JWT_ISSUER_LOCATION);
+    }
+
     public String getJWTSignatureAlgorithm() {
         return configurationDAO.getPropertyValue(AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_ALGORITHM);
     }
