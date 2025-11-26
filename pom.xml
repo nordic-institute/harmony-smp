@@ -55,14 +55,14 @@ See the Licence for the specific language governing permissions and limitations 
         <edelivery.dynamic-discovery-client.version>2.5-SNAPSHOT</edelivery.dynamic-discovery-client.version>
         <bdmsl-api.version>4.3.2</bdmsl-api.version>
         <!-- plugin versions -->
-        <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>10.0.4</plugin.dependency-check-maven.version>
-        <plugin.jacoco-maven-plugin.version>0.8.13</plugin.jacoco-maven-plugin.version>
+        <plugin.jacoco-maven-plugin.version>0.8.14</plugin.jacoco-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
         <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
         <plugin.maven-clean-plugin.version>3.5.0</plugin.maven-clean-plugin.version>
-        <plugin.maven-compiler-plugin.version>3.14.0</plugin.maven-compiler-plugin.version>
+        <plugin.maven-compiler-plugin.version>3.14.1</plugin.maven-compiler-plugin.version>
         <plugin.maven-dependency-plugin.version>3.8.1</plugin.maven-dependency-plugin.version>
         <plugin.maven-failsafe-plugin.version>3.5.4</plugin.maven-failsafe-plugin.version>
         <plugin.maven-jar-plugin.version>3.4.2</plugin.maven-jar-plugin.version>
@@ -72,14 +72,14 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
         <plugin.versions-maven-plugin.version>2.18.0</plugin.versions-maven-plugin.version>
 
-        <aspectj.version>1.9.24</aspectj.version>
+        <aspectj.version>1.9.25</aspectj.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.20.0</commons-io.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-net.version>3.12.0</commons-net.version>
-        <commons-validator.version>1.10.0</commons-validator.version>
+        <commons-validator.version>1.10.1</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.4</cxf-xjc-runtime.version>
         <cxf.version>3.5.11</cxf.version>
         <ehcache.version>3.11.1</ehcache.version>
@@ -89,7 +89,7 @@ See the Licence for the specific language governing permissions and limitations 
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <jackson.version>2.19.2</jackson.version>
+        <jackson.version>2.19.4</jackson.version>
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
@@ -99,7 +99,7 @@ See the Licence for the specific language governing permissions and limitations 
         <junit-jupiter.version>5.13.4</junit-jupiter.version>
         <junitparams.version>1.1.1</junitparams.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <logback.version>1.3.15</logback.version>
+        <logback.version>1.3.16</logback.version>
         <mysql.jdbc.version>8.4.0</mysql.jdbc.version>
         <metro.version>2.2.1-1</metro.version>
         <mockito.version>4.11.0</mockito.version>
@@ -107,13 +107,13 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.109</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.112</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.4</xmlunit.version>
 
         <!-- plugins -->
-        <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
+        <plugin.frontend-maven-plugin.version>1.15.4</plugin.frontend-maven-plugin.version>
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
