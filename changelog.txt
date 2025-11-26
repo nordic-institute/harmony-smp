@@ -7,6 +7,8 @@ DomiSMP 5.2
         smp.authorization.jwt.audience: The JWT audience used for validating the token.
         smp.authorization.jwt.key: The JWT key used for signing the token.
         smp.authorization.jwt.algorithm: The JWT algorithm used for signing the token. Default is HS256.
+        smp.authorization.jwt.jwks.uri: The URI of the JWKS endpoint to fetch the public keys for validating the token (Note: EdDSA keys are not supported).
+        smp.authorization.jwt.issuer.location: The location of the issuer claim in the JWT token. (Note: EdDSA keys are not supported).
         vault.enabled: Enable/Disable Vault integration for sensitive properties.
         smp.vault.implementation.classname: The implementation class name for Vault integration. The class must implement the interface eu.domibus.api.property.VaultService.
         smp.vault.configuration: The list of vault configuration properties. The key names are specific to vault instance type.

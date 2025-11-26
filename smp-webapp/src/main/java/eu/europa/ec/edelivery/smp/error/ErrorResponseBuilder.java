@@ -97,13 +97,13 @@ public class ErrorResponseBuilder {
         return this;
     }
 
-    public ResponseEntity build() {
+    public ResponseEntity<?> build() {
         return ResponseEntity.status(this.status)
                 .contentType(CONTENT_TYPE_TEXT_XML_UTF8)
                 .body(this.buildBody());
     }
 
-    public ResponseEntity buildJSon() {
+    public ResponseEntity<?> buildJSon() {
         return ResponseEntity.status(this.status)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(this.buildJSonBody());
