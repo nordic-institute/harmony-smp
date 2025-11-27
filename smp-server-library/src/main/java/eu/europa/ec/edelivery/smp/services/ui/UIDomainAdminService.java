@@ -61,7 +61,6 @@ import java.util.stream.Collectors;
 public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainAdminService.class);
-    public static final String DOMAIN_DOES_NOT_EXIST_IN_DATABASE = "Domain does not exist in database!";
 
     private final DomainDao domainDao;
     private final DomainConfigurationDao domainConfigurationDao;
@@ -101,12 +100,12 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     /**
      * Method returns Domain resource object list for page.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @param filter
-     * @return
+     * @param page - page number (0..N)
+     * @param pageSize - page size
+     * @param sortField - sort field
+     * @param sortOrder - sort order
+     * @param filter - filter object
+     * @return ServiceResult with DomainRO list
      */
     @Transactional
     @Override
@@ -144,8 +143,8 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     /**
      * Update only basic domain data from DomainRO object. Ignore other
      *
-     * @param domainId
-     * @param data
+     * @param domainId - domain ID
+     * @param data - domain data object
      */
     @Transactional
     public void updateBasicDomainData(Long domainId, DomainRO data) {
@@ -288,7 +287,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         }
         if (domain.isSmlRegistered()) {
             LOG.info("Can not delete domain for ID [{}], is registered to SML!", domainId);
-            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+            throw new SMPRuntimeException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
                     .addParam(ErrorMessageArgument.ERROR,
                             "Can not delete domain because it is registered to SML service! Unregister domain from SML service!");
         }
@@ -296,9 +295,9 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         Long count = domainDao.getResourceCountForDomain(domainId);
         if (count > 0) {
             LOG.info("Can not delete domain for ID [{}], because it has resources. Resource count [{}]!", domainId, count);
-            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
-                    .addParam(ErrorMessageArgument.ERROR,
-                            "Can not delete domain because it has resources [" + count + "]! Delete resources first!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOMAIN_DELETE_CONTAINS_RESOURCES)
+                    .addParam(ErrorMessageArgument.COUNT,
+                            count+"");
         }
 
         // if there are no resources  / just "unpin" the members and the groups
