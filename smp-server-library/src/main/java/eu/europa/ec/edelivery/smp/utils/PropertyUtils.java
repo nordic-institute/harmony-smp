@@ -83,7 +83,18 @@ public class PropertyUtils {
         }
 
         SMPPropertyTypeEnum type = prop.getPropertyType();
-        Object result = parsePropertyType(type, value, rootFolder);
+        Object result;
+        try {
+            result = parsePropertyType(type, value, rootFolder);
+        } catch (SMPRuntimeException ex) {
+            LOG.debug("Invalid property value [{}] for property [{}]. Error: [{}]", value, prop.getProperty(), ExceptionUtils.getRootCauseMessage(ex));
+            // rethrow with property specific error message code for consistency
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_PROPERTY, ex)
+                    .addParam(ERROR_MESSAGE_CODE, prop.getErrorMessageCode())
+                    .addParam(PROPERTY_NAME, prop.getProperty())
+                    .addParam(PROPERTY_VALUE,value);
+        }
+
         return switch (prop) {
             case AUTOMATION_AUTHENTICATION_TYPES, UI_AUTHENTICATION_TYPES ->
                     parseEnumListPropertyType(prop, (List<String>) result);
@@ -271,7 +282,7 @@ public class PropertyUtils {
             return propOpt.get().isEncrypted() || property.toLowerCase().contains(".password.decrypted");
         }
         LOG.debug("Database property [{}] is not recognized by the SMP. Basic mask rule applied for masking!", property);
-        return StringUtils.contains(property.toLowerCase(), "passw");
+        return Strings.CI.contains(property, "passw");
     }
 
     /**
