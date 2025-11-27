@@ -1,10 +1,10 @@
 <div id="admin-resource-panel">
-  @if (!dataSource.loadingResults) {
+
     <data-panel id="admin-resource-data-panel"
                 title="{{ 'edit.resource.title' | translate }}"
                 text="{{ 'edit.resource.text' | translate }}"
                 [labelColumnContent]="searchGroupPanel">
-
+      @if (!dataSource.loadingResults) {
       <mat-tab-group [selectedIndex]="getSelectedTabIndex()"
                      *ngIf="hasResources;else noUserAdminGroupsDataFound"
                      class="edit-resource-tab-group"
@@ -44,6 +44,7 @@
           ></subresource-panel>
         </mat-tab>
       </mat-tab-group>
+      }
     </data-panel>
     <ng-template #noUserAdminGroupsDataFound>
       <smp-warning-panel *ngIf="!isLoadingResults"
@@ -52,10 +53,10 @@
                          type="warning"
                          [label]="(filterResourceResults && !!domainList &&  domainList.length > 0 ? 'edit.resource.label.no.filter.results.admin': 'edit.resource.label.user.not.administrator') | translate"></smp-warning-panel>
     </ng-template>
-  }
+
 </div>
 
-<ng-template #searchGroupPanel>
+  <ng-template #searchGroupPanel>
   <div class="edit-resource-selection-panel"
        *ngIf="!!domainList &&  domainList.length > 0 && (hasResources || filterResourceResults)"
   >
@@ -89,10 +90,6 @@
     </mat-form-field>
 
     <div class="edit-resource-container mat-elevation-z2">
-      <div class="edit-resource-loading-shade"
-           *ngIf="isLoadingResults">
-        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-      </div>
       <smp-table
         filterLabel="edit.resource.label.filter"
         filterPlaceholder="edit.resource.placeholder.filter"
@@ -100,7 +97,9 @@
         noResultForFilterLabel="edit.resource.label.no.filter.results"
         [isLoadableTable]="true"
         [dataSource]="dataSource"
-        [dataLength]="dataSource.resourceCount"
+        [dataLength]="dataSource?.resourceCount"
+        [pageIndex]="dataSource?.resourcePageIndex"
+        [pageSize]="dataSource?.resourcePageSize"
         [selectedRow]="selectedResource"
         [filterValue]="filterResourceValue"
         [columnDefList]="columns"

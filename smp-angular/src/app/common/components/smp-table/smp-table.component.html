@@ -81,7 +81,7 @@
     <div class="mat-row" *matNoDataRow>
       @if (showFilter && filterValue) {
         <div class="mat-cell">
-          {{ noResultForFilterLabel | translate: {filterValue: tableFilter.value} }}
+          {{ noResultForFilterLabel | translate: {filterValue: filterValue} }}
         </div>
       } @else {
         <div>{{ noResultLabel | translate }}</div>
@@ -90,7 +90,7 @@
   </mat-table>
 </div>
 
-<mat-paginator #smpTablePaginator
+<mat-paginator #smpTablePaginator id="smpTablePaginator"
                (page)="onPageChangedEvent($event)"
                [pageSizeOptions]="pageSizeOptions"
                showFirstLastButtons="true"

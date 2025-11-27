@@ -1,6 +1,6 @@
-import {AfterViewInit, Component, Input, ViewChild,} from '@angular/core';
+import {AfterViewInit, Component, Input,} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
@@ -10,15 +10,12 @@ import {EditResourceController} from "./edit-resource.controller";
 import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
-    templateUrl: './edit-resource.component.html',
-    styleUrls: ['./edit-resource.component.css'],
-    standalone: false
+  templateUrl: './edit-resource.component.html',
+  styleUrls: ['./edit-resource.component.css'],
+  standalone: false
 })
 export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-
   selected: ResourceRo;
   isLoadingResults = false;
   dataSource: EditResourceController;
@@ -44,17 +41,19 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
     ];
     // set loading state, it will be triggered in ngAfterViewInit
     this.dataSource.loadingResults = true
+
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.editResourceController.refreshDataOnDataChange();
 
-    if (!this.selectedResource) {
+    if (this.editResourceController.dataChanged) {
+      this.editResourceController.refreshDataOnDataChange();
+    } else if (!this.selectedResource) {
       this.editResourceController.refreshDomains();
     } else {
       // always refresh resources when selected resource is set
       this.editResourceController.refreshResources();
+
     }
   }
 
