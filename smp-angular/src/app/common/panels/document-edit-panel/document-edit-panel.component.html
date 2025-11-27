@@ -141,6 +141,7 @@
       <!-- The document panels -->
       @if (!isDocumentTemplateMode) {
         <expandable-item icon="description"
+                         [showItem]="!isDocumentTemplateMode"
                          [showButtonSpacer]="true"
                          title="{{'document.properties.panel.tab.title' | translate }}"
                          buttonLabel="{{'document.properties.panel.tab.button.properties' | translate }}">
@@ -171,7 +172,7 @@
 
       <!-- The document version panels -->
       <expandable-item icon="event"
-                       [showItem]="true"
+                       [showItem]="isDocumentTemplateMode"
                        showButtonSpacer="true"
                        title="{{'document.events.panel.tab.title' | translate }}"
                        buttonLabel="{{'document.events.panel.tab.button.events' | translate }}">
