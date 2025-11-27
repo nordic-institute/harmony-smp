@@ -45,7 +45,7 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
   title = "";
   visibilityDescription = "";
   private _resource: ResourceRo;
-  @Input() private group: GroupRo;
+  @Input() public group: GroupRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
 

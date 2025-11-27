@@ -35,7 +35,9 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   _selectedComponent = '';
 
   resourcesFilter: any = {};
-  private _resourceCount: number = 0;
+  public resourceCount: number = -1;
+  public resourcePageSize: number = 10;
+  public resourcePageIndex: number = 0;
 
 
   constructor(
@@ -87,7 +89,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedDomainResourceDefs = [];
     this._selectedComponent = '';
     this.resourcesFilter = {};
-    this.updateResourceList([], 0, -1, -1);
+    this.updateResourceList([], 0, -1, this.resourcePageSize);
     this.loadingResults = false;
   }
 
@@ -107,6 +109,18 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     }
   };
 
+  // overwrite the set paginator and refresh paginator
+  override set paginator(paginator: any) {
+    console.log("Setting paginator in EditResourceController", paginator);
+    super.paginator = paginator;
+    console.log("Paginator set:", this.paginator);
+    this.refreshPaginator();
+  }
+
+  override get paginator(): any {
+    return super.paginator;
+  }
+
   get selectedGroup(): GroupRo {
     return this._selectedGroup;
   };
@@ -117,7 +131,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
       this.refreshResources();
     } else {
       this.loadingResults = false;
-      this.updateResourceList([], 0, -1, -1);
+      this.updateResourceList([], 0, -1, this.resourcePageSize);
     }
   };
 
@@ -194,14 +208,15 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   refreshResources() {
+
     if (!this._selectedGroup) {
       this.loadingResults = false;
-      this.updateResourceList([], 0, -1, -1);
+      this.updateResourceList([], 0, -1, this.resourcePageSize);
       return;
     }
     this.loadingResults = true;
     this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
-      this.resourcesFilter,  this.paginator? this.paginator.pageIndex : 0, this.paginator? this.paginator.pageSize : 10)
+      this.resourcesFilter, this.resourcePageIndex, this.resourcePageSize)
       .subscribe({
         next: (result: TableResult<ResourceRo>) => {
           this.updateResourceList(result.serviceEntities, result.count, result.page, result.pageSize);
@@ -211,6 +226,10 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
           this.alertService.error(error.error?.errorDescription)
         }
       });
+    // reset values so that when reloaded via updateResourceList paginator detect changes
+    this.resourceCount = -1;
+    this.resourcePageIndex = -1;
+    this.resourcePageSize = 10;
   }
 
   refreshDomainsResourceDefinitions() {
@@ -259,7 +278,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     }
 
     if (!this.selectedGroup && !!this.groupList && this.groupList.length > 0) {
-        this.selectedGroup = this.groupList[0];
+      this.selectedGroup = this.groupList[0];
     } else {
       this._dataChanged = false;
       this.loadingResults = false;
@@ -270,12 +289,13 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     let currentSelection: ResourceRo = this.selectedResource;
     this.selectedResource = null;
 
-    if (this.paginator) {
-        this.paginator.pageSize = pageSize;
-        this.paginator.pageIndex = pageIndex;
-        this.paginator.length = totalDataSize;
-    }
-    this._resourceCount= totalDataSize;
+    console.log("Loading resources... 3, list size=" + list?.length + ". totalDataSize=" + totalDataSize + ", pageIndex=" + pageIndex + ", pageSize=" + pageSize);
+
+
+    this.resourcePageIndex = pageIndex;
+    this.resourcePageSize = pageSize;
+    this.resourceCount = totalDataSize;
+    this.refreshPaginator()
     this.data = list;
 
     if (!!currentSelection) {
@@ -289,8 +309,13 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     }
   }
 
-  get resourceCount(): number {
-    return this._resourceCount;
+  refreshPaginator() {
+    if (this.paginator) {
+      console.log("Refreshing paginator: pageIndex=" + this.resourcePageIndex + ", pageSize=" + this.resourcePageSize + ", totalDataSize=" + this.resourceCount);
+      this.paginator.pageSize = this.resourcePageSize;
+      this.paginator.pageIndex = this.resourcePageIndex;
+      this.paginator.length = this.resourceCount;
+    }
   }
 
 
@@ -305,7 +330,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedGroup = group;
     this._selectedResource = resource;
     // set filter to find the resource
-    this.resourcesFilter["filter"] =    !filterValue ? '' : filterValue.trim().toLowerCase();
+    this.resourcesFilter["filter"] = !filterValue ? '' : filterValue.trim().toLowerCase();
     // refresh data and set data changed as false to avoid multiple refreshes
     this.refreshDomains();
     this.dataChanged = false;
@@ -322,9 +347,11 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   applyResourcePage(pageIndex: number, pageSize: number) {
+    this.resourcePageIndex = pageIndex;
+    this.resourcePageSize = pageSize;
     if (this.paginator) {
-      this.paginator.pageSize = pageSize;
-      this.paginator.pageIndex = pageIndex;
+      console.log("Applying paginator: pageIndex=" + pageIndex + ", pageSize=" + pageSize);
+      this.refreshPaginator()
     }
     this.refreshResources();
   }
