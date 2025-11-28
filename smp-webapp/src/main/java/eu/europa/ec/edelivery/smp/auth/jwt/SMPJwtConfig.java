@@ -149,13 +149,13 @@ public class SMPJwtConfig {
         String sigJWTAlg = configurationService.getJWTSignatureAlgorithm();
 
         if (StringUtils.isBlank(sigJWTAlg)) {
-            LOG.debug("SMP JWT Signature Key is blank, skipping JWT decoder configuration based on public key.");
+            LOG.debug("SMP JWT Signature Key is blank, skipping JWT decoder configuration based on jwksUri [{}].", jwksUri);
             return null;
         }
 
         JWSAlgorithm signatureAlgorithm = JWSAlgorithm.parse(sigJWTAlg);
         if (jwksUri != null) {
-            LOG.info("Initiate JWT decoder using JWKS_URI [{}]", jwksUri);
+            LOG.info("Initiate JWT decoder using JWKS_URI [{}] and algorithm [{}]", jwksUri, sigJWTAlg);
             try {
                 return SMPJwtDecoderBuilder.withJwkSetUri(jwksUri, signatureAlgorithm)
                         .validateType(false)  // Disable type validation to allow custom claims at-jwt from  rfc9068
@@ -176,7 +176,7 @@ public class SMPJwtConfig {
         }
         String sigJWTAlg = configurationService.getJWTSignatureAlgorithm();
         if (StringUtils.isBlank(sigJWTAlg)) {
-            LOG.debug("SMP JWT Signature Key is blank, skipping JWT decoder configuration based on public key.");
+            LOG.debug("SMP JWT Signature algorithm is blank, skipping JWT decoder configuration based on public key.");
             return null;
         }
         JWSAlgorithm signatureAlgorithm = JWSAlgorithm.parse(sigJWTAlg);
@@ -187,7 +187,7 @@ public class SMPJwtConfig {
             LOG.error("Error occurred while loading/parsing JWT Public Key", e);
             return null;
         }
-
+        LOG.info("Initiate JWT decoder using public key with signature algorithm [{}]", sigJWTAlg);
         return SMPJwtDecoderBuilder.withPublicKey(publicKey, signatureAlgorithm)
                 .validateType(false) // Disable type validation to allow custom claims at-jwt from  rfc9068
                 .build();

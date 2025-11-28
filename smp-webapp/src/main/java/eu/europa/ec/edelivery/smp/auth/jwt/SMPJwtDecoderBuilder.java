@@ -263,7 +263,7 @@ public class SMPJwtDecoderBuilder {
 
     protected JWSKeySelector<SecurityContext> jwsKeySelector() {
         if (this.key != null) {
-            new SingleKeyJWSKeySelector<>(this.jwsAlgorithm, this.key);
+            return new SingleKeyJWSKeySelector<>(this.jwsAlgorithm, this.key);
         } else if (jwkSetUri != null || issuerLocation != null) {
             return new JWSVerificationKeySelector<>(jwsAlgorithm, jwkSource());
         }
