@@ -164,6 +164,7 @@ public class UIDomainDocumentTemplateService {
     @Transactional
     public DocumentRO updateTemplateForDomainVersion(long domainId, long templateId, DocumentRO payload) {
         DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
+        uiDocumentService.validateDocumentForTemplate(template, payload);
         return uiDocumentService.saveDocumentForTemplate(template.getId(), payload);
     }
 

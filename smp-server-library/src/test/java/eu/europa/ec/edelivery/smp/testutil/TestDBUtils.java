@@ -197,11 +197,15 @@ public class TestDBUtils {
     public static DBDocumentVersion createDBDocumentVersion(String id, String sch, DocumentVersionStatusType status) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
         docuVersion.setStatus(status);
-        docuVersion.setContent(("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
+        docuVersion.setContent(createServiceGroup(id, sch).getBytes());
+        return docuVersion;
+    }
+
+    public static String createServiceGroup(String id, String sch) {
+        return "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
                 "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
                 "<ServiceMetadataReferenceCollection />" +
-                "</ServiceGroup>").getBytes());
-        return docuVersion;
+                "</ServiceGroup>";
     }
 
     public static DBDocumentVersion createDBDocumentVersion(String id, String sch, String docId, String docSch) {
