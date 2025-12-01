@@ -723,6 +723,9 @@
     alter table SMP_DOMAIN_CONFIGURATION 
        add constraint SMP_DOMAIN_CONF_IDX unique (ID, PROPERTY_NAME, FK_DOMAIN_ID);
 
+    alter table SMP_DOMAIN_DOC_TMPL 
+       add constraint SMP_DOC_TMPL_UNIQ_IDX unique (DOCUMENT_LEVEL, FK_DOREDEF_ID, FK_SUREDEF_ID);
+
     alter table SMP_DOMAIN_MEMBER 
        add constraint SMP_DOM_MEM_IDX unique (FK_DOMAIN_ID, FK_USER_ID);
 
