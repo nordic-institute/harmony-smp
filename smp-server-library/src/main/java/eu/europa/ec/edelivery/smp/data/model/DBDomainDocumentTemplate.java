@@ -39,7 +39,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Entity
 @Audited
-@Table(name = "SMP_DOMAIN_DOC_TMPL", comment = "The domain document template")
+@Table(name = "SMP_DOMAIN_DOC_TMPL", comment = "The domain document template",
+        indexes = {@Index(name = "SMP_DOC_TMPL_UNIQ_IDX", columnList = "DOCUMENT_LEVEL, FK_DOREDEF_ID, FK_SUREDEF_ID", unique = true)})
 @NamedQuery(name = QUERY_DOMAIN_DOC_TEMPLATES_BY_DOMAIN, query = "SELECT tmpl FROM DBDomainDocumentTemplate tmpl " +
         " WHERE tmpl.domainResourceDef.domain.id = :domain_id " )
 @NamedQuery(name = QUERY_DOMAIN_DOC_TEMPLATES_BY_DOMAIN_RESDEF_SUBRESDEF, query = "SELECT tmpl FROM DBDomainDocumentTemplate tmpl " +

@@ -30,6 +30,7 @@ export class DomainDocumentTemplateDialog {
   _template: DomainDocumentTemplateRo;
   _currentDomain: DomainRo;
   _selectedResourceDef: ResourceDefinitionRo;
+  _submitInProgress: boolean = false;
 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
@@ -153,7 +154,8 @@ export class DomainDocumentTemplateDialog {
   }
 
   get submitButtonEnabled(): boolean {
-    return this.templateForm.valid && this.templateForm.dirty && !this.inputDataError("subresourceDefIdentifier", "noSubresourceDef");
+    return !this._submitInProgress && this.templateForm.valid && this.templateForm.dirty &&
+      !this.inputDataError("subresourceDefIdentifier", "noSubresourceDef");
   }
 
   public onSaveButtonClicked() {
@@ -165,14 +167,15 @@ export class DomainDocumentTemplateDialog {
   }
 
   public create(template: DomainDocumentTemplateRo) {
-
+    this._submitInProgress = true;
     this.editDomainService.createDocumentTemplateObservable(this._currentDomain.domainId, template).subscribe({
       next: (response: DomainDocumentTemplateRo) => {
         this.closeDialog();
       },
       error: (error) => {
+        this._submitInProgress = false;
         this.alertService.error(error.error?.errorDescription)
-      }
+      },
     });
   }
 
