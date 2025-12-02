@@ -55,19 +55,19 @@ See the Licence for the specific language governing permissions and limitations 
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>12.1.6</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.14</plugin.jacoco-maven-plugin.version>
-        <plugin.sonar-maven-plugin.version>5.3.0.6276</plugin.sonar-maven-plugin.version>
+        <plugin.sonar-maven-plugin.version>5.4.0.6343</plugin.sonar-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
         <plugin.maven-antrun-plugin.version>3.2.0</plugin.maven-antrun-plugin.version>
-        <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
+        <plugin.maven-assembly-plugin.version>3.8.0</plugin.maven-assembly-plugin.version>
         <plugin.maven-clean-plugin.version>3.5.0</plugin.maven-clean-plugin.version>
         <plugin.maven-compiler-plugin.version>3.14.1</plugin.maven-compiler-plugin.version>
         <plugin.maven-dependency-plugin.version>3.9.0</plugin.maven-dependency-plugin.version>
         <plugin.maven-failsafe-plugin.version>3.5.4</plugin.maven-failsafe-plugin.version>
         <plugin.maven-jar-plugin.version>3.5.0</plugin.maven-jar-plugin.version>
         <plugin.maven-release-plugin.version>3.2.0</plugin.maven-release-plugin.version>
-        <plugin.maven-resources-plugin.version>3.3.1</plugin.maven-resources-plugin.version>
+        <plugin.maven-resources-plugin.version>3.4.0</plugin.maven-resources-plugin.version>
         <plugin.maven-surefire-plugin.version>3.5.4</plugin.maven-surefire-plugin.version>
-        <plugin.maven-war-plugin.version>3.5.0</plugin.maven-war-plugin.version>
+        <plugin.maven-war-plugin.version>3.5.1</plugin.maven-war-plugin.version>
         <plugin.frontend-maven-plugin.version>1.15.4</plugin.frontend-maven-plugin.version>
         <plugin.versions-maven-plugin.version>2.20.1</plugin.versions-maven-plugin.version>
 
@@ -87,9 +87,9 @@ See the Licence for the specific language governing permissions and limitations 
         <fasterxml.classmate.version>1.7.1</fasterxml.classmate.version>
         <h2.version>2.4.240</h2.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <hibernate-tools-orm.version>6.6.36.Final</hibernate-tools-orm.version>
+        <hibernate-tools-orm.version>6.6.38.Final</hibernate-tools-orm.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
-        <hibernate.version>6.6.37.Final</hibernate.version>
+        <hibernate.version>6.6.38.Final</hibernate.version>
         <httpclient5.version>5.5.1</httpclient5.version>
         <jackson.version>2.20.1</jackson.version>
         <jakarta.activation-api.version>2.1.4</jakarta.activation-api.version>
