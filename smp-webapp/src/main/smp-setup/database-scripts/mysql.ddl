@@ -1,5 +1,5 @@
 -- This is [CREATE] database script for DomiSML version: [5.2-RC2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.38.Final] with dialect [org.hibernate.dialect.MySQL5InnoDBDialect].
+-- This file was generated using hibernate version [6.6.38.Final] with dialect [org.hibernate.dialect.MySQLDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     create table SMP_ALERT (
@@ -8,15 +8,15 @@
         LAST_UPDATED_ON datetime(6) not null,
         ALERT_LEVEL enum ('HIGH','LOW','MEDIUM'),
         ALERT_STATUS enum ('FAILED','PROCESS','SUCCESS'),
-        ALERT_STATUS_DESC varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_STATUS_DESC varchar(1024),
         ALERT_TYPE enum ('CREDENTIAL_CHANGED','CREDENTIAL_EXPIRED','CREDENTIAL_IMMINENT_EXPIRATION','CREDENTIAL_REQUEST_RESET','CREDENTIAL_SUSPENDED','CREDENTIAL_VERIFICATION_FAILED','RESOURCE_DOCUMENT_ACTION','RESOURCE_DOCUMENT_REVIEW_ACTION','SUBRESOURCE_DOCUMENT_ACTION','SUBRESOURCE_DOCUMENT_REVIEW_ACTION','SYSTEM_CERTIFICATE_EXPIRED','SYSTEM_CERTIFICATE_IMMINENT_EXPIRATION','TEST_ALERT','USER_CREATED','USER_CREATED_CONFIRMATION','USER_CREATED_EU_LOGIN','USER_UPDATED'),
-        MAIL_SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
-        MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MAIL_SUBJECT varchar(1024),
+        MAIL_TO varchar(1024),
         PROCESSED_TIME datetime(6),
         REPORTING_TIME datetime(6),
-        FOR_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FOR_USERNAME varchar(64),
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_ALERT_AUD (
         ID bigint not null,
@@ -26,25 +26,25 @@
         LAST_UPDATED_ON datetime(6),
         ALERT_LEVEL enum ('HIGH','LOW','MEDIUM'),
         ALERT_STATUS enum ('FAILED','PROCESS','SUCCESS'),
-        ALERT_STATUS_DESC varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_STATUS_DESC varchar(1024),
         ALERT_TYPE enum ('CREDENTIAL_CHANGED','CREDENTIAL_EXPIRED','CREDENTIAL_IMMINENT_EXPIRATION','CREDENTIAL_REQUEST_RESET','CREDENTIAL_SUSPENDED','CREDENTIAL_VERIFICATION_FAILED','RESOURCE_DOCUMENT_ACTION','RESOURCE_DOCUMENT_REVIEW_ACTION','SUBRESOURCE_DOCUMENT_ACTION','SUBRESOURCE_DOCUMENT_REVIEW_ACTION','SYSTEM_CERTIFICATE_EXPIRED','SYSTEM_CERTIFICATE_IMMINENT_EXPIRATION','TEST_ALERT','USER_CREATED','USER_CREATED_CONFIRMATION','USER_CREATED_EU_LOGIN','USER_UPDATED'),
-        MAIL_SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
-        MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MAIL_SUBJECT varchar(1024),
+        MAIL_TO varchar(1024),
         PROCESSED_TIME datetime(6),
         REPORTING_TIME datetime(6),
-        FOR_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FOR_USERNAME varchar(64),
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_ALERT_PROPERTY (
         ID bigint not null auto_increment comment 'Unique alert property id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_NAME varchar(255),
+        PROPERTY_VALUE varchar(1024),
         FK_ALERT_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_ALERT_PROPERTY_AUD (
         ID bigint not null,
@@ -52,26 +52,26 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROPERTY_VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_NAME varchar(255),
+        PROPERTY_VALUE varchar(1024),
         FK_ALERT_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_CERTIFICATE (
         ID bigint not null comment 'Shared primary key with master table SMP_CREDENTIAL',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Formatted Certificate id using tags: cn, o, c:serialNumber',
-        CRL_URL varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'URL to the certificate revocation list (CRL)',
-        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate issuer (canonical form)',
+        CERTIFICATE_ID varchar(1024) comment 'Formatted Certificate id using tags: cn, o, c:serialNumber',
+        CRL_URL varchar(4000) comment 'URL to the certificate revocation list (CRL)',
+        ISSUER varchar(1024) comment 'Certificate issuer (canonical form)',
         PEM_ENCODED_CERT longtext comment 'PEM encoded  certificate',
-        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate serial number',
-        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate subject (canonical form)',
+        SERIALNUMBER varchar(128) comment 'Certificate serial number',
+        SUBJECT varchar(1024) comment 'Certificate subject (canonical form)',
         VALID_FROM datetime(6) comment 'Certificate valid from date.',
         VALID_TO datetime(6) comment 'Certificate valid to date.',
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_CERTIFICATE_AUD (
         ID bigint not null,
@@ -79,36 +79,36 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
-        CRL_URL varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
-        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CERTIFICATE_ID varchar(1024),
+        CRL_URL varchar(4000),
+        ISSUER varchar(1024),
         PEM_ENCODED_CERT longtext,
-        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SERIALNUMBER varchar(128),
+        SUBJECT varchar(1024),
         VALID_FROM datetime(6),
         VALID_TO datetime(6),
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_CONFIGURATION (
-        PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Property name/key',
+        PROPERTY_NAME varchar(512) not null comment 'Property name/key',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
-        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property value',
+        DESCRIPTION varchar(4000) comment 'Property description',
+        PROPERTY_VALUE varchar(4000) comment 'Property value',
         primary key (PROPERTY_NAME)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_CONFIGURATION_AUD (
-        PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        PROPERTY_NAME varchar(512) not null,
         REV bigint not null,
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(4000),
+        PROPERTY_VALUE varchar(4000),
         primary key (REV, PROPERTY_NAME)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_CREDENTIAL (
         ID bigint not null auto_increment comment 'Unique id',
@@ -119,18 +119,18 @@
         CHANGED_ON datetime(6) comment 'Last date when credential was changed',
         CREDENTIAL_TARGET enum ('REST_API','UI') not null comment 'Credential target UI, API',
         CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD') not null comment 'Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS',
-        CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Credential description',
+        CREDENTIAL_DESC varchar(256) comment 'Credential description',
         LAST_ALERT_ON datetime(6) comment 'Generated last password expire alert',
         EXPIRE_ON datetime(6) comment 'Date when password will expire',
         LAST_FAILED_LOGIN_ON datetime(6) comment 'Last failed login attempt',
-        CREDENTIAL_NAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
+        CREDENTIAL_NAME varchar(256) not null comment 'Unique username identifier. The Username must not be null',
         RESET_EXPIRE_ON datetime(6) comment 'Date time when reset token will expire',
-        RESET_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Reset token for credential reset',
+        RESET_TOKEN varchar(256) comment 'Reset token for credential reset',
         LOGIN_FAILURE_COUNT integer comment 'Sequential login failure count',
-        CREDENTIAL_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Credential value - it can be encrypted value',
+        CREDENTIAL_VALUE varchar(256) comment 'Credential value - it can be encrypted value',
         FK_USER_ID bigint not null,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_CREDENTIAL_AUD (
         ID bigint not null,
@@ -143,31 +143,31 @@
         CHANGED_ON datetime(6),
         CREDENTIAL_TARGET enum ('REST_API','UI'),
         CREDENTIAL_TYPE enum ('ACCESS_TOKEN','CAS','CERTIFICATE','USERNAME_PASSWORD'),
-        CREDENTIAL_DESC varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CREDENTIAL_DESC varchar(256),
         LAST_ALERT_ON datetime(6),
         EXPIRE_ON datetime(6),
         LAST_FAILED_LOGIN_ON datetime(6),
-        CREDENTIAL_NAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CREDENTIAL_NAME varchar(256),
         RESET_EXPIRE_ON datetime(6),
-        RESET_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        RESET_TOKEN varchar(256),
         LOGIN_FAILURE_COUNT integer,
-        CREDENTIAL_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CREDENTIAL_VALUE varchar(256),
         FK_USER_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT (
         ID bigint not null auto_increment comment 'Unique document id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
         CURRENT_VERSION integer not null,
-        MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        REF_DOCUMENT_URL varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MIME_TYPE varchar(128),
+        NAME varchar(255),
+        REF_DOCUMENT_URL varchar(1024),
         SHARING_ENABLED bit,
         FK_REF_DOCUMENT_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_AUD (
         ID bigint not null,
@@ -176,27 +176,27 @@
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
         CURRENT_VERSION integer,
-        MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        REF_DOCUMENT_URL varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MIME_TYPE varchar(128),
+        NAME varchar(255),
+        REF_DOCUMENT_URL varchar(1024),
         SHARING_ENABLED bit,
         FK_REF_DOCUMENT_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_CERTIFICATE (
         ID bigint not null comment 'Shared primary key with master table SMP_DOC_PROP_SEQ',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Formatted Certificate id using tags: cn, o, c and serialNumber',
-        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate issuer (canonical form)',
+        CERTIFICATE_ID varchar(1024) comment 'Formatted Certificate id using tags: cn, o, c and serialNumber',
+        ISSUER varchar(1024) comment 'Certificate issuer (canonical form)',
         PEM_ENCODED_CERT longtext comment 'PEM encoded certificate',
-        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate serial number',
-        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate subject (canonical form)',
+        SERIALNUMBER varchar(128) comment 'Certificate serial number',
+        SUBJECT varchar(1024) comment 'Certificate subject (canonical form)',
         VALID_FROM datetime(6) comment 'Certificate valid from date.',
         VALID_TO datetime(6) comment 'Certificate valid to date.',
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_CERTIFICATE_AUD (
         ID bigint not null,
@@ -204,27 +204,27 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
-        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CERTIFICATE_ID varchar(1024),
+        ISSUER varchar(1024),
         PEM_ENCODED_CERT longtext,
-        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SERIALNUMBER varchar(128),
+        SUBJECT varchar(1024),
         VALID_FROM datetime(6),
         VALID_TO datetime(6),
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_PROPERTY (
         ID bigint not null auto_increment comment 'Unique document property id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
-        PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(4000) comment 'Property description',
+        PROPERTY_NAME varchar(255),
         PROPERTY_TYPE enum ('BOOLEAN','CERTIFICATE','CRON_EXPRESSION','DATETIME','EMAIL','FILENAME','INTEGER','LIST_STRING','MAP_STRING','PATH','REGEXP','STRING','URL'),
-        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_VALUE varchar(4000),
         FK_DOCUMENT_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_PROPERTY_AUD (
         ID bigint not null,
@@ -232,13 +232,13 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROPERTY_NAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(4000),
+        PROPERTY_NAME varchar(255),
         PROPERTY_TYPE enum ('BOOLEAN','CERTIFICATE','CRON_EXPRESSION','DATETIME','EMAIL','FILENAME','INTEGER','LIST_STRING','MAP_STRING','PATH','REGEXP','STRING','URL'),
-        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_VALUE varchar(4000),
         FK_DOCUMENT_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_VERSION (
         ID bigint not null auto_increment comment 'Unique version document id',
@@ -249,7 +249,7 @@
         VERSION integer not null,
         FK_DOCUMENT_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_VERSION_AUD (
         ID bigint not null,
@@ -262,43 +262,43 @@
         VERSION integer,
         FK_DOCUMENT_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOCUMENT_VERSION_EVENT (
         ID bigint not null auto_increment comment 'Unique document version event identifier',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DETAILS varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Details of the event',
+        DETAILS varchar(1024) comment 'Details of the event',
         EVENT_ON datetime(6) comment 'Date time of the event',
         EVENT_SOURCE enum ('CRON','OTHER','PLUGIN','REST_API','UI') not null comment 'Event source UI, API',
         EVENT_TYPE enum ('APPROVE','CREATE','ERROR','PUBLISH','REJECT','REQUEST_REVIEW','RETIRE','SETTINGS_CHANGE','UPDATE') not null comment 'Document version event type',
         EVENT_STATUS enum ('APPROVED','DRAFT','PUBLISHED','REJECTED','RETIRED','UNDER_REVIEW') not null comment 'Document version event type',
-        EVENT_BY_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'username identifier of the user who triggered the event',
+        EVENT_BY_USERNAME varchar(64) comment 'username identifier of the user who triggered the event',
         FK_DOCUMENT_VERSION_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN (
         ID bigint not null auto_increment comment 'Unique domain id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DEFAULT_RESOURCE_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Default resourceType code',
-        DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Domain code used as http parameter in rest webservices',
+        DEFAULT_RESOURCE_IDENTIFIER varchar(255) comment 'Default resourceType code',
+        DOMAIN_CODE varchar(256) not null comment 'Domain code used as http parameter in rest webservices',
         ENABLE_DOMAIN_TRUSTSTORE bit comment 'If enabled use the domain custom truststore to validate domain certificates, else it uses the system truststore',
-        SIGNATURE_ALGORITHM varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Set signature algorithm. Ex.: http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
-        SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Set signature hash method. Ex.: http://www.w3.org/2001/04/xmlenc#sha256',
-        SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Signature key alias used for SML integration',
+        SIGNATURE_ALGORITHM varchar(256) comment 'Set signature algorithm. Ex.: http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+        SIGNATURE_DIGEST_METHOD varchar(256) comment 'Set signature hash method. Ex.: http://www.w3.org/2001/04/xmlenc#sha256',
+        SIGNATURE_KEY_ALIAS varchar(256) comment 'Signature key alias used for SML integration',
         SML_CLIENT_CERT_AUTH bit not null comment 'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)',
-        SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used for SML integration',
-        SML_CLIENT_KEY_CHANGE_ALIAS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used to update the certificate for SML integration',
+        SML_CLIENT_KEY_ALIAS varchar(256) comment 'Client key alias used for SML integration',
+        SML_CLIENT_KEY_CHANGE_ALIAS varchar(255) comment 'Client key alias used to update the certificate for SML integration',
         SML_CLIENT_KEY_CHANGE_DATE datetime(6) comment 'Future date when to update the certificate for SML integration',
         SML_REGISTERED bit not null comment 'Flag for: Is domain registered in SML',
-        SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SMP ID used for SML integration',
-        SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SML subdomain',
+        SML_SMP_ID varchar(256) comment 'SMP ID used for SML integration',
+        SML_SUBDOMAIN varchar(256) comment 'SML subdomain',
         SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit comment 'Append the domain code to SMP url when registering the SMP entry',
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC') comment 'The visibility of the domain: PUBLIC, INTERNAL',
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_AUD (
         ID bigint not null,
@@ -306,35 +306,35 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DEFAULT_RESOURCE_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
-        DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DEFAULT_RESOURCE_IDENTIFIER varchar(255),
+        DOMAIN_CODE varchar(256),
         ENABLE_DOMAIN_TRUSTSTORE bit,
-        SIGNATURE_ALGORITHM varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SIGNATURE_ALGORITHM varchar(256),
+        SIGNATURE_DIGEST_METHOD varchar(256),
+        SIGNATURE_KEY_ALIAS varchar(256),
         SML_CLIENT_CERT_AUTH bit,
-        SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_CLIENT_KEY_CHANGE_ALIAS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SML_CLIENT_KEY_ALIAS varchar(256),
+        SML_CLIENT_KEY_CHANGE_ALIAS varchar(255),
         SML_CLIENT_KEY_CHANGE_DATE datetime(6),
         SML_REGISTERED bit,
-        SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SML_SMP_ID varchar(256),
+        SML_SUBDOMAIN varchar(256),
         SML_ENABLE_URL_DOMAIN_CODE_SUFFIX bit,
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_CONFIGURATION (
         ID bigint not null auto_increment comment 'Unique domain configuration id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
-        PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Property name/key',
+        DESCRIPTION varchar(4000) comment 'Property description',
+        PROPERTY_NAME varchar(512) not null comment 'Property name/key',
         SYSTEM_DEFAULT bit not null comment 'Use system default value',
-        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property value',
+        PROPERTY_VALUE varchar(4000) comment 'Property value',
         FK_DOMAIN_ID bigint not null,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_CONFIGURATION_AUD (
         ID bigint not null,
@@ -342,13 +342,13 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(4000),
+        PROPERTY_NAME varchar(512),
         SYSTEM_DEFAULT bit,
-        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_VALUE varchar(4000),
         FK_DOMAIN_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_DOC_TMPL (
         ID bigint not null auto_increment comment 'Unique domain document template id',
@@ -359,7 +359,7 @@
         FK_DOREDEF_ID bigint not null,
         FK_SUREDEF_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_DOC_TMPL_AUD (
         ID bigint not null,
@@ -372,7 +372,7 @@
         FK_DOREDEF_ID bigint,
         FK_SUREDEF_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_MEMBER (
         ID bigint not null auto_increment,
@@ -382,7 +382,7 @@
         FK_DOMAIN_ID bigint,
         FK_USER_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_MEMBER_AUD (
         ID bigint not null,
@@ -394,7 +394,7 @@
         FK_DOMAIN_ID bigint,
         FK_USER_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_RESOURCE_DEF (
         ID bigint not null auto_increment,
@@ -403,7 +403,7 @@
         FK_DOMAIN_ID bigint,
         FK_RESOURCE_DEF_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_DOMAIN_RESOURCE_DEF_AUD (
         ID bigint not null,
@@ -414,19 +414,19 @@
         FK_DOMAIN_ID bigint,
         FK_RESOURCE_DEF_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_EXTENSION (
         ID bigint not null auto_increment comment 'Unique extension id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IMPLEMENTATION_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        VERSION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(512),
+        IDENTIFIER varchar(128),
+        IMPLEMENTATION_NAME varchar(512),
+        NAME varchar(128),
+        VERSION varchar(128),
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_EXTENSION_AUD (
         ID bigint not null,
@@ -434,24 +434,24 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IMPLEMENTATION_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        VERSION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(512),
+        IDENTIFIER varchar(128),
+        IMPLEMENTATION_NAME varchar(512),
+        NAME varchar(128),
+        VERSION varchar(128),
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_GROUP (
         ID bigint not null auto_increment comment 'Unique domain group id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Domain Group description',
-        NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Domain Group name',
+        DESCRIPTION varchar(4000) comment 'Domain Group description',
+        NAME varchar(512) not null comment 'Domain Group name',
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
         FK_DOMAIN_ID bigint not null,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_GROUP_AUD (
         ID bigint not null,
@@ -459,12 +459,12 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(4000),
+        NAME varchar(512),
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
         FK_DOMAIN_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_GROUP_MEMBER (
         ID bigint not null auto_increment,
@@ -474,7 +474,7 @@
         FK_GROUP_ID bigint,
         FK_USER_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_GROUP_MEMBER_AUD (
         ID bigint not null,
@@ -486,18 +486,18 @@
         FK_GROUP_ID bigint,
         FK_USER_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_PERIODICAL_ALERT (
         ID bigint not null auto_increment comment 'Unique periodical alert id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
         ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
-        ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Entity identifier for which the alert is sent, credential database id, certificate alias, etc.',
+        ENTITY_IDENTIFIER varchar(255) comment 'Entity identifier for which the alert is sent, credential database id, certificate alias, etc.',
         ENTITY_TYPE enum ('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
         LAST_ALERT_ON datetime(6) comment 'Date and time when the last alert was sent for this entity',
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_PERIODICAL_ALERT_AUD (
         ID bigint not null,
@@ -506,18 +506,18 @@
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
         ALERT_SCOPE enum ('SYSTEM_KEYSTORE','SYSTEM_TRUSTSTORE','USER_CREDENTIAL'),
-        ENTITY_IDENTIFIER varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ENTITY_IDENTIFIER varchar(255),
         ENTITY_TYPE enum ('ACCESS_TOKEN','CERTIFICATE','SYSTEM_CERTIFICATE','USERNAME_PASSWORD'),
         LAST_ALERT_ON datetime(6),
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_RESOURCE (
         ID bigint not null auto_increment comment 'Unique ServiceGroup id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        IDENTIFIER_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        IDENTIFIER_SCHEME varchar(256),
+        IDENTIFIER_VALUE varchar(256) not null,
         REVIEW_ENABLED bit,
         SML_REGISTERED bit,
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
@@ -525,7 +525,7 @@
         FK_DOREDEF_ID bigint not null,
         FK_GROUP_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_RESOURCE_AUD (
         ID bigint not null,
@@ -533,8 +533,8 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        IDENTIFIER_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        IDENTIFIER_SCHEME varchar(256),
+        IDENTIFIER_VALUE varchar(256),
         REVIEW_ENABLED bit,
         SML_REGISTERED bit,
         VISIBILITY enum ('INTERNAL','PRIVATE','PUBLIC'),
@@ -542,22 +542,22 @@
         FK_DOREDEF_ID bigint,
         FK_GROUP_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_RESOURCE_DEF (
         ID bigint not null auto_increment comment 'Unique id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Comma separated optional resources url_segment.',
-        URL_SEGMENT varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'resources are published under url_segment.',
+        DESCRIPTION varchar(512),
+        HANDLER_IMPL_NAME varchar(512),
+        IDENTIFIER varchar(128),
+        MIME_TYPE varchar(128),
+        NAME varchar(128),
+        URL_SEGMENT_OPTIONAL varchar(128) comment 'Comma separated optional resources url_segment.',
+        URL_SEGMENT varchar(128) comment 'resources are published under url_segment.',
         FK_EXTENSION_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_RESOURCE_DEF_AUD (
         ID bigint not null,
@@ -565,16 +565,16 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        URL_SEGMENT varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(512),
+        HANDLER_IMPL_NAME varchar(512),
+        IDENTIFIER varchar(128),
+        MIME_TYPE varchar(128),
+        NAME varchar(128),
+        URL_SEGMENT_OPTIONAL varchar(128),
+        URL_SEGMENT varchar(128),
         FK_EXTENSION_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_RESOURCE_MEMBER (
         ID bigint not null auto_increment,
@@ -585,7 +585,7 @@
         FK_RESOURCE_ID bigint,
         FK_USER_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_RESOURCE_MEMBER_AUD (
         ID bigint not null,
@@ -598,27 +598,27 @@
         FK_RESOURCE_ID bigint,
         FK_USER_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_REV_INFO (
         id bigint not null auto_increment,
         REVISION_DATE datetime(6),
         timestamp bigint not null,
-        USERNAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        USERNAME varchar(255),
         primary key (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_SUBRESOURCE (
         ID bigint not null auto_increment comment 'Shared primary key with master table SMP_SUBRESOURCE',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        IDENTIFIER_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER_VALUE varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        IDENTIFIER_SCHEME varchar(500),
+        IDENTIFIER_VALUE varchar(500) not null,
         FK_DOCUMENT_ID bigint,
         FK_RESOURCE_ID bigint not null,
         FK_SUREDEF_ID bigint not null,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_SUBRESOURCE_AUD (
         ID bigint not null,
@@ -626,28 +626,28 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        IDENTIFIER_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER_VALUE varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
+        IDENTIFIER_SCHEME varchar(500),
+        IDENTIFIER_VALUE varchar(500),
         FK_DOCUMENT_ID bigint,
         FK_RESOURCE_ID bigint,
         FK_SUREDEF_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_SUBRESOURCE_DEF (
         ID bigint not null auto_increment comment 'Unique id',
         CREATED_ON datetime(6) not null,
         LAST_UPDATED_ON datetime(6) not null,
-        DESCRIPTION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Comma separated optional subresources url_segment.',
-        URL_SEGMENT varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Subresources are published under url_segment. It must be unique for resource type',
+        DESCRIPTION varchar(128),
+        HANDLER_IMPL_NAME varchar(512),
+        IDENTIFIER varchar(128),
+        MIME_TYPE varchar(128),
+        NAME varchar(128),
+        URL_SEGMENT_OPTIONAL varchar(128) comment 'Comma separated optional subresources url_segment.',
+        URL_SEGMENT varchar(64) comment 'Subresources are published under url_segment. It must be unique for resource type',
         FK_RESOURCE_DEF_ID bigint,
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_SUBRESOURCE_DEF_AUD (
         ID bigint not null,
@@ -655,16 +655,16 @@
         REVTYPE tinyint,
         CREATED_ON datetime(6),
         LAST_UPDATED_ON datetime(6),
-        DESCRIPTION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        URL_SEGMENT_OPTIONAL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        URL_SEGMENT varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DESCRIPTION varchar(128),
+        HANDLER_IMPL_NAME varchar(512),
+        IDENTIFIER varchar(128),
+        MIME_TYPE varchar(128),
+        NAME varchar(128),
+        URL_SEGMENT_OPTIONAL varchar(128),
+        URL_SEGMENT varchar(64),
         FK_RESOURCE_DEF_ID bigint,
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_USER (
         ID bigint not null auto_increment comment 'Unique user id',
@@ -672,13 +672,13 @@
         LAST_UPDATED_ON datetime(6) not null,
         ACTIVE bit not null comment 'Is user active',
         APPLICATION_ROLE enum ('SYSTEM_ADMIN','USER') comment 'User application role as USER, SYSTEM_ADMIN',
-        EMAIL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User email',
-        FULL_NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User full name (name and lastname)',
-        SMP_LOCALE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'DomiSMP settings: locale for the user',
-        SMP_THEME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'DomiSMP settings: theme for the user',
-        USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
+        EMAIL varchar(128) comment 'User email',
+        FULL_NAME varchar(128) comment 'User full name (name and lastname)',
+        SMP_LOCALE varchar(64) comment 'DomiSMP settings: locale for the user',
+        SMP_THEME varchar(64) comment 'DomiSMP settings: theme for the user',
+        USERNAME varchar(64) not null comment 'Unique username identifier. The Username must not be null',
         primary key (ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     create table SMP_USER_AUD (
         ID bigint not null,
@@ -688,13 +688,13 @@
         LAST_UPDATED_ON datetime(6),
         ACTIVE bit,
         APPLICATION_ROLE enum ('SYSTEM_ADMIN','USER'),
-        EMAIL varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        FULL_NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SMP_LOCALE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SMP_THEME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
-        USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
+        EMAIL varchar(128),
+        FULL_NAME varchar(128),
+        SMP_LOCALE varchar(64),
+        SMP_THEME varchar(64),
+        USERNAME varchar(64),
         primary key (REV, ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) engine=InnoDB;
 
     alter table SMP_CERTIFICATE 
        add constraint UK3x3rvf6hkim9fg16caurkgg6f unique (CERTIFICATE_ID);

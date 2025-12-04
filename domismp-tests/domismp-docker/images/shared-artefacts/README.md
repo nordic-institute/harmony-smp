@@ -14,7 +14,7 @@ are registered in SML as trusted certificates for domains
  - domain-01.test.edelivery.local 
  - domain-02.test.edelivery.local
 
-For detailed DomiSML configuration see the SML init script:[sml-mysql5innodb-data.sql](sml-mysql5innodb-data.sql)
+For detailed DomiSML configuration see the SML init script:[sml-mysql-data.sql](sml-mysql-data.sql)
 
 
 # Tomcat HTTPS endpoint

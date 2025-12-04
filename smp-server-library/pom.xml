@@ -301,7 +301,7 @@
                                     2. script version
                                     3. export scripts.-->
                                 <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator" fork="true" failonerror="true">
-                                    <arg value="org.hibernate.dialect.MySQL5InnoDBDialect:mysql5innodb, org.hibernate.dialect.OracleDialect:oracle10g" />
+                                    <arg value="org.hibernate.dialect.MySQLDialect:mysql, org.hibernate.dialect.OracleDialect:oracle" />
                                     <arg value="${project.version}" />
                                     <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts" />
                                     <arg value="${hibernate.version}" />
