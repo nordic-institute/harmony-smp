@@ -461,7 +461,7 @@
   "resource.details.panel.button.reset": "Reset",
   "resource.details.panel.button.save": "Save",
   "resource.details.panel.review.disabled.confirmation.dialog.title": "Review disabled?",
-  "resource.details.panel.review.disabled.confirmation.dialog.description": "All document versions with review statuses (UNDER_REVIEW, APPROVED, REJECTED) will be set to DRAFT<br /> Do you want to continue?",
+  "resource.details.panel.review.disabled.confirmation.dialog.description": "All document versions with review statuses (UNDER_REVIEW, APPROVED, REJECTED) will be set to DRAFT!<br />Do you want to continue?",
   "resource.details.panel.visibility.change.confirmation.dialog.title": "Visibility change?",
   "resource.details.panel.visibility.change.confirmation.dialog.description": "Private resources are accessible/visible only by the authenticated members of the resource.<br /> Do you want to continue?",
   "resource.details.panel.visibility.change.confirmation.dialog.description.referenced": "Private resources are accessible/visible only by the authenticated members of the resource.<br />It is currently referenced by [{{referenceCount}}] other resources as a template. Existing references will remain functional, but new resources will no longer be able to locate it through the reference search dialog. Do you want to continue?",
