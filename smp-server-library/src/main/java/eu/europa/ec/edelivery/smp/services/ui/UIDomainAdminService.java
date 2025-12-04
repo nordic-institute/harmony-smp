@@ -31,7 +31,7 @@ import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPRole;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -151,7 +151,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not update domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         domain.setDomainCode(data.getDomainCode());
         domain.setDefaultResourceTypeIdentifier(data.getDefaultResourceTypeIdentifier());
@@ -165,18 +165,18 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public void updateDomainSmlIntegrationData(Long domainId, DomainRO data) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         if (domain.isSmlRegistered() && !Strings.CS.equals(data.getSmlSmpId(), domain.getSmlSmpId())) {
             String msg = "SMP-SML identifier must not change for registered domain [" + domain.getDomainCode() + "]!";
-            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+            throw new SMPRuntimeException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
                     .addParam(ErrorMessageArgument.ERROR, msg);
         }
 
         Optional<DBDomain> domainBySmlSmpId = domainDao.getDomainBySmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         if (domainBySmlSmpId.isPresent() && !Objects.equals(domainBySmlSmpId.get().getId(), domain.getId())) {
             String msg = "SMP-SML identifier must unique. The SmlSmpId [" + data.getSmlSmpId() + "] is already used by other domains!";
-            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+            throw new SMPRuntimeException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
                     .addParam(ErrorMessageArgument.ERROR, msg);
         }
 
@@ -189,7 +189,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         // if registered, validate the updated domain to ensure its SML integration certificate is valid
         if (domain.isSmlRegistered() && !smlIntegrationService.isDomainValid(domain)) {
             String msg = "The SML-SMP certificate for domain [" + domain.getDomainCode() + "] is not valid!";
-            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+            throw new SMPRuntimeException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
                     .addParam(ErrorMessageArgument.ERROR, msg);
         }
     }
@@ -200,7 +200,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         LOG.info("add resources: [{}]", resourceDefIds);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
 
         //filter and validate resources to be removed
@@ -217,7 +217,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         resourceDefIds.stream()
                 .filter(identifier -> !currentIdentifiers.contains(identifier))
                 .map(identifier -> resourceDefDao.getResourceDefByIdentifier(identifier)
-                        .orElseThrow(() -> new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
+                        .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
                                 .addParam(ErrorMessageArgument.ERROR, "Identifier [" + identifier + "] does not exists")))
                 .forEach(resourceDef ->
                         domainResourceDefDao.create(domain, resourceDef)
@@ -246,7 +246,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public List<DomainPropertyRO> getDomainProperties(Long domainId) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         return domainConfigurationDao.getDomainPropertiesForRole(domain, SMPRole.SYSTEM_ADMIN).stream()
                 .map(domainConfiguration -> conversionService.convert(domainConfiguration, DomainPropertyRO.class))
@@ -257,7 +257,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
     public List<DomainPropertyRO> updateDomainProperties(Long domainId, List<DomainPropertyRO> domainProperties) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         return domainConfigurationDao.updateDomainPropertiesForRole(domain, domainProperties, SMPRole.SYSTEM_ADMIN)
                 .stream()
@@ -269,10 +269,11 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
 
         Long count = resourceDao.getResourceCountForDomainIdAndResourceDefId(domain.getId(), resourceDef.getId());
         if (count > 0) {
-            String msg = "Can not remove resource definition [" + resourceDef.getIdentifier() + "] from domain [" + domain.getDomainCode()
-                    + "], because it has resources. Resource count [" + count + "]!";
-            throw new BadRequestException(ErrorMessageType.UI_BAD_REQUEST_WITH_ERROR)
-                    .addParam(ErrorMessageArgument.ERROR, msg);
+            LOG.debug("Can not remove resource definition [{}] from domain [{}], because it has resources. Resource count [{}]!", resourceDef.getIdentifier(), domain.getDomainCode(), count);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOMAIN_REMOVE_RESOURCE_DEF)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceDef.getIdentifier())
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain.getDomainCode())
+                    .addParam(ErrorMessageArgument.COUNT, count+"");
         }
         return true;
     }
@@ -283,7 +284,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
-            throw new BadRequestException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS_ID);
         }
         if (domain.isSmlRegistered()) {
             LOG.info("Can not delete domain for ID [{}], is registered to SML!", domainId);

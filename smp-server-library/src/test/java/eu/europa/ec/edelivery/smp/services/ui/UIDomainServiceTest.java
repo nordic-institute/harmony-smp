@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
@@ -109,7 +110,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
 
     @Test
     void updateSMLDomainData_domainNotFound() {
-        BadRequestException result = assertThrows(BadRequestException.class, () ->
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(-1L, new DomainRO()));
         assertEquals("Invalid domain id!", result.getMessage());
     }
@@ -121,7 +122,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
         DomainRO domainRO = new DomainRO();
         domainRO.setSmlSmpId("utestRegistered03");
 
-        BadRequestException result = assertThrows(BadRequestException.class, () ->
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("SMP-SML identifier must not change for registered domain [utestRegistered03]!"));
     }
@@ -141,7 +142,7 @@ class UIDomainServiceTest extends AbstractServiceTest {
         Mockito.doReturn(false).when(smlIntegrationService).isDomainValid(domain);
         Mockito.doReturn(true).when(smlIntegrationService).isSMLIntegrationEnabled();
 
-        BadRequestException result = assertThrows(BadRequestException.class, () ->
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("The SML-SMP certificate for domain [utestRegistered03] is not valid!"));
     }
