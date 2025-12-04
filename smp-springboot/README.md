@@ -53,7 +53,7 @@ Before executing the example script set the following variables:
 
 *Explanation if the script:*
 The script connect to mysql database using CLI tool 'mysql' and  deletes database/schema and user defined in variable [DATABASE] and [DB_USERNAME]. The the DomiSMP schema is generated from script 
-[PROJECT_HOME]/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl
+[PROJECT_HOME]/smp-webapp/src/main/smp-setup/database-scripts/mysql.ddl
 and insert the init data from
 [PROJECT_HOME]/smp-soapui-tests/src/test/resources/init-data/init-test-mysql-soapui.sql
 
@@ -75,7 +75,7 @@ mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD -e "drop schema if
 
 # create new database
 echo "create database"
-mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD $DATABASE < "$PROJECT_HOME/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
+mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD $DATABASE < "$PROJECT_HOME/smp-webapp/src/main/smp-setup/database-scripts/mysql.ddl"
 echo "init database for soapui tests"
 mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD $DATABASE < "$PROJECT_HOME/smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql"
 ```
@@ -99,7 +99,7 @@ mysql -h localhost -u %DB_ADMIN% --password=%DB_ADMIN_PASSWORD% -e "drop schema 
 
 REM create new database
 echo "create database"
-mysql -h localhost -u %DB_ADMIN% --password=%DB_ADMIN_PASSWORD% %DATABASE% < "%PROJECT_HOME%\smp-webapp\src\main\smp-setup\database-scripts\mysql5innodb.ddl"
+mysql -h localhost -u %DB_ADMIN% --password=%DB_ADMIN_PASSWORD% %DATABASE% < "%PROJECT_HOME%\smp-webapp\src\main\smp-setup\database-scripts\mysql.ddl"
 echo "init database for soapui tests"
 mysql -h localhost -u %DB_ADMIN% --password=%DB_ADMIN_PASSWORD% %DATABASE% < "%PROJECT_HOME%\smp-soapui-tests\groovy\mysql-4.1_integration_test_data.sql"
 ```
@@ -129,7 +129,7 @@ NOTE: Please update the properties to meet you local mysql installation configur
 server.port=8084
 
 # Database configuration
-smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 # *********************************
 #  Custom defined datasource

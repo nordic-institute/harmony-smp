@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-# -i: path to the database data initialization script, default: SMP_PROJECT_FOLDER/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql
+# -i: path to the database data initialization script, default: SMP_PROJECT_FOLDER/smp-webapp/src/main/smp-setup/database-scripts/mysql-data.sql
 # -v: version of the SMP to start. If not provided, the version will defined by maven project version
 # -l: start with local compose file docker-compose.localhost.yml, default: false. The compose file is used to start
 #      the SMP with local configuration (e.g. exporting ports, etc.)
