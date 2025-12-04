@@ -54,7 +54,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   pageSize: number = 10;
   filterValue: string;
 
-  warningMessage: string = "";
+  _warningMessage: string = "";
 
   @ViewChild('domainPanelComponent') domainPanelComponent: DomainPanelComponent;
   @ViewChild('domainResourceTypePanelComponent') domainResourceTypePanelComponent: DomainResourceTypePanelComponent;
@@ -127,6 +127,13 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     return this.hasRowErrors(this.selected);
   }
 
+  get warningMessage() : string {
+    if(this.showWarning && !this._warningMessage) {
+      this.updateShowWarningMessage();
+    }
+    return this._warningMessage;
+  }
+
   async updateShowWarningMessage() {
     let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
     if (!this.selected?.signatureKeyAlias) {
@@ -140,7 +147,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     }
     message += "</ul>"; // No need to translate this part
 
-    this.warningMessage = message;
+    this._warningMessage = message;
   }
 
   domainResourceTypes(domain: DomainRo): ResourceDefinitionRo[] {
