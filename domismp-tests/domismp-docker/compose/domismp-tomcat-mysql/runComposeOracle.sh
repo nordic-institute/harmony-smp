@@ -12,15 +12,15 @@ source "${WORKDIR}/../../functions/run-test.functions"
 initializeVariables
 START_LOCAL="false"
 
-SMP_INIT_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
+SMP_INIT_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle.ddl"
 SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/domismp-tests/domismp-tests-api/groovy/oracle-4.1_integration_test_data.sql"
-#SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
+#SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle-data.sql"
 
 
 # example to test migration from 5.1 to 5.1
-#SMP_INIT_DATABASE="/cef/code/tmp/smp/smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
+#SMP_INIT_DATABASE="/cef/code/tmp/smp/smp-webapp/src/main/smp-setup/database-scripts/oracle.ddl"
 #SMP_INIT_DATABASE_DATA="/cef/code/tmp/smp/domismp-tests/domismp-tests-api/groovy/oracle-4.1_integration_test_data.sql"
-#SMP_MIGRATE_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/migration from 5.1 to 5.2/oracle10g-5.1_to_5.2.sql"
+#SMP_MIGRATE_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/migration from 5.1 to 5.2/oracle-5.1_to_5.2.sql"
 
 # READ arguments
 while getopts i:v:l: option
