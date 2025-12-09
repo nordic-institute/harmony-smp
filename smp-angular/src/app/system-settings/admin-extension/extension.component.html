@@ -42,7 +42,7 @@
     <tr class="mat-row" *matNoDataRow>
       <td *ngIf="input.value;else noDataFound" class="mat-cell" colspan="2">{{ "extensions.label.no.filter.results" | translate: { filterValue: input.value } }}</td>
       <ng-template #noDataFound>
-        <td class="mat-cell" colspan="2">{{ "extensions.label.no.data.found" }}</td>
+        <td class="mat-cell" colspan="2">{{ "extensions.label.no.data.found" | translate }}</td>
       </ng-template>
     </tr>
   </table>
