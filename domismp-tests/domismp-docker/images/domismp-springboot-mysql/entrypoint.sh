@@ -49,20 +49,20 @@ init_mysql() {
     echo 'Create smp database'
     mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';drop schema if exists $SMP_DB_SCHEMA;DROP USER IF EXISTS $SMP_DB_USER;  create schema $SMP_DB_SCHEMA;alter database $SMP_DB_SCHEMA charset=utf8; create user $SMP_DB_USER identified by '$SMP_DB_USER_PASSWORD';grant all on $SMP_DB_SCHEMA.* to $SMP_DB_USER;"
 
-    if [ -f "/tmp/custom-data/mysql5innodb.sql" ]; then
+    if [ -f "/tmp/custom-data/mysql.sql" ]; then
       echo "Use custom database script! "
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"tmp/custom-data/mysql5innodb.ddl"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"tmp/custom-data/mysql.ddl"
     else
       echo "Use default database ddl script!"
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/smp-setup/database-scripts/mysql5innodb.ddl"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/smp-setup/database-scripts/mysql.ddl"
     fi
 
-    if [ -f "/tmp/custom-data/mysql5innodb-data.sql" ]; then
+    if [ -f "/tmp/custom-data/mysql-data.sql" ]; then
       echo "Use custom init script! "
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/custom-data/mysql5innodb-data.sql"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/custom-data/mysql-data.sql"
     else
       echo "Use default init script!"
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/smp-setup/database-scripts/mysql5innodb-data.sql"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/smp-setup/database-scripts/mysql-data.sql"
     fi
   fi
   sleep 5s
@@ -120,7 +120,7 @@ init_smp_properties() {
   echo "[INFO] init application.properties:"
   {
     echo "# mysql database configuration"
-    echo "smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect"
+    echo "smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQLDialect"
     echo "smp.jdbc.driver=com.mysql.cj.jdbc.Driver"
     echo "smp.jdbc.url=jdbc:mysql://localhost:3306/${SMP_DB_SCHEMA}?allowPublicKeyRetrieval=true"
     echo "smp.jdbc.user=${SMP_DB_USER}"

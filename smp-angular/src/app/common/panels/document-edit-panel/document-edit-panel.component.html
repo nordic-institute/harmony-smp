@@ -12,9 +12,7 @@
         <mat-icon>add_circle</mat-icon>
         <span>{{ "document.edit.panel.button.version.new" | translate }}</span>
       </button>
-      @if (!isDocumentTemplateMode && isNotReviewMode) {
-
-
+      @if (isNotReviewMode) {
         <button id="validateResource_id" mat-raised-button
                 color="primary"
                 matTooltip="{{ 'document.edit.panel.tooltip.validate' | translate }}"
@@ -124,7 +122,7 @@
       </ng-template>
 
 
-      <div [className]="documentEditable ? 'document-editor-container': 'document-editor-container smp-disabled'"
+      <div [className]="documentEditable ? 'document-editor-container': 'document-editor-container smp-readonly'"
            (click)="onEditPanelClick()">
         <smp-editor #smpDocumentEditor
                     formControlName="editorText"
@@ -143,6 +141,7 @@
       <!-- The document panels -->
       @if (!isDocumentTemplateMode) {
         <expandable-item icon="description"
+                         [showItem]="!isDocumentTemplateMode"
                          [showButtonSpacer]="true"
                          title="{{'document.properties.panel.tab.title' | translate }}"
                          buttonLabel="{{'document.properties.panel.tab.button.properties' | translate }}">
@@ -173,7 +172,7 @@
 
       <!-- The document version panels -->
       <expandable-item icon="event"
-                       [showItem]="true"
+                       [showItem]="isDocumentTemplateMode"
                        showButtonSpacer="true"
                        title="{{'document.events.panel.tab.title' | translate }}"
                        buttonLabel="{{'document.events.panel.tab.button.events' | translate }}">

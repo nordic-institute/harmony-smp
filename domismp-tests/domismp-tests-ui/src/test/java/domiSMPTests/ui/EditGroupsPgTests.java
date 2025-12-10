@@ -178,7 +178,7 @@ public class EditGroupsPgTests extends SeleniumTest {
         createResourceDetailsDialog.fillResourceDetails(resourceModel);
         createResourceDetailsDialog.tryClickOnSave();
         String duplicatedResourceMessage = editGroupPage.getAlertMessageAndClose();
-        soft.assertEquals(duplicatedResourceMessage, String.format("Invalid request [CreateResourceForGroup]. Error: Resource [val:%s scheme:%s] already exists for domain!!", resourceModel.getIdentifierValue(), resourceModel.getIdentifierScheme()));
+        soft.assertEquals(duplicatedResourceMessage, String.format("Invalid request [CreateResourceForGroup]. Error: resource definition (val: [%s] scheme: [%s]) already exists for the domain!", resourceModel.getIdentifierValue(), resourceModel.getIdentifierScheme()));
 
         soft.assertAll();
     }
@@ -209,7 +209,7 @@ public class EditGroupsPgTests extends SeleniumTest {
 
         //Register domain to SML
         DomainsPage domainsPage = editGroupPage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
-        domainsPage.getLeftSideGrid().searchAndClickElementInColumn("Domain code", domainModel.getDomainCode());
+        domainsPage.filterAndSelectDomain(domainModel.getDomainCode());
         domainsPage.goToTab("SML integration");
         domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(generatedDomainModel);
         domainsPage.getSMLIntegrationTab().saveChanges();

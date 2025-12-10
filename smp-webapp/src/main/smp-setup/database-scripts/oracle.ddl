@@ -1,5 +1,5 @@
--- This is [CREATE] database script for DomiSML version: [5.2-SNAPSHOT].
--- This file was generated using hibernate version [6.6.33.Final] with dialect [org.hibernate.dialect.OracleDialect].
+-- This is [CREATE] database script for DomiSML version: [5.2-RC2-SNAPSHOT].
+-- This file was generated using hibernate version [6.6.38.Final] with dialect [org.hibernate.dialect.OracleDialect].
 -- For more information, refer to the Hibernate dialect documentation.
 
     create sequence SMP_ALERT_PROP_SEQ start with 1 increment by 1;
@@ -621,7 +621,8 @@
         FK_DOCUMENT_ID number(19,0) not null,
         FK_DOREDEF_ID number(19,0) not null,
         FK_SUREDEF_ID number(19,0),
-        primary key (ID)
+        primary key (ID),
+        constraint SMP_DOC_TMPL_UNIQ_IDX unique (DOCUMENT_LEVEL, FK_DOREDEF_ID, FK_SUREDEF_ID)
     );
 
     comment on column SMP_DOMAIN_DOC_TMPL.ID is

@@ -78,15 +78,19 @@ public class CertificatesPage extends DomiSMPPage {
 
     public HashMap<String, String> getCertificateInfo(String certificateId) throws Exception {
         HashMap<String, String> certificateIdInfo = new HashMap<>();
-        WebElement accessToken = getCertificate(certificateId);
-        wait.forElementToBeClickable(accessToken.findElement(By.cssSelector("mat-expansion-panel")));
-        accessToken.findElement(By.cssSelector("mat-expansion-panel")).click();
+        WebElement certificateElement = getCertificate(certificateId);
+        wait.forElementToBeClickable(certificateElement.findElement(By.cssSelector("mat-expansion-panel")));
+        certificateElement.findElement(By.cssSelector("mat-expansion-panel")).click();
 
-        certificateIdInfo.put("Description", weToDInput(accessToken.findElement(descriptionLocator)).getText());
-        certificateIdInfo.put("Active", String.valueOf(weToDChecked(accessToken.findElement(isActiveLocator)).isChecked()));
-        certificateIdInfo.put("StartDate", weToDInput(accessToken.findElement(startDateLocator)).getText());
-        certificateIdInfo.put("EndDate", weToDInput(accessToken.findElement(endDateLocator)).getText());
-        certificateIdInfo.put("AlertMessage", accessToken.findElement(alertMessageLocator).getText());
+        certificateIdInfo.put("Description", weToDInput(certificateElement.findElement(descriptionLocator)).getText());
+        certificateIdInfo.put("Active", String.valueOf(weToDChecked(certificateElement.findElement(isActiveLocator)).isChecked()));
+        certificateIdInfo.put("StartDate", weToDInput(certificateElement.findElement(startDateLocator)).getText());
+        certificateIdInfo.put("EndDate", weToDInput(certificateElement.findElement(endDateLocator)).getText());
+        try {
+            certificateIdInfo.put("AlertMessage", certificateElement.findElement(alertMessageLocator).getText());
+        } catch (Exception exception) {
+            LOG.debug("Alert message not found!");
+        }
         return certificateIdInfo;
 
     }

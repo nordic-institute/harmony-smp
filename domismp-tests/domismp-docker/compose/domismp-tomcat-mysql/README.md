@@ -29,7 +29,7 @@ The command:
 
 The compose scripts has the following options:
 
-- i: path to the database data initialization script, default: SMP_PROJECT_FOLDER/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql
+- i: path to the database data initialization script, default: SMP_PROJECT_FOLDER/smp-webapp/src/main/smp-setup/database-scripts/mysql-data.sql
 - v: version of the SMP to start. If not provided, the version will defined by maven project version
 - l: start with local compose file docker-compose.localhost.yml, default: false. The compose file is used to start  the SMP with local configuration (e.g. exporting ports, etc.)
 
@@ -132,3 +132,19 @@ With the JWT token  (Please make sure it is not expired!)
 To enable X5t#S256 go to OOTS realm -> Clients -> oots-ddc-client -> Advanced Settings -> and enable OAuth 2.0 Mutual TLS Certificate Bound Access Tokens Enabled 
 Or make sure that the following attribute is set in keycloak/imports/realm-smp.json
 /clients/["clientId"="oots-ddc-client"]/attributes/tls.client.certificate.bound.access.tokens=true
+
+### Authorization server configuration
+The compose plan contains pre-configured Keycloak server with the following configuration:
+
+- smp.authorization.jwt.tls.client.certificate.bound=true
+- smp.authorization.jwt.audience=oots-audience-custom
+- smp.authorization.jwt.issuer=https://authorization-server:8143/realms/OOTS
+- smp.authorization.jwt.key=MCowBQYDK2VwAyEAJQUoAZs7F8INql8oKpyrfBntIamUqRBdutFuRB7zc1M=
+- smp.authorization.jwt.algorithm=EdDSA
+
+To test the dynamic JWT signing key retrieval the following configuration must be used
+- smp.authorization.jwt.algorithm=RS256
+- The url addresses and set smp.authorization.jwt.key to null/empty value:
+    - smp.authorization.jwt.jwks.uri=https://authorization-server:8143/realms/OOTS/protocol/openid-connect/certs OR
+    - smp.authorization.jwt.issuer.location=https://authorization-server:8143/realms/OOTS
+In the keycloak server the realm public key algorithm must be set to RS256 (Realm Settings: OOTS -> Clients:  oots-ddc-client Keys -> Advanced -> Access token signature algorithm  -> RS256)

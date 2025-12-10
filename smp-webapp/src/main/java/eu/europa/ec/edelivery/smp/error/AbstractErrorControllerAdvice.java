@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 
 import java.util.Map;
@@ -59,7 +60,11 @@ abstract class AbstractErrorControllerAdvice {
                     ex.getErrorCode(),
                     smpExceptionLanguageService.getMessageTranslation(ex.getMessageCode(), ex.getMessageArgs(), currentLocale),
                     runtimeException);
-        } else if (runtimeException instanceof AuthenticationException ex) {
+        } else if (runtimeException instanceof AuthenticationServiceException ex) {
+            response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED,
+                    smpExceptionLanguageService.getMessageTranslation(UNAUTHORIZED_INVALID_BEARER_TOKEN.getMessageCode(), currentLocale), ex);
+        }
+        else if (runtimeException instanceof AuthenticationException ex) {
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED,
                     smpExceptionLanguageService.getMessageTranslation(UI_AUTHENTICATION_EXCEPTION.getMessageCode(), currentLocale), ex);
         } else if (runtimeException instanceof AccessDeniedException ex) {

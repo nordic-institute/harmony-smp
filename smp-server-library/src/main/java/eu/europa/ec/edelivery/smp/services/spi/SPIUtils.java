@@ -40,11 +40,11 @@ public class SPIUtils {
     }
 
     public static ResourceIdentifier createTemplateSubresourceIdentifier() {
-        return new ResourceIdentifier("[RESOURCE-IDENTIFIER-VALUE]","[RESOURCE-IDENTIFIER-SCHEME]");
+        return new ResourceIdentifier("subresource-id-value","subresource-id-scheme");
     }
 
     public static ResourceIdentifier createTemplateResourceIdentifier() {
-        return new ResourceIdentifier("[RESOURCE-IDENTIFIER-VALUE]","[RESOURCE-IDENTIFIER-SCHEME]");
+        return new ResourceIdentifier("resource-id-value","resource-id-scheme");
     }
 
     public static Identifier toIdentifier(ResourceIdentifier identifier) {

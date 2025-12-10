@@ -148,7 +148,7 @@ class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
         assertEquals("error.configuration.property", result.getErrorMessageCode());
-        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("is not valid Integer"));
+        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("has error"));
     }
 
     @Test

@@ -16,8 +16,8 @@ import java.util.List;
 
 public class CommonAlertsGrid extends DComponent {
 
-    protected static final By gridHeadersLocator = By.cssSelector("datatable-header-cell.datatable-header-cell");
-    protected static final By gridRowsLocator = By.cssSelector("datatable-body datatable-row-wrapper datatable-body-row");
+    protected static final By gridHeadersLocator = By.cssSelector("mat-table mat-header-cell");
+    protected static final By gridRowsLocator = By.cssSelector("mat-table mat-row");
     private final static Logger LOG = LoggerFactory.getLogger(CommonAlertsGrid.class);
     private final WebElement parentElement;
 
@@ -42,8 +42,8 @@ public class CommonAlertsGrid extends DComponent {
 
     private List<WebElement> getAllAlertsByValue(String columnNameToSearch, String valueToSearch) {
         wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
-        Integer numOfPages = 1;
-        List<WebElement> rowsContainingSearchedValue = new ArrayList<WebElement>();
+        int numOfPages = 1;
+        List<WebElement> rowsContainingSearchedValue = new ArrayList<>();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
 

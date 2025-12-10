@@ -42,6 +42,7 @@ public class EditResourcePage extends CommonPageWithTabsAndGrid {
 
     public void selectDomain(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceModel) {
         weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
+        wait.forElementToBeClickable(groupDdl);
         weToMatSelect(groupDdl).selectByVisibleText(groupModel.getGroupName());
         String identifierValue = resourceModel.getIdentifierValue();
         // bug in filter -does not handle char _ O so search only by the last random part of username

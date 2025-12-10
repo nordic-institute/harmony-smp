@@ -314,7 +314,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentPage.getSaveBtn().click();
 
         String error = editResourceDocumentPage.getAlertArea().getAlertMessage();
-        soft.assertEquals(error, "Identifier: [" + invalidScheme + "::" + resourceModel.getIdentifierValue() + "] has invalid scheme [" + invalidScheme + "] (Check the length or scheme pattern)!", "Wrong error message for invalid scheme: ");
+        soft.assertEquals(error, "Unexpected malformed identifier error occurred.", "Wrong error message for invalid scheme: ");
 
         editResourceDocumentPage.clickOnCancelAndConfirm();
         editResourceDocumentPage.getNewVersionBtn().click();
@@ -328,7 +328,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentPage.getSaveBtn().click();
 
         error = editResourceDocumentPage.getAlertArea().getAlertMessage();
-        soft.assertTrue(error.startsWith("Invalid request [StoreResourceValidation]. Error: ResourceException: Participant identifiers don't match between URL parameter [ResourceIdentifier"), "Wrong error message for invalid participant identifier: ");
+        soft.assertTrue(error.startsWith("Invalid request [StoreResourceValidation]. Error: [ResourceException: Participant identifiers don't match between URL parameter [ResourceIdentifier"), "Wrong error message for invalid participant identifier: ");
 
         soft.assertAll();
     }

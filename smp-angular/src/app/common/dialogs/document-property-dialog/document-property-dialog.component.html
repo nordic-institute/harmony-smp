@@ -45,7 +45,7 @@
           />
         </mat-form-field>
         <button mat-raised-button color="primary" (click)="openSelectCertificateDialog()" style="flex-shrink: 0;">
-          {{ "document.property.dialog.button.select.certificate" | translate }}
+          {{ (isEmptyValue? "document.property.dialog.button.import.certificate" : "document.property.dialog.button.edit.certificate") |  translate }}
         </button>
 
       </div>

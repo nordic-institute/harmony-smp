@@ -40,8 +40,8 @@ If this is your first contact with the eDelivery SMP, it is highly recommended t
 ## Build
 
 In order to build eDelivery SMP, you need to have the following installed: 
-*  Java JDK 8 or JDK 11
-*  Maven 3.6+   
+*  Open JDK 21 
+*  Maven 3.9+   
 
 To build eDelivery SMP, run the following command in the root directory of the project:
 

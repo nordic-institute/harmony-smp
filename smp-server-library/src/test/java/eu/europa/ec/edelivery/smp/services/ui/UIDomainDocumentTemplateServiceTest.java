@@ -23,11 +23,15 @@ import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainDocumentTemplate;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.ui.DocumentRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainDocumentTemplateRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
+import eu.europa.ec.edelivery.smp.services.resource.ResourceResolverServiceTest;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.hamcrest.CoreMatchers;
@@ -159,7 +163,9 @@ class UIDomainDocumentTemplateServiceTest extends AbstractServiceTest {
         Long tmplId = SessionSecurityUtils.decryptEntityId(created.getTemplateId());
         DocumentRO documentRO =  documentService.getDocumentForTemplate( tmplId, -1);
         assertEquals(1, documentRO.getDocumentVersions().size());
-        DocumentRO update = TestROUtils.createDocument(DocumentVersionStatusType.DRAFT, EntityROStatus.NEW, "<test>updated</test>");
+        String  serviceGroup =  TestDBUtils.createServiceGroup("resource-id-value", "resource-id-scheme");
+
+        DocumentRO update = TestROUtils.createDocument(DocumentVersionStatusType.DRAFT, EntityROStatus.NEW, serviceGroup);
         // When
         DocumentRO result = testInstance.updateTemplateForDomainVersion(domainId, tmplId, update);
         // Then
@@ -168,12 +174,37 @@ class UIDomainDocumentTemplateServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    void testUpdateTemplateForDomainInvalid() {
+        // Given
+        DBDomainResourceDef d2r1 = testUtilsDao.getDomainResourceDefD2R1();
+        Long domainId = d2r1.getDomain().getId();
+        String resourceDefIdentifier = d2r1.getResourceDef().getIdentifier();
+        DomainDocumentTemplateRO templateRO = new DomainDocumentTemplateRO();
+        templateRO.setDomainCode(d2r1.getDomain().getDomainCode());
+        templateRO.setResourceDefIdentifier(resourceDefIdentifier);
+        templateRO.setDocumentLevel(DocumentLevelType.RESOURCE);
+
+        // Create a template to delete
+        DomainDocumentTemplateRO created = testInstance.createTemplateForDomainAndTemplateData(domainId, templateRO);
+        Long tmplId = SessionSecurityUtils.decryptEntityId(created.getTemplateId());
+        DocumentRO documentRO =  documentService.getDocumentForTemplate( tmplId, -1);
+        assertEquals(1, documentRO.getDocumentVersions().size());
+        String content = "<test>"+ UUID.randomUUID()+"</test>";
+        DocumentRO update = TestROUtils.createDocument(DocumentVersionStatusType.DRAFT, EntityROStatus.NEW, content);
+        // When
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, ()->testInstance.updateTemplateForDomainVersion(domainId, tmplId, update));
+        // Then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("SAXParseException"));
+
+    }
+
+    @Test
     void testGetTemplateForDomainDocument() {
         // Given
         DBDomainDocumentTemplate d1T1 = testUtilsDao.getDomainDocumentTemplateD1T1();
         int currentVersion = d1T1.getDocument().getCurrentVersion();
         DBDomain d1 = testUtilsDao.getD1();
-        String content = "<test>"+ UUID.randomUUID()+"</test>";
+        String  content =  TestDBUtils.createServiceGroup("resource-id-value", "resource-id-scheme");
         DocumentRO documentRO = TestROUtils.createDocument(DocumentVersionStatusType.DRAFT, EntityROStatus.NEW, content);
         testInstance.updateTemplateForDomainVersion(d1.getId(), d1T1.getId(), documentRO);
 

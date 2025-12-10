@@ -436,7 +436,7 @@ public class DomainsPgTests extends SeleniumTest {
         domainsPage.getSMLIntegrationTab().getSMLClientCertificateAliasDdl().selectByVisibleText("sample_key (CN=demo-smp-signing-key,O=digit,C=eu:000000006443f9bc)");
         domainsPage.getSMLIntegrationTab().saveChanges();
         String smlIntegrationError = domainsPage.getAlertMessageAndClose();
-        soft.assertTrue(smlIntegrationError.startsWith("SML integration error! Error: UnauthorizedFault: [ERR-102]"), "No error appears when selecting a certificate which cannot be added to SML");
+        soft.assertTrue(smlIntegrationError.startsWith("SML integration error! Error: [UnauthorizedFault: [ERR-102]"), "No error appears when selecting a certificate which cannot be added to SML");
 
         //Update SML Client Certificate Alias with a value which is registered to SML
         domainsPage.getSMLIntegrationTab().getSMLClientCertificateAliasDdl().selectByVisibleText("smp_domain_01 (CN=smp_domain_01,O=digit,C=eu:000000006443d8a8)");

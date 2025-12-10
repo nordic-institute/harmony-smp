@@ -36,11 +36,12 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.resource.DomainResolverService;
-import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.utils.EntityLoggingUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
@@ -66,20 +67,18 @@ public class DomainGroupGuard {
     final DomainMemberDao domainMemberDao;
     final GroupMemberDao groupMemberDao;
     final ResourceMemberDao resourceMemberDao;
-    private final UITruststoreService uITruststoreService;
-    private final ConfigurationService configurationService;
+    final ConfigurationService configurationService;
 
     public DomainGroupGuard(DomainResolverService domainResolverService,
                             DomainMemberDao domainMemberDao,
                             GroupMemberDao groupMemberDao,
                             ResourceMemberDao resourceMemberDao,
-                            GroupDao groupDao, UITruststoreService uITruststoreService, ConfigurationService configurationService) {
+                            GroupDao groupDao, ConfigurationService configurationService) {
         this.domainResolverService = domainResolverService;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
         this.resourceMemberDao = resourceMemberDao;
         this.groupDao = groupDao;
-        this.uITruststoreService = uITruststoreService;
         this.configurationService = configurationService;
     }
 
@@ -138,6 +137,7 @@ public class DomainGroupGuard {
             return false;
         }
         List<SMPAutomationAuthenticationTypes> authorizationTypes = configurationService.getDomainConfigurationValue(domain, SMPDomainPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES);
+        authorizationTypes = authorizationTypes != null ? authorizationTypes : List.of();
 
         if (principal instanceof PreAuthenticatedCertificatePrincipal certificatePrincipal) {
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.CERTIFICATE)) {
@@ -153,23 +153,34 @@ public class DomainGroupGuard {
             }
             // check if certificate is in the domain truststore
             if (!isCertificateAuthorizedForDomain(domain, x509Certificate)) {
-                LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate with subjectDN [{}] is not in the domain [{}] truststore", x509Certificate.getSubjectDN(), domain.getDomainCode());
+                LOG.warn(SMPLogger.SECURITY_MARKER, "Certificate with subjectDN [{}] is not in the domain [{}] truststore", x509Certificate.getSubjectX500Principal(), domain.getDomainCode());
                 return false;
             }
             return true;
         } else if (principal instanceof Jwt) {
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.JWT)) {
                 LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
-                return true;
+                return false;
             }
+            //  get scop claim as string and split it into a list
+            String scopeClaim = ((Jwt)principal).getClaimAsString("scope");
+            if (StringUtils.isBlank(scopeClaim)) {
+                String message = "JWT does not contain 'scope' claim";
+                LOG.warn("Failed to authenticate since the JWT was invalid: [{}]", message);
+                throw new AuthenticationServiceException(message);
+            }
+            boolean hasDomainScope = Strings.CI.equalsAny(domain.getDomainCode(), scopeClaim.split(" "));
+            if (!hasDomainScope) {
+                LOG.warn(SMPLogger.SECURITY_MARKER, "JWT with scopes [{}] does not contain valid domain [{}] scope.", scopeClaim, domain.getDomainCode());
+            }
+            return hasDomainScope;
         } else {            // principal is not certificate or JWT, it must be username/password or anonymous
             if (!authorizationTypes.contains(SMPAutomationAuthenticationTypes.BASIC_TOKEN)) {
                 LOG.debug(SMPLogger.SECURITY_MARKER, "Principal type: [{}] is not authorized for domain [{}]", principal.getClass().getSimpleName(), domain.getDomainCode());
                 return false;
             }
+            return true;
         }
-
-        return true;
     }
 
     private boolean isCertificateAuthorizedForDomain(DBDomain domain, X509Certificate x509Certificate) {

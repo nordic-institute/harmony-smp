@@ -32,6 +32,7 @@ public enum ErrorMessageArgument {
     CERTIFICATE_CREDENTIAL_ID("certificateCredentialId"),
     CLIENT_CERT_ENABLED("clientCertEnabled"),
     CRL_URL("crlURL"),
+    COUNT("count"),
     DNS_LOOKUP_TYPE("dnsLookupType"),
     DOCUMENT_IDENTIFIER("documentIdentifier"),
     DOCUMENT_SCHEME("documentScheme"),

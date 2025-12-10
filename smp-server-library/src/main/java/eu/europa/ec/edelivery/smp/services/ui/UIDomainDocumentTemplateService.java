@@ -113,7 +113,9 @@ public class UIDomainDocumentTemplateService {
                     }
             );
         }
-
+        DocumentRO payload = uiDocumentService.generateTemplateDocument(domainResourceDef, dbSubresourceDef);
+        DBDomainDocumentTemplate template = createDBDomainDocumentTemplate(templateRO, domainResourceDef, dbSubresourceDef);
+        // Check if template already exists for domain and resourceDefIdentifier before saving new one
         if (!domainDocumentTemplateDao.getDomainDocumentTemplate(domainResourceDef, dbSubresourceDef, templateRO.getDocumentLevel()).isEmpty()) {
             LOG.warn("Resource definition with id [{}] already has document template for domain with id [{}]", resourceDefIdentifier, domainId);
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DOC_TEMPLATE_ALREADY_EXISTS_FOR_RESOURCEDEF_AND_DOMAIN)
@@ -121,9 +123,7 @@ public class UIDomainDocumentTemplateService {
                     .addParam(ErrorMessageArgument.DOMAIN_CODE, domain.getDomainCode());
         }
 
-        DBDomainDocumentTemplate template = createDBDomainDocumentTemplate(templateRO, domainResourceDef, dbSubresourceDef);
         DBDomainDocumentTemplate response = domainDocumentTemplateDao.merge(template);
-        DocumentRO payload = uiDocumentService.generateTemplateDocument(domainResourceDef, dbSubresourceDef);
         uiDocumentService.saveDocumentForTemplate(response.getId(), payload);
         return conversionService.convert(response, DomainDocumentTemplateRO.class);
     }
@@ -150,8 +150,21 @@ public class UIDomainDocumentTemplateService {
     }
 
     @Transactional
+    public void validateTemplateForDomain(long domainId, long templateId, DocumentRO payload) {
+        DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
+        uiDocumentService.validateDocumentForTemplate(template, payload);
+    }
+
+    @Transactional
+    public DocumentRO generateTemplateForDomain(long domainId, long templateId) {
+        DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
+        return uiDocumentService.generateTemplateDocument(template.getDomainResourceDef(), template.getSubresourceDef());
+    }
+
+    @Transactional
     public DocumentRO updateTemplateForDomainVersion(long domainId, long templateId, DocumentRO payload) {
         DBDomainDocumentTemplate template = getDomainDocumentTemplate(domainId, templateId);
+        uiDocumentService.validateDocumentForTemplate(template, payload);
         return uiDocumentService.saveDocumentForTemplate(template.getId(), payload);
     }
 

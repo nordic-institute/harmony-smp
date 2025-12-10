@@ -296,14 +296,7 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     } else {
       this.isResourceDocument = this.editorMode === SmpDocumentEditorType.RESOURCE_EDITOR;
     }
-    /*
-    if (this.editorMode === SmpDocumentEditorType.REVIEW_EDITOR && !this.reviewDocument
-      || this.editorMode !== SmpDocumentEditorType.REVIEW_EDITOR && !this.resource) {
-      this.alertService.errorForTranslation("document.edit.panel.error.document.null");
-      this.navigationService.navigateUp();
-      return;
-    }
-     */
+
     // load the document to show
     if (this.isDocumentTemplateMode) {
       console.log("DocumentEditPanelComponent loadDomainDocumentTemplateForVersion ")
@@ -649,9 +642,12 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
   }
 
   onGenerateButtonClicked(): void {
-    let generateObservable = this.isResourceDocument ?
-      this.editResourceService.generateResourceDocumentObservable(this.resource) :
-      this.editResourceService.generateSubresourceDocumentObservable(this.subresource, this.resource);
+    let generateObservable =
+      this.isDocumentTemplateMode?
+        this.editResourceService.generateDomainDocumentTemplateObservable(this.domain, this.domainDocumentTemplateRo) :
+        this.isResourceDocument ?
+          this.editResourceService.generateResourceDocumentObservable(this.resource) :
+          this.editResourceService.generateSubresourceDocumentObservable(this.subresource, this.resource);
     generateObservable.subscribe(this.generateDocumentObserver);
   }
 
@@ -751,9 +747,13 @@ export class DocumentEditPanelComponent implements BeforeLeaveGuard, OnInit {
     let docRequest: DocumentRo = this.document;
     // set the payload from the current editor text
     docRequest.payload = this.documentForm.controls['editorText'].value;
-    let validateObservable = this.isResourceDocument ?
-      this.editResourceService.validateResourceDocumentObservable(this.resource, docRequest) :
-      this.editResourceService.validateSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
+
+    let validateObservable =
+      this.isDocumentTemplateMode?
+        this.editResourceService.validateTemplateDocumentObservable(this.domain, this.domainDocumentTemplateRo, docRequest) :
+        this.isResourceDocument ?
+          this.editResourceService.validateResourceDocumentObservable(this.resource, docRequest) :
+          this.editResourceService.validateSubresourceDocumentObservable(this.subresource, this.resource, docRequest);
     validateObservable.subscribe(this.validateDocumentObserver);
   }
 

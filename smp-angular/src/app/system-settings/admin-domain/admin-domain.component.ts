@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {PageEvent} from "@angular/material/paginator";
 import {AdminDomainService} from "./admin-domain.service";
@@ -54,7 +54,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   pageSize: number = 10;
   filterValue: string;
 
-  warningMessage: string = "";
+  _warningMessage: string = "";
 
   @ViewChild('domainPanelComponent') domainPanelComponent: DomainPanelComponent;
   @ViewChild('domainResourceTypePanelComponent') domainResourceTypePanelComponent: DomainResourceTypePanelComponent;
@@ -127,6 +127,13 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     return this.hasRowErrors(this.selected);
   }
 
+  get warningMessage() : string {
+    if(this.showWarning && !this._warningMessage) {
+      this.updateShowWarningMessage();
+    }
+    return this._warningMessage;
+  }
+
   async updateShowWarningMessage() {
     let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
     if (!this.selected?.signatureKeyAlias) {
@@ -140,7 +147,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     }
     message += "</ul>"; // No need to translate this part
 
-    this.warningMessage = message;
+    this._warningMessage = message;
   }
 
   domainResourceTypes(domain: DomainRo): ResourceDefinitionRo[] {
@@ -237,7 +244,15 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     }
     this.updateShowWarningMessage();
     if (domain.status == EntityStatus.NEW) {
-      this.domainList.push(domain)
+      let itemIndex = this.domainList.findIndex(item => item?.domainId == domain?.domainId);
+      if (itemIndex != -1) {
+        // already exists - should not happen
+        this.domainList[itemIndex] = domain;
+      } else {
+        this.domainList.push(domain);
+        this.dataLength += 1;
+      }
+
       this.selected = domain;
       this.alertService.success(await lastValueFrom(this.translateService.get("admin.domain.success.create", {domainCode: domain.domainCode})));
     } else if (domain.status == EntityStatus.UPDATED) {

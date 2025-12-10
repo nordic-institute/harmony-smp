@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -50,29 +51,29 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
     }
 
     @Override
-    @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class,  AuthenticationException.class,})
-    public ResponseEntity handleRuntimeException(RuntimeException ex) {
+    @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class, AuthenticationServiceException.class, AuthenticationException.class,})
+    public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
         return super.handleRuntimeException(ex);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity handleBadRequestException(BadRequestException ex) {
+    public ResponseEntity<?> handleBadRequestException(BadRequestException ex) {
         return buildAndLog(BAD_REQUEST, ex.getErrorBusinessCode(), ex.getMessage(), ex);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleMalformedIdentifierException(IllegalArgumentException ex) {
+    public ResponseEntity<?> handleMalformedIdentifierException(IllegalArgumentException ex) {
         return buildAndLog(BAD_REQUEST, FORMAT_ERROR, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity handleAccessDeniedException(AccessDeniedException ex) {
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
         return buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage() + " - Only SMP Admin or owner of given ServiceGroup is allowed to perform this action", ex);
     }
 
-    ResponseEntity buildAndLog(HttpStatus status, ErrorCode errorCode, ErrorBusinessCode businessCode, String msg, Exception exception) {
+    ResponseEntity<?> buildAndLog(HttpStatus status, ErrorCode errorCode, ErrorBusinessCode businessCode, String msg, Exception exception) {
 
-        ResponseEntity response = ErrorResponseBuilder.status(status)
+        ResponseEntity<?> response = ErrorResponseBuilder.status(status)
                 .businessCode(businessCode)
                 .errorCode(errorCode)
                 .errorDescription(msg)

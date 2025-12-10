@@ -65,7 +65,8 @@ create table SMP_DOMAIN_DOC_TMPL (
      FK_DOCUMENT_ID number(19,0) not null,
      FK_DOREDEF_ID number(19,0) not null,
      FK_SUREDEF_ID number(19,0),
-     primary key (ID)
+     primary key (ID),
+     constraint SMP_DOC_TMPL_UNIQ_IDX unique (DOCUMENT_LEVEL, FK_DOREDEF_ID, FK_SUREDEF_ID)
 );
 
 comment on column SMP_DOMAIN_DOC_TMPL.ID is

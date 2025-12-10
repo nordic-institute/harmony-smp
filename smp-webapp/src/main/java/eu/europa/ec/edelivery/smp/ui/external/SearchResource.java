@@ -27,11 +27,15 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceSearchService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -75,7 +79,9 @@ public class SearchResource {
         sgf.setIdentifierSchemeLike(participantScheme);
         // add domain search parameter
         sgf.setDomain(domainDao.validateDomainCode(domainCode));
-        sgf.setDocumentType(documentType);
+        if (StringUtils.isNotBlank(documentType)) {
+            sgf.setDocumentType(URLDecoder.decode(documentType, StandardCharsets.UTF_8));
+        }
 
         return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
     }

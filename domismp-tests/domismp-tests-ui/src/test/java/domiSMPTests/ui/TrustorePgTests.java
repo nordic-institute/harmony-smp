@@ -59,12 +59,12 @@ public class TrustorePgTests extends SeleniumTest {
 
         }
         String certificateALias = truststorepage.addCertificateAndReturnAlias(path);
-        soft.assertTrue(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", certificateALias));
-        soft.assertNotNull(certificateALias);
+        soft.assertTrue(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", certificateALias), "Added certificate is present in the grid.");
+        soft.assertNotNull(certificateALias, "Certificate alias is not null");
 
         String duplicatedCertificateALias = truststorepage.addCertificateAndReturnAlias(path);
-        soft.assertNotNull(duplicatedCertificateALias);
-        soft.assertTrue(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", duplicatedCertificateALias));
+        soft.assertNotNull(duplicatedCertificateALias, "Alias for duplicated certificate is not null");
+        soft.assertTrue(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", duplicatedCertificateALias), "Added duplicated certificate is present in the grid.");
         soft.assertAll();
 
     }

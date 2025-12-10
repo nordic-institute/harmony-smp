@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ReviewTasksGrid extends DComponent {
-    protected static final By gridHeadersLocator = By.cssSelector("datatable-header div.datatable-row-center datatable-header-cell");
-    protected static final By gridRowsLocator = By.cssSelector("datatable-body-row > div.datatable-row-center.datatable-row-group");
+    protected static final By gridHeadersLocator = By.cssSelector("mat-table mat-header-cell");
+    protected static final By gridRowsLocator = By.cssSelector("mat-table mat-row");
     private final static Logger LOG = LoggerFactory.getLogger(ResourcePageGrid.class);
     private final WebElement parentElement;
 
@@ -40,7 +40,7 @@ public class ReviewTasksGrid extends DComponent {
     }
 
     private List<WebElement> getCells(WebElement row) {
-        return row.findElements(By.cssSelector("datatable-body-cell"));
+        return row.findElements(By.cssSelector("mat-cell"));
     }
 
     public boolean isDocumentTaskPresent(String resourceIdentifier, int version) {

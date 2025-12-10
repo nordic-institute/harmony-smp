@@ -283,6 +283,12 @@ public class ConfigurationService {
         return configurationDAO.getCachedProperty(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }
 
+    public boolean isURLRedirectionEnabled() {
+        Boolean value = configurationDAO.getPropertyValue(SML_URL_REDIRECTION_ENABLED);
+        // by default is not forced
+        return value != null && value;
+    }
+
     public Pattern getSMLIntegrationServerCertSubjectRegExp() {
         return configurationDAO.getPropertyValue(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }
@@ -469,6 +475,14 @@ public class ConfigurationService {
 
     public String getJWTSignatureKey() {
         return configurationDAO.getPropertyValue(AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_KEY);
+    }
+
+    public URL getJWTJwksUri() {
+        return configurationDAO.getPropertyValue(AUTOMATION_AUTHORIZATION_JWT_JWKS_URI);
+    }
+
+    public URL getJWTIssuerLocationUri() {
+        return configurationDAO.getPropertyValue(AUTOMATION_AUTHORIZATION_JWT_ISSUER_LOCATION);
     }
 
     public String getJWTSignatureAlgorithm() {

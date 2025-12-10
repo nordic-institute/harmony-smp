@@ -92,9 +92,11 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
+    SML_URL_REDIRECTION_ENABLED("bdmsl.integration.url.redirection.enabled", "false", "Allow HTTP redirections (e.g. http 302, 307) when connecting to SML URL",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    SML_TLS_SERVER_CERT_SUBJECT_REGEXP("bdmsl.integration.tls.serverSubjectRegex", ".*", "Regular expression for server TLS certificate subject verification  CertEx. .*CN=acc.edelivery.tech.ec.europa.eu.*.",
+    SML_TLS_SERVER_CERT_SUBJECT_REGEXP("bdmsl.integration.tls.serverSubjectRegex", "^.*$", "Regular expression for server TLS certificate subject verification  CertEx. .*CN=acc.edelivery.tech.ec.europa.eu.*.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     SML_TLS_TRUSTSTORE_USE_SYSTEM_DEFAULT("bdmsl.integration.tls.useSystemDefaultTruststore", "false", "If true use system default truststore for trusting TLS server certificate (Legacy behaviour to SMP 4.1 version), else use SMP truststore",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
@@ -217,6 +219,16 @@ public enum SMPPropertyEnum {
     AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_KEY("smp.authorization.jwt.key", "",
             "The base64 signature key used to verify the JWT token.",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING
+    ),
+
+    AUTOMATION_AUTHORIZATION_JWT_JWKS_URI("smp.authorization.jwt.jwks.uri", "",
+            "The JWKS_URI address with authorization keys.  Note: The retrieving the EdDSA key is not supported.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, URL
+    ),
+
+    AUTOMATION_AUTHORIZATION_JWT_ISSUER_LOCATION("smp.authorization.jwt.issuer.location", "",
+            "The issuer location of the JWT token, to retrieve .well-known/openid-configuration. Note: the retrieving the EdDSA key is not supported.",
+            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, URL
     ),
 
     AUTOMATION_AUTHORIZATION_JWT_SIGNATURE_ALGORITHM("smp.authorization.jwt.algorithm", "RS256",

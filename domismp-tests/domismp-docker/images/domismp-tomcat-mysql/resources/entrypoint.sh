@@ -176,20 +176,20 @@ init_mysql() {
     echo 'Create smp database'
     mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';CREATE USER 'root'@'%' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';drop schema if exists $SMP_DB_SCHEMA;DROP USER IF EXISTS $SMP_DB_USER;  create schema $SMP_DB_SCHEMA;alter database $SMP_DB_SCHEMA charset=utf8; create user $SMP_DB_USER identified by '$SMP_DB_USER_PASSWORD';grant all on $SMP_DB_SCHEMA.* to $SMP_DB_USER;"
 
-    if [ -f "/tmp/custom-data/mysql5innodb.ddl" ]; then
+    if [ -f "/tmp/custom-data/mysql.ddl" ]; then
       echo "Use custom database script! "
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/custom-data/mysql5innodb.ddl"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/custom-data/mysql.ddl"
     else
       echo "Use default database ddl script!"
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/smp-setup/database-scripts/mysql5innodb.ddl"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/smp-setup/database-scripts/mysql.ddl"
     fi
 
-    if [ -f "/tmp/custom-data/mysql5innodb-data.sql" ]; then
+    if [ -f "/tmp/custom-data/mysql-data.sql" ]; then
       echo "Use custom init script! "
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/custom-data/mysql5innodb-data.sql"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA <"/tmp/custom-data/mysql-data.sql"
     else
       echo "Use default init script!"
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/smp-setup/database-scripts/mysql5innodb-data.sql"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/smp-setup/database-scripts/mysql-data.sql"
     fi
 
     if [ -f "/tmp/custom-data/mysql-migrate.sql" ]; then
@@ -210,21 +210,21 @@ init_mysql() {
     echo 'Create sml database'
     mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';drop schema if exists $SML_DB_SCHEMA;DROP USER IF EXISTS $SML_DB_USER;  create schema $SML_DB_SCHEMA;alter database $SML_DB_SCHEMA charset=utf8; create user $SML_DB_USER identified by '$SML_DB_USER_PASSWORD';grant all on $SML_DB_SCHEMA.* to $SML_DB_USER;"
 
-    if [ -f "/tmp/custom-data/sml-mysql5innodb.sql" ]; then
+    if [ -f "/tmp/custom-data/sml-mysql.sql" ]; then
       echo "Use custom database script! "
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/custom-data/sml-mysql5innodb.ddl"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/custom-data/sml-mysql.ddl"
     else
       echo "Use default database ddl script!"
       mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/sml-setup/database-scripts/mysql.ddl"
     fi
 
-    if [ -f "/tmp/custom-data/sml-mysql5innodb-data.sql" ]; then
+    if [ -f "/tmp/custom-data/sml-mysql-data.sql" ]; then
       echo "Use custom init script! "
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/custom-data/sml-mysql5innodb-data.sql"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/custom-data/sml-mysql-data.sql"
     else
       echo "Use default init script!"
-      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/artefacts/shared-artefacts/sml-mysql5innodb-data.sql"
-      #mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/sml-setup/database-scripts/mysql5innodb-data.sql"
+      mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/artefacts/shared-artefacts/sml-mysql-data.sql"
+      #mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA <"/tmp/sml-setup/database-scripts/mysql-data.sql"
     fi
   fi
   sleep 5s

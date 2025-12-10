@@ -104,9 +104,10 @@ public class SmlConnector implements ApplicationContextAware {
     /**
      * Register a new participant in the SML. If the integration with SML is disabled
      * or the Domain is not registered, it returns {@code false}.
-     * @param scheme the participant identifier scheme
-     * @param identifier  the participant identifier value
-     * @param domain the domain entity to which the participant must be registered
+     *
+     * @param scheme             the participant identifier scheme
+     * @param identifier         the participant identifier value
+     * @param domain             the domain entity to which the participant must be registered
      * @param customNaptrService the custom NAPTR service to be used with registration the naptr record
      * @return {@code true} if the participant is registered; otherwise, {@code false}
      * @throws SMPRuntimeException if an error occurs during the registration process
@@ -147,9 +148,9 @@ public class SmlConnector implements ApplicationContextAware {
      * Checks whether the participant identified by the provided ID exists or not. In case the integration with SML is
      * disabled, it returns {@code false}.
      *
-     * @param scheme the participant scheme
+     * @param scheme     the participant scheme
      * @param identifier the participant scheme
-     * @param domain                  the domain entity
+     * @param domain     the domain entity
      * @return {@code true} if the participant exists; otherwise, {@code false} (also when SML integration is disabled).
      */
     public boolean participantExists(String scheme, String identifier, DBDomain domain) {
@@ -277,12 +278,12 @@ public class SmlConnector implements ApplicationContextAware {
 
     protected ServiceMetadataPublisherServiceType createServiceMetadataPublisherServiceType(DBDomain domain) {
         URL smpLogicalAddressURL = configurationService.getDomainSMLIntegrationSMPLogicalAddress(domain);
-        String smpLogicalAddress = smpLogicalAddressURL!=null ? smpLogicalAddressURL.toString() : null;
+        String smpLogicalAddress = smpLogicalAddressURL != null ? smpLogicalAddressURL.toString() : null;
         String smpPhysicalAddress = configurationService.getDomainSMLIntegrationSMPPhysicalAddress(domain);
 
         String smlSmpId = domain.getSmlSmpId();
         if (domain.isSmlUrlDomainCodeSuffixEnabled()) {
-            smpLogicalAddress =  Strings.CS.appendIfMissing(smpLogicalAddress , "/") + domain.getDomainCode();
+            smpLogicalAddress = Strings.CS.appendIfMissing(smpLogicalAddress, "/") + domain.getDomainCode();
         }
 
         ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
@@ -323,9 +324,10 @@ public class SmlConnector implements ApplicationContextAware {
 
     /**
      * Unregister a participant from the SML. If the integration with SML is disabled or the Domain is not registered, it returns {@code false}.
-     * @param scheme the participant identifier scheme
+     *
+     * @param scheme     the participant identifier scheme
      * @param identifier the participant identifier value
-     * @param domain the domain entity from which the participant must be unregistered
+     * @param domain     the domain entity from which the participant must be unregistered
      * @return {@code true} if the participant is unregistered; otherwise, {@code false}
      */
     public boolean unregisterFromDns(String scheme, String identifier, DBDomain domain) {
@@ -449,9 +451,7 @@ public class SmlConnector implements ApplicationContextAware {
         boolean useTLS = Strings.CI.equals(urlSMPManagment.getProtocol(), "https");
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
-
         CertificateRO certificateRO = getClientCertificate(clientKeyAlias);
-
         if (!clientCertAuthentication && !useTLS) {
             LOG.warn("SML integration is wrongly configured. Uses 2-way-SSL HTTPS but URL is not HTTPS! Url: [{}].", urlSMPManagment);
         }
@@ -488,10 +488,22 @@ public class SmlConnector implements ApplicationContextAware {
             throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
 
+        if (configurationService.isURLRedirectionEnabled() && httpConduit.getClient() != null) {
+            LOG.info("Enable redirection for SML HTTPConduit.");
+            httpConduit.getClient().setAutoRedirect(true);
+        } else if (configurationService.isURLRedirectionEnabled()) {
+            LOG.warn("Cannot enable redirection for SML HTTPConduit because client configuration is null.");
+        }
+
         // set truststore...
         TLSClientParameters tlsParams = new TLSClientParameters();
         tlsParams.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
         tlsParams.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
+        String certSubjectRegExp = configurationService.getSMLIntegrationServerCertSubjectRegExpPattern();
+        if (StringUtils.isNotBlank(certSubjectRegExp)) {
+            LOG.debug("Set SML server certificate subject DN constraints with pattern: [{}].", certSubjectRegExp);
+            tlsParams.setCertConstraints(createCertConstraint(certSubjectRegExp));
+        }
         tlsParams.setCertConstraints(createCertConstraint(configurationService.getSMLIntegrationServerCertSubjectRegExpPattern()));
         tlsParams.setDisableCNCheck(configurationService.smlDisableCNCheck());
         if (!configurationService.useSystemTruststoreForTLS()) {
@@ -524,13 +536,19 @@ public class SmlConnector implements ApplicationContextAware {
         if (StringUtils.isBlank(regExp)) {
             return null;
         }
+        String trimmedRegExp = StringUtils.trim(regExp);
+        // work-around when the regExp is set to .*, that causes issues in CXF to block with 100% CPU
+        if (Strings.CI.equals(".*", trimmedRegExp)) {
+            LOG.warn("Skipping setting SML server certificate subject DN constraints with pattern: [{}] to avoid CXF CPU issue.", regExp);
+            // the .* should allow all certificates and thus no constraint is needed
+            return null;
+        }
 
         CertificateConstraintsType ct = new CertificateConstraintsType();
         DNConstraintsType dnConstraintsType = new DNConstraintsType();
-        dnConstraintsType.setCombinator(CombinatorType.fromValue("ALL"));
-        dnConstraintsType.getRegularExpression().add(regExp);
+        dnConstraintsType.setCombinator(CombinatorType.ANY);
+        dnConstraintsType.getRegularExpression().add(trimmedRegExp);
         ct.setSubjectDNConstraints(dnConstraintsType);
-
         return ct;
     }
 

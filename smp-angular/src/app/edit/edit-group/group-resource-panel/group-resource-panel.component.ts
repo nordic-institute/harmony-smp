@@ -243,12 +243,8 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
       return;
     }
 
+    this.editResourceController.selectTargetResource(this.selected, this._group, this.domain );
     this.editResourceController.selectedComponent = 'subresources';
-    this.editResourceController.applyResourceFilter(this.selected.identifierValue);
-    this.editResourceController.dataChanged = true;
-    this.editResourceController.selectedDomain = this.domain;
-    this.editResourceController.selectedGroup = this._group;
-    this.editResourceController.selectedResource = this.selected;
     this.navigationService.navigateToEditResourceSubresources();
   }
 
