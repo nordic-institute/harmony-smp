@@ -208,14 +208,14 @@ This product includes dynamically linked software developed by third parties whi
 - Copyright:
   - Copyright (c) 1999 - 2024 The Apache Software Foundation (https://www.apache.org/), Michael Osipov, Ortwin Glueck, Oleg Kalnichevski, Asankha C. Perera, Sebastian Bazley, Erik Abele, Ant Elder, Paul Fremantle, Roland Weber, Sam Berlin, Sean C. Sullivan, Jonathan Moore, Gary Gregory, William Speirs, Karl Wright, Francois-Xavier Bonnet, Ryan Schmitt, Arturo Bernal
 
-***org.apache.tomcat.embed:tomcat-embed-jasper:10.1.49*** 
+***org.apache.tomcat.embed:tomcat-embed-jasper:10.1.50*** 
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024
 
-***org.apache.tomcat.embed:tomcat-embed-websocket:10.1.49*** 
+***org.apache.tomcat.embed:tomcat-embed-websocket:10.1.50*** 
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
