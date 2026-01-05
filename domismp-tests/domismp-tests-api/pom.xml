@@ -14,7 +14,7 @@
 
         <!-- the soap ui specific dependencies -->
         <plugin.soapui-maven-plugin.version>5.9.1</plugin.soapui-maven-plugin.version>
-        <plugin.maven-compiler-plugin.version>3.14.0</plugin.maven-compiler-plugin.version>
+        <plugin.maven-compiler-plugin.version>3.14.1</plugin.maven-compiler-plugin.version>
         <plugin.dependency-check-maven.version>9.2.0</plugin.dependency-check-maven.version>
 
         <org.codehaus.groovy.version>2.9.3-01</org.codehaus.groovy.version>

@@ -72,7 +72,7 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
         <plugin.versions-maven-plugin.version>2.18.0</plugin.versions-maven-plugin.version>
 
-        <aspectj.version>1.9.25</aspectj.version>
+        <aspectj.version>1.9.25.1</aspectj.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.20.0</commons-io.version>
@@ -107,7 +107,7 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.112</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.113</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.4</xmlunit.version>
