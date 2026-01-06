@@ -160,15 +160,15 @@
     <suppress>
         <notes><![CDATA[
    file name: @angular/common:18.2.9
+   False Positive: the DomiSMP application does not use protocol-relative URLs (URLs starting with `//`) in HttpClient requests
    ]]></notes>
         <packageUrl regex="true">^pkg:npm/%40angular%2Fcommon@.*$</packageUrl>
         <vulnerabilityName>GHSA-58c5-g7wp-6w37</vulnerabilityName>
     </suppress>
-    False Positive: the DomiSMP application does not use protocol-relative URLs (URLs starting with `//`) in HttpClient requests
     <suppress>
         <notes><![CDATA[
    file name: @angular/compiler:18.2.9
-   False Positive: The  ulnerable attributes is never sourced from untrusted user input
+   False Positive: The  vulnerable attributes is never sourced from untrusted user input
    ]]></notes>
         <packageUrl regex="true">^pkg:npm/%40angular%2Fcompiler@.*$</packageUrl>
         <vulnerabilityName>GHSA-v4hv-rgfq-gp49</vulnerabilityName>
