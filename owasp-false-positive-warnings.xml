@@ -148,7 +148,14 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf-.*@.*$</packageUrl>
         <cve>CVE-2025-48913</cve>
     </suppress>
-
+    <suppress>
+        <notes><![CDATA[
+   file name: log4j-api-2.17.2.jar
+   The DomiSMP does not use The Socket Appender
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-api@.*$</packageUrl>
+        <cve>CVE-2025-68161</cve>
+    </suppress>
     <suppress>
         <notes><![CDATA[
    file name: @angular/platform-server:18.2.9
@@ -156,6 +163,7 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:npm/%40angular%2Fplatform-server@.*$</packageUrl>
         <vulnerabilityName>GHSA-68x2-mx4q-78m7</vulnerabilityName>
+        <vulnerabilityName>GHSA-jrmj-c5cx-3cw6</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -172,5 +180,6 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:npm/%40angular%2Fcompiler@.*$</packageUrl>
         <vulnerabilityName>GHSA-v4hv-rgfq-gp49</vulnerabilityName>
+        <vulnerabilityName>GHSA-jrmj-c5cx-3cw6</vulnerabilityName>
     </suppress>
 </suppressions>
