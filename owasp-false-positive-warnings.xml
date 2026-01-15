@@ -175,6 +175,13 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
+   file name: @angular/core:18.2.9
+   ]]></notes>
+        <packageUrl regex="true">^pkg:npm/%40angular%2Fcore@.*$</packageUrl>
+        <vulnerabilityName>GHSA-jrmj-c5cx-3cw6</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
    file name: @angular/compiler:18.2.9
    False Positive: The  vulnerable attributes is never sourced from untrusted user input
    ]]></notes>
