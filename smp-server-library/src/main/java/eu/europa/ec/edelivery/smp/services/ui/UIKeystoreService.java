@@ -20,7 +20,8 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -42,10 +43,12 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.list;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -86,12 +89,14 @@ public class UIKeystoreService extends BasicKeystoreService {
         // load keystore
         File keystoreFile = configurationService.getKeystoreFile();
         if (keystoreFile == null) {
+            clearTruststoreCache();
             LOG.error("KeystoreFile: is null! Check the keystore and the configuration!");
             return;
         }
 
         KeyStore keyStore = loadKeystore(keystoreFile, keystoreSecToken);
         if (keyStore == null) {
+            clearTruststoreCache();
             LOG.error("Keystore: [{}] is not loaded! Check the keystore and the configuration!", keystoreFile.getAbsolutePath());
             return;
         }
@@ -103,6 +108,7 @@ public class UIKeystoreService extends BasicKeystoreService {
             keyManagersTemp = kmf.getKeyManagers();
         } catch (KeyStoreException | NoSuchAlgorithmException |
                  UnrecoverableKeyException exception) {
+            clearTruststoreCache();
             LOG.error("Error occurred while initialize  keyManagers : "
                     + keystoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
@@ -117,7 +123,8 @@ public class UIKeystoreService extends BasicKeystoreService {
                 loadKeyAndCert(keyStore, alias, keyList, hmCertificates);
             }
         } catch (Exception exception) {
-            LOG.error("Could not load signing certificate amd private keys Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            LOG.error("Could not load signing certificate amd private keys Error: [{}]", ExceptionUtils.getRootCauseMessage(exception));
+            clearTruststoreCache();
             return;
         }
         LOG.debug("Set keystore certificates:");
@@ -125,15 +132,17 @@ public class UIKeystoreService extends BasicKeystoreService {
         // if got all data from keystore - update data
         keyManagers = keyManagersTemp;
 
-        keystoreKeys.clear();
-        keystoreCertificates.clear();
-
+        clearTruststoreCache();
         keystoreKeys.addAll(keyList);
         keystoreCertificates.putAll(hmCertificates);
         // add last file date
         lastUpdateKeystoreFileTime = keystoreFile.lastModified();
         lastUpdateKeystoreFile = keystoreFile;
-        // clear list to reload RO when required
+    }
+
+    public void clearTruststoreCache(){
+        keystoreKeys.clear();
+        keystoreCertificates.clear();
         certificateROList.clear();
     }
 
@@ -211,6 +220,20 @@ public class UIKeystoreService extends BasicKeystoreService {
         return certificateROList;
     }
 
+    public Map<String, OffsetDateTime> getExpiredCertificateAliases() {
+        return getKeystoreEntriesList()
+                .stream()
+                .filter(CertificateRO::isExpired)
+                .collect(toMap(CertificateRO::getAlias, CertificateRO::getValidTo));
+    }
+
+    public Map<String, OffsetDateTime> getAboutToExpireCertificateAliases(int days) {
+        return getKeystoreEntriesList()
+                .stream()
+                .filter(certificateRO -> certificateRO.expiringInDays(days))
+                .collect(toMap(CertificateRO::getAlias, CertificateRO::getValidTo));
+    }
+
     public CertificateRO convertToRo(X509Certificate d) {
         return conversionService.convert(d, CertificateRO.class);
     }
@@ -229,7 +252,9 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (keystoreKeys.isEmpty() || keyManagers == null || keyManagers.length < 1) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: [" + keyAlias + "] from empty keystore: [" + configurationService.getKeystoreFile() + "]!");
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_EMPTY_KEYSTORE)
+                    .addParam(ErrorMessageArgument.KEYSTORE_FILE, configurationService.getKeystoreFile() != null ? configurationService.getKeystoreFile().getAbsolutePath() : "null")
+                    .addParam(ErrorMessageArgument.ALIAS, keyAlias);
         }
 
         final String searchAlias = getKeyAlias(keyAlias);
@@ -239,8 +264,9 @@ public class UIKeystoreService extends BasicKeystoreService {
                 .map(X509KeyManager.class::cast)
                 .map(km -> km.getPrivateKey(searchAlias))
                 .findFirst()
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR,
-                        "Could not retrieve key: [" + keyAlias + "] from empty keystore: [" + configurationService.getKeystoreFile() + "]!"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.CONFIGURATION_EMPTY_KEYSTORE)
+                        .addParam(ErrorMessageArgument.KEYSTORE_FILE, configurationService.getKeystoreFile() != null ? configurationService.getKeystoreFile().getAbsolutePath() : "null")
+                        .addParam(ErrorMessageArgument.ALIAS, keyAlias));
     }
 
     /**
@@ -258,7 +284,8 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (isBlank(trimAlias) || !keystoreKeys.contains(trimAlias)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Wrong configuration, missing key pair from keystore or wrong alias: " + keyAlias);
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_MISSING_KEYPAIR_OR_WRONG_ALIAS)
+                    .addParam(ErrorMessageArgument.ALIAS, keyAlias);
         }
         return trimAlias;
     }
@@ -277,7 +304,8 @@ public class UIKeystoreService extends BasicKeystoreService {
             return keystoreCertificates.values().iterator().next();
         }
         if (isBlank(certAlias) || !keystoreCertificates.containsKey(certAlias)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Wrong configuration, missing key pair from keystore or wrong alias: " + certAlias);
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_MISSING_KEYPAIR_OR_WRONG_ALIAS)
+                    .addParam(ErrorMessageArgument.ALIAS, certAlias);
         }
         return keystoreCertificates.get(certAlias);
     }
@@ -291,15 +319,16 @@ public class UIKeystoreService extends BasicKeystoreService {
     public List<CertificateRO> importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
-        if (keyStore != null) {
-            List<String> listAliases = KeystoreUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
-            // store keystore
-            storeKeystore(keyStore);
-            // refresh and return added list of certificates
-            List<CertificateRO> keystoreEntries = getKeystoreEntriesList();
-            return keystoreEntries.stream().filter(cert -> listAliases.contains(cert.getAlias())).collect(Collectors.toList());
+        if (keyStore == null ) {
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_KEYSTORE_INVALID);
         }
-        return Collections.emptyList();
+        List<String> listAliases = KeystoreUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
+        // store keystore
+        storeKeystore(keyStore);
+        // refresh and return added list of certificates
+        List<CertificateRO> keystoreEntries = getKeystoreEntriesList();
+        return keystoreEntries.stream().filter(cert -> listAliases.contains(cert.getAlias())).collect(Collectors.toList());
+
     }
 
     /**
@@ -326,7 +355,10 @@ public class UIKeystoreService extends BasicKeystoreService {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
 
-        if (keyStore == null || !keyStore.containsAlias(alias)) {
+        if (keyStore == null ) {
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION_KEYSTORE_INVALID);
+        }
+        if (!keyStore.containsAlias(alias)) {
             return null;
         }
         X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);

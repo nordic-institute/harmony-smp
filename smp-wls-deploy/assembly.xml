@@ -6,7 +6,7 @@
     </formats>
      <files>
         <file>
-            <source>${project.basedir}/../smp-webapp/target/smp.war</source>
+            <source>${project.basedir}/../smp-webapp/target/harmonysmp.war</source>
             <outputDirectory></outputDirectory>
             <destName>smp.war</destName>
             <filtered>false</filtered>

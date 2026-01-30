@@ -22,12 +22,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,31 +40,38 @@ class RootControllerTest {
 
     @Test
     void testRedirectOldIndexPath() {
+
         ModelMap mockModel = Mockito.mock(ModelMap.class);
         ModelAndView result = testInstance.redirectOldIndexPath(mockModel);
 
         assertNotNull(result);
-        assertEquals("redirect:/index.html", result.getViewName());
+        assertEquals("redirect:/", result.getViewName());
     }
 
     @ParameterizedTest
     @CsvSource({
             ", text/html",
             "/index.html, text/html",
-            "/favicon.png, image/png",
-            "/favicon.ico, image/x-ico"
+            "/favicon.ico, image/x-ico",
+            "images/favicon.ico, image/x-ico",
+            "styles/domismp.css, text/css",
+            "images/DomiSMP_logo.svg, image/svg+xml",
+            "images/EC+Logo2.png, image/png",
+            "images/oasis-smp-1.png, image/png",
+            "images/oasis-smp-2.png, image/png"
     })
-    void testGetStaticResources(String pathInfo, String contentType) throws IOException {
+    void testGetStaticResources(String pathInfo, String contentType)  {
         //given
         HttpServletRequest mockHttpServletRequest = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse mockHttpServletResponse = Mockito.mock(HttpServletResponse.class);
-        Mockito.when(mockHttpServletRequest.getPathInfo()).thenReturn(pathInfo);
+        Mockito.when(mockHttpServletRequest.getRequestURI()).thenReturn(pathInfo);
         //when
-        byte[] result = testInstance.getStaticResources(mockHttpServletRequest, mockHttpServletResponse);
+        ResponseEntity<InputStreamResource> result = testInstance.getStaticResources(mockHttpServletRequest);
         //then
         assertNotNull(result);
-        Mockito.verify(mockHttpServletResponse).setContentType(contentType);
-
+        assertEquals(200, result.getStatusCodeValue());
+        assertNotNull(result.getBody());
+        assertEquals(MediaType.parseMediaType(contentType), result.getHeaders().getContentType());
     }
 
     @Test
@@ -71,7 +80,7 @@ class RootControllerTest {
         ModelAndView result = testInstance.redirectWithUsingRedirectPrefix(mockModel);
 
         assertNotNull(result);
-        assertEquals("redirect:/ui/index.html", result.getViewName());
+        assertEquals("redirect:/ui/", result.getViewName());
     }
 
 }

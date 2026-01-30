@@ -29,7 +29,7 @@ public class AlertComponent extends DComponent {
 
     public String getAlertMessage() {
         try {
-            wait.forElementToBeVisible(alertToaster, true);
+            wait.forElementToBeVisible(alertToaster, false);
             String alertMesageText = alertToaster.getText();
             alertMesageText = alertMesageText.replace("×", "").replaceAll("\n", "");
             LOG.debug("Displayed message : {}.", alertToaster.getText());
@@ -37,7 +37,7 @@ public class AlertComponent extends DComponent {
             return alertMesageText;
         } catch (Exception e) {
             LOG.error("No messages displayed.");
-            return "No alert message found";
+            return "";
         }
     }
 

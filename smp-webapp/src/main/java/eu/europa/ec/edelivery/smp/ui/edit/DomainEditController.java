@@ -21,7 +21,8 @@ package eu.europa.ec.edelivery.smp.ui.edit;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.*;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -44,7 +45,7 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
  * @since 5.0
  */
 @RestController
-@RequestMapping(value = CONTEXT_PATH_EDIT_DOMAIN)
+@RequestMapping(path = CONTEXT_PATH_EDIT_DOMAIN)
 public class DomainEditController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainEditController.class);
@@ -54,7 +55,6 @@ public class DomainEditController {
 
     public DomainEditController(UIDomainEditService uiDomainService) {
         this.uiDomainEditService = uiDomainService;
-
     }
 
     /**
@@ -80,9 +80,9 @@ public class DomainEditController {
         if (StringUtils.isBlank(forRole) || StringUtils.equals(forRole, "domain-admin")) {
             return uiDomainEditService.getAllDomainsForDomainAdminUser(userId);
         }
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "GetDomains", "Unknown parameter type [" + forRole + "]!");
+        throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GET_USER_DOMAINS)
+                .addParam(ErrorMessageArgument.USER_ROLE, forRole);
     }
-
 
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
@@ -99,9 +99,11 @@ public class DomainEditController {
         return uiDomainEditService.getDomainMembers(domainId, page, pageSize, filter);
     }
 
-    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
+    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT,
+            produces = MimeTypeUtils.APPLICATION_JSON_VALUE,
+            consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) "
+            + " and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public MemberRO putDomainMember(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
@@ -201,7 +203,7 @@ public class DomainEditController {
         LOG.info("Validate Domain property: [{}]", propertyRO);
 
         if (propertyRO == null || StringUtils.isBlank(propertyRO.getProperty())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ValidateProperty", "Property name is empty!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_VALIDATE_PROPERTY);
         }
         return uiDomainEditService.validateDomainProperty(propertyRO);
     }

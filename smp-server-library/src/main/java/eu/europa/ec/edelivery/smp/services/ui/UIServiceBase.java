@@ -21,6 +21,8 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -30,8 +32,6 @@ import org.springframework.core.GenericTypeResolver;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * @author Joze Rihtarsic
@@ -74,6 +74,7 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         sg.setPage(page < 0 ? 0 : page);
 
         long iCnt = getDatabaseDao().getDataListCount(filter);
+
         if (pageSize < 0) { // if page size iz -1 return all results and set pageSize to maxCount
             pageSize = (int) iCnt;
         }
@@ -83,9 +84,9 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         if (iCnt > 0) {
             int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             if (iStartIndex >= iCnt && page > 0) {
-                page = page - 1;
+                page = (int) iCnt / pageSize + (iStartIndex == iCnt? 1 : 0); // go back to fist page with results
                 sg.setPage(page); // go back for a page
-                iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+                iStartIndex = page * pageSize;
             }
 
 
@@ -100,7 +101,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     String msg = "Error occurred while retrieving list for " + roClass.getName();
                     LOG.error(msg, e);
-                    throw new SMPRuntimeException(INTERNAL_ERROR, "DB list query exception.", msg);
+                    throw new SMPRuntimeException(ErrorMessageType.INTERNAL_DATABASE_LIST_QUERY)
+                            .addParam(ErrorMessageArgument.ERROR, msg);
                 }
             }
             sg.getServiceEntities().addAll(lstRo);
@@ -112,8 +114,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
     /**
      * Simple method for converting types. Property name and property type must match
      *
-     * @param d
-     * @return
+     * @param d - DB entity to convert
+     * @return R - RO entity
      */
     public R convertToRo(E d) {
         try {
@@ -123,7 +125,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             String msg = "Error occurred while converting to RO Entity for " + roClass.getName();
             LOG.error(msg, e);
-            throw new SMPRuntimeException(INTERNAL_ERROR, "DB to RO entity conversion.", msg);
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_CONVERSION_FROM_DATABASE_ENTITY_TO_VALUE_OBJECT)
+                    .addParam(ErrorMessageArgument.ERROR, msg);
         }
     }
 
@@ -140,7 +143,8 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             String msg = "Error occurred while converting to DB entity for " + dbClass.getName();
             LOG.error(msg, e);
-            throw new SMPRuntimeException(INTERNAL_ERROR, "RO to DB entity conversion.", msg);
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_CONVERSION_FROM_VALUE_OBJECT_TO_DATABASE_ENTITY)
+                    .addParam(ErrorMessageArgument.ERROR, msg);
         }
     }
 

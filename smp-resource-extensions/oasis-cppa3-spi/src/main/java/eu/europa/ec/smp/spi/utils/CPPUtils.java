@@ -23,7 +23,7 @@ import org.w3._2000._09.xmldsig_.KeyInfo;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
 import org.w3._2000._09.xmldsig_.X509Data;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 
 public class CPPUtils {

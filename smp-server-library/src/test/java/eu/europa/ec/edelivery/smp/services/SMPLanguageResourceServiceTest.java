@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -116,13 +117,11 @@ class SMPLanguageResourceServiceTest {
         assertTrue(localeFolder.exists());
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
-        assertEquals(2, files.length);
-        // check if bot files are created regardless the order
-        String[] expectedNames = new String[]{LANGUAGE_FILENAME_UI_PREFIX + "en.json", LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"};
-        String[] fileNames = new String[] {files[0].getName(), files[1].getName()};
-        Arrays.sort(expectedNames);
-        Arrays.sort(fileNames);
-        assertArrayEquals(expectedNames, fileNames);
+        assertEquals(3, files.length);
+        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName(), files[2].getName());
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_UI_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_ERROR_PREFIX + "en.json"));
     }
 
     @Test
@@ -143,27 +142,20 @@ class SMPLanguageResourceServiceTest {
 
         // when
         testInstance.updateLocalesOnDisk();
-
         // then
         assertTrue(localeFolder.exists());
-        // Compare the sorted arrays
-
-
         File[] files = localeFolder.listFiles();
         assertNotNull(files);
-        assertEquals(2, files.length);
-
-        // check if bot files are created regardless the order
-        String[] expectedNames = new String[]{LANGUAGE_FILENAME_UI_PREFIX + "en.json", LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"};
-        String[] fileNames = new String[] {files[0].getName(), files[1].getName()};
-        Arrays.sort(expectedNames);
-        Arrays.sort(fileNames);
-        assertArrayEquals(expectedNames, fileNames);
+        assertEquals(3, files.length);
+        List<String> fileNames = Arrays.asList(files[0].getName(), files[1].getName(), files[2].getName());
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_UI_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_MAIL_PREFIX + "en.json"));
+        assertTrue(fileNames.contains(LANGUAGE_FILENAME_ERROR_PREFIX + "en.json"));
 
         JsonNode result = objectMapper.readTree(pathToFile.toFile());
         assertEquals(testText, result.get(testKey).asText());
         // 3 properties are added by the updateLocalesOnDisk method
         // from the classpath resource META-INF/resources/ui/assets/i18n/en.json
-        assertEquals(4, result.size());
+        assertEquals(1167, result.size());
     }
 }

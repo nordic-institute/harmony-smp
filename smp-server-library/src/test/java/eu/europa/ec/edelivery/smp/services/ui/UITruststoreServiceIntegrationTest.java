@@ -20,7 +20,8 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
@@ -91,7 +92,6 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         Mockito.doReturn("test123").when(configurationService).getTruststoreCredentialToken();
         Mockito.doReturn(truststoreFile).when(configurationService).getTruststoreFile();
         Mockito.doReturn("JKS").when(configurationService).getTruststoreType();
-        Mockito.doReturn(targetDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn(true).when(configurationService).forceCRLValidation();
         resetKeystore();
 
@@ -427,7 +427,10 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509CRL crl = (X509CRL) cf.generateCRL(getClass().getResourceAsStream("/certificates/smp-crl-test.crl"));
         Mockito.doReturn(false).when(configurationService).forceCRLValidation();
-        Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:" + crlUrl, "")).when(crlVerifierService).downloadURL(crlUrl);
+        Mockito.doThrow(new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_DOWNLOAD_ISSUE)
+                        .addParam(ErrorMessageArgument.CRL_URL, crlUrl)
+                        .addParam(ErrorMessageArgument.ERROR, ""))
+            .when(crlVerifierService).downloadURL(crlUrl);
 
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(

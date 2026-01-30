@@ -23,10 +23,14 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
+import java.io.Serial;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +41,13 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Entity
 @Audited
-@Table(name = "SMP_DOMAIN",
+@Table(name = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data",
         indexes = {@Index(name = "SMP_DOM_UNIQ_CODE_IDX", columnList = "DOMAIN_CODE", unique = true)
         })
 @NamedQuery(name = QUERY_DOMAIN_ALL, query = "SELECT d FROM DBDomain d order by d.id asc")
 @NamedQuery(name = QUERY_DOMAIN_ALL_CODES, query = "SELECT d.domainCode FROM DBDomain d")
 @NamedQuery(name = QUERY_DOMAIN_CODE, query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domain_code")
+@NamedQuery(name = QUERY_DOMAIN_CODES_FILTER, query = "SELECT d.domainCode FROM DBDomain d WHERE lower(d.domainCode) in  :domain_codes")
 @NamedQuery(name = QUERY_DOMAIN_SMP_SML_ID, query = "SELECT d FROM DBDomain d WHERE lower(d.smlSmpId) = lower(:sml_smp_id)")
 
 @NamedNativeQuery(name = "DBDomain.updateNullSignAlias",
@@ -98,13 +103,24 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
         "   ) " )
-        @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
+@NamedQuery(name = QUERY_DOMAIN_BY_EXPIRING_CERTIFICATES, query = "SELECT new eu.europa.ec.edelivery.smp.data.model.DBDomain$DBDomainExpiringCertificateMapping(" +
+        "   d.domainCode, " +
+        "   d.signatureKeyAlias, " +
+        "   d.smlClientKeyAlias, " +
+        "   CASE WHEN d.signatureKeyAlias IN :expired_certificate_aliases THEN true ELSE false END, " +
+        "   CASE WHEN d.smlClientKeyAlias IN :expired_certificate_aliases THEN true ELSE false END) " +
+        "   FROM DBDomain d " +
+                "   WHERE d.smlClientKeyAlias IN :expired_certificate_aliases " +
+                "       OR d.signatureKeyAlias IN :expired_certificate_aliases")
 public class DBDomain extends BaseEntity {
 
+    @Serial
     private static final long serialVersionUID = 1008583888835630004L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_SEQ")
-    @GenericGenerator(name = "SMP_DOMAIN_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOMAIN_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique domain id")
     Long id;
@@ -122,6 +138,21 @@ public class DBDomain extends BaseEntity {
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Client key alias used for SML integration")
     String smlClientKeyAlias;
+    @Column(name = "SML_CLIENT_KEY_CHANGE_ALIAS")
+    @ColumnDescription(comment = "Client key alias used to update the certificate for SML integration")
+    String smlClientKeyChangeAlias;
+    @Column(name = "SML_CLIENT_KEY_CHANGE_DATE")
+    @ColumnDescription(comment = "Future date when to update the certificate for SML integration")
+    OffsetDateTime smlClientKeyChangeDate;
+
+    @Column(name = "SML_ENABLE_URL_DOMAIN_CODE_SUFFIX")
+    @ColumnDescription(comment = "Append the domain code to SMP url when registering the SMP entry")
+    Boolean smlUrlDomainCodeSuffixEnabled = true;
+
+    @Column(name = "ENABLE_DOMAIN_TRUSTSTORE")
+    @ColumnDescription(comment = "If enabled use the domain custom truststore to validate domain certificates, else it uses the system truststore")
+    Boolean domainTrustStoreEnabled = false;
+
     @Column(name = "SIGNATURE_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Signature key alias used for SML integration")
     String signatureKeyAlias;
@@ -138,7 +169,7 @@ public class DBDomain extends BaseEntity {
 
     @Column(name = "SML_CLIENT_CERT_AUTH", nullable = false)
     @ColumnDescription(comment = "Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)")
-    private boolean smlClientCertAuth = false;
+    private Boolean smlClientCertAuth = false;
 
     @Column(name = "DEFAULT_RESOURCE_IDENTIFIER")
     @ColumnDescription(comment = "Default resourceType code")
@@ -208,12 +239,45 @@ public class DBDomain extends BaseEntity {
         this.smlSmpId = smlSmpId;
     }
 
+    public Boolean isSmlUrlDomainCodeSuffixEnabled() {
+        // return false if null
+        return Boolean.TRUE.equals(smlUrlDomainCodeSuffixEnabled);
+    }
+
+    public void setSmlUrlDomainCodeSuffixEnabled(Boolean smlAppendDomainCode) {
+        this.smlUrlDomainCodeSuffixEnabled = smlAppendDomainCode;
+    }
+
+    public Boolean isDomainTrustStoreEnabled() {
+        return Boolean.TRUE.equals(domainTrustStoreEnabled);
+    }
+
+    public void setDomainTrustStoreEnabled(Boolean domainTrustStoreEnabled) {
+        this.domainTrustStoreEnabled = domainTrustStoreEnabled;
+    }
+
     public String getSmlClientKeyAlias() {
         return smlClientKeyAlias;
     }
 
     public void setSmlClientKeyAlias(String smlClientKeyAlias) {
         this.smlClientKeyAlias = smlClientKeyAlias;
+    }
+
+    public String getSmlClientKeyChangeAlias() {
+        return smlClientKeyChangeAlias;
+    }
+
+    public void setSmlClientKeyChangeAlias(String smlClientKeyChangeAlias) {
+        this.smlClientKeyChangeAlias = smlClientKeyChangeAlias;
+    }
+
+    public OffsetDateTime getSmlClientKeyChangeDate() {
+        return smlClientKeyChangeDate;
+    }
+
+    public void setSmlClientKeyChangeDate(OffsetDateTime smlClientKeyChangeDate) {
+        this.smlClientKeyChangeDate = smlClientKeyChangeDate;
     }
 
     public String getSignatureKeyAlias() {
@@ -289,10 +353,18 @@ public class DBDomain extends BaseEntity {
 
     @Override
     public String toString() {
-        return "DBDomain{" +
-                "id=" + id +
-                ", domainCode='" + domainCode + '\'' +
-                '}';
+        return new ToStringBuilder(this)
+                .append("smlSmpId", smlSmpId)
+                .append("smlClientKeyAlias", smlClientKeyAlias)
+                .append("smlClientKeyChangeAlias", smlClientKeyChangeAlias)
+                .append("smlClientKeyChangeDate", smlClientKeyChangeDate)
+                .append("smlAppendDomainCode", smlUrlDomainCodeSuffixEnabled)
+                .append("signatureKeyAlias", signatureKeyAlias)
+                .append("smlRegistered", smlRegistered)
+                .append("smlClientCertAuth", smlClientCertAuth)
+                .append("defaultResourceTypeIdentifier", defaultResourceTypeIdentifier)
+                .append("visibility", visibility)
+                .toString();
     }
 
     @Override
@@ -310,15 +382,63 @@ public class DBDomain extends BaseEntity {
                 .append(smlSubdomain, dbDomain.smlSubdomain)
                 .append(smlSmpId, dbDomain.smlSmpId)
                 .append(smlClientKeyAlias, dbDomain.smlClientKeyAlias)
+                .append(smlClientKeyChangeAlias, dbDomain.smlClientKeyChangeAlias)
+                .append(smlClientKeyChangeDate, dbDomain.smlClientKeyChangeDate)
                 .append(signatureKeyAlias, dbDomain.signatureKeyAlias)
                 .append(signatureAlgorithm, dbDomain.signatureAlgorithm)
                 .append(signatureDigestMethod, dbDomain.signatureDigestMethod)
                 .append(defaultResourceTypeIdentifier, dbDomain.defaultResourceTypeIdentifier)
+                .append(smlUrlDomainCodeSuffixEnabled, dbDomain.smlUrlDomainCodeSuffixEnabled)
                 .append(visibility, dbDomain.visibility).isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37).appendSuper(super.hashCode()).append(id).append(domainCode).toHashCode();
+    }
+
+    /**
+     * @author Sebastian-Ion TINCU
+     * @since 5.2
+     */
+    public static class DBDomainExpiringCertificateMapping {
+
+        private final String domainCode;
+
+        private final String signatureKeyAlias;
+
+        private final String smlClientKeyAlias;
+
+        private final boolean matchedSigningCertificate;
+
+        private final boolean matchedSmlCertificate;
+
+        public DBDomainExpiringCertificateMapping(String domainCode, String signatureKeyAlias, String smlClientKeyAlias, boolean matchedSigningCertificate, boolean matchedSmlCertificate) {
+            this.domainCode = domainCode;
+            this.signatureKeyAlias = signatureKeyAlias;
+            this.smlClientKeyAlias = smlClientKeyAlias;
+            this.matchedSigningCertificate = matchedSigningCertificate;
+            this.matchedSmlCertificate = matchedSmlCertificate;
+        }
+
+        public String getDomainCode() {
+            return domainCode;
+        }
+
+        public String getSignatureKeyAlias() {
+            return signatureKeyAlias;
+        }
+
+        public String getSmlClientKeyAlias() {
+            return smlClientKeyAlias;
+        }
+
+        public boolean isMatchedSigningCertificate() {
+            return matchedSigningCertificate;
+        }
+
+        public boolean isMatchedSmlCertificate() {
+            return matchedSmlCertificate;
+        }
     }
 }

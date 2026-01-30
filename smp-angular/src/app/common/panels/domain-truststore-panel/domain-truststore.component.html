@@ -1,0 +1,41 @@
+<div id="truststore-panel">
+
+  <smp-warning-panel  *ngIf="dataSource.data?.length ==0"
+                      icon="warn"
+                     label="{{ 'admin.truststore.label.certificate.trustiness' | translate }}">
+  </smp-warning-panel>
+
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <div class="custom-file-upload">
+        <input #fileInput type="file" id="custom-file-upload" accept=".cer,.crt,.pem,.der"
+               [(ngModel)]="inputFileValue"
+               (change)="uploadCertificate($event)">
+        <button mat-raised-button mat-flat-button color="primary"
+                (click)="fileInput.click()">{{ "admin.truststore.button.add.certificate" | translate }}
+        </button>
+      </div>
+      <button mat-raised-button
+              [disabled]="!selected"
+              color="primary"
+              (click)="onDeleteSelectedCertificateClicked()">
+        <mat-icon>delete</mat-icon>
+        <span>{{ "admin.truststore.button.delete.certificate" | translate }}</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <smp-table class="mat-elevation-z2" id="truststore-table"
+             filterLabel="admin.truststore.label.filter"
+             filterPlaceholder="admin.truststore.placeholder.filter"
+             noResultLabel="admin.truststore.label.no.data.found"
+             noResultForFilterLabel="admin.truststore.label.no.filter.results"
+             [dataSource]="dataSource"
+             [selectedRow]="selected"
+             [columnDefList]="columns"
+             [displayedColumns]="displayedColumns"
+             (onFilterChanged)="applyCertificateFilter($event)"
+             (onRowClicked)="onCertificateSelected($event)"
+  >
+  </smp-table>
+</div>

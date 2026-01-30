@@ -13,9 +13,10 @@ import {SmpConstants} from "../../smp.constants";
  * @since 5.0
  */
 @Component({
-  selector: 'smp-sidenav',
-  templateUrl: './sidenav.component.html',
-  styleUrls: ['./sidenav.component.css']
+    selector: 'smp-sidenav',
+    templateUrl: './sidenav.component.html',
+    styleUrls: ['./sidenav.component.css'],
+    standalone: false
 })
 
 export class SidenavComponent implements OnInit {

@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,8 @@ import static org.mockito.Mockito.*;
 class ConfigurationServiceTest {
 
     ConfigurationDao configurationDaoMock = mock(ConfigurationDao.class);
-    ConfigurationService testInstance = spy(new ConfigurationService(configurationDaoMock));
+    DomainConfigurationDao domainConfigurationDao = mock(DomainConfigurationDao.class);
+    ConfigurationService testInstance = spy(new ConfigurationService(configurationDaoMock, domainConfigurationDao));
 
     @BeforeEach
     public void setUp() {
@@ -50,8 +52,8 @@ class ConfigurationServiceTest {
     void testGetCasUserDataURL() throws MalformedURLException {
         String casUrl = "http://test:123/path";
         String casUserDataPath = "userdata/data.hsp";
-        doReturn(new URL(casUrl)).when(configurationDaoMock).getCachedPropertyValue(SSO_CAS_URL);
-        doReturn(casUserDataPath).when(configurationDaoMock).getCachedPropertyValue(SSO_CAS_SMP_USER_DATA_URL_PATH);
+        doReturn(new URL(casUrl)).when(configurationDaoMock).getPropertyValue(SSO_CAS_URL);
+        doReturn(casUserDataPath).when(configurationDaoMock).getPropertyValue(SSO_CAS_SMP_USER_DATA_URL_PATH);
 
         URL result = testInstance.getCasUserDataURL();
         assertNotNull(result);

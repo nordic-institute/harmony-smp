@@ -1,6 +1,6 @@
 package pages.administration.editGroupsPage;
 
-import ddsl.CommonPageWithTabs;
+import ddsl.commonPages.CommonPageWithTabs;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -37,6 +37,7 @@ public class EditGroupsPage extends CommonPageWithTabs {
 
     public void selectDomain(DomainModel domainModel, GroupModel groupModel) {
         weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
+        wait.forElementToBeClickable(groupDdl);
         weToMatSelect(groupDdl).selectByVisibleText(groupModel.getGroupName());
     }
 

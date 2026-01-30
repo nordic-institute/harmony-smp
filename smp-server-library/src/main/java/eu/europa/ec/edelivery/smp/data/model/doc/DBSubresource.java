@@ -26,7 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -34,12 +34,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-@Table(name = "SMP_SUBRESOURCE",
+@Table(name = "SMP_SUBRESOURCE", comment = "Service metadata",
         indexes = {@Index(name = "SMP_SRS_UNIQ_ID_RES_SRT_IDX", columnList = "FK_RESOURCE_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME", unique = true),
                 @Index(name = "SMP_SMD_DOC_ID_IDX", columnList = "IDENTIFIER_VALUE", unique = false),
                 @Index(name = "SMP_SMD_DOC_SCH_IDX", columnList = "IDENTIFIER_SCHEME", unique = false)
         })
-@org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE", comment = "Service metadata")
 @NamedQuery(name = QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF, query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
         " AND d.subresourceDef.urlSegment=:url_segment" +
         " AND lower(d.identifierValue) = lower(:identifier_value) " +
@@ -64,12 +63,22 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 )
 
 @NamedQuery(name = QUERY_SUBRESOURCE_BY_RESOURCE_ID , query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id order by id asc")
-@NamedQuery(name = "DBSubresource.deleteById", query = "DELETE FROM DBSubresource d WHERE d.id = :id")
+@NamedQuery(name = QUERY_SUBRESOURCE_REFERENCE_DATA,
+        query = "SELECT  new eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData(" +
+                "    sr.document.id as documentId, " +
+                "    sr.document.sharingEnabled as sharingEnabled, " +
+                "    (SELECT COUNT(d2.id) FROM DBDocument d2 WHERE d2.referenceDocument = sr.document) as referencedByCount, " +
+                "    sr.document.referenceDocument.id as referencedDocumentId, " +
+                "    sr.document.referenceDocumentUrl as referenceUrlPath) " +
+                "  FROM DBSubresource sr WHERE sr.id = :subresource_id")
+
 public class DBSubresource extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SUBRESOURCE_SEQ")
-    @GenericGenerator(name = "SMP_SUBRESOURCE_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_SUBRESOURCE_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Shared primary key with master table SMP_SUBRESOURCE")
     Long id;

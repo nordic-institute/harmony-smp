@@ -1,10 +1,10 @@
-FROM httpd:2.4.39
+FROM httpd:2.4.63
 
 # in order to be able to use additional terminal capabilities
 ENV TERM=xterm-256color
 
 # turn off the package manager interactive mode during the image build
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Set the correct timezone
 ENV TZ=Europe/Brussels
@@ -29,7 +29,7 @@ RUN chown -R root:www-data /usr/local/apache2/conf/ \
     && chmod +x /usr/local/bin/entrypoint.sh
 
 # turn off the package manager interactive mode during the image build
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 

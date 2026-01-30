@@ -21,6 +21,8 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 
+import java.io.Serial;
+
 /**
  * Document property contains values for updating the document variables. The
  * properties are used with document templates such are ${my.property.name}.
@@ -30,11 +32,13 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
  */
 public class DocumentPropertyRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630036L;
     private String property;
     private String value;
     private String desc;
     private SMPPropertyTypeEnum type = SMPPropertyTypeEnum.STRING;
+    private CertificateRO certificate;
     // the property is readonly and can not be changed. Example of readonly
     // property is resource identifier
     private boolean readonly;
@@ -89,5 +93,11 @@ public class DocumentPropertyRO extends BaseRO {
         this.readonly = readonly;
     }
 
+    public CertificateRO getCertificate() {
+        return certificate;
+    }
 
+    public void setCertificate(CertificateRO certificate) {
+        this.certificate = certificate;
+    }
 }

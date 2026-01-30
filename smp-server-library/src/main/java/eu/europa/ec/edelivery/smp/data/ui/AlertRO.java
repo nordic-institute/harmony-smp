@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ import java.util.Map;
  * @since 4.2
  */
 public class AlertRO extends BaseRO {
+    @Serial
     private static final long serialVersionUID = 9008583888835630003L;
 
     // session id

@@ -30,7 +30,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,7 +73,9 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
 
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_RESOURCE_ID, resourceId);
-        return query.getResultList().stream().anyMatch(DBResourceMember::hasPermissionToReview);
+        boolean hasReviewPermission = query.getResultList().stream().anyMatch(DBResourceMember::hasPermissionToReview);
+        LOG.debug("User id [{}], Resource id [{}], with review permission: [{}]", userId, resourceId, hasReviewPermission);
+        return hasReviewPermission;
     }
 
     public boolean isUserAnyDomainResourceMember(DBUser user, DBDomain domain) {
@@ -144,7 +146,6 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
         query.setParameter(PARAM_GROUP_IDS, groupIds);
         return query.getSingleResult() > 0;
     }
-
 
     public List<DBResourceMember> getResourceMembers(Long resourceId, int iPage, int iPageSize, String filter) {
         boolean hasFilter = StringUtils.isNotBlank(filter);

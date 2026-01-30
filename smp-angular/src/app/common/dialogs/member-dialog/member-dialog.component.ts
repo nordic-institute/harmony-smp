@@ -12,11 +12,13 @@ import {GroupRo} from "../../model/group-ro.model";
 import {ResourceRo} from "../../model/resource-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 import {MembershipService} from "../../services/membership.service";
+import {EntityStatus} from "../../enums/entity-status.enum";
 
 
 @Component({
-  templateUrl: './member-dialog.component.html',
-  styleUrls: ['./member-dialog.component.css']
+    templateUrl: './member-dialog.component.html',
+    styleUrls: ['./member-dialog.component.css'],
+    standalone: false
 })
 export class MemberDialogComponent implements OnInit {
 
@@ -146,8 +148,8 @@ export class MemberDialogComponent implements OnInit {
   }
 
 
-  closeDialog() {
-    this.dialogRef.close()
+  closeDialog(newAdmin?: number) {
+    this.dialogRef.close(newAdmin)
   }
 
   get submitButtonEnabled(): boolean {
@@ -157,7 +159,18 @@ export class MemberDialogComponent implements OnInit {
   public onSaveButtonClicked() {
       this.getAddMembershipService().subscribe((member: MemberRo) => {
         if (!!member) {
-          this.closeDialog();
+          // Determine admin delta: 1 = admin added, -1 = admin removed, 0 = no admin change
+          let newAdmin: number = 0;
+          if (this.newMode) {
+            newAdmin = member.roleType === MembershipRoleEnum.ADMIN ? 1 : 0;
+          } else {
+            if (this._currentMember.roleType !== member.roleType) {
+              newAdmin = member.roleType === MembershipRoleEnum.ADMIN
+                ? 1
+                : (this._currentMember.roleType === MembershipRoleEnum.ADMIN ? -1 : 0);
+            }
+          }
+          this.closeDialog( newAdmin );
         }
       }, (error)=> {
         this.alertService.error(error.error?.errorDescription)

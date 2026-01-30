@@ -8,8 +8,9 @@ import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
 @Component({
-  selector: 'keystore-import-dialog',
-  templateUrl: './keystore-import-dialog.component.html'
+    selector: 'keystore-import-dialog',
+    templateUrl: './keystore-import-dialog.component.html',
+    standalone: false
 })
 export class KeystoreImportDialogComponent {
   formTitle: string;

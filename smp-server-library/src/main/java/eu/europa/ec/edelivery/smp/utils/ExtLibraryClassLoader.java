@@ -58,11 +58,14 @@ public class ExtLibraryClassLoader extends URLClassLoader {
      */
     protected static URL[] discoverLibraries(File libraryDirectory) throws MalformedURLException {
 
-        final List<URI> jarUris = Arrays.asList(
-                libraryDirectory.listFiles((dir, name) -> name.toLowerCase().endsWith(".jar")))
-                .stream()
+        File[] files = libraryDirectory.listFiles((dir, name) -> name.toLowerCase().endsWith(".jar"));
+        if (files == null || files.length == 0) {
+            LOG.info("No libraries found in the folder [{}].", libraryDirectory.getAbsolutePath());
+            return new URL[0];
+        }
+        final List<URI> jarUris = Arrays.stream(files)
                 .map(File::toURI)
-                .collect(Collectors.toList());
+                .toList();
 
         final URL[] urls = new URL[jarUris.size()];
         for (int i = 0; i < jarUris.size(); i++) {

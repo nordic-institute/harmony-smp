@@ -12,6 +12,7 @@ import {TranslateService} from "@ngx-translate/core";
 export interface AlertMessageRO {
   type: string,
   text: string,
+  showAsHtml?: boolean,
   timeoutInSeconds?: number
 }
 
@@ -113,15 +114,18 @@ export class AlertMessageService {
    * @param messageObject The message to display
    * @param type The type of the message (success, error, info, warning)
    * @param keepAfterNavigationChange If true, the message will be displayed after a navigation changed
+   * @param timeoutInSeconds The timeout in seconds to display the message. If null, the default timeout will be used for success messages
+   * @param showAsHtml If true, the message will be displayed as HTML
    */
-  showMessage(messageObject: any, type: string, keepAfterNavigationChange:boolean = false, timeoutInSeconds: number = null) {
+  showMessage(messageObject: any, type: string, keepAfterNavigationChange:boolean = false, timeoutInSeconds: number = null, showAsHtml: boolean = false) : void {
     this.setKeepAfterNavigationChange(keepAfterNavigationChange);
     this.message = {
       type: type,
+      showAsHtml: showAsHtml,
       text: this.getObjectMessage(messageObject),
       // if the timeoutInSeconds is not set, we use the default timeout for success messages
       timeoutInSeconds: !timeoutInSeconds && type =="success" ?this.DEFAULT_TIMEOUT: timeoutInSeconds
-    };
+    } as AlertMessageRO;
     this.displayCurrentMessage();
   }
 
@@ -134,8 +138,8 @@ export class AlertMessageService {
     this.showMessageForTranslation(translationCode, 'success', keepAfterNavigationChange, timeoutInSeconds);
   }
 
-  success(message: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
-    this.showMessage(message, 'success', keepAfterNavigationChange, timeoutInSeconds);
+  success(message: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null, showAsHtml: boolean = false) {
+    this.showMessage(message, 'success', keepAfterNavigationChange, timeoutInSeconds, showAsHtml);
   }
 
   warning(message: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {

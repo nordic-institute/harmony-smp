@@ -22,19 +22,21 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
 
@@ -47,6 +49,12 @@ import static org.apache.commons.lang3.StringUtils.trim;
  */
 @Repository
 public class GroupDao extends BaseDao<DBGroup> {
+
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public GroupDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
 
     /**
      * Get group list for domains
@@ -94,7 +102,9 @@ public class GroupDao extends BaseDao<DBGroup> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY.getMessage(name, domainId));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_ILLEGAL_STATE_MULTIPLE_GROUP_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOMAIN_ID, domainId)
+                    .addParam(ErrorMessageArgument.GROUP_NAME, name);
         }
     }
 
@@ -116,7 +126,8 @@ public class GroupDao extends BaseDao<DBGroup> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(name, domainCode));
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
     }
 

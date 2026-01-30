@@ -32,9 +32,18 @@ public enum AlertTypeEnum {
     CREDENTIAL_VERIFICATION_FAILED("credential_verification_failed"),
     CREDENTIAL_REQUEST_RESET("credential_request_reset"),
     CREDENTIAL_CHANGED("credential_changed"),
+    SYSTEM_CERTIFICATE_IMMINENT_EXPIRATION("system_certificate_imminent_expiration"),
+    SYSTEM_CERTIFICATE_EXPIRED("system_certificate_expired"),
     USER_CREATED_CONFIRMATION("user_created_confirmation"),
     USER_CREATED("user_created"),
     USER_UPDATED("user_updated"),
+    USER_CREATED_EU_LOGIN("user_created_eu_login"),
+
+    RESOURCE_DOCUMENT_ACTION("resource_document_action"),
+    SUBRESOURCE_DOCUMENT_ACTION("subresource_document_action"),
+
+    RESOURCE_DOCUMENT_REVIEW_ACTION("resource_document_review_action"),
+    SUBRESOURCE_DOCUMENT_REVIEW_ACTION("subresource_document_review_action"),
     ;
 
     private final String template;

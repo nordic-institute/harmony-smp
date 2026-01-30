@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -23,12 +23,14 @@ import eu.europa.ec.edelivery.smp.config.DatabaseProperties;
 import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
@@ -36,6 +38,7 @@ import java.time.OffsetDateTime;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.SECURITY_FOLDER;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.SMP_MODE_DEVELOPMENT;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument.ERROR;
 
 /**
  * Class initialize and validates the DomiSMP configurations. For the first time SMPConfigurationInitializer reads all
@@ -201,9 +204,10 @@ public class SMPConfigurationInitializer implements SMPKeystoreConfBuilder.Prope
         String configPath = environmentProperties.getEnvPropertyValue(SECURITY_FOLDER);
         File confFolder = Paths.get(configPath).toAbsolutePath().toFile();
         LOG.info("Set configuration folder to: [{}] (absolute path: [{}])", configPath, confFolder.getAbsolutePath());
-        if (!confFolder.exists()) {
-            LOG.warn("Configuration folder [{}] does not exist. Folder will be created!", confFolder.getAbsolutePath());
-            confFolder.mkdirs();
+        if (!confFolder.exists() && !confFolder.mkdirs()) {
+            LOG.warn("Configuration folder [{}] does not exist and it can not be created!", confFolder.getAbsolutePath());
+            throw new SMPRuntimeException(ErrorMessageType.CONFIGURATION)
+                    .addParam(ERROR, "Security folder does not exist and it can not be created!");
         }
         // init encryption filename
         SecurityUtils.Secret secret = initEncryptionKey(confFolder, devMode);

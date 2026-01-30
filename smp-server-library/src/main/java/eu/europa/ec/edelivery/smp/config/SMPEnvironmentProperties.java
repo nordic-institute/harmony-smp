@@ -73,7 +73,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
 
     Properties classPathEnvFileProperties = null;
 
-    ClassLoader classLoader = null;
+    ClassLoader classLoader;
 
     private static SMPEnvironmentProperties instance;
 

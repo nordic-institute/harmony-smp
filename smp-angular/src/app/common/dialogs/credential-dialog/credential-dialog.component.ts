@@ -11,8 +11,9 @@ import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
 @Component({
-  templateUrl: './credential-dialog.component.html',
-  styleUrls: ['./credential-dialog.component.css']
+    templateUrl: './credential-dialog.component.html',
+    styleUrls: ['./credential-dialog.component.css'],
+    standalone: false
 })
 export class CredentialDialogComponent {
   public static CERTIFICATE_TYPE: string = "CERTIFICATE";

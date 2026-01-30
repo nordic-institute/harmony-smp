@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -25,8 +25,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -39,8 +41,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.apache.commons.lang3.StringUtils.lowerCase;
@@ -55,13 +59,17 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 @Service
 public class SMPLanguageResourceService {
 
+    public static final String LANGUAGE_RESOURCE_SUFFIX = ".json";
+
     public static final String LANGUAGE_FILENAME_UI_PREFIX = "ui_";
     public static final String LANGUAGE_RESOURCE_UI_FOLDER = "/META-INF/resources/ui/assets/i18n/";
-    public static final String LANGUAGE_RESOURCE_UI_DEFAULT = LANGUAGE_RESOURCE_UI_FOLDER + "en.json";
+    public static final String LANGUAGE_RESOURCE_UI_DEFAULT = LANGUAGE_RESOURCE_UI_FOLDER + LocaleUtils.DEFAULT_LOCALE + LANGUAGE_RESOURCE_SUFFIX;
 
     public static final String LANGUAGE_FILENAME_MAIL_PREFIX = "mail-messages_";
     public static final String LANGUAGE_RESOURCE_MAIL_FOLDER = "/mail-messages/";
-    public static final String LANGUAGE_RESOURCE_MAIL_DEFAULT = LANGUAGE_RESOURCE_MAIL_FOLDER + "en.json";
+    public static final String LANGUAGE_RESOURCE_MAIL_DEFAULT = LANGUAGE_RESOURCE_MAIL_FOLDER + LocaleUtils.DEFAULT_LOCALE + LANGUAGE_RESOURCE_SUFFIX;
+
+    public static final String LANGUAGE_FILENAME_ERROR_PREFIX = "error-messages_";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPLanguageResourceService.class);
 
@@ -73,7 +81,6 @@ public class SMPLanguageResourceService {
         this.configurationService = configurationService;
         this.resourceResolver = resourceResolver;
     }
-
 
     /**
      * Method for getting the language file for a specific ISO 639 language code.
@@ -94,16 +101,33 @@ public class SMPLanguageResourceService {
         return new File(localeFolder, languageFileName).toPath().toAbsolutePath();
     }
 
-    @Cacheable("mail-templates-translations")
+
+
+    @Cacheable(value = "error-translations")
+    public Properties getErroProperties(String langCode) {
+        Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_ERROR_PREFIX, langCode, null);
+        if (langRes != null) {
+            return loadPropertiesFromJSON(langRes);
+        }
+        // return default error messages
+        return ErrorMessageType.getAllErrorMessagesAsProperties();
+
+    }
+
+    @Cacheable(value = "mail-templates-translations")
     public Properties getMailProperties(String langCode) {
         Resource langRes = getTranslationResourceFile(LANGUAGE_FILENAME_MAIL_PREFIX, langCode, LANGUAGE_RESOURCE_MAIL_DEFAULT);
+        return loadPropertiesFromJSON(langRes);
+    }
+
+    private Properties loadPropertiesFromJSON(Resource langRes) {
         ObjectMapper mapper = jsonObjectMapper();
         try (InputStream target = langRes.getInputStream()) {
             // Read JSON nodes from input streams
             JsonNode jsonTranslation = mapper.readTree(target);
             Properties properties = new Properties();
             jsonTranslation.fieldNames().forEachRemaining(fieldName ->
-                properties.setProperty(fieldName, jsonTranslation.get(fieldName).asText()));
+                    properties.setProperty(fieldName, jsonTranslation.get(fieldName).asText()));
             return properties;
         } catch (IOException e) {
             LOG.error("Error occurred while merging the translation files", e);
@@ -112,12 +136,11 @@ public class SMPLanguageResourceService {
     }
 
     public Resource getTranslationResourceFile(String prefix, String code, String defaultResourceFile) {
-
         Path langResourcePath = getLanguageFile(prefix, code);
         if (langResourcePath != null && langResourcePath.toFile().exists()) {
             LOG.debug("Returning local mail translation file [{}]", langResourcePath.toAbsolutePath());
             return new FileSystemResource(langResourcePath);
-        } else {
+        } else if (defaultResourceFile != null) {
             LOG.warn("Local translation file [{}] does not exist. Return default translation [{}]!", code, defaultResourceFile);
             ClassPathResource defResource = new ClassPathResource(defaultResourceFile);
             if (defResource.exists()) {
@@ -127,6 +150,8 @@ public class SMPLanguageResourceService {
                 return null;
             }
         }
+        LOG.error("Local translation file [{}] does not exist and no default resource file defined!", code);
+        return null;
     }
 
     /**
@@ -136,11 +161,48 @@ public class SMPLanguageResourceService {
      * existing translation file, the method will add it from the classpath translation file.
      */
     public void updateLocalesOnDisk() {
-        updateLocalesOnDisk(LANGUAGE_FILENAME_UI_PREFIX, LANGUAGE_RESOURCE_UI_FOLDER + "*.json");
-        updateLocalesOnDisk(LANGUAGE_FILENAME_MAIL_PREFIX, LANGUAGE_RESOURCE_MAIL_FOLDER + "*.json");
+        updateLocalesOnDisk(LANGUAGE_FILENAME_UI_PREFIX, LANGUAGE_RESOURCE_UI_FOLDER + "*" + LANGUAGE_RESOURCE_SUFFIX);
+        updateLocalesOnDisk(LANGUAGE_FILENAME_MAIL_PREFIX, LANGUAGE_RESOURCE_MAIL_FOLDER + "*" + LANGUAGE_RESOURCE_SUFFIX);
+        // update error translations
+        updateLocalesOnDiskFromProperties(LANGUAGE_FILENAME_ERROR_PREFIX, ErrorMessageType.getAllErrorMessagesAsProperties(), "en");
     }
 
-    public void updateLocalesOnDisk(String filenamePrefix, String resourcePathPattern) {
+    protected void  updateLocalesOnDiskFromProperties(String filenamePrefix, Properties properties, String locale) {
+        Path localFilePath  = getLanguageFile(filenamePrefix, locale); // ensure locale folder exists
+        File localFile = localFilePath.toFile();
+        LOG.info("Updating translation file [{}]", localFile);
+        if (!localFile.exists()) {
+            LOG.debug("The local translation file [{}] does not exist!", localFile);
+            try (OutputStream os = new FileOutputStream(localFilePath.toFile())) {
+                ObjectMapper mapper = jsonObjectMapper();
+                // Write the merged JSON to the output file
+                Map<String, String> sortedMap = new TreeMap<>();
+                for (String name : properties.stringPropertyNames()) {
+                    sortedMap.put(name, properties.getProperty(name));
+                }
+                mapper.writerWithDefaultPrettyPrinter().writeValue(os, sortedMap);
+            } catch (IOException e) {
+                LOG.error("Error occurred while writing the merged translation file", e);
+            }
+            return;
+        }
+
+        // update file
+        ObjectMapper mapper = jsonObjectMapper();
+        JsonNode mergedJson;
+        boolean changed;
+        try (InputStream target = new FileInputStream(localFilePath.toFile())) {
+            // Read JSON nodes from input streams
+            mergedJson = mapper.readTree(target);
+            // Merge the JSON nodes
+            changed = mergeTranslationProperties(mergedJson, properties);
+            LOG.info("Local file [{}] changed [{}]",localFilePath.toFile(), changed);
+        } catch (IOException e) {
+            LOG.error("Error occurred while merging the translation files", e);
+        }
+    }
+
+    protected void updateLocalesOnDisk(String filenamePrefix, String resourcePathPattern) {
         // Get all the language files from the classpath
         Resource[] resources;
         try {
@@ -192,7 +254,7 @@ public class SMPLanguageResourceService {
      * @return the filename for the language file
      */
     private String getLanguageFilename(String prefix, String langCode) {
-        return normalize(prefix) + normalize(langCode) + ".json";
+        return normalize(prefix) + normalize(langCode) + LANGUAGE_RESOURCE_SUFFIX;
     }
 
     /**
@@ -223,8 +285,8 @@ public class SMPLanguageResourceService {
         }
         // update file
         ObjectMapper mapper = jsonObjectMapper();
-        JsonNode mergedJson = null;
-        boolean changed = false;
+        JsonNode mergedJson;
+        boolean changed;
         try (InputStream target = new FileInputStream(localFilePath.toFile());
              InputStream classpathTranslation = resourceTranslation.getInputStream()) {
             // Read JSON nodes from input streams
@@ -283,9 +345,23 @@ public class SMPLanguageResourceService {
     }
 
 
+
+    protected static boolean mergeTranslationProperties(JsonNode targetNode, Properties referenceProperties) {
+        AtomicBoolean changed = new AtomicBoolean(false);
+        // iterate through properties
+        referenceProperties.stringPropertyNames().stream()
+                .filter(fieldName -> targetNode.get(fieldName) == null && targetNode instanceof ObjectNode)
+                .forEach(fieldName -> {
+                    ((ObjectNode) targetNode).put(fieldName, referenceProperties.getProperty(fieldName));
+                    changed.set(true);
+                });
+        return changed.get();
+    }
+
+
     /**
      * Method for creating a new instance of the {@link ObjectMapper} with the default configuration.
-     *
+     *~
      * @return the new instance of the {@link ObjectMapper}
      */
     public static ObjectMapper jsonObjectMapper() {

@@ -8,8 +8,9 @@ import {SubresourceDefinitionRo} from "../subresource-definition-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'resource-details-dialog',
-  templateUrl: './resource-details-dialog.component.html'
+    selector: 'resource-details-dialog',
+    templateUrl: './resource-details-dialog.component.html',
+    standalone: false
 })
 export class ResourceDetailsDialogComponent  implements AfterViewInit  {
 

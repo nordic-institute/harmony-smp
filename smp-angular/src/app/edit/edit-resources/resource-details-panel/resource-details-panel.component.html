@@ -49,7 +49,7 @@
     <smp-warning-panel *ngIf="showReviewEnabledHint"
                        type="warning"
                        icon="warning"
-                       label="{{ 'resource.details.panel.review.disabled.confirmation.dialog.description' | translate }}"></smp-warning-panel>
+                       htmlContent="{{ 'resource.details.panel.review.disabled.confirmation.dialog.description' | translate }}"></smp-warning-panel>
     <mat-form-field style="width:100%">
       <mat-label>{{ "resource.details.panel.label.resource.visibility" | translate }}</mat-label>
       <select matNativeControl formControlName="visibility"
@@ -62,7 +62,7 @@
         </option>
       </select>
     </mat-form-field>
-    <!-- extandable spacer :" -->
+    <!-- expandable spacer :" -->
     <div style="flex-grow: 1"></div>
     <smp-warning-panel
       type="desc"

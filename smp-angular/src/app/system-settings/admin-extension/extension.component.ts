@@ -8,8 +8,9 @@ import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
-  templateUrl: './extension.component.html',
-  styleUrls: ['./extension.component.css']
+    templateUrl: './extension.component.html',
+    styleUrls: ['./extension.component.css'],
+    standalone: false
 })
 export class ExtensionComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['name', 'version'];

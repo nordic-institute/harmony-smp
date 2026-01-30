@@ -9,8 +9,9 @@ import {SecurityService} from "../security.service";
 import {SmpInfo} from "../../app-info/smp-info.model";
 
 @Component({
-  templateUrl: './reset-credential.component.html',
-  styleUrls: ['./reset-credential.component.css']
+    templateUrl: './reset-credential.component.html',
+    styleUrls: ['./reset-credential.component.css'],
+    standalone: false
 })
 export class ResetCredentialComponent implements OnInit {
 

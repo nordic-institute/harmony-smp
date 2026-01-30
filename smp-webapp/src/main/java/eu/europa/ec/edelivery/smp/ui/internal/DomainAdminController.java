@@ -19,16 +19,18 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
 
-import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.SMLIntegrationResult;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.filter.Filter;
+import eu.europa.ec.edelivery.smp.services.ui.filters.DomainFilter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.DomainSMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIDomainAdminService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -67,9 +69,22 @@ public class DomainAdminController {
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public List<DomainRO> getAllDomainList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId) {
-        logAdminAccess("getAllDomainList");
-        return uiDomainService.getAllDomains();
+    public ServiceResult<DomainRO> getDomainList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                 @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+                                                 @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+                                                 @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
+                                                 @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
+                                                 @RequestParam(value = PARAM_PAGINATION_FILTER, required = false) @Filter String filterValue
+
+            ) {
+        LOG.info("Search for domains with filter [{}] page: [{}], page size: [{}]", filterValue,  page, pageSize);
+        DomainFilter domainFilter = null;
+        if (!StringUtils.isEmpty(filterValue)) {
+            domainFilter  = new DomainFilter();
+            domainFilter.setDomainCodeLike(filterValue);
+        }
+
+        return uiDomainService.getTableList(page, pageSize, orderBy, orderType, domainFilter);
     }
 
     @DeleteMapping(path = SUB_CONTEXT_INTERNAL_DOMAIN_DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -149,7 +164,7 @@ public class DomainAdminController {
     public SMLIntegrationResult registerDomainAndParticipants(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
                                                               @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId
     ) {
-        LOG.info("SML register domain code: {}, user user-id {}", domainEncId, userId);
+        LOG.info("SML register domain code: [{}], user user id [{}]", domainEncId, userId);
         SMLIntegrationResult result = new SMLIntegrationResult();
         try {
             Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
@@ -167,7 +182,7 @@ public class DomainAdminController {
     @PutMapping(value = SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_UNREGISTER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public SMLIntegrationResult unregisterDomainAndParticipants(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
                                                                 @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId) {
-        LOG.info("SML unregister domain code: {}, user id {}", domainEncId, userId);
+        LOG.info("SML unregister domain code: [{}], user id [{}]", domainEncId, userId);
         // try to open keystore
         SMLIntegrationResult result = new SMLIntegrationResult();
         try {
@@ -179,6 +194,42 @@ public class DomainAdminController {
             result.setErrorMessage(e.getMessage());
         }
         return result;
+    }
+
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.systemAdministrator")
+    @PutMapping(value = SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_PREPARE_CERTIFICATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public void prepareCertificate(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
+                                   @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                   @RequestBody SMLChangeCertificate changeCertificate) {
+        LOG.info("Prepare SML change certificate for domain [{}], user id [{}]", domainEncId, userId);
+
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        domainService.prepareDomainChangeCertificate(domainId, changeCertificate.getCertificateAlias(), changeCertificate.getChangeDateTime());
+    }
+
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.systemAdministrator")
+    @GetMapping(value = SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_CHANGE_CERTIFICATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public SMLChangeCertificate getChangeCertificateDetails(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
+                                                           @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId) {
+        LOG.info("Get SML change certificate details for domain code: [{}], user id [{}]", domainEncId, userId);
+
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        DBDomain domain = domainService.getDomain(domainId);
+
+        SMLChangeCertificate result = new SMLChangeCertificate();
+        result.setCertificateAlias(domain.getSmlClientKeyChangeAlias());
+        result.setChangeDateTime(domain.getSmlClientKeyChangeDate());
+        return result;
+    }
+
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.systemAdministrator")
+    @PutMapping(value = SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_CHANGE_CERTIFICATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public void changeCertificate(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
+                                  @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId) {
+        LOG.info("SML change certificate for domain [{}], user id [{}]", domainEncId, userId);
+
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        domainService.changeDomainCertificate(domainId);
     }
 
     /**

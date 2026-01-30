@@ -26,23 +26,27 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
-
 
 class SMPAuthorizationServiceTest {
 
@@ -55,14 +59,16 @@ class SMPAuthorizationServiceTest {
     DomainMemberDao domainMemberDao = Mockito.mock(DomainMemberDao.class);
     GroupMemberDao groupMemberDao = Mockito.mock(GroupMemberDao.class);
     ResourceMemberDao resourceMemberDao = Mockito.mock(ResourceMemberDao.class);
+    File localeFolder = new File("target/locales");
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
 
     SMPAuthorizationService testInstance = new SMPAuthorizationService(userDao, domainMemberDao, groupMemberDao, resourceMemberDao, conversionService,
-            configurationService);
-
+            configurationService, smpExceptionLanguageService);
 
     @BeforeEach
     public void setup() {
-
         user = new UserRO();
         SMPUserDetails sysUserDetails = new SMPUserDetails(new DBUser() {{
             setId(10L);
@@ -97,6 +103,7 @@ class SMPAuthorizationServiceTest {
             }
         };
 
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
 
     @Test

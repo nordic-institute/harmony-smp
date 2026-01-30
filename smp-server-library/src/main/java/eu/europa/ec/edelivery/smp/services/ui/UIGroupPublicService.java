@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,7 +28,8 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -123,7 +124,8 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
 
         Optional<DBGroup> optGroup = groupDao.getGroupByNameAndDomain(groupRO.getGroupName(), domainId);
         if (optGroup.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CreateGroup", "Group with name [" + groupRO.getGroupName() + "] already exists!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_CREATE_ALREADY_EXISTS)
+                    .addParam(ErrorMessageArgument.GROUP_NAME, groupRO.getGroupName());
         }
         DBDomain domain = domainDao.find(domainId);
 
@@ -151,18 +153,19 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Can not find group to delete");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_DELETE_NOT_EXISTS);
         }
 
         if (!Objects.equals(group.getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group does not belong to domain");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_DELETE_NOT_PART_OF_DOMAIN);
         }
 
         DBResourceFilter resourceFilter = DBResourceFilter.createBuilder().group(group).domain(group.getDomain()).build();
         Long resCount = resourceDao.getResourcesForFilterCount(resourceFilter);
 
         if (resCount > 0) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has resources [" + resCount + "] and can not be deleted");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_DELETE_CONTAINS_RESOURCES)
+                    .addParam(ErrorMessageArgument.RESOURCES_COUNT, resCount);
         }
 
         groupDao.remove(group);
@@ -174,12 +177,13 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         LOG.info("save group [{}] to domain [{}]", groupRO, domainId);
 
         if (StringUtils.isBlank(groupRO.getGroupName())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UpdateGroup", "Group name must not be blank!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_UPDATE_BLANK_NAME);
         }
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UpdateGroup", "Group with does not exists!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_UPDATE_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.GROUP_ID, groupId);
         }
 
         group.setGroupName(lowerCase(trim(groupRO.getGroupName())));
@@ -191,13 +195,13 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         return conversionService.convert(group, GroupRO.class);
     }
 
-    public DBGroup validateDomainAndGroup(Long groupId, Long domainId, String action) {
+    public DBGroup validateDomainAndGroup(Long groupId, Long domainId, ErrorMessageType nonexistentGroupTranslationMessageCode, ErrorMessageType groupNotPartOfDomainTranslationMessageCode) {
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Group does not exists!");
+            throw new SMPRuntimeException(nonexistentGroupTranslationMessageCode);
         }
         if (!Objects.equals(domainId, group.getDomain().getId())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Group does not belong to given domain!");
+            throw new SMPRuntimeException(groupNotPartOfDomainTranslationMessageCode);
         }
         return group;
     }
@@ -205,7 +209,9 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     @Transactional
     public ServiceResult<MemberRO> getGroupMembers(Long groupId, Long domainId, int page, int pageSize,
                                                    String filter) {
-        validateDomainAndGroup(groupId, domainId, "GetGroupMembers");
+        validateDomainAndGroup(groupId, domainId,
+                ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_GET_MEMBERS_GROUP_NOT_EXISTS,
+                ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_GET_MEMBERS_GROUP_NOT_PART_OF_DOMAIN);
 
         Long count = groupMemberDao.getGroupMemberCount(groupId, filter);
         ServiceResult<MemberRO> result = new ServiceResult<>();
@@ -217,7 +223,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         }
         result.setCount(count);
         List<DBGroupMember> memberROS = groupMemberDao.getGroupMembers(groupId, page, pageSize, filter);
-        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).collect(Collectors.toList());
+        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).toList();
 
         result.getServiceEntities().addAll(memberList);
         return result;
@@ -226,10 +232,13 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     @Transactional
     public MemberRO addMemberToGroup(Long groupId, Long domainId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to group [{}]", memberRO.getUsername(), groupId);
-        validateDomainAndGroup(groupId, domainId, "AddMemberToGroup");
+        validateDomainAndGroup(groupId, domainId,
+                ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_ADD_MEMBER_GROUP_NOT_EXISTS,
+                ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_ADD_MEMBER_GROUP_NOT_PART_OF_DOMAIN);
 
         DBUser user = userDao.findUserByUsername(memberRO.getUsername())
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User [" + memberRO.getUsername() + "] does not exists!"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_ADD_USER_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.USERNAME, memberRO.getUsername()));
 
         DBGroupMember member;
         if (memberId != null) {
@@ -238,7 +247,8 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         } else {
             DBGroup group = groupDao.find(groupId);
             if (groupMemberDao.isUserGroupMember(user, Collections.singletonList(group))) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add membership", "User [" + memberRO.getUsername() + "] is already a member!");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_ADD_USER_ALREADY_MEMBER)
+                        .addParam(ErrorMessageArgument.USERNAME, memberRO.getUsername());
             }
             member = groupMemberDao.addMemberToGroup(group, user, memberRO.getRoleType());
         }
@@ -249,14 +259,16 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     public MemberRO deleteMemberFromGroup(Long groupId, Long domainId, Long memberId) {
         LOG.info("Delete member [{}] from group [{}]", memberId, groupId);
 
-        validateDomainAndGroup(groupId, domainId, "DeleteMemberFromGroup");
+        validateDomainAndGroup(groupId, domainId,
+                ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_REMOVE_MEMBER_GROUP_NOT_EXISTS,
+                ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_REMOVE_MEMBER_GROUP_NOT_PART_OF_DOMAIN);
 
         DBGroupMember groupMember = groupMemberDao.find(memberId);
         if (groupMember == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not exists!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_REMOVE_USER_NOT_MEMBER);
         }
         if (!Objects.equals(groupMember.getGroup().getId(), groupId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not belong to group!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GROUP_MEMBERSHIP_REMOVE_USER_NOT_PART_OF_GROUP);
         }
 
         groupMemberDao.remove(groupMember);

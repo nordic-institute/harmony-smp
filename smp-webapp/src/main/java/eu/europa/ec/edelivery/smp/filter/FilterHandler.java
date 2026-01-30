@@ -19,13 +19,13 @@
 package eu.europa.ec.edelivery.smp.filter;
 
 import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.AnnotationFormatterFactory;
 import org.springframework.format.Formatter;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 
 import java.net.URLDecoder;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -67,7 +67,10 @@ public class FilterHandler implements AnnotationFormatterFactory<Filter> {
             }
 
             @Override
-            public String parse(String encoded, Locale locale) throws ParseException {
+            public String parse(String encoded, Locale locale) {
+                if (StringUtils.isBlank(encoded)) {
+                    return encoded;
+                }
                 String decoded = URLDecoder.decode(encoded);
                 // We need to escape the following characters that have special meaning when used in a LIKE statement
                 // inside an SQL query: '%', '\', '_', ''', '"', '[' and ']'

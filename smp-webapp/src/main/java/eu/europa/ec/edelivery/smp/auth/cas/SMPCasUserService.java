@@ -27,7 +27,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
-import org.jasig.cas.client.authentication.AttributePrincipal;
+import org.apereo.cas.client.authentication.AttributePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class SMPCasUserService implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
-    enum MappingData {
+    public enum MappingData {
         EMAIL("${email}"),
         FULL_NAME("${firstName} ${lastName}");
 
@@ -130,7 +130,7 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
         dbUser.setActive(!configurationService.isCasAutomaticRegistrationConfirmation());
         dbUser.setEmailAddress(getValueFromCasPrincipal(MappingData.EMAIL, attributes, attributesMap));
         dbUser.setFullName(getValueFromCasPrincipal(MappingData.FULL_NAME, attributes, attributesMap));
-        uiUserService.createDBUser(dbUser);
+        uiUserService.createCasDBUser(dbUser);
         return dbUser;
     }
 

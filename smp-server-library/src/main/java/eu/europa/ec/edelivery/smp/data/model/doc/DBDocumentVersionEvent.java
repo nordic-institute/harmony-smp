@@ -26,7 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -39,16 +39,17 @@ import java.util.Objects;
  * @since 5.1
  */
 @Entity
-@Table(name = "SMP_DOCUMENT_VERSION_EVENT",
+@Table(name = "SMP_DOCUMENT_VERSION_EVENT", comment = "Document version Events.",
         indexes = {
                 @Index(name = "SMP_DOCVEREVNT_DOCVER_IDX", columnList = "FK_DOCUMENT_VERSION_ID"),
         })
-@org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT_VERSION_EVENT", comment = "Document version Events.")
 public class DBDocumentVersionEvent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOCVER_EVENT_SEQ")
-    @GenericGenerator(name = "SMP_DOCVER_EVENT_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_DOCVER_EVENT_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique document version event identifier")
     Long id;

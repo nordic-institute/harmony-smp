@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.dynamicdiscovery.util.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;
@@ -69,5 +70,10 @@ public class DateTimeUtils {
     public static String formatOffsetDateTimeWithLocal(OffsetDateTime offsetDateTime, String code) {
         return formatOffsetDateTimeWithLocal(offsetDateTime, code, ZoneId.systemDefault());
     }
+
+    public static OffsetDateTime parseToOffsetDateTime(String dateTimeString) {
+        return DatatypeConverter.parseDateTime(dateTimeString);
+    }
+
 
 }

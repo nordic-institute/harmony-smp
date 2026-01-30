@@ -12,16 +12,17 @@ import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
 @Component({
-  selector: 'domain-panel',
-  templateUrl: './domain-panel.component.html',
-  styleUrls: ['./domain-panel.component.scss']
+    selector: 'domain-panel',
+    templateUrl: './domain-panel.component.html',
+    styleUrls: ['./domain-panel.component.scss'],
+    standalone: false
 })
 export class DomainPanelComponent implements BeforeLeaveGuard {
   @Output() onSaveBasicDataEvent: EventEmitter<DomainRo> = new EventEmitter();
 
   @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
   readonly warningTimeout: number = 3000;
-  readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
+  readonly domainCodePattern = '^[^-._+0-9][-._+a-zA-Z0-9]{1,63}$';
   readonly domainVisibilityOptions = Object.keys(VisibilityEnum)
     .map(el => {
       return {key: el, value: VisibilityEnum[el]}
@@ -93,8 +94,8 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       'adminMemberCount': new FormControl({value: '', readonly: true}),
       'visibility': new FormControl({value: '', readonly: true}),
       'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
+      'domainTrustStoreEnabled': new FormControl({value: false, readonly: false}),
     });
-    (async () => await this.updateShowWarningMessage()) ();
   }
 
   get domain(): DomainRo {
@@ -103,6 +104,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     newDomain.signatureKeyAlias = this.domainForm.get('signatureKeyAlias').value;
     newDomain.visibility = this.domainForm.get('visibility').value;
     newDomain.defaultResourceTypeIdentifier = this.domainForm.get('defaultResourceTypeIdentifier').value;
+    newDomain.domainTrustStoreEnabled = this.domainForm.get('domainTrustStoreEnabled').value;
     return newDomain;
   }
 
@@ -114,6 +116,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['signatureKeyAlias'].setValue(this._domain.signatureKeyAlias);
       this.domainForm.controls['adminMemberCount'].setValue(this._domain.adminMemberCount);
       this.domainForm.controls['visibility'].setValue(this._domain.visibility);
+      this.domainForm.controls['domainTrustStoreEnabled'].setValue(this._domain.domainTrustStoreEnabled);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue(this._domain.defaultResourceTypeIdentifier);
       this.domainForm.enable();
       if (!!value?.domainId) {
@@ -124,10 +127,10 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['signatureKeyAlias'].setValue("");
       this.domainForm.controls['adminMemberCount'].setValue("0");
       this.domainForm.controls['visibility'].setValue(VisibilityEnum.Public);
+      this.domainForm.controls['domainTrustStoreEnabled'].setValue(false);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
       this.domainForm.disable();
     }
-    (async () => await this.updateShowWarningMessage()) ();
     this.domainForm.markAsPristine();
   }
 
@@ -146,28 +149,6 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
   }
 
-  get showWarning() {
-    return !!this._domain?.domainId && (!this.domainResourceTypes?.length
-      || !this._domain.signatureKeyAlias
-      || !this._domain.adminMemberCount
-      || this._domain.adminMemberCount < 1)
-  }
-
-  async updateShowWarningMessage() {
-    let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
-    if (!this._domain.signatureKeyAlias) {
-      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.signature.key"));
-    }
-    if (!this.domainResourceTypes?.length) {
-      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.resource.type"));
-    }
-    if (!this._domain.adminMemberCount || this._domain.adminMemberCount < 1) {
-      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.admin.member"));
-    }
-    message += "</ul>"; // No need to translate this part
-
-    this.warningMessage = message;
-  }
 
   get submitButtonEnabled(): boolean {
     return this.domainForm.valid && this.domainForm.dirty;

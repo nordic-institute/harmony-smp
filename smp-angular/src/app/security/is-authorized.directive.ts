@@ -3,7 +3,8 @@ import {SecurityService} from './security.service';
 import {Authority} from "./authority.model";
 
 @Directive({
-    selector:'[isAuthorized]'
+    selector: '[isAuthorized]',
+    standalone: false
 })
 export class IsAuthorized implements OnInit {
     @Input('isAuthorized') role: Authority;

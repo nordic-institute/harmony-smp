@@ -103,11 +103,11 @@ class UIDomainPublicServiceTest   extends AbstractJunit5BaseDao {
     }
 
     @Test
-    void testGetResourceDefDomainListFal() {
+    void testGetResourceDefDomainListFail() {
         BadRequestException result = assertThrows(BadRequestException.class, () ->
             testInstance.getResourceDefDomainList(-100L));
 
-        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Domain does not exist in database"));
+        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Invalid domain id!"));
 
     }
 }

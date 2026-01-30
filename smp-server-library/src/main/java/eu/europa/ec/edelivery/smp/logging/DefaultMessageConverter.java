@@ -36,7 +36,7 @@ public class DefaultMessageConverter implements MessageConverter {
 
     @Override
     public String getMessage(Marker marker, MessageCode messageCode, Object... args) {
-        String message = null;
+        String message;
         try {
             message = MessageFormatter.arrayFormat(messageCode.getMessage(), args).getMessage();
         } catch (Exception throwable) {

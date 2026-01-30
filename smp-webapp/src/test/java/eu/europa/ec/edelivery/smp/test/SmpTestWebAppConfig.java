@@ -20,7 +20,8 @@ package eu.europa.ec.edelivery.smp.test;
 
 import eu.europa.ec.edelivery.smp.config.SMPDatabaseConfig;
 import eu.europa.ec.edelivery.smp.config.SMPWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
+import eu.europa.ec.edelivery.smp.config.UISecurityConfig;
+import eu.europa.ec.edelivery.smp.config.WSSecurityConfig;
 import eu.europa.ec.edelivery.smp.config.properties.SMPSecurityPropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.cron.CronTriggerConfig;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
@@ -36,7 +37,8 @@ import org.springframework.context.annotation.Import;
         PropertiesTestConfig.class,
         SMPWebAppConfig.class,
         SMPDatabaseConfig.class,
-        WSSecurityConfigurerAdapter.class,
+        WSSecurityConfig.class,
+        UISecurityConfig.class,
         SMPSecurityPropertyUpdateListener.class,
         CronTriggerConfig.class,
         ConfigurationDao.class})

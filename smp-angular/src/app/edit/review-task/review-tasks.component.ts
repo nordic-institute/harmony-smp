@@ -3,9 +3,10 @@ import {SmpConstants} from "../../smp.constants";
 import {SecurityService} from "../../security/security.service";
 
 @Component({
-  selector: 'smp-review-tasks',
-  templateUrl: './review-tasks.component.html',
-  styleUrls: ['./review-tasks.component.css']
+    selector: 'smp-review-tasks',
+    templateUrl: './review-tasks.component.html',
+    styleUrls: ['./review-tasks.component.css'],
+    standalone: false
 })
 export class ReviewTasksComponent {
 

@@ -13,8 +13,9 @@ import {SubresourceRo} from "../../../../common/model/subresource-ro.model";
 import {EditResourceService} from "../../edit-resource.service";
 
 @Component({
-  templateUrl: './subresource-dialog.component.html',
-  styleUrls: ['./subresource-dialog.component.css']
+    templateUrl: './subresource-dialog.component.html',
+    styleUrls: ['./subresource-dialog.component.css'],
+    standalone: false
 })
 export class SubresourceDialogComponent {
   formTitle = "";

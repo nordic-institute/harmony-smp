@@ -11,9 +11,10 @@ import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
 
 @Component({
-  selector: 'smp-password-change-dialog',
-  templateUrl: './password-change-dialog.component.html',
-  styleUrls: ['./password-change-dialog.component.css']
+    selector: 'smp-password-change-dialog',
+    templateUrl: './password-change-dialog.component.html',
+    styleUrls: ['./password-change-dialog.component.css'],
+    standalone: false
 })
 export class PasswordChangeDialogComponent {
 

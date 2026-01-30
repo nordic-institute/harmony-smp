@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,10 +43,10 @@ import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,14 +56,15 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
     public static final String S_ALIAS = "single_domain_key";
 
-
     public static final X500Principal CERT_SUBJECT_X500PRINCIPAL = new X500Principal("CN=SMP Mock Services, OU=DIGIT, O=European Commision, C=BE");
 
     @Autowired
     protected UIKeystoreService testInstance;
 
-    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
     @BeforeEach
     public void setup() throws IOException {
@@ -73,7 +75,6 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         // set keystore properties
         File keystoreFile = new File(targetDirectory.toFile(), "smp-keystore.jks");
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
-        Mockito.doReturn(targetDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         testInstance.refreshData();
     }
@@ -195,8 +196,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.getCert(S_ALIAS));
 
-        MatcherAssert.assertThat(result.getMessage(),
-                CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+                CoreMatchers.containsStringIgnoringCase("Wrong configuration, missing key pair from keystore or wrong alias [" + S_ALIAS + "]!"));
     }
 
     @Test
@@ -211,8 +212,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.getKey(S_ALIAS));
 
-        MatcherAssert.assertThat(result.getMessage(),
-                CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+                CoreMatchers.containsStringIgnoringCase("Wrong configuration, missing key pair from keystore or wrong alias [" + S_ALIAS + "]!"));
     }
 
     private KeyStore loadKeystore(String keystoreName, String password, String type) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
@@ -268,5 +269,30 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
         // then
         assertEquals(new HashSet<>(Arrays.asList("testcertificatea", "testcertificateb")), duplicateCertificates);
+    }
+
+    @Test
+    void testAboutToExpireCertificateAliases() {
+        OffsetDateTime expirationDate = testInstance.getCert(S_ALIAS).getNotAfter().toInstant().atOffset(ZoneOffset.UTC);
+        int daysOfValidityLeft = (int) ChronoUnit.DAYS.between(OffsetDateTime.now(ZoneOffset.UTC), expirationDate);
+
+        assertTrue(daysOfValidityLeft > 0);
+
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(daysOfValidityLeft);
+        assertFalse(expiredCertificateAliases.containsKey(S_ALIAS));
+
+        expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(daysOfValidityLeft + 1);
+        assertTrue(expiredCertificateAliases.containsKey(S_ALIAS));
+    }
+
+    @Test
+    void testExpiredCertificateAliases() {
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getExpiredCertificateAliases();
+
+        expiredCertificateAliases.forEach((certificateAlias, expirationDate) -> {
+            OffsetDateTime expected = testInstance.getCert(certificateAlias).getNotAfter().toInstant().atOffset(ZoneOffset.UTC);
+            assertTrue(expected.isAfter(OffsetDateTime.now(ZoneOffset.UTC)));
+            assertEquals(expected, expirationDate);
+        });
     }
 }

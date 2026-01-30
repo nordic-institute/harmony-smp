@@ -22,16 +22,19 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * @author Joze Rihtarsic
@@ -40,14 +43,12 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 @Repository
 public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
 
-
-
     /**
      * Returns the ResourceDef configuration for domain
-     *
-     * @param domain
+     *e
+     * @param domain the DBDomain
      * @return the List of records for DBDomainResourceDef
-     * @throws IllegalStateException if more than one ResourceDef is returned
+     * @throws IllegalStateException if more than one ResourceDef is found
      */
     public List<DBDomainResourceDef> getResourceDefConfigurationsForDomain(DBDomain domain) {
         TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ALL, DBDomainResourceDef.class);
@@ -58,42 +59,23 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
     /**
      * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
      *
-     * @param domainId             domain id
-     * @param resourceIdentifier resource definition identifier
+     * @param domainCode             domain code
+     * @param resourceDefUrlSegment resourceDefUrlSegment
      * @return the only single record for DBDomainResourceDef
-     * @throws IllegalStateException if more than one ResourceDef is returned
+     * @throws SMPRuntimeException if more than one ResourceDef is found
      */
-    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainIdAndResourceDefIdentifier(Long domainId, String resourceIdentifier) {
-        try {
-            TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER, DBDomainResourceDef.class);
-            query.setParameter(PARAM_DOMAIN_ID, domainId);
-            query.setParameter(PARAM_RESOURCE_DEF_IDENTIFIER, resourceIdentifier);
-            return Optional.of(query.getSingleResult());
-        } catch (NoResultException e) {
-            return Optional.empty();
-        } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef identifier [" + resourceIdentifier + "] and domain code [" + domainId + "]"));
-        }
-    }
-
-    /**
-     * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
-     *
-     * @param domainCode             domain cod
-     * @param resourceDeftUrlSegment resourceDeftUrlSegment
-     * @return the only single record for DBDomainResourceDef
-     * @throws IllegalStateException if more than one ResourceDef is returned
-     */
-    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainCodeAndResourceDefCtx(String domainCode, String resourceDeftUrlSegment) {
+    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainCodeAndResourceDefCtx(String domainCode, String resourceDefUrlSegment) {
         try {
             TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_CODE_SEGMENT_URL, DBDomainResourceDef.class);
             query.setParameter(PARAM_DOMAIN_CODE, domainCode);
-            query.setParameter(PARAM_URL_SEGMENT, resourceDeftUrlSegment);
+            query.setParameter(PARAM_URL_SEGMENT, resourceDefUrlSegment);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef with url context [" + resourceDeftUrlSegment + "] and domain code [" + domainCode + "]"));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_URL_AND_DOMAIN_CODE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.URL_SEGMENT, resourceDefUrlSegment)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
     }
 
@@ -101,9 +83,9 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
      * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
      *
      * @param domain the DBDomain
-     * @param resourceDef resourceDeftUrlSegment
+     * @param resourceDef the DBResourceDef
      * @return the only single record for DBDomainResourceDef
-     * @throws IllegalStateException if more than one ResourceDef is returned
+     * @throws IllegalStateException if more than one ResourceDef is found
      */
     public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainAndResourceDef(DBDomain domain, DBResourceDef resourceDef) {
         try {
@@ -114,7 +96,32 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef with url context [" + resourceDef + "] and domain code [" + domain + "]"));
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_URL_AND_DOMAIN_CODE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.URL_SEGMENT, resourceDef)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain);
+        }
+    }
+
+    /**
+     * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
+     *
+     * @param domain the DBDomain
+     * @param resourceDefIdentifier the DBResourceDef
+     * @return the only single record for DBDomainResourceDef
+     * @throws IllegalStateException if more than one ResourceDef is found
+     */
+    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainAndResourceDefIdentifier(DBDomain domain, String resourceDefIdentifier) {
+        try {
+            TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER, DBDomainResourceDef.class);
+            query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+            query.setParameter(PARAM_RESOURCE_DEF_IDENTIFIER, StringUtils.trim(resourceDefIdentifier));
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCEDEF_LOOKUP_BY_IDENTIFIER_AND_DOMAIN_CODE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceDefIdentifier)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domain);
         }
     }
 
@@ -124,6 +131,4 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         domainResourceDef.setResourceDef(resourceDef);
         return merge(domainResourceDef);
     }
-
-
 }

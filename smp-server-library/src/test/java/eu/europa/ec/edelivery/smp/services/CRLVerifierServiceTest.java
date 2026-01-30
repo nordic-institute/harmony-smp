@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,7 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,11 +27,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.*;
 
+import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertThrowsContainingMessages;
+import static eu.europa.ec.edelivery.smp.testutil.DomiSMPAssertions.assertThrowsMatchingRegexExpressions;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,10 +49,17 @@ class CRLVerifierServiceTest {
 
     ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
 
+    File localeFolder = new File("target/locales");
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
+
     private CRLVerifierService testInstance = new CRLVerifierService(mockConfigurationService);
 
     @BeforeEach
     public void beforeMethods() {
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
         doReturn(true).when(mockConfigurationService).forceCRLValidation();
         // force verification
         testInstance = Mockito.spy(testInstance);
@@ -54,7 +67,7 @@ class CRLVerifierServiceTest {
 
 
     @Test
-    void verifyCertificateCRLsTest() throws CertificateException, CRLException, IOException {
+    void verifyCertificateCRLsTest() throws CertificateException, CRLException {
         // given
         X509Certificate certificate = loadCertificate("smp-crl-test-all.pem");
 
@@ -87,25 +100,23 @@ class CRLVerifierServiceTest {
     void verifyCertificateCRLsX509FailsToConnectTest() throws CertificateException {
         // given
         X509Certificate certificate = loadCertificate("smp-crl-test-all.pem");
-        // when
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
-                testInstance.verifyCertificateCRLs(certificate));
-        // then
-        assertThat(result.getMessage(),
-                startsWith("Certificate error [Error occurred while downloading CRL:'https://localhost/clr']. Error: ConnectException: Connection refused (Connection refused)!"));
+        // when - then
+        assertThrowsContainingMessages(SMPRuntimeException.class, () ->
+                        testInstance.verifyCertificateCRLs(certificate), smpExceptionLanguageService,
+                "Certificate error: error occurred while downloading CRL [https://localhost/clr].",
+                "Connection refused"
+        );
     }
 
     @Test
-    void downloadCRLWrongUrlSchemeTest()  {
-
+    void downloadCRLWrongUrlSchemeTest() {
         X509CRL crl = testInstance.downloadCRL("wrong://localhost/crl", true);
 
         assertNull(crl);
     }
 
     @Test
-    void downloadCRLUrlSchemeLdapTest()  {
-
+    void downloadCRLUrlSchemeLdapTest() {
         X509CRL crl = testInstance.downloadCRL("ldap://localhost/crl", true);
 
         assertNull(crl);
@@ -113,26 +124,28 @@ class CRLVerifierServiceTest {
 
     @Test
     void verifyCertificateCRLsRevokedSerialTest() throws CertificateException, CRLException {
-
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509CRL crl = (X509CRL) cf.generateCRL(getClass().getResourceAsStream("/certificates/smp-crl-test.crl"));
 
         doReturn(crl).when(testInstance).getCRLByURL("https://localhost/crl");
 
-        CertificateRevokedException result = assertThrows(CertificateRevokedException.class, () -> testInstance.verifyCertificateCRLs("11", "https://localhost/crl"));
-        assertThat(result.getMessage(), startsWith("Certificate has been revoked, reason: UNSPECIFIED"));
+        assertThrowsMatchingRegexExpressions(CertificateRevokedException.class, () -> testInstance.verifyCertificateCRLs("11", "https://localhost/crl"),
+                "Certificate has been revoked, reason:.*");
     }
 
     @Test
     void verifyCertificateCRLsRevokedSerialTestThrowIOExceptionHttps() {
         String crlURL = "https://localhost/crl";
 
-        doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL + "'", "IOException: Can not access URL"))
+        doThrow(new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_DOWNLOAD_ISSUE)
+                .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                .addParam(ErrorMessageArgument.ERROR, "IOException: Cannot access URL"))
                 .when(testInstance).getCRLByURL("https://localhost/crl");
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.verifyCertificateCRLs("11", "https://localhost/crl"));
         // then
-        assertThat(result.getMessage(), startsWith("Certificate error [Can not download CRL 'https://localhost/crl']. Error: IOException: Can not access URL"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()),
+                startsWith("Certificate error: error occurred while downloading CRL [https://localhost/crl]. Error: [IOException: Cannot access URL]"));
     }
 
     @ParameterizedTest

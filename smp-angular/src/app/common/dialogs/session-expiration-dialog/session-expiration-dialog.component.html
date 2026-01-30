@@ -2,6 +2,7 @@
 <mat-dialog-content>
   <div innerHTML='{{"session.expiration.dialog.label.session.about.to.expire" | translate:{timeLeft: data.timeLeft,
   timeoutMinutes: sessionDurationInMinutes, timeoutSeconds: sessionDurationInMinutesReminder} }}'></div>
+  <timer [countingDown]="true" [durationInSeconds]="data.timeLeft"/>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-raised-button mat-dialog-close (click)="onLogoutClicked()" tabindex="-1">

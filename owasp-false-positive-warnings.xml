@@ -7,12 +7,21 @@
         <notes><![CDATA[
    file name: spring-security-crypto-5.8.*.jar
    The data serialized by the application is trusted
-   NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
+   CVE-2020-5408 - the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
+   CVE-2025-22228 - BCryptPasswordEncoder.matches(CharSequence,String) will incorrectly return true for passwords larger
+                    than 72 characters as long as the first 72 characters are the same. No substitition at the moment. Upgrade to newer version when possible and remove this suppression.
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
         <vulnerabilityName>CVE-2025-22228</vulnerabilityName>
         <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-crypto-5.8.16.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-crypto@.*$</packageUrl>
+        <vulnerabilityName>CVE-2025-22228</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -31,8 +40,6 @@
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2024-38828</cve>
-        <!-- Application does not use affected headers or vulnerable URL construction patterns -->
-        <vulnerabilityName>CVE-2025-41234</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -57,7 +64,16 @@
    ]]></notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
-
+    <suppress>
+        <notes><![CDATA[
+   file name: logback-core-1.2.13.jar
+   - both vulnerabilities are not exploitable by SMP usage of the library, Because attacker need a write
+   access to configuration files.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback-core@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-12798</vulnerabilityName>
+        <vulnerabilityName>CVE-2024-12801</vulnerabilityName>
+    </suppress>
     <suppress>
         <notes><![CDATA[
         CVE-2020-8908 -  we don't use com.google.common.io.Files.createTempDir()
@@ -98,10 +114,10 @@
    file name: tomcat-embed-websocket-9.0.x.jar
    The vulnerability is not impacting smp.war,
    because is part of spring boot - intended only for demo and testing.
+
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
         <cve>CVE-2023-41080</cve>
-        <cve>CVE-2024-38286</cve>
         <cve>CVE-2025-24813</cve>
     </suppress>
     <suppress>
@@ -133,5 +149,16 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
         <vulnerabilityName>CVE-2024-38816</vulnerabilityName>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: tomcat-embed-websocket-9.0.83.jar
+   The transitive dependency of the spring-boot-starter-web:jar:2.7.18.
+   The library is added only for the spring boot demo module which is used only for the Demo and testing. Final smp.war artefact does not include this library.
+   Test if execption is still needed when spring-boot-starter-web is upgraded
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
+        <cve>CVE-2024-38286</cve>
     </suppress>
 </suppressions>

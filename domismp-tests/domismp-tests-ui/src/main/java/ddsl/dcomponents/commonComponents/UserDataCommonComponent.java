@@ -2,9 +2,14 @@ package ddsl.dcomponents.commonComponents;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.SetChangePasswordDialog;
+import ddsl.dobjects.DButton;
+import ddsl.dobjects.DInput;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -28,9 +33,19 @@ public class UserDataCommonComponent extends DomiSMPPage {
     private WebElement lastSetLbl;
     @FindBy(id = "passwordExpireOn_id")
     private WebElement passwordExpiresOnLbl;
+    @FindBy(id = "sequentialLoginFailureCount_id")
+    private WebElement seqFailedAttempts;
+    @FindBy(id = "LastFailedAttempt_id")
+    private WebElement lastFailedAttempt;
+    @FindBy(id = "suspendedUtil_id")
+    private WebElement suspendedUntil;
+
 
     public UserDataCommonComponent(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
+
+
     }
 
     public String getSelectedTheme() {
@@ -50,34 +65,32 @@ public class UserDataCommonComponent extends DomiSMPPage {
     }
 
     public String getLastSetValue() {
-        return lastSetLbl.getAttribute("value");
+        return weToDInput(lastSetLbl).getText();
     }
 
     public String getPasswordExpiresOnValue() {
-        return passwordExpiresOnLbl.getAttribute("value");
+        return weToDInput(passwordExpiresOnLbl).getText();
+    }
+
+    public String getSequenceFailedAttempts() {
+        return weToDInput(seqFailedAttempts).getText();
+    }
+
+    public String getlastFailedAttempt() {
+        return weToDInput(lastFailedAttempt).getText();
+    }
+
+    public String getsuspendedUntil() {
+        return weToDInput(suspendedUntil).getText();
     }
 
     public SetChangePasswordDialog clickOnChangePassword(){
         setChangePasswordBtn.click();
         return new SetChangePasswordDialog(driver);
     }
-    public String fillUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
-        try {
-            if (!emailValue.isEmpty()) {
-                weToDInput(emailAddressInput).fill(emailValue);
-            }
-            if (!emailValue.isEmpty()) {
-                weToDInput(fullNameInput).fill(fullNameValue);
-            }
-            weToDSelect(themeSel).selectByVisibleText(selectThemeValue);
-            wait.forXMillis(50);
-            weToDSelect(localeSel).selectByVisibleText(localeValue);
 
-
-        } catch (Exception e) {
-            LOG.error("Cannot change User Profile Data ", e);
-        }
-
+    public String fillUserProfileDataAndSave(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
+        fillUserProfileData(emailValue, fullNameValue, selectThemeValue, localeValue);
         if (saveBtn.isEnabled()) {
             saveBtn.click();
         } else {
@@ -90,4 +103,38 @@ public class UserDataCommonComponent extends DomiSMPPage {
             return null;
         }
     }
+
+    public void fillUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
+        try {
+            if (!emailValue.isEmpty()) {
+                weToDInput(emailAddressInput).fill(emailValue);
+            }
+            if (!emailValue.isEmpty()) {
+                weToDInput(fullNameInput).fill(fullNameValue);
+            }
+            weToDSelect(themeSel).selectByVisibleText(selectThemeValue);
+            wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
+            weToDSelect(localeSel).selectByVisibleText(localeValue);
+
+
+        } catch (Exception e) {
+            LOG.error("Cannot change User Profile Data ", e);
+        }
+
+    }
+
+
+    public DInput getEmailInput() {
+        return weToDInput(emailAddressInput);
+    }
+
+    public String getEmailValidationMessage() {
+        return emailAddressInput.findElement(By.xpath("following-sibling::*[1]")).getText();
+    }
+
+    public DButton getSaveBtn() {
+        return weToDButton(saveBtn);
+    }
+
+
 }

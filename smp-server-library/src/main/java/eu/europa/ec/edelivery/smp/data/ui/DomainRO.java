@@ -21,6 +21,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +32,15 @@ import java.util.List;
 
 public class DomainRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630008L;
 
     private String domainId;
     private String domainCode;
     private String smlSubdomain;
     private String smlSmpId;
+    private boolean smlUrlDomainCodeSuffixEnabled;
+    private boolean domainTrustStoreEnabled;
     private String smlClientKeyAlias;
     private String signatureKeyAlias;
     private boolean smlClientCertAuth;
@@ -77,6 +81,22 @@ public class DomainRO extends BaseRO {
 
     public void setSmlSmpId(String smlSmpId) {
         this.smlSmpId = smlSmpId;
+    }
+
+    public boolean isSmlUrlDomainCodeSuffixEnabled() {
+        return smlUrlDomainCodeSuffixEnabled;
+    }
+
+    public void setSmlUrlDomainCodeSuffixEnabled(boolean smlUrlDomainCodeSuffixEnabled) {
+        this.smlUrlDomainCodeSuffixEnabled = smlUrlDomainCodeSuffixEnabled;
+    }
+
+    public boolean isDomainTrustStoreEnabled() {
+        return domainTrustStoreEnabled;
+    }
+
+    public void setDomainTrustStoreEnabled(boolean domainTrustStoreEnabled) {
+        this.domainTrustStoreEnabled = domainTrustStoreEnabled;
     }
 
     public String getSmlClientKeyAlias() {

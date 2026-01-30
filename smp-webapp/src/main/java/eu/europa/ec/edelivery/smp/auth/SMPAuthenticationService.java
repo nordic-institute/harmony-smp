@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -34,8 +35,8 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.CSRF_COOKIE_NAME;
@@ -55,7 +56,7 @@ public class SMPAuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final CredentialService credentialService;
 
-    public SMPAuthenticationService(@Qualifier(SMPSecurityConstants.SMP_UI_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager,
+    public SMPAuthenticationService(@Lazy @Qualifier(SMPSecurityConstants.SMP_UI_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager,
                                     CredentialService credentialService) {
         this.authenticationManager = authenticationManager;
         this.credentialService = credentialService;

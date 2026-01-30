@@ -22,8 +22,11 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
+import eu.europa.ec.edelivery.smp.services.mail.prop.DocumentActionProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -32,9 +35,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,12 +56,12 @@ class MailTemplateTest {
     @BeforeEach
     void setUp() throws IOException {
         // clean the folder
-        if (localeFolder.exists() ) {
+        if (localeFolder.exists()) {
             // first delete all files and then empty folders
             Files.walk(localeFolder.toPath())
-                    .map( Path::toFile )
-                    .sorted( Comparator.comparing( File::isDirectory ) )
-                    .forEach( File::delete );
+                    .map(Path::toFile)
+                    .sorted(Comparator.comparing(File::isDirectory))
+                    .forEach(File::delete);
         }
         Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
@@ -79,5 +84,32 @@ class MailTemplateTest {
         assertTrue(result.contains("alert level"));
         assertTrue(result.contains("credential id"));
         assertTrue(result.contains("credential name"));
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+            "RESOURCE_DOCUMENT_ACTION, false",
+            "RESOURCE_DOCUMENT_REVIEW_ACTION, false",
+            "SUBRESOURCE_DOCUMENT_ACTION, true",
+            "SUBRESOURCE_DOCUMENT_REVIEW_ACTION, true",
+    })
+    void getMailContentForDocumentAction(AlertTypeEnum alertTypeEnum, boolean isSubresource) {
+
+        // prepare properties for all document action properties
+        Map<String, Object> props = Arrays.stream(DocumentActionProperties.values())
+                .filter(prop -> {
+                    // filter out SUBRESOURCE_... properties for resource document action mails
+                    return isSubresource || !prop.name().startsWith("SUBRESOURCE_");
+                })
+                .collect(Collectors.toMap(Enum::name, prop -> "Test-" + prop.name(), (a, b) -> b));
+
+        MailDataModel model = new MailDataModel("en", alertTypeEnum, props);
+        // when
+        String result = testInstance.getMailHtmlContent(model);
+        // then
+        assertNotNull(result);
+        // assert all props values  are in the result
+        props.values().forEach(value -> assertTrue(result.contains((String) value)));
     }
 }

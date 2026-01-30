@@ -28,6 +28,7 @@ import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.TestROUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -94,6 +95,7 @@ abstract public class AbstractControllerTest {
         mvc = MockMvcUtils.initializeMockMvc(webAppContext);
         configurationDao.reloadPropertiesFromDatabase();
     }
+
 
     /**
      * Helper method for getting the ObjectMapper.

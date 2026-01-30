@@ -6,5 +6,6 @@ export interface ResourceSearchRo extends SearchTableEntity {
   participantScheme: string;
   domainCode?:string;
   resourceDefUrlSegment?:string;
+  documentType?: string;
   serviceMetadata: Array<SubresourceSearchRo>;
 }

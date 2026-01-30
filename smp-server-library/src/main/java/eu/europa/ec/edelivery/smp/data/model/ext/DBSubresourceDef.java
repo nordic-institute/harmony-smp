@@ -26,7 +26,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -38,21 +43,23 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Entity
 @Audited
-@Table(name = "SMP_SUBRESOURCE_DEF",
+@Table(name = "SMP_SUBRESOURCE_DEF", comment = "SMP extension subresource definitions",
         indexes = {@Index(name = "SMP_RD_UNIQ_RDID_UCTX_IDX", columnList = "FK_RESOURCE_DEF_ID,URL_SEGMENT", unique = true),
                 @Index(name = "SMP_RESDEF_UNIQ_IDENTIFIER", columnList = "IDENTIFIER", unique = true)
 })
-@org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE_DEF", comment = "SMP extension subresource definitions")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_ALL, query = "SELECT d FROM DBSubresourceDef d order by d.id asc")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBSubresourceDef d WHERE d.identifier = :identifier")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBSubresourceDef d WHERE d.urlSegment = :url_segment")
 
 public class DBSubresourceDef extends BaseEntity {
+    @Serial
     private static final long serialVersionUID = 1008583888835630002L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SUBRESOURCE_DEF_SEQ")
-    @GenericGenerator(name = "SMP_SUBRESOURCE_DEF_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_SUBRESOURCE_DEF_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique id")
     Long id;
@@ -75,6 +82,10 @@ public class DBSubresourceDef extends BaseEntity {
     @Column(name = "URL_SEGMENT", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
     @ColumnDescription(comment = "Subresources are published under url_segment. It must be unique for resource type")
     private String urlSegment;
+
+    @Column(name = "URL_SEGMENT_OPTIONAL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
+    @ColumnDescription(comment = "Comma separated optional subresources url_segment.")
+    String optionalUrlSegment;
 
     @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
     private String handlerImplementationName;
@@ -142,6 +153,17 @@ public class DBSubresourceDef extends BaseEntity {
 
     public void setHandlerImplementationName(String handlerImplementationName) {
         this.handlerImplementationName = handlerImplementationName;
+    }
+
+    @Transient
+    public List<String> getOptionalUrlSegments() {
+        return optionalUrlSegment == null ? Collections.emptyList() :
+                Arrays.stream(optionalUrlSegment.split(","))
+                .map(String::trim).toList();
+    }
+
+    public void setOptionalUrlSegments(List<String> segments) {
+        this.optionalUrlSegment = segments.isEmpty() ? null : String.join(",", segments);
     }
 
     @Override

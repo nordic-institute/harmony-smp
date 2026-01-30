@@ -7,9 +7,10 @@ import {NestedTreeControl} from "@angular/cdk/tree";
  * @title Tree with nested nodes
  */
 @Component({
-  selector: "nav-tree",
-  templateUrl: "nav-tree.component.html",
-  styleUrls: ["nav-tree.component.scss"]
+    selector: "nav-tree",
+    templateUrl: "nav-tree.component.html",
+    styleUrls: ["nav-tree.component.scss"],
+    standalone: false
 })
 export class NavTree {
   treeControl = new NestedTreeControl<NavigationNode>(node => node.children);

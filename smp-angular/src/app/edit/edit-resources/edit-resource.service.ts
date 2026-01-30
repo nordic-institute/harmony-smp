@@ -11,10 +11,9 @@ import {TableResult} from "../../common/model/table-result.model";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {DocumentRo} from "../../common/model/document-ro.model";
 import {SubresourceRo} from "../../common/model/subresource-ro.model";
-import {
-  ReviewDocumentVersionRo
-} from "../../common/model/review-document-version-ro.model";
+import {ReviewDocumentVersionRo} from "../../common/model/review-document-version-ro.model";
 import {LocalStorageService} from "../../common/services/local-storage.service";
+import {DomainDocumentTemplateRo} from "../../common/model/domain-document-template.ro";
 
 /**
  * The EditResourceService is used for server interaction on resources, sub-resources and it's documents.
@@ -25,14 +24,28 @@ import {LocalStorageService} from "../../common/services/local-storage.service";
 @Injectable()
 export class EditResourceService {
 
+  private _selectedDomain: DomainRo;
   _selectedResource: ResourceRo;
   _selectedSubresource: SubresourceRo;
   _selectedReviewDocument: ReviewDocumentVersionRo;
+  _selectedDomainDocumentTemplate: DomainDocumentTemplateRo;
 
   constructor(
     private http: HttpClient,
     private securityService: SecurityService,
     private localStorageService: LocalStorageService) {
+  }
+
+  @Input() get selectedDomain(): DomainRo {
+    if (this._selectedDomain == null) {
+      this._selectedDomain = this.localStorageService.getSelectedDomain();
+    }
+    return this._selectedDomain;
+  }
+
+  set selectedDomain(value: DomainRo) {
+    this.localStorageService.storeSelectedDomain(value);
+    this._selectedDomain = value;
   }
 
   @Input() set selectedResource(value: ResourceRo) {
@@ -69,6 +82,18 @@ export class EditResourceService {
       this._selectedReviewDocument = this.localStorageService.getSelectedReviewDocumentVersion();
     }
     return this._selectedReviewDocument;
+  }
+
+  @Input() set selectedDomainDocumentTemplate(value: DomainDocumentTemplateRo) {
+    this._selectedDomainDocumentTemplate = value;
+    this.localStorageService.storeSelectedDomainDocumentTemplateVersion(value);
+  }
+
+  get selectedDomainDocumentTemplate(): DomainDocumentTemplateRo {
+    if (this._selectedDomainDocumentTemplate == null) {
+      this._selectedDomainDocumentTemplate = this.localStorageService.getSelectedDomainDocumentTemplateVersion();
+    }
+    return this._selectedDomainDocumentTemplate;
   }
 
 
@@ -175,6 +200,27 @@ export class EditResourceService {
   }
 
   /**
+   * Method return observable of Document object from the server.
+   * @param domain the domain.
+   * @param domainDocumentTemplate the template.
+   * @param version version of document - if null current version is returned.
+   * @returns observable of DocumentRo
+   */
+  public getDomainDocumentTemplateObservable(domain: DomainRo, domainDocumentTemplate: DomainDocumentTemplateRo, version: number = null): Observable<DocumentRo> {
+    let params: HttpParams = null;
+    if (version) {
+      params = new HttpParams()
+        .set('version', version);
+    }
+
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.get<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_DOCUMENT
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, domainDocumentTemplate?.templateId), {params});
+  }
+
+  /**
    * Method returns observable for saving the document for resource to the server.
    *
    * @param resource resource for which document belongs to.
@@ -202,6 +248,37 @@ export class EditResourceService {
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId)
       .replace(SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID, subresource?.subresourceId), document);
+  }
+
+  /**
+   * Method returns observable for saving the document for resource to the server.
+   *
+   * @param domain the domain.
+   * @param template the template.
+   * @param document document to be saved.
+   * @returns observable of DocumentRo
+   */
+  public saveDomainDocumentTemplateObservable(domain: DomainRo, template: DomainDocumentTemplateRo, document: DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.put<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_UPDATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId), document);
+  }
+
+  /**
+   * Method returns observable for validating the document for resource on the server.
+   * @param domain the domain.
+   * @param template the template.
+   * @param document document to be validated.
+   * @returns document DocumentRo to be validated.
+   */
+  public validateTemplateDocumentObservable(domain: DomainRo, template: DomainDocumentTemplateRo, document: DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VALIDATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId), document);
   }
 
   /**
@@ -248,6 +325,55 @@ export class EditResourceService {
    */
   public publishSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo, document: DocumentRo): Observable<DocumentRo> {
     return this.subresourceDocumentActionObservable(subresource, resource, document, SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE_PUBLISH);
+  }
+
+  /**
+   * Method returns observable for publishing the domain document templates for resource on the server.
+   * @param domain the domain.
+   * @param template the template.
+   * @param document document to be published.
+   */
+  public publishDomainDocumentTemplateObservable(domain: DomainRo, template: DomainDocumentTemplateRo, document: DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_PUBLISH
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+        .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId),
+      document);
+  }
+
+  /**
+   * Method returns observable for deleting the document for resource on the server.
+   * @param resource resource for which document belongs to.
+   * @param document document version to be deleted.
+   */
+  public deleteResourceDocumentObservable(resource: ResourceRo, document: DocumentRo): Observable<DocumentRo> {
+    return this.resourceDocumentActionObservable(resource, document, SmpConstants.REST_EDIT_DOCUMENT_RESOURCE_DELETE);
+  }
+
+  /**
+   * Method returns observable for deleting the document for subresource on the server.
+   * @param subresource subresource for which document belongs to.
+   * @param resource resource of the subresource.
+   * @param document document to be deleted.
+   */
+  public deleteSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo, document: DocumentRo): Observable<DocumentRo> {
+    return this.subresourceDocumentActionObservable(subresource, resource, document, SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE_DELETE);
+  }
+
+  /**
+   * Method returns observable for publishing the domain document templates for resource on the server.
+   * @param domain the domain.
+   * @param template the template.
+   * @param document document to be published.
+   */
+  public deleteDomainDocumentTemplateObservable(domain: DomainRo, template: DomainDocumentTemplateRo, document: DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_VERSION_DELETE
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+        .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId),
+      document);
   }
 
   /**
@@ -299,6 +425,7 @@ export class EditResourceService {
 
   /**
    * Method returns observable for review reject of the document for resource on the server.
+   * @param subresource subresource for which document belongs to.
    * @param resource resource for which document belongs to.
    * @param document document to be rejected.
    */
@@ -362,6 +489,20 @@ export class EditResourceService {
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId)
       .replace(SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID, subresource?.subresourceId), null);
+  }
+
+  /**
+   * Method returns http-post observable to generate of new payload for domain template  document.
+   * @param domain  the domain.
+   * @param template  the template.
+   * @returns observable of DocumentRo
+   */
+  public generateDomainDocumentTemplateObservable(domain: DomainRo, template: DomainDocumentTemplateRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_GENERATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, template?.templateId), null);
   }
 
   getSubResourcesForResource(resource: ResourceRo): Observable<SubresourceRo[]> {

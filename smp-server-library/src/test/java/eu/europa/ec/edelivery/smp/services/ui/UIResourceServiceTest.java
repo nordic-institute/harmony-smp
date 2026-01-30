@@ -31,6 +31,7 @@ import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,7 @@ import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_SCHEMA_1;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.containsStringIgnoringCase;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,6 +58,8 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
     ResourceMemberDao resourceMemberDao;
     @Autowired
     ConversionService conversionService;
+    @Autowired
+    SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach
     public void prepareDatabase() {
@@ -112,7 +116,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
         // then
         assertNotNull(result);
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Group does not exist"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Group does not exist"));
     }
 
     @Test
@@ -128,7 +132,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
         // then
         assertNotNull(result);
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Group does not belong to the given domain"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Group does not belong to the given domain"));
     }
 
     @Test
@@ -144,7 +148,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
         // then
         assertNotNull(result);
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Resource definition [" + testResource.getResourceTypeIdentifier() + "] does not exist!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Resource definition [" + testResource.getResourceTypeIdentifier() + "] does not exist!"));
     }
 
     @Test
@@ -161,7 +165,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
         // then
         assertNotNull(result);
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Resource [val:" + testResource.getIdentifierValue() + " scheme:" + testResource.getIdentifierScheme() + "] already exists for domain!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Resource definition (val: [" + testResource.getIdentifierValue() + "] scheme: [" + testResource.getIdentifierScheme() + "]) already exists for the domain!"));
     }
 
     @Test
@@ -197,7 +201,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
                         -1000L, testUtilsDao.getD1().getId()));
         // then
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Group does not exist!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Group does not exist!"));
     }
 
     @Test
@@ -214,7 +218,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
                         testUtilsDao.getGroupD2G1().getId(), testUtilsDao.getD1().getId()));
         // then
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Group does not belong to the given domain!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Group does not belong to the given domain!"));
     }
 
 
@@ -233,7 +237,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
                 testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId()));
         // then
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Resource definition ["+defIdNotExist+"] does not exist!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Resource definition ["+defIdNotExist+"] does not exist!"));
     }
 
     @Test
@@ -260,7 +264,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
                 ()-> testInstance.deleteResourceFromGroup(-1000L, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId()));
         // then
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Resource does not exist!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Resource does not exist!"));
     }
 
 
@@ -272,7 +276,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
                 ()-> testInstance.deleteResourceFromGroup(testUtilsDao.getResourceD2G1RD1().getId(), testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId()));
         // then
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Resource does not belong to the group!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Resource does not belong to the group!"));
     }
 
     @Test
@@ -289,7 +293,7 @@ class UIResourceServiceTest extends AbstractJunit5BaseDao {
                 ()-> testInstance.deleteResourceFromGroup(resourceId, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD2().getId()));
         // then
         assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
-        assertThat(result.getMessage(), containsString("Group does not belong to the given domain!"));
+        assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode(), result.getMessageArgs()), containsStringIgnoringCase("Group does not belong to the given domain!"));
     }
 
     @Test

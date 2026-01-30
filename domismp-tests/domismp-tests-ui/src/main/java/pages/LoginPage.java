@@ -54,6 +54,21 @@ public class LoginPage extends DomiSMPPage {
         }
     }
 
+    public void simpleLogin(String user, String pass) throws Exception {
+        HashMap<String, String> usr = new HashMap<>();
+        usr.put("username", user);
+        usr.put("pass", pass);
+        LOG.debug("Login started " + usr.get("username") + " / " + usr.get("pass"));
+
+        goToLoginPage();
+        weToDInput(usernameInput).fill(usr.get("username"));
+        weToDInput(passwordInput).fill(usr.get("pass"));
+        weToDButton(loginBtn).click();
+
+
+    }
+
+
     public String resetPassword(String user) {
         LOG.debug("Resetting password for : " + user);
         goToLoginPage();

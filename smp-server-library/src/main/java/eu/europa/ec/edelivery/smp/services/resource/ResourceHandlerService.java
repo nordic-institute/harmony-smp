@@ -20,7 +20,6 @@ package eu.europa.ec.edelivery.smp.services.resource;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -30,10 +29,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
@@ -42,6 +38,7 @@ import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
+import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
@@ -51,19 +48,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_CREATED;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_RESPONSE_CODE_UPDATED;
 
 /**
- * The class handles the resource actions
+ * The service handles the resource operations by locating the correct resource handler and passing the request to it.
  *
  * @author Joze Rihtarsic
  * @since 5.0
  */
 @Service
-public class ResourceHandlerService extends AbstractResourceHandler {
+public class ResourceHandlerService extends ResourceSPIHandler {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceHandlerService.class);
 
     final ResourceMemberDao resourceMemberDao;
@@ -91,13 +90,27 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         ResourceHandlerSpi handlerSpi = getResourceHandler(resolvedData.getResourceDef());
         // set default mimetype - it can be overwritten by handler
         resourceResponse.setContentType(resolvedData.getResourceDef().getMimeType());
-
-        RequestData requestData = buildRequestDataForResource(resolvedData.getDomain(), resolvedData.getResource());
+        Map<String, String> requestAttributes = getDocumentAttributes(resolvedData);
+        RequestData requestData = buildRequestDataForResource(resolvedData.getDomain(), resolvedData.getResource(), requestAttributes);
         ResponseData responseData = new SpiResponseData(resourceResponse.getOutputStream());
         // get resource byte array
 
         handleReadResource(handlerSpi, requestData, responseData, resourceResponse);
+    }
 
+    protected Map<String, String> getDocumentAttributes(ResolvedData resolvedData) {
+        Map<String, String> documentAttributes = new HashMap<>();
+        documentAttributes.put(TransientDocumentPropertyType.RESOURCE_URL_SEGMENT.getPropertyName(), resolvedData.getRequestResourceUrlSegment());
+        documentAttributes.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_VALUE.getPropertyName(), resolvedData.getResource().getIdentifierValue());
+        documentAttributes.put(TransientDocumentPropertyType.RESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resolvedData.getResource().getIdentifierScheme());
+        if (resolvedData.getSubresource() != null) {
+            documentAttributes.put(TransientDocumentPropertyType.SUBRESOURCE_URL_SEGMENT.getPropertyName(), resolvedData.getRequestSubresourceUrlSegment());
+            documentAttributes.put(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_VALUE.getPropertyName(), resolvedData.getSubresource().getIdentifierValue());
+            documentAttributes.put(TransientDocumentPropertyType.SUBRESOURCE_IDENTIFIER_SCHEME.getPropertyName(), resolvedData.getSubresource().getIdentifierScheme());
+        }
+
+
+        return documentAttributes;
     }
 
     @Transactional
@@ -131,9 +144,9 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         ResourceHandlerSpi handlerSpi = getResourceHandler(resolvedData.getResourceDef());
 
         boolean isNewResource = resource.getId() == null;
-
+        Map<String, String> requestAttributes = getDocumentAttributes(resolvedData);
         RequestData requestData = buildRequestDataForResource(resolvedData.getDomain(),
-                resource, resourceRequest.getInputStream());
+                resource, resourceRequest.getInputStream(), requestAttributes);
 
         // write to response data and save the request
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -147,13 +160,15 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         } catch (ResourceException e) {
             switch (e.getErrorCode()) {
                 case INVALID_PARAMETERS:
-                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, e.getMessage());
+                    throw new BadRequestException(ErrorMessageType.INVALID_REQUEST_PARAMETER)
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 case INVALID_RESOURCE:
-                    throw new SMPRuntimeException(ErrorCode.INVALID_EXTENSION_FOR_SG, resource.getIdentifierValue(),
-                            resource.getIdentifierScheme(),
-                            e.getMessage());
+                    throw new SMPRuntimeException(ErrorMessageType.RESOURCE_INVALID_EXTENSION)
+                            .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                            .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme())
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the resource!", e);
+                    throw new SMPRuntimeException(ErrorMessageType.INTERNAL_RESOURCE_READING, e);
             }
         }
         // set headers to response
@@ -218,12 +233,13 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         } catch (ResourceException e) {
             switch (e.getErrorCode()) {
                 case INVALID_PARAMETERS:
-                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, ExceptionUtils.getRootCauseMessage(e));
+                    throw new BadRequestException(ErrorMessageType.INVALID_REQUEST_PARAMETER)
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 case INVALID_RESOURCE:
-                    throw new SMPRuntimeException(ErrorCode.INVALID_SMD_XML,
-                            ExceptionUtils.getRootCauseMessage(e));
+                    throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_INVALID_XML)
+                            .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
                 default:
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the subresource!", e);
+                    throw new SMPRuntimeException(ErrorMessageType.INTERNAL_SUBRESOURCE_READING, e);
             }
         }
         // set headers to response
