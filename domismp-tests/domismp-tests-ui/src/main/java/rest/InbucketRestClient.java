@@ -50,36 +50,47 @@ public class InbucketRestClient {
 
 
     public String getResetPasswordTokenFromLastEmailOfUser(String userName) {
+        String subject = "Request for reset of the Credential";
         JsonObject lastMessageArray = null;
-        int i = 0;
-        boolean isResetEmail = false;
-        while (i <= 5 & !isResetEmail) {
-            lastMessageArray = getlastmessageOfUser(userName, "Request for reset of the Credential");
-            if (lastMessageArray.isEmpty()) {
-                LOG.error("Last email of user is empty!");
-                fail();
-            }
-            if (lastMessageArray.get("subject").toString().contains("Request for reset of the Credential")) {
-                isResetEmail = true;
-                String text = lastMessageArray.get("text").toString();
-                String regex = "http://[^\\s\"<>]+(?=\\s|<|$)";
-                Pattern pattern = Pattern.compile(regex);
+
+        String regex = "https?://[^\\s\"<>]+(?=\\s|<|$)";
+        Pattern pattern = Pattern.compile(regex);
+
+        for (int i = 0; i < 6; i++) {
+            lastMessageArray = getlastmessageOfUser(userName, subject);
+
+            if (lastMessageArray != null
+                    && !lastMessageArray.isEmpty()
+                    && lastMessageArray.has("subject")
+                    && !lastMessageArray.get("subject").isJsonNull()
+                    && lastMessageArray.get("subject").getAsString().contains(subject)) {
+
+                String text = (lastMessageArray.has("text") && !lastMessageArray.get("text").isJsonNull())
+                        ? lastMessageArray.get("text").getAsString()
+                        : "";
+
                 Matcher matcher = pattern.matcher(text);
-                while (matcher.find()) {
+                if (matcher.find()) {
                     return matcher.group(0);
                 }
-                LOG.error("Reset URL found in the email: " + text);
-                throw new NullPointerException("Reset URL found in the email: " + text);
+
+                LOG.error("Reset URL not found in the email: " + text);
+                throw new NullPointerException("Reset URL not found in the email: " + text);
             }
-            i++;
 
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while waiting for reset email", e);
+            }
         }
-        throw new NullPointerException("Could not find reset email. The current subject found is: " + lastMessageArray.get("subject").toString());
 
+        String lastSubject = (lastMessageArray != null && lastMessageArray.has("subject") && !lastMessageArray.get("subject").isJsonNull())
+                ? lastMessageArray.get("subject").getAsString()
+                : "null";
 
-
-
-
+        throw new NullPointerException("Could not find reset email. Last subject found is: " + lastSubject);
     }
 
 }
