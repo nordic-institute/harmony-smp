@@ -20,26 +20,33 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.wrapIfMissing;
 
 
 /**
@@ -50,6 +57,12 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 public class ResourceDao extends BaseDao<DBResource> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceDao.class);
+
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
+
+    public ResourceDao(SMPExceptionLanguageService smpExceptionLanguageService) {
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
+    }
 
     public static final class DBResourceWrapper {
 
@@ -121,7 +134,9 @@ public class ResourceDao extends BaseDao<DBResource> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(identifierValue, identifierSchema));
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_ILLEGAL_STATE_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER,  identifierValue)
+                    .addParam(ErrorMessageArgument.SCHEME, identifierSchema);
         }
     }
 
@@ -190,11 +205,11 @@ public class ResourceDao extends BaseDao<DBResource> {
      * @return escaped value
      */
     private  String getNormalizedLikeParameter(String value) {
-        if (StringUtils.isBlank(value)){
+        if (isBlank(value)){
             return null;
         }
-        String escapedValue = value.replace("\\", "\\\\");
-        return StringUtils.wrapIfMissing(escapedValue, "%");
+
+        return wrapIfMissing(value, "%");
     }
 
     public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier, String domainCode, String documentType) {
@@ -202,8 +217,8 @@ public class ResourceDao extends BaseDao<DBResource> {
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER_COUNT, Long.class);
 
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
-        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema) ? null : StringUtils.wrapIfMissing(schema, "%"));
-        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier) ? null : StringUtils.wrapIfMissing(identifier, "%"));
+        query.setParameter(PARAM_RESOURCE_SCHEME, isBlank(schema) ? null : wrapIfMissing(schema, "%"));
+        query.setParameter(PARAM_RESOURCE_IDENTIFIER, isBlank(identifier) ? null : wrapIfMissing(identifier, "%"));
         query.setParameter(PARAM_DOMAIN_CODE, StringUtils.defaultIfBlank(domainCode, null));
         query.setParameter(PARAM_DOCUMENT_TYPE, StringUtils.defaultIfBlank(documentType, null));
 
@@ -232,7 +247,9 @@ public class ResourceDao extends BaseDao<DBResource> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(participantId, schema));
+            throw new IllegalStateException(
+                    smpExceptionLanguageService.getMessageTranslation("error.service.group.illegal.state.multiple.entries",
+                             Map.of("identifier", participantId, "scheme", schema)));
         }
     }
 
@@ -245,10 +262,29 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     /**
+     * Method returns DocumentReferenceData for the resource. If there is no reference data it returns null.
+     * If more than one result returns fist and logs data inconsistency with WARN log level
+     * @param resource the resource to get the reference data for.
+     * @return DBDocumentReferenceData or null
+     */
+    public DBDocumentReferenceData getDocumentReferenceData(DBResource resource) {
+        TypedQuery<DBDocumentReferenceData> query = memEManager.createNamedQuery(QUERY_RESOURCE_REFERENCE_DATA, DBDocumentReferenceData.class);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        List<DBDocumentReferenceData> result = query.getResultList();
+        if (result.isEmpty()) {
+            return null;
+        }
+        if (result.size() > 1) {
+            LOG.warn("Found more than one document reference data for resource [{}]", resource.getId());
+        }
+        return result.get(0);
+    }
+
+    /**
      * Method removes the resource from DB. Related entities (cascade): sub-resources, Document, Document version,
      * group memberships,
      *
-     * @param resource
+     * @param resource resource to be removed
      */
     @Transactional
     public void remove(DBResource resource) {

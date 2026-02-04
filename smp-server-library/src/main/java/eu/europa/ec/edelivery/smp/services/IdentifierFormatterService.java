@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -23,16 +23,14 @@ import eu.europa.ec.dynamicdiscovery.enums.DNSLookupFormatType;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.TemplateFormatterType;
 import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
-import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.dao.DomainConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.IdentifierFormatter;
-import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,13 +56,16 @@ public class IdentifierFormatterService {
     private final DomainDao domainDao;
     private final DomainConfigurationDao domainConfigurationDao;
     private final ConfigurationService configurationService;
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
     public IdentifierFormatterService(DomainDao domainDao,
                                       DomainConfigurationDao domainConfigurationDao,
-                                      ConfigurationService configurationService) {
+                                      ConfigurationService configurationService,
+                                      SMPExceptionLanguageService smpExceptionLanguageService) {
         this.domainDao = domainDao;
         this.domainConfigurationDao = domainConfigurationDao;
         this.configurationService = configurationService;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
     /**
@@ -83,7 +84,8 @@ public class IdentifierFormatterService {
             return getDefaultResourceIdentifierFormatter();
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, domainCode));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode));
 
         IdentifierFormatter.Builder builder = IdentifierFormatter.Builder
                 .create()
@@ -99,10 +101,10 @@ public class IdentifierFormatterService {
         }
 
         IdentifierFormatter identifierFormatter = builder.build();
-        identifierFormatter.setCaseSensitiveSchemas(getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES));
-        Boolean mandatory = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_MANDATORY);
+        identifierFormatter.setCaseSensitiveSchemas(configurationService.getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES));
+        Boolean mandatory = configurationService.getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_MANDATORY);
         identifierFormatter.setSchemeMandatory(Boolean.TRUE.equals(mandatory));
-        identifierFormatter.setSchemeValidationPattern(getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_VALIDATION_REGEXP));
+        identifierFormatter.setSchemeValidationPattern(configurationService.getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_SCH_VALIDATION_REGEXP));
 
         return identifierFormatter;
     }
@@ -137,19 +139,19 @@ public class IdentifierFormatterService {
         return identifierFormatter;
     }
 
-    TemplateFormatterType createTemplateFormatterType(List<DBDomainConfiguration> listDomainConf,  String domainCode) {
+    TemplateFormatterType createTemplateFormatterType(List<DBDomainConfiguration> listDomainConf, String domainCode) {
         // template for formating the identifier
-        Pattern matchRegExp = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_MATCH_REGEXP);
-        Pattern splitRegExp = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP);
-        String formatTemplate = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_CONCATENATE);
-        String formatNullTemplate = getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME);
+        Pattern matchRegExp = configurationService.getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_MATCH_REGEXP);
+        Pattern splitRegExp = configurationService.getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_SPLIT_REGEXP);
+        String formatTemplate = configurationService.getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_CONCATENATE);
+        String formatNullTemplate = configurationService.getDomainConfigurationValue(listDomainConf, SMPDomainPropertyEnum.RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME);
 
         return createTemplateFormatterType(matchRegExp, splitRegExp, formatTemplate, formatNullTemplate, domainCode);
     }
 
-    TemplateFormatterType createTemplateFormatterType( Pattern matchRegExp, Pattern splitRegExp, String formatTemplate, String formatNullTemplate, String domainCode) {
+    TemplateFormatterType createTemplateFormatterType(Pattern matchRegExp, Pattern splitRegExp, String formatTemplate, String formatNullTemplate, String domainCode) {
         // template for formating the identifier
-        if (matchRegExp == null ||  splitRegExp == null) {
+        if (matchRegExp == null || splitRegExp == null) {
             LOG.info("TemplateFormatterType for domain [{}] not be created. One of the required parameters is empty: " +
                             "matchRegExp: [{}], splitRegExp: [{}], formatTemplate: [{}],formatNullTemplate: [{}]",
                     domainCode, matchRegExp, splitRegExp, formatTemplate, formatNullTemplate);
@@ -167,58 +169,21 @@ public class IdentifierFormatterService {
     public IdentifierFormatter getSubresourceIdentifierFormatter(String domainCode) {
 
         if (StringUtils.isBlank(domainCode)) {
-            throw new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, domainCode);
+            throw new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode);
         }
         DBDomain domain = domainDao.getDomainByCode(domainCode)
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.DOMAIN_NOT_EXISTS, domainCode));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.DOMAIN_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.DOMAIN_CODE, domainCode));
+
         List<DBDomainConfiguration> listDomainConf = domainConfigurationDao.getDomainConfiguration(domain);
         IdentifierFormatter identifierFormatter = IdentifierFormatter.Builder
                 .create()
                 .build();
 
-        identifierFormatter.setCaseSensitiveSchemas(getDomainConfigurationValue(listDomainConf,
+        identifierFormatter.setCaseSensitiveSchemas(configurationService.getDomainConfigurationValue(listDomainConf,
                 SMPDomainPropertyEnum.SUBRESOURCE_CASE_SENSITIVE_SCHEMES));
         return identifierFormatter;
     }
 
-    /**
-     * Method returns parsed value for  property on given domain. If property is not found or use system default,
-     * system default value is returned.
-     *
-     * @param domain   domain to get configuration value
-     * @param property domain property type
-     * @param <T>      type of returned value
-     * @return parsed value for property
-     */
-    public <T> T getDomainConfigurationValue(List<DBDomainConfiguration> domain, SMPDomainPropertyEnum property) {
-
-        DBDomainConfiguration domainConfiguration = domain.stream()
-                .filter(dc -> dc.getProperty().equals(property.getProperty()))
-                .findFirst()
-                .orElse(null);
-
-        if (domainConfiguration == null || domainConfiguration.isUseSystemDefault()) {
-            LOG.debug("Domain configuration value for property [{}] not found or use system default. Using system default value!", property);
-            return configurationService.getDefaultDomainConfigurationValue(property);
-        }
-
-        String value = domainConfiguration.getValue();
-        SMPPropertyEnum sysPropType = getSmpPropertyEnum(property);
-        return (T) PropertyUtils.parseProperty(sysPropType, value, null);
-
-    }
-
-    private static SMPPropertyEnum getSmpPropertyEnum(SMPDomainPropertyEnum property) {
-        SMPPropertyEnum sysPropType = property.getPropertyEnum();
-        if (sysPropType.isEncrypted()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encrypted domain Properties are not supported!. Can not parse   ["
-                    + property + "]!");
-        }
-        if (sysPropType.getPropertyType() == SMPPropertyTypeEnum.PATH ||
-                sysPropType.getPropertyType() == SMPPropertyTypeEnum.FILENAME) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Path or filename domain properties are not supported!. Can not parse   ["
-                    + property + "]!");
-        }
-        return sysPropType;
-    }
 }

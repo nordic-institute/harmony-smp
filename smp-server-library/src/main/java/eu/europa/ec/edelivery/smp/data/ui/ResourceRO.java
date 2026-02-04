@@ -23,6 +23,8 @@ import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
+
 /**
  * @author Joze Rihtarsic
  * @since 5.0
@@ -30,18 +32,18 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class ResourceRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630028L;
 
     private String resourceId;
-
     private String resourceTypeIdentifier;
-
     private String identifierValue;
     private String identifierScheme;
     private boolean smlRegistered = false;
     private Boolean reviewEnabled;
     private Boolean hasCurrentUserReviewPermission;
     private VisibilityType visibility = VisibilityType.PUBLIC;
+    private DocumentReferenceInfoRO documentReferenceInfo;
 
     public String getResourceId() {
         return resourceId;
@@ -105,6 +107,14 @@ public class ResourceRO extends BaseRO {
 
     public void setHasCurrentUserReviewPermission(Boolean hasCurrentUserReviewPermission) {
         this.hasCurrentUserReviewPermission = hasCurrentUserReviewPermission;
+    }
+
+    public DocumentReferenceInfoRO getDocumentReferenceInfo() {
+        return documentReferenceInfo;
+    }
+
+    public void setDocumentReferenceInfo(DocumentReferenceInfoRO documentReferenceInfo) {
+        this.documentReferenceInfo = documentReferenceInfo;
     }
 
     @Override

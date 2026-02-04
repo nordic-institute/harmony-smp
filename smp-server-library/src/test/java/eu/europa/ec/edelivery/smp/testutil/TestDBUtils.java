@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.data.enums.*;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBPeriodicalAlert;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
@@ -37,6 +38,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_EXTENSION_XML;
@@ -91,6 +93,7 @@ public class TestDBUtils {
         DBResourceDef entity = new DBResourceDef();
         entity.setIdentifier(identifier);
         entity.setUrlSegment(urlSegment);
+        entity.setOptionalUrlSegments(Arrays.asList(anyString(), anyString()));
         entity.setName(anyString());
         entity.setDescription(anyString());
         entity.setMimeType(anyString());
@@ -122,20 +125,12 @@ public class TestDBUtils {
         return alert;
     }
 
-    public static DBGroup createDBGroup() {
-        return createDBGroup(TestConstants.TEST_GROUP_A);
-    }
-
     public static DBDomain createDBDomain() {
         return createDBDomain(TestConstants.TEST_DOMAIN_CODE_1);
     }
 
     public static DBResource createDBResource() {
         return createDBResource(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
-    }
-
-    public static DBSubresource createDBSubresource(String partcId, String partcSch) {
-        return createDBSubresource(partcId, partcSch, anyString(), anyString(), anyString());
     }
 
     public static DBSubresource createDBSubresource(String partcId, String partcSch, String docId, String docSch) {
@@ -202,11 +197,15 @@ public class TestDBUtils {
     public static DBDocumentVersion createDBDocumentVersion(String id, String sch, DocumentVersionStatusType status) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
         docuVersion.setStatus(status);
-        docuVersion.setContent(("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
+        docuVersion.setContent(createServiceGroup(id, sch).getBytes());
+        return docuVersion;
+    }
+
+    public static String createServiceGroup(String id, String sch) {
+        return "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
                 "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
                 "<ServiceMetadataReferenceCollection />" +
-                "</ServiceGroup>").getBytes());
-        return docuVersion;
+                "</ServiceGroup>";
     }
 
     public static DBDocumentVersion createDBDocumentVersion(String id, String sch, String docId, String docSch) {
@@ -237,25 +236,22 @@ public class TestDBUtils {
         return createDBCredential(name, "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
     }
 
-    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from, OffsetDateTime to) {
         DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
-        credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from, OffsetDateTime to) {
         DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
-        credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from, OffsetDateTime to) {
         DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
-        credential.setExpireAlertOn(lastAlertSent);
         if (to != null) {
             credential.setExpireOn(to);
         }
@@ -277,12 +273,10 @@ public class TestDBUtils {
         dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
         dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
-        dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
         dbCredential.setUser(dbUser);
 
         if (CredentialType.CERTIFICATE.equals(credentialType)) {
-
             DBCertificate certificate = new DBCertificate();
             certificate.setCertificateId(name);
             certificate.setValidFrom(dbCredential.getActiveFrom());
@@ -315,9 +309,17 @@ public class TestDBUtils {
         dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
         dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
-        dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
         return dbCredential;
+    }
+
+    public static DBPeriodicalAlert createUserCredentialPeriodicalAlert(ExpiringEntity entityType, String entityId, OffsetDateTime lastAlertSent) {
+        DBPeriodicalAlert alert = new DBPeriodicalAlert();
+        alert.setEntityType(entityType);
+        alert.setEntityIdentifier(entityId);
+        alert.setAlertScope(AlertScope.USER_CREDENTIAL);
+        alert.setLastAlertOn(lastAlertSent);
+        return alert;
     }
 
     public static DBAlert createDBAlert() {
@@ -331,12 +333,16 @@ public class TestDBUtils {
     }
 
     public static DBUser createDBUserByUsername(String userName) {
+        return createDBUserByUsername(userName, ApplicationRoleType.USER);
+    }
+
+    public static DBUser createDBUserByUsername(String userName, ApplicationRoleType applicationRole) {
         DBUser dbuser = new DBUser();
         dbuser.setUsername(userName);
         dbuser.setSmpLocale("en");
         dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setActive(true);
-        dbuser.setApplicationRole(ApplicationRoleType.USER);
+        dbuser.setApplicationRole(applicationRole);
         return dbuser;
     }
 

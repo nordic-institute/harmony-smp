@@ -16,14 +16,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-import {
-  AfterViewInit,
-  Component,
-  forwardRef,
-  Input,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import {AfterViewInit, Component, forwardRef, Input, OnInit, ViewChild,} from '@angular/core';
 import {
   ControlContainer,
   ControlValueAccessor,
@@ -34,23 +27,19 @@ import {
   NG_VALUE_ACCESSOR
 } from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
-import {
-  BeforeLeaveGuard
-} from "../../../../window/sidenav/navigation-on-leave-guard";
-import {
-  DocumentConfigurationRo
-} from "../../../model/document-configuration-ro.model";
+import {BeforeLeaveGuard} from "../../../../window/sidenav/navigation-on-leave-guard";
+import {DocumentConfigurationRo} from "../../../model/document-configuration-ro.model";
 import {
   ReferenceDocumentDialogComponent
 } from "../../../dialogs/reference-document-dialog/reference-document-dialog.component";
-import {
-  DocumentReferenceType
-} from "../../../enums/documetn-reference-type.enum";
+import {DocumentLevelType} from "../../../enums/documetn-reference-type.enum";
 import {ResourceRo} from "../../../model/resource-ro.model";
 import {SubresourceRo} from "../../../model/subresource-ro.model";
-import {
-  SearchReferenceDocument
-} from "../../../model/search-reference-document-ro.model";
+import {SearchReferenceDocument} from "../../../model/search-reference-document-ro.model";
+import {ConfirmationDialogComponent} from "../../../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {lastValueFrom} from "rxjs";
+import {MatCheckboxChange} from "@angular/material/checkbox";
+import {TranslateService} from "@ngx-translate/core";
 
 /**
  * Component to display the properties of a document in a table. The properties can be edited and saved.
@@ -67,7 +56,8 @@ import {
       useExisting: forwardRef(() => DocumentConfigurationPanelComponent),
       multi: true
     }
-  ]
+  ],
+  standalone: false
 })
 export class DocumentConfigurationPanelComponent implements OnInit, AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
 
@@ -87,7 +77,8 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
   constructor(
     public dialog: MatDialog,
     private controlContainer: ControlContainer,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private translateService: TranslateService) {
 
     this.documentConfigurationForm = this.formBuilder.group({
       'name': new FormControl({value: null}),
@@ -209,7 +200,7 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
   onShowSearchDialogClicked() {
     this.dialog.open(ReferenceDocumentDialogComponent, {
       data: {
-        targetType: !this.subresource? DocumentReferenceType.RESOURCE:DocumentReferenceType.SUBRESOURCE,
+        targetType: !this.subresource ? DocumentLevelType.RESOURCE : DocumentLevelType.SUBRESOURCE,
         targetResource: this.resource,
         targetSubresource: this.subresource,
       }
@@ -224,8 +215,23 @@ export class DocumentConfigurationPanelComponent implements OnInit, AfterViewIni
     });
   }
 
-  onSharingEnabledChanged() {
-    this.updateShareCheckboxStatus();
+  async onSharingEnabledChanged(event: MatCheckboxChange) {
+    if (!event.checked) {
+      this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: await lastValueFrom(this.translateService.get("document.edit.panel.unshare.document.confirmation.dialog.title")),
+          description: await lastValueFrom(this.translateService.get("document.edit.panel.unshare.document.confirmation.dialog.description"))
+        }
+      }).afterClosed().subscribe(result => {
+        if (!result) {
+          this.documentConfigurationForm.get('sharingEnabled')?.setValue(true, {emitEvent: false});
+        } else {
+          this.updateShareCheckboxStatus();
+        }
+      });
+    } else {
+      this.updateShareCheckboxStatus();
+    }
   }
 
   updateShareCheckboxStatus() {

@@ -1,0 +1,209 @@
+body {
+    display: flex;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.toolbar {
+    width: 150px;
+    background-color: #16A649; /* Dark red */
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: relative;
+    transition: width 0.3s;
+}
+
+.toolbar.tb-collapsed {
+    width: 40px;
+}
+
+.toolbar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 0;
+    transition: 0.3s ;
+}
+
+.toolbar a:hover {
+    background-color: #56D699; /* Light red */
+}
+
+.content {
+    flex-grow: 1;
+    padding-left: 30px;
+    background: linear-gradient(to bottom right, #ffffff 30%, #cadacaa0 100%);
+    border-left: 2px solid #aaa;
+    position: relative;
+    transition: padding-left 0.3s;
+}
+
+.content.tb-collapsed  {
+    padding-left: 5px;
+}
+
+.logo-div {
+    border-radius: 15px 40px;
+    width: 150px;
+    height: 180px;
+    position: relative;
+    background-color: white;
+    z-index: 1000;
+    top: 0;
+    left: 40px; /* Adjust this value to control overlap */
+    transition: 0.3s;
+}
+
+.logo {
+    position: relative;
+    background-image: url("../images/DomiSMP_logo.svg");
+    background-repeat: no-repeat;
+    background-size: 150px 150px;
+    width: 150px;
+    height: 180px;
+    z-index: 1000;
+    padding-top: 15px;
+    top: 15px;
+    left: 10px;
+    transition: 0.3s;
+}
+
+.app-info {
+    margin-top: 50px;
+    margin-left: 40px;
+}
+
+.toolbar.tb-collapsed  {
+    padding-left: 10px;
+    padding-right: 5px;
+}
+
+.toolbar.tb-collapsed h2 {
+    display: none;
+    transition: display 0.3s;
+}
+
+.toolbar a {
+    max-height: 28px;
+}
+.toolbar.tb-collapsed a {
+    text-align: center;
+}
+
+.toolbar.tb-collapsed .logo-div {
+    width: 40px;
+    height: 50px;
+    left: 0;
+    margin-bottom: 10px;
+    border-radius: 3px 9px;
+}
+
+.toolbar.tb-collapsed .logo {
+    padding-top: 2px;
+    padding-left: 5px;
+    background-size: 35px 45px;
+    width: 35px;
+    height: 45px;
+    top: 5px;
+    left: 5px;
+}
+
+.toggle-button {
+    position: absolute;
+    bottom: 40px;
+    right: 10px;
+    background-color: #56D699;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.action-icon {
+    display: inline-block;
+    max-height: 35px;
+    width: 22px;
+    padding: 0;
+    font-size: 1.5em;
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+}
+
+.icon-ec-logo {
+    background-size: 25px 20px;
+    background-image: url("../images/EC+Logo2.png");
+}
+.icon-oasis-logo {
+    background-image: url("../images/oasis-smp-2.png");
+
+}
+
+.icon-oasis-logo-old {
+    background-image: url("../images/oasis-smp-1.png");
+}
+
+.action-label {
+    padding-left: 5px;
+    transition: display 0.3s;
+}
+
+.toggle-button #collapsed {
+    display: none;
+}
+
+.toolbar.tb-collapsed #expanded {
+    display: none;
+}
+
+.toolbar.tb-collapsed #collapsed {
+    display: inline;
+}
+
+.toolbar.tb-collapsed .action-label {
+    display: none;
+}
+
+pre {
+    padding: 0;
+    margin:0
+
+}
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+

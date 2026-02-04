@@ -4,6 +4,7 @@
 
     <h3>{{ "domain.sml.integration.panel.title" | translate }}</h3>
     <div class="panel" *ngIf="isDomainRegistered"><p style="font-weight: bold">{{ "domain.sml.integration.panel.text" | translate }}</div>
+    <div class="panel" *ngIf="changeCertificateDateInPast"><p style="font-weight: bold">{{ "domain.sml.integration.panel.text.certificate.change.in.past" | translate }}</div>
     <mat-form-field style="width:100%">
       <mat-label>{{ "domain.sml.integration.panel.label.sml.domain" | translate }}</mat-label>
       <input matInput
@@ -62,6 +63,11 @@
         {{ "domain.sml.integration.panel.label.smp.id.already.exists" | translate }}
       </div>
     </mat-form-field>
+    <mat-slide-toggle style="width:100%"
+                      formControlName="smlUrlDomainCodeSuffixEnabled"
+                      id="smlAppendDomainCode_id">
+      {{ "domain.sml.integration.panel.label.append.domain.code.to.smp.url" | translate }}
+    </mat-slide-toggle>
 
     <mat-form-field style="width:100%"
                     matTooltip="{{ 'domain.sml.integration.panel.tooltip.smp.client.certificate.alias' | translate }}">
@@ -76,9 +82,14 @@
 
       </select>
     </mat-form-field>
-
+    @if (changeCertificateAliasSet) {
+      <smp-warning-panel [ngClass]="'certificate-change-note'"
+        type="desc"
+        icon="info"
+        htmlContent="{{ 'domain.sml.integration.panel.confirm.change.certificate.note.description' | translate:{alias: this.changeCertificate?.certificateAlias, changeDate: this.changeCertificate?.changeDateTime | date:dateTimeFormat, }  }}"
+      ></smp-warning-panel>
+    }
     <mat-slide-toggle style="width:100%"
-                      mat-no-ink class="mat-primary"
                       formControlName="smlClientCertAuth"
                       id="smlClientCertHeaderAuth_id">
       {{ "domain.sml.integration.panel.label.sml.client.certificate.toggle" | translate }}
@@ -107,6 +118,17 @@
                [disabled]="!enableSMLUnregister()" color="primary">
         <mat-icon>link_off</mat-icon>
         <span>{{ "domain.sml.integration.panel.button.unregister" | translate }}</span>
+      </button>
+      <tool-button-spacer></tool-button-spacer>
+      <button  id="prepareCertificateButton" mat-raised-button (click)="onPrepareCertificateClicked()"
+               [disabled]="changeCertificateAliasSet ||!enableSMLUnregister()" color="primary">
+        <mat-icon>link</mat-icon>
+        <span>{{ "domain.sml.integration.panel.button.prepare" | translate }}</span>
+      </button>
+      <button  id="changeCertificateButton" mat-raised-button (click)="onChangeCertificateClicked()"
+               [disabled]="!changeCertificateAliasSet" color="primary">
+        <mat-icon>link</mat-icon>
+        <span>{{ "domain.sml.integration.panel.button.change" | translate }}</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>

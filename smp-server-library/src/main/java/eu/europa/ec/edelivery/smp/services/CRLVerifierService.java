@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,7 +20,8 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -28,16 +29,15 @@ import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.helpers.IOUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpHost;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.x500.X500Principal;
@@ -59,7 +59,7 @@ public class CRLVerifierService implements ICRLVerifierService {
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
     public static final long REFRESH_CRL_INTERVAL = 1000L * 60 * 60;
-    public static final Long NULL_LONG = Long.valueOf(-1);
+    public static final Long NULL_LONG = -1L;
 
     private static final X500Principal NULL_ISSUER = new X500Principal("");
     private static final CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
@@ -69,6 +69,7 @@ public class CRLVerifierService implements ICRLVerifierService {
 
     public CRLVerifierService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
+
     }
 
     @Override
@@ -157,14 +158,17 @@ public class CRLVerifierService implements ICRLVerifierService {
                 crl = (X509CRL) cf.generateCRL(crlStream);
             }
         } catch (IOException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e), e);
+            exception = new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_CANNOT_DOWNLOAD, e)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         } catch (CertificateException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e), e);
+            exception = new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_NOT_SUPPORTED, e)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         } catch (CRLException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL + "'"
-                    , ExceptionUtils.getRootCauseMessage(e), e);
+            exception = new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_CANNOT_READ, e)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         } catch (SMPRuntimeException exc) {
             exception = exc;
         }
@@ -194,7 +198,7 @@ public class CRLVerifierService implements ICRLVerifierService {
                     String decryptedPassword = configurationService.getProxyCredentialToken();
                     Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
                     inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(),
-                            proxyPort.isPresent() ? proxyPort.get() : DEF_PROXY_PORT,
+                            proxyPort.orElse(DEF_PROXY_PORT),
                             configurationService.getProxyUsername(), decryptedPassword);
                 } else {
                     inputStream = downloadURLDirect(crlURL);
@@ -202,18 +206,20 @@ public class CRLVerifierService implements ICRLVerifierService {
             }
             return inputStream;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL + "'", ExceptionUtils.getRootCauseMessage(exc));
+            throw new SMPRuntimeException(ErrorMessageType.CERTIFICATE_CRL_DOWNLOAD_ISSUE, exc)
+                    .addParam(ErrorMessageArgument.CRL_URL, crlURL)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(exc));
         }
     }
 
     public InputStream downloadURLViaProxy(String url, String proxyHost, Integer proxyPort, String proxyUser,
                                            String proxyPassword) throws IOException {
 
-        CredentialsProvider credentialsProvider = null;
+        BasicCredentialsProvider credentialsProvider = null;
         if (isValidParameter(proxyUser, proxyPassword)) {
             credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
-                    new UsernamePasswordCredentials(proxyUser, proxyPassword));
+                    new UsernamePasswordCredentials(proxyUser, proxyPassword.toCharArray()));
         }
 
 
@@ -251,6 +257,12 @@ public class CRLVerifierService implements ICRLVerifierService {
         return true;
     }
 
+    /**
+     * Checks if the parameters are valid. Valid means that they are not null and not empty.
+     *
+     * @param parameters the parameters to check
+     * @return true if the parameters are valid, false otherwise
+     */
     protected boolean isValidParameter(String... parameters) {
         if (parameters == null || parameters.length == 0) {
             return false;

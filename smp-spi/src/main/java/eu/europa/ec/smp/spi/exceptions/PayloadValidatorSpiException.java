@@ -24,16 +24,14 @@ package eu.europa.ec.smp.spi.exceptions;
  *
  * The external validation library throws the exception if the payload validation does not pass.
  */
-public class PayloadValidatorSpiException extends Exception {
-    public PayloadValidatorSpiException(String message) {
-        super(message);
+public class PayloadValidatorSpiException extends SMPException {
+
+    public PayloadValidatorSpiException(String messageCode) {
+        super(messageCode);
     }
 
-    public PayloadValidatorSpiException(String message, Throwable cause) {
-        super(message, cause);
+    public PayloadValidatorSpiException(String messageCode, Throwable cause) {
+        super(messageCode, cause);
     }
 
-    public PayloadValidatorSpiException(Throwable cause) {
-        super(cause);
-    }
 }

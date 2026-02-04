@@ -19,27 +19,28 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.AlertScope;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
+import eu.europa.ec.edelivery.smp.data.enums.ExpiringEntity;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY;
 
 /**
  * @author Joze Rihtarsic
@@ -48,16 +49,11 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USER
 @Repository
 public class CredentialDao extends BaseDao<DBCredential> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialDao.class);
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE = "start_alert_send_date";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_END_DATE = "endAlertDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE = "expire_test_date";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE = "lastSendAlertDate";
-
 
     /**
      * Persists the user to the database. Before that test if user has identifiers. Usernames are saved to database in lower caps
      *
-     * @param user
+     * @param user the user to persist
      */
     @Override
     @Transactional
@@ -80,7 +76,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
      * Method finds credentials by username. If credential does not exist
      * Optional  with isPresent - false is returned.
      *
-     * @param username
+     * @param username the UI username to search for
      * @return returns Optional DBCredential for username
      */
     public Optional<DBCredential> findUsernamePasswordCredentialForUsernameAndUI(String username) {
@@ -100,7 +96,8 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional");
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, username);
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, username);
         }
     }
 
@@ -112,7 +109,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
      * @return returns Optional DBCredential for reset Token Identifier
      * @throws SMPRuntimeException if more than one credential is found!
      */
-    public Optional<DBCredential> findUCredentialForUsernamePasswordTypeAndResetToken(String resetTokenIdentifier) {
+    public Optional<DBCredential> findCredentialForUsernamePasswordTypeAndResetToken(String resetTokenIdentifier) {
         // check if blank
         if (StringUtils.isBlank(resetTokenIdentifier)) {
             return Optional.empty();
@@ -128,7 +125,8 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for reset token: [{}]", resetTokenIdentifier);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, resetTokenIdentifier);
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resetTokenIdentifier);
         }
     }
 
@@ -154,7 +152,8 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for user ID: [{}]", userId);
             return Optional.empty();
         } else if (list.size() > 1) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, userId);
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, userId);
         }
         return Optional.of(list.get(0));
     }
@@ -183,7 +182,8 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for access token: [{}]", accessToken);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, accessToken);
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, accessToken);
         }
     }
 
@@ -198,34 +198,31 @@ public class CredentialDao extends BaseDao<DBCredential> {
         return query.getResultList();
     }
 
-    public List<DBCredential> findAll() {
-        // check if blank
-        TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_ALL, DBCredential.class);
-        return query.getResultList();
-    }
-
     /**
      * Get users with credentials which are about to expire, and they were not yet notified in alertInterval period
      * @param credentialType - the credential type to send alert
      * @param beforeStartDays - days before password is expired and the alerting starts
      * @param alertInterval - how many days must past since last alert before we can send next alert
      * @param maxAlertsInBatch - max number of alerts we can process in on batch
-     * @return
+     * @return list of credentials which are about to expire
      */
     public List<DBCredential> getCredentialsBeforeExpireForAlerts(CredentialType credentialType, int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-
         OffsetDateTime expireTestDate = OffsetDateTime.now();
         OffsetDateTime startAlertSendDate = expireTestDate.plusDays(beforeStartDays);
         OffsetDateTime lastSendAlertDate = expireTestDate.minusDays(alertInterval);
+        ExpiringEntity expiringEntity = ExpiringEntity.getExpiringEntity(credentialType);
 
         TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_BEFORE_EXPIRE, DBCredential.class);
 
         query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType );
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE, startAlertSendDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireTestDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setParameter(PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE, startAlertSendDate);
+        query.setParameter(PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireTestDate);
+        query.setParameter(PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setParameter(PARAM_ALERT_SCOPE, AlertScope.USER_CREDENTIAL);
+        query.setParameter(PARAM_ENTITY_TYPE, expiringEntity);
         query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+
+        return  query.getResultList();
     }
     /**
      * Get users with passwords which are about to expire, and they were not yet notified in alertInterval period
@@ -233,21 +230,24 @@ public class CredentialDao extends BaseDao<DBCredential> {
      * @param alertPeriodDays - days before password is expired and the alerting starts
      * @param alertInterval - how many days must past since last alert before we can send next alert
      * @param maxAlertsInBatch - max number of alerts we can process in on batch
-     * @return
+     * @return list of credentials which are expired and were not yet notified
      */
     public List<DBCredential> getUsersWithExpiredCredentialsForAlerts(CredentialType credentialType, int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
         OffsetDateTime expireDate = OffsetDateTime.now();
         // the alert period must be less than expire day
         OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
         OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+        ExpiringEntity expiringEntity = ExpiringEntity.getExpiringEntity(credentialType);
 
         TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_EXPIRED, DBCredential.class);
-        query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType );
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType);
+        query.setParameter(PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
+        query.setParameter(PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireDate);
+        query.setParameter(PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setParameter(PARAM_ALERT_SCOPE, AlertScope.USER_CREDENTIAL);
+        query.setParameter(PARAM_ENTITY_TYPE, expiringEntity);
         query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+        return  query.getResultList();
     }
 
     public List<DBCredential> getBeforePasswordExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
@@ -278,19 +278,8 @@ public class CredentialDao extends BaseDao<DBCredential> {
      * Method finds user by certificateId. If user does not exist
      * Optional  with isPresent - false is returned.
      *
-     * @param certificateId
-     * @return returns Optional DBUser for certificateID
-     */
-    public Optional<DBCredential> findUserByCertificateId(String certificateId) {
-        return findUserByCertificateId(certificateId, true);
-    }
-
-    /**
-     * Method finds user by certificateId. If user does not exist
-     * Optional  with isPresent - false is returned.
-     *
-     * @param certificateId
-     * @param caseInsensitive
+     * @param certificateId the certificate identifier to search for
+     * @param caseInsensitive if true, the search is executed with case-insensitive comparison
      * @return returns Optional DBUser for certificateID
      */
     public Optional<DBCredential> findUserByCertificateId(String certificateId, boolean caseInsensitive) {
@@ -303,30 +292,8 @@ public class CredentialDao extends BaseDao<DBCredential> {
             LOG.debug("No results: Return empty optional for certificate ID: [{}]", certificateId);
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY, certificateId);
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, certificateId);
         }
     }
-
-    /**
-     * Validation report for users which owns service group
-     *
-     * @param userIds
-     * @return
-     */
-    public List<DBUserDeleteValidationMapping> validateUsersForDelete(List<Long> userIds) {
-        TypedQuery<DBUserDeleteValidationMapping> query = memEManager.createNamedQuery("DBUserDeleteValidation.validateUsersForOwnership",
-                DBUserDeleteValidationMapping.class);
-        query.setParameter("idList", userIds);
-        return query.getResultList();
-    }
-
-    @Transactional
-    public void updateAlertSentForUserCredentials(DBCredential credential,  OffsetDateTime dateTime) {
-        // attach to jpa session of not already
-        DBCredential managedCredential = find(credential.getId());
-        managedCredential.setExpireAlertOn(dateTime);
-    }
-
-
-
 }

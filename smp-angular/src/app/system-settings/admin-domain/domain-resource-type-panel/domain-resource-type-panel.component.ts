@@ -6,9 +6,10 @@ import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guar
 
 
 @Component({
-  selector: 'domain-resource-type-panel',
-  templateUrl: './domain-resource-type-panel.component.html',
-  styleUrls: ['./domain-resource-type-panel.component.scss']
+    selector: 'domain-resource-type-panel',
+    templateUrl: './domain-resource-type-panel.component.html',
+    styleUrls: ['./domain-resource-type-panel.component.scss'],
+    standalone: false
 })
 export class DomainResourceTypePanelComponent implements BeforeLeaveGuard {
   @Output() onSaveResourceTypesEvent: EventEmitter<DomainRo> = new EventEmitter();

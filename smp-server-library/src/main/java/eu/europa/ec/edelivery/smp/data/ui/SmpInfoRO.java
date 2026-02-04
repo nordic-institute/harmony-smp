@@ -18,6 +18,9 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,7 @@ import java.util.List;
  * @since 4.1
  */
 public class SmpInfoRO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 9008583888835630022L;
     private String version;
     private String ssoAuthenticationLabel;
@@ -38,7 +42,7 @@ public class SmpInfoRO implements Serializable {
     private String passwordValidationRegExp;
     private String passwordValidationRegExpMessage;
 
-    private final List<String> authTypes = new ArrayList<>();
+    private final List<SMPUserAuthenticationTypes> authTypes = new ArrayList<>();
 
     public String getVersion() {
         return version;
@@ -72,11 +76,11 @@ public class SmpInfoRO implements Serializable {
         this.ssoAuthenticationURI = ssoAuthenticationURI;
     }
 
-    public List<String> getAuthTypes() {
+    public List<SMPUserAuthenticationTypes> getAuthTypes() {
         return authTypes;
     }
 
-    public void addAuthTypes(List<String> authTypes) {
+    public void addAuthTypes(List<SMPUserAuthenticationTypes> authTypes) {
         this.authTypes.addAll(authTypes);
     }
 

@@ -1,4 +1,5 @@
 import {SearchTableEntity} from "../search-table/search-table-entity.model";
+import {DocumentReferenceInfoRo} from "./document-reference-info-ro.model";
 
 /**
  * SubresourceRo interface for subresource data
@@ -11,4 +12,5 @@ export interface SubresourceRo extends SearchTableEntity {
   subresourceTypeIdentifier?: string;
   identifierValue: string;
   identifierScheme?: string;
+  documentReferenceInfo?: DocumentReferenceInfoRo;
 }

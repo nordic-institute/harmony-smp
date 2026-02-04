@@ -19,9 +19,11 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersionEvent;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -41,6 +43,11 @@ import java.time.OffsetDateTime;
 public class DocumentVersionService {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(DocumentVersionService.class);
     public static final String DOCUMENT_VERSION_INITIALIZED_BY_GROUP_ADMIN = "Create and publish resource by group admin";
+    private final DocumentDao documentDao;
+
+    public DocumentVersionService(DocumentDao documentDao) {
+        this.documentDao = documentDao;
+    }
 
     /**
      * Create document version initialized by group admin. This is used when group admin creates and publishes resource.
@@ -107,10 +114,9 @@ public class DocumentVersionService {
     }
 
     /**
-     * Method sets document version status to approved and add new event to list of events
-     * It also submits request mails to the review requesters
+     * Method sets document version status to rejected and add new event to list of events
      *
-     * @param dbDocumentVersion document version to be resource administrators
+     * @param dbDocumentVersion the version of the document to be rejected
      * @param eventSourceType   event source type
      * @param message           message to be sent to the resource administrators
      */
@@ -122,10 +128,22 @@ public class DocumentVersionService {
     }
 
     /**
+     * Method unlinks document version from the document and thus marks it for deletion by cascade when the document is saved
+     *
+     * @param dbDocumentVersion the version of the document to be deleted
+     * @param dbDocument   document to which the version belongs
+     */
+    public void deleteDocumentVersion(DBDocumentVersion dbDocumentVersion, DBDocument dbDocument) {
+        // remove bidirectional links - the version will be deleted by cascade when the document is saved
+        dbDocument.getDocumentVersions().remove(dbDocumentVersion);
+        dbDocumentVersion.setDocument(null);
+    }
+
+    /**
      * Method sets document version status to approved and add new event to list of events
      * It also submits request mails to the review requesters
      *
-     * @param dbDocumentVersion document version to be resource administrators
+     * @param dbDocumentVersion the version of the document to be approved
      * @param eventSourceType   event source type
      * @param message           message to be sent to the resource administrators
      */

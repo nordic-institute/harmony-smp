@@ -29,7 +29,8 @@ import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -47,9 +48,9 @@ public class ResourceGuard {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceGuard.class);
     private static final String LOG_NOT_LOGGED_IN = "Anonymous users are not permitted to execute action [{}]!";
-    private DomainMemberDao domainMemberDao;
-    private GroupMemberDao groupMemberDao;
-    private ResourceMemberDao resourceMemberDao;
+    private final DomainMemberDao domainMemberDao;
+    private final GroupMemberDao groupMemberDao;
+    private final ResourceMemberDao resourceMemberDao;
 
     public ResourceGuard(DomainMemberDao domainMemberDao, GroupMemberDao groupMemberDao, ResourceMemberDao resourceMemberDao) {
         this.domainMemberDao = domainMemberDao;
@@ -70,6 +71,7 @@ public class ResourceGuard {
     }
 
     public boolean userIsAuthorizedForAction(SMPUserDetails user, ResourceAction action, DBResource resource, DBDomain domain) {
+        String userInfo = user != null ? user.getUsername() : "anonymous";
         switch (action) {
             case READ:
                 return canRead(user, resource);
@@ -78,10 +80,13 @@ public class ResourceGuard {
             case DELETE:
                 return canDelete(user, resource, domain);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Action not supported", "Unknown user action: [" + action + "]");
+        throw new SMPRuntimeException(ErrorMessageType.INTERNAL_USER_UNAUTHORIZED_FOR_INVALID_RESOURCE_ACTION)
+                .addParam(ErrorMessageArgument.USER, userInfo)
+                .addParam(ErrorMessageArgument.ACTION, action);
     }
 
     public boolean userIsAuthorizedForAction(SMPUserDetails user, ResourceAction action, DBSubresource subresource) {
+        String userInfo = user != null ? user.getUsername() : "anonymous";
         switch (action) {
             case READ:
                 return canRead(user, subresource);
@@ -90,7 +95,9 @@ public class ResourceGuard {
             case DELETE:
                 return canDelete(user, subresource);
         }
-        throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Action not supported", "Unknown user action: [" + action + "]");
+        throw new SMPRuntimeException(ErrorMessageType.INTERNAL_USER_UNAUTHORIZED_FOR_INVALID_RESOURCE_ACTION)
+                .addParam(ErrorMessageArgument.USER, userInfo)
+                .addParam(ErrorMessageArgument.ACTION, action);
     }
 
 
@@ -99,34 +106,43 @@ public class ResourceGuard {
 
         DBGroup group = resource.getGroup();
         DBDomain domain = group.getDomain();
-        DBUser dbuser = user == null ? null : user.getUser();
-        // if domain is internal check if user is member of domain, or any internal resources, groups
+        DBUser dbUser = (user != null) ? user.getUser() : null;
+        VisibilityType resourceVisibility = resource.getVisibility();
+        VisibilityType groupVisibility = group.getVisibility();
+        VisibilityType domainVisibility = domain.getVisibility();
 
-        if (resource.getVisibility() == VisibilityType.PRIVATE ) {
+        // 1. Private resource: only resource members can read
+        if (resourceVisibility == VisibilityType.PRIVATE) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to read private resource [{}]", user, resource);
-            return dbuser!=null && resourceMemberDao.isUserResourceMember(dbuser, resource);
+            return dbUser != null && resourceMemberDao.isUserResourceMember(dbUser, resource);
         }
 
-        if (group.getVisibility() == VisibilityType.PRIVATE) {
-            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to read public resource in a private group [{}]", user, group);
-            return dbuser!=null &&  (groupMemberDao.isUserGroupMember(dbuser, Collections.singletonList(group)) ||
-                    resourceMemberDao.isUserAnyGroupResourceMember(dbuser, group));
+        // 2. Private group: only group members or group resource members can read
+        if (groupVisibility == VisibilityType.PRIVATE) {
+            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to read resource in a private group [{}]", user, group);
+            return dbUser != null && (
+                    groupMemberDao.isUserGroupMember(dbUser, Collections.singletonList(group)) ||
+                            resourceMemberDao.isUserAnyGroupResourceMember(dbUser, group)
+            );
         }
 
-        if ((resource.getVisibility() == null || domain.getVisibility() == VisibilityType.PRIVATE)
-                && (dbuser == null ||
-                !(domainMemberDao.isUserDomainMember(dbuser, domain)
-                        || groupMemberDao.isUserAnyDomainGroupResourceMember(dbuser, domain)
-                        || resourceMemberDao.isUserAnyDomainResourceMember(dbuser, domain)))) {
+        // 3. Internal domain or unspecified resource visibility: only domain/group/resource members or JWT-authenticated users can read
+        boolean isPrivateDomain = (resourceVisibility == null || domainVisibility == VisibilityType.PRIVATE);
+        boolean isDomainMember =domainMemberDao.isUserDomainGroupOrResourceMember(dbUser, domain);
+        boolean isJwtAuthenticated = (user != null && user.isJwtAuthenticated());
+
+        if (isPrivateDomain && !isDomainMember && !isJwtAuthenticated) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read internal domain [{}] resources", user, domain);
             return false;
         }
 
-        // if resource is public anybody can see it
-        if (resource.getVisibility() == VisibilityType.PUBLIC) {
+        // 4. Public resource: anyone can read
+        if (resourceVisibility == VisibilityType.PUBLIC) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized to read public resource [{}]", user, resource);
             return true;
         }
+
+        // 5. Default: not authorized
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read resource [{}]", user, resource);
         return false;
     }

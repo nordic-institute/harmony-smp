@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SmlPage extends DComponent {
 
-    @FindBy(css = "body>pre")
+    @FindBy(css = "body>div>pre")
     private List<WebElement> dnsRecords;
 
     public SmlPage(WebDriver driver) {

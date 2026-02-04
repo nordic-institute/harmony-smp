@@ -46,12 +46,12 @@ Mysql database files and tomcat configuration (and logs) can be externalized for
   
     ./db-scripts
 
-NOTE: Make sure the script name is *mysql5innodb-data.sql*
+NOTE: Make sure the script name is *mysql-data.sql*
 
 
 example:
         
-    curl -k https://ec.europa.eu/digital-building-blocks/code/projects/EDELIVERY/repos/smp/raw/smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql?at=refs%2Fheads%2Fdevelopment --output ./db-scripts/mysql5innodb-data.sql
+    curl -k https://ec.europa.eu/digital-building-blocks/code/projects/EDELIVERY/repos/smp/raw/smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql?at=refs%2Fheads%2Fdevelopment --output ./db-scripts/mysql-data.sql
 
 Then start the docker as:
 

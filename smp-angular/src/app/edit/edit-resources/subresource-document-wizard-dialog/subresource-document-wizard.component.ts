@@ -12,8 +12,9 @@ import {lastValueFrom} from "rxjs";
 
 
 @Component({
-  templateUrl: './subresource-document-wizard.component.html',
-  styleUrls: ['./subresource-document-wizard.component.css']
+    templateUrl: './subresource-document-wizard.component.html',
+    styleUrls: ['./subresource-document-wizard.component.css'],
+    standalone: false
 })
 export class SubresourceDocumentWizardComponent {
 
@@ -74,7 +75,6 @@ export class SubresourceDocumentWizardComponent {
 
   }
 
-
   uploadCertificate(event) {
     const file = event.target.files[0];
     this.certificateValidationMessage = null;
@@ -82,7 +82,7 @@ export class SubresourceDocumentWizardComponent {
         if (res && res.certificateId) {
 
           this.dialogForm.patchValue({
-            'endpointCertificate': res.encodedValue
+            'endpointCertificate': this.removePEMHeader(res.encodedValue)
           });
         } else {
           this.certificateValidationMessage = await lastValueFrom(this.translateService.get("subresource.document.wizard.error.read"));
@@ -97,22 +97,20 @@ export class SubresourceDocumentWizardComponent {
     );
   }
 
+  removePEMHeader(pem: string) :string  {
+    if (!pem) {
+      return '';
+    }
+    // Remove the PEM header and footer
+    return pem.replace(/-----BEGIN CERTIFICATE-----/, '')
+      .replace(/-----END CERTIFICATE-----/, '')
+      .trim();
+  }
+
   clearAlert() {
     this.certificateValidationMessage = null;
   }
 
-
-  onFileChanged(event) {
-    this.selectedFile = event.target.files[0]
-  }
-
-  onUpload() {
-    // this.http is the injected HttpClient
-    this.certificateService.validateCertificate(this.selectedFile)
-      .subscribe(event => {
-        console.log(event); // handle event here
-      });
-  }
 
   public getCurrent(): SubresourceWizardRo {
 
@@ -142,15 +140,13 @@ export class SubresourceDocumentWizardComponent {
     }
 
     return '<ParticipantIdentifier ' +
-      (!schema ? '' : 'scheme="' + this.xmlSpecialChars(schema) + '"') + '>'
-      + this.xmlSpecialChars(value) + '</ParticipantIdentifier>';
+      (!schema ? '' : 'scheme="${resource.identifier.scheme}"') + '>${resource.identifier.value}</ParticipantIdentifier>';
   }
 
   getDocumentElementXML(): string {
     return ' <DocumentIdentifier ' +
-      (!this.dialogForm.controls['documentIdentifierScheme'].value ? '' : 'scheme="'
-        + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '"') +
-      '>' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>';
+      (!this.dialogForm.controls['documentIdentifierScheme'].value ? '' : 'scheme="${subresource.identifier.scheme}"') +
+      '>${subresource.identifier.value}</DocumentIdentifier>';
   }
 
   getServiceMetadataXML() {

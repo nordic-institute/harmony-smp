@@ -22,15 +22,20 @@ package eu.europa.ec.edelivery.smp.exceptions;
 /**
  * Created by migueti on 13/01/2017.
  */
-public class BadRequestException extends RuntimeException {
-    private final ErrorBusinessCode errorBusinessCode;
+public class BadRequestException extends SMPRuntimeException implements I18NException {
 
-    public BadRequestException(ErrorBusinessCode errorBusinessCode, String sMsg) {
-        super(sMsg);
-        this.errorBusinessCode = errorBusinessCode;
+
+    public BadRequestException(ErrorMessageType errorBusinessCode) {
+        super(errorBusinessCode);
+    }
+
+    @Override
+    public BadRequestException addParam(ErrorMessageArgument key, Object value) {
+        super.addParam(key, value);
+        return this;
     }
 
     public ErrorBusinessCode getErrorBusinessCode() {
-        return errorBusinessCode;
+        return getErrorCode().getErrorBusinessCode();
     }
 }

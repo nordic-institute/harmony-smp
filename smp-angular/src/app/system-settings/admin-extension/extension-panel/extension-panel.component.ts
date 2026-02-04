@@ -8,9 +8,10 @@ import {ResourceDetailsDialogComponent} from "../resource-details-dialog/resourc
 
 
 @Component({
-  selector: 'extension-panel',
-  templateUrl: './extension-panel.component.html',
-  styleUrls: ['./extension-panel.component.scss']
+    selector: 'extension-panel',
+    templateUrl: './extension-panel.component.html',
+    styleUrls: ['./extension-panel.component.scss'],
+    standalone: false
 })
 export class ExtensionPanelComponent implements AfterViewInit {
 

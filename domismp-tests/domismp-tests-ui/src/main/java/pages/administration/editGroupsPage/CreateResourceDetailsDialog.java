@@ -2,6 +2,7 @@ package pages.administration.editGroupsPage;
 
 import ddsl.dcomponents.AlertComponent;
 import ddsl.dcomponents.DComponent;
+import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -19,6 +20,8 @@ public class CreateResourceDetailsDialog extends DComponent {
     private WebElement resourceSchemeInput;
     @FindBy(id = "visibility_id")
     private WebElement resourceVisibilityDdl;
+    @FindBy(id = "closeDialogButton")
+    private WebElement closeBtn;
     @FindBy(id = "saveButton")
     private WebElement saveBtn;
     private AlertComponent alertComponent = null;
@@ -50,6 +53,7 @@ public class CreateResourceDetailsDialog extends DComponent {
             wait.forElementToBeClickable(saveBtn);
             if (weToDButton(saveBtn).isEnabled()) {
                 weToDButton(saveBtn).click();
+                wait.forXMillis(data.getWaitTimeoutShortMilliseconds());
                 return true;
             } else {
                 return false;
@@ -57,6 +61,10 @@ public class CreateResourceDetailsDialog extends DComponent {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public DButton getCloseBtn() {
+        return weToDButton(closeBtn);
     }
 
 }

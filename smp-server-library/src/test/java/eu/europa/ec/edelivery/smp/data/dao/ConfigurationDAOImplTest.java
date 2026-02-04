@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,9 +47,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
-
     @Autowired
     private ConfigurationDao configurationDao;
+
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
 
     @BeforeEach
     public void before() throws IOException {
@@ -194,7 +197,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
     @Test
     void testGetCachedPropertyValue() {
-        Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.ALERT_ACCESS_TOKEN_EXPIRED_PERIOD);
+        Object objPath = configurationDao.getPropertyValue(SMPPropertyEnum.ALERT_ACCESS_TOKEN_EXPIRED_PERIOD);
 
         assertNotNull(objPath);
         assertEquals(Integer.class, objPath.getClass());
@@ -207,7 +210,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         configurationDao.setPropertyToDatabase(SMP_CLUSTER_ENABLED, "true", null);
 
         String testValue = configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
-        Object objValue = configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
+        Object objValue = configurationDao.getPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
         OffsetDateTime localDateTime = configurationDao.getLastUpdate();
         // set new value
         String pathNew = "123456";
@@ -222,7 +225,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         // then
         assertEquals(pathNew, configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
         assertTrue(localDateTime.isBefore(configurationDao.getLastUpdate()));
-        assertNotEquals(objValue, configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
+        assertNotEquals(objValue, configurationDao.getPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
     }
 
 
@@ -231,7 +234,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
         // give
         String testValue = configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
-        Object objValue = configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
+        Object objValue = configurationDao.getPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
         OffsetDateTime localDateTime = configurationDao.getLastUpdate();
         // set new value
         String pathNew = "123455";
@@ -248,7 +251,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         // then
         assertEquals(pathNew, configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
         assertTrue(localDateTime.isBefore(configurationDao.getLastUpdate()));
-        assertNotEquals(objValue, configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
+        assertNotEquals(objValue, configurationDao.getPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
     }
 
     @Test
@@ -276,25 +279,25 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         assertNotEquals(newDBTestPassword, dbProxyPassword);
 
         // value is the actual password
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.KEYSTORE_PASSWORD));
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.TRUSTSTORE_PASSWORD));
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.KEYSTORE_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.TRUSTSTORE_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
 
         // test decrypt
-        File encryptionKey = configurationDao.getCachedPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
-        assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, dbKeystorePassword, encryptionKey));
-        assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
-        assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));
+        File encryptionKey = configurationDao.getPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
+        assertEquals(newTestPassword, configurationDao.decryptStringToString(SMPPropertyEnum.KEYSTORE_PASSWORD, dbKeystorePassword, encryptionKey));
+        assertEquals(newTestPassword, configurationDao.decryptStringToString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
+        assertEquals(newTestPassword, configurationDao.decryptStringToString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));
     }
 
     @Test
-    void encryptDefault() throws IOException {
+    void encryptDefault() {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
 
         // when
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
+        String encPassword = configurationDao.encryptStringToBase64(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -307,40 +310,42 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String password = "TEST11002password1@!." + System.currentTimeMillis();
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
-                () -> configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f));
+                () -> configurationDao.encryptStringToBase64(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f));
         //then
         assertNotNull(result);
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Error occurred while encrypting the property:"));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                CoreMatchers.containsStringIgnoringCase("Cannot encrypt the property"));
     }
 
     @Test
-    void decryptDefault() throws IOException {
+    void decryptDefault() {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
+        String encPassword = configurationDao.encryptStringToBase64(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
 
         // when
-        String decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, f);
+        byte[] decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, f);
         //then
         assertNotNull(decPassword);
-        assertEquals(password, decPassword);
+        assertEquals(password, new String(decPassword));
     }
 
     @Test
-    void decryptDefaultError() throws IOException {
+    void decryptDefaultError() {
         // given
         File f = generateRandomPrivateKey();
         File fErr = new File("no.key");
         String password = "TEST11002password1@!." + System.currentTimeMillis();
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
+        String encPassword = configurationDao.encryptStringToBase64(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
 
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, fErr));
         //then
         assertNotNull(result);
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Error occurred while decrypting the property:"));
+        MatcherAssert.assertThat(smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()),
+                CoreMatchers.containsStringIgnoringCase("Cannot decrypt the property"));
     }
 
     @Test
@@ -350,12 +355,12 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String password = "test123";
 
         // when
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, keyFile);
-        String decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, keyFile);
+        String encPassword = configurationDao.encryptStringToBase64(SMPPropertyEnum.KEYSTORE_PASSWORD, password, keyFile);
+        byte[] decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, keyFile);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
-        assertEquals(password, decPassword);
+        assertEquals(password, new String(decPassword));
     }
 
     @Test
@@ -365,12 +370,12 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String password = "test123";
 
         // when
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, keyFile);
-        String decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, keyFile);
+        String encPassword = configurationDao.encryptStringToBase64(SMPPropertyEnum.KEYSTORE_PASSWORD, password, keyFile);
+        byte[] decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, keyFile);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
-        assertEquals(password, decPassword);
+        assertEquals(password, new String(decPassword));
     }
 
     @Test
@@ -388,9 +393,9 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         assertEquals(newDBTestPassword, configurationDao.getCachedProperty(SMPPropertyEnum.TRUSTSTORE_PASSWORD));
         assertEquals(newDBTestPassword, configurationDao.getCachedProperty(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
         // value is the actual password
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.KEYSTORE_PASSWORD));
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.TRUSTSTORE_PASSWORD));
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.KEYSTORE_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.TRUSTSTORE_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
     }
 
     @Test
@@ -435,15 +440,15 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         assertNotEquals(newDBTestPassword, dbProxyPassword);
 
         // value is the actual password
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.KEYSTORE_PASSWORD));
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.TRUSTSTORE_PASSWORD));
-        assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.KEYSTORE_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.TRUSTSTORE_PASSWORD));
+        assertEquals(newTestPassword, configurationDao.getPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
 
         // test decrypt
-        File encryptionKey = configurationDao.getCachedPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
-        assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, dbKeystorePassword, encryptionKey));
-        assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
-        assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));
+        File encryptionKey = configurationDao.getPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
+        assertEquals(newTestPassword, configurationDao.decryptStringToString(SMPPropertyEnum.KEYSTORE_PASSWORD, dbKeystorePassword, encryptionKey));
+        assertEquals(newTestPassword, configurationDao.decryptStringToString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
+        assertEquals(newTestPassword, configurationDao.decryptStringToString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));
     }
 
     @Test

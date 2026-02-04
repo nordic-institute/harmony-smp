@@ -37,11 +37,13 @@ import {
 import {
   EditResourceController
 } from "../../edit-resources/edit-resource.controller";
+import {NavigationService} from "../../../window/sidenav/navigation-model.service";
 
 @Component({
-  selector: 'group-resource-panel',
-  templateUrl: './group-resource-panel.component.html',
-  styleUrls: ['./group-resource-panel.component.scss']
+    selector: 'group-resource-panel',
+    templateUrl: './group-resource-panel.component.html',
+    styleUrls: ['./group-resource-panel.component.scss'],
+    standalone: false
 })
 export class GroupResourcePanelComponent implements BeforeLeaveGuard {
 
@@ -64,7 +66,8 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
               private editResourceController: EditResourceController,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private navigationService: NavigationService) {
 
     this.columns = [
       {
@@ -85,7 +88,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     ];
 
   }
-
 
   @Input()
   set group(value: GroupRo) {
@@ -204,19 +206,46 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
       return;
     }
 
+    let confirmationDescriptionKey:string = "group.resource.panel.delete.confirmation.dialog.description";
+    let confirmationDescriptionParameters: any = {
+      identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
+      identifierValue: this.selected.identifierValue,
+    };
+
+    // check if resource is referenced by document references
+    if (this.selected.documentReferenceInfo &&
+      this.selected.documentReferenceInfo.sharingEnabled
+      && this.selected.documentReferenceInfo.referencedByCount > 0) {
+      confirmationDescriptionKey = "group.resource.panel.delete.confirmation.dialog.description.referenced";
+      confirmationDescriptionParameters["referenceCount"] = this.selected.documentReferenceInfo.referencedByCount;
+    }
+
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.title")),
-        description: await lastValueFrom(this.translateService.get("group.resource.panel.delete.confirmation.dialog.description", {
-          identifierScheme: StringUtils.toEmpty(this.selected.identifierScheme),
-          identifierValue: this.selected.identifierValue
-        }))
+        description: await lastValueFrom(this.translateService.get(confirmationDescriptionKey, confirmationDescriptionParameters ))
       }
     }).afterClosed().subscribe(result => {
       if (result) {
         this.deleteResource(this.group, this.selected);
       }
     });
+  }
+
+  public async onSelectResourceClicked() {
+    if (!this._group || !this._group.groupId) {
+      this.alertService.error(await lastValueFrom(this.translateService.get("group.resource.panel.error.edit.group")));
+      return;
+    }
+
+    if (!this.selected || !this.selected.resourceId) {
+      this.alertService.error(await lastValueFrom(this.translateService.get("group.resource.panel.error.edit.resource")));
+      return;
+    }
+
+    this.editResourceController.selectTargetResource(this.selected, this._group, this.domain );
+    this.editResourceController.selectedComponent = 'subresources';
+    this.navigationService.navigateToEditResourceSubresources();
   }
 
   deleteResource(group: GroupRo, resource: ResourceRo) {
@@ -242,7 +271,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
         }
       );
   }
-
 
   public onResourceSelected(resource: ResourceRo) {
     this.selected = resource;

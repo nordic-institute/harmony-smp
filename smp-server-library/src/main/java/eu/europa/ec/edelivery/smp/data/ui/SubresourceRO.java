@@ -18,13 +18,17 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
+
 public class SubresourceRO extends BaseRO {
+    @Serial
     private static final long serialVersionUID = 9008583888835630029L;
     String subresourceId;
     String identifierValue;
     String identifierScheme;
     String subresourceTypeIdentifier;
     Boolean isDocumentSharingEnabled = false;
+    private DocumentReferenceInfoRO documentReferenceInfo;
 
 
     public String getSubresourceId() {
@@ -65,5 +69,11 @@ public class SubresourceRO extends BaseRO {
 
     public void setDocumentSharingEnabled(Boolean documentSharingEnabled) {
         isDocumentSharingEnabled = documentSharingEnabled;
+    }
+    public DocumentReferenceInfoRO getDocumentReferenceInfo() {
+        return documentReferenceInfo;
+    }
+    public void setDocumentReferenceInfo(DocumentReferenceInfoRO documentReferenceInfo) {
+        this.documentReferenceInfo = documentReferenceInfo;
     }
 }

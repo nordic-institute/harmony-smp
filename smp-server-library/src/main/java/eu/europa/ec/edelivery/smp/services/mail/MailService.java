@@ -18,10 +18,13 @@
  */
 package eu.europa.ec.edelivery.smp.services.mail;
 
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.mail.MailException;
@@ -29,8 +32,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 
 
@@ -86,8 +87,9 @@ public class MailService {
 
             javaMailSender.send(message);
         } catch (MessagingException | MailException e) {
-            LOG.error("Exception while sending mail from [{}] to [{}]", from, to, e);
-            throw new SMPRuntimeException(ErrorCode.MAIL_SUBMISSION_ERROR, e, ExceptionUtils.getRootCauseMessage(e));
+            LOG.error("Exception while sending mail from [{}] to [{}], root cause [{}]", from, to, ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorMessageType.MAIL_SUBMISSION, e)
+                    .addParam(ErrorMessageArgument.ERROR, ExceptionUtils.getRootCauseMessage(e));
         }
         return subject;
     }

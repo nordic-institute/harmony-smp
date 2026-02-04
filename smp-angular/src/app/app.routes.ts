@@ -1,69 +1,41 @@
 import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
-import {
-  ResourceSearchComponent
-} from './resource-search/resource-search.component';
-import {
-  PropertyComponent
-} from "./system-settings/admin-properties/property.component";
-import {
-  UserProfileComponent
-} from "./user-settings/user-profile/user-profile.component";
+import {ResourceSearchComponent} from './resource-search/resource-search.component';
+import {PropertyComponent} from "./system-settings/admin-properties/property.component";
+import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
 import {authenticationGuard} from "./guards/authentication.guard";
-import {
-  UserAccessTokensComponent
-} from "./user-settings/user-access-tokens/user-access-tokens.component";
-import {
-  UserCertificatesComponent
-} from "./user-settings/user-certificates/user-certificates.component";
-import {
-  ExtensionComponent
-} from "./system-settings/admin-extension/extension.component";
-import {
-  AdminTruststoreComponent
-} from "./system-settings/admin-truststore/admin-truststore.component";
-import {
-  AdminKeystoreComponent
-} from "./system-settings/admin-keystore/admin-keystore.component";
-import {
-  AdminDomainComponent
-} from "./system-settings/admin-domain/admin-domain.component";
+import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
+import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
+import {ExtensionComponent} from "./system-settings/admin-extension/extension.component";
+import {AdminTruststoreComponent} from "./system-settings/admin-truststore/admin-truststore.component";
+import {AdminKeystoreComponent} from "./system-settings/admin-keystore/admin-keystore.component";
+import {AdminDomainComponent} from "./system-settings/admin-domain/admin-domain.component";
 import {dirtyDeactivateGuard} from "./guards/dirty.guard";
-import {
-  AdminUserComponent
-} from "./system-settings/admin-users/admin-user.component";
+import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
-import {
-  EditResourceComponent
-} from "./edit/edit-resources/edit-resource.component";
+import {EditResourceComponent} from "./edit/edit-resources/edit-resource.component";
 import {
   ResourceDocumentPanelComponent
 } from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
 import {
   SubresourceDocumentPanelComponent
 } from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
-import {
-  authorizeChildSystemAdminGuard
-} from "./guards/authorize-child-system-admin.guard";
-import {
-  activateChildResourceGuard
-} from "./guards/activate-child-document.guard";
-import {
-  UserAlertsComponent
-} from "./user-settings/user-alerts/user-alerts.component";
-import {
-  AdminAlertsComponent
-} from "./system-settings/admin-alerts/admin-alerts.component";
-import {
-  ResetCredentialComponent
-} from "./security/reset-credential/reset-credential.component";
+import {authorizeChildSystemAdminGuard} from "./guards/authorize-child-system-admin.guard";
+import {activateChildResourceGuard} from "./guards/activate-child-document.guard";
+import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
+import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.component";
+import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
 import {DnsToolsComponent} from "./tools/dns-tools/dns-tools.component";
 import {ReviewTasksComponent} from "./edit/review-task/review-tasks.component";
 import {
   ReviewDocumentPanelComponent
 } from "./common/panels/review-tasks-panel/review-document-panel/review-document-panel.component";
 import {activateChildReviewGuard} from "./guards/activate-child-review.guard";
+import {activateChildEditDomainGuard} from "./guards/activate-child-edit-domain.guard";
+import {
+  DomainDocumentTemplateEditPanelComponent
+} from "./edit/edit-domain/domain-extension-template-panel/domain-document-template-edit-panel/domain-document-template-edit-panel.component";
 
 
 const appRoutes: Routes = [
@@ -79,8 +51,16 @@ const appRoutes: Routes = [
     children: [
       {
         path: 'edit-domain',
-        component: EditDomainComponent,
-        canDeactivate: [dirtyDeactivateGuard]
+        canDeactivate: [dirtyDeactivateGuard],
+        children: [
+          {
+            path: 'edit-domain-document-template',
+            //canActivate: [activateChildEditDomainGuard],
+            component: DomainDocumentTemplateEditPanelComponent,
+            canDeactivate: [dirtyDeactivateGuard]
+          },
+          {path: '', component: EditDomainComponent}
+        ]
       },
       {
         path: 'edit-group',

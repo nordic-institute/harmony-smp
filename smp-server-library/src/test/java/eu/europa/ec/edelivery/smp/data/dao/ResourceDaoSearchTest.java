@@ -104,7 +104,7 @@ class ResourceDaoSearchTest extends AbstractBaseDao {
     public void assertResources(List<ResourceDao.DBResourceWrapper> result, String... resourceIdentifiers) {
         List<String> resultIdentifiers = result.stream().map(val -> val.getDbResource().getIdentifierScheme() + "::" + val.getDbResource().getIdentifierValue()).collect(Collectors.toList());
         System.out.println(resultIdentifiers);
-        assertArrayEquals(resourceIdentifiers, resultIdentifiers.stream().toArray());
+        assertArrayEquals(resourceIdentifiers, resultIdentifiers.toArray());
     }
 
     @Test
@@ -153,18 +153,18 @@ class ResourceDaoSearchTest extends AbstractBaseDao {
             "'Search by scheme partial OK',0088:1234556,test-test-test,,-test-, 1",
             "'Search by chars OK',0088:#$%!@#$-1234,test-test-test,#$%!@#,, 1",
             "'Search by '/' OK',0088/1234,test-test-test,88/12,, 1",
-            "'Search by '\\' OK',0088\\1234,test-test-test,88\\12,, 1",
+            "'Search by '\\' OK',0088\\1234,test-test-test,88\\\\12,, 1",
+            "'Search by '_' OK',0088_123_4,test-test-test,88\\_12,, 1",
+            "'Search by '%' OK',0088%123_4,test-test-test,88\\%12,, 1",
     })
-    void testGetSearchSlashCharacter(String testDec, String identifierValue, String identifierScheme, String searchValue, String searcScheme, int cnt) {
+    void testGetSearchSlashCharacter(String testDec, String identifierValue, String identifierScheme, String searchValue, String searchScheme, int cnt) {
         LOG.info(testDec);
         // given
         testUtilsDao.createResource(identifierValue,identifierScheme, VisibilityType.PUBLIC, testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1()  );
         // then
-        List<ResourceDao.DBResourceWrapper> result = testInstance.getPublicResourcesSearch(-1, -1, null, searcScheme, searchValue, null, null);
+        List<ResourceDao.DBResourceWrapper> result = testInstance.getPublicResourcesSearch(-1, -1, null, searchScheme, searchValue, null, null);
         assertEquals(cnt, result.size());
-        result.stream().forEach(val -> {
-            assertEquals(VisibilityType.PUBLIC, val.getDbResource().getVisibility());
-        });
+        result.forEach(val -> assertEquals(VisibilityType.PUBLIC, val.getDbResource().getVisibility()));
     }
 
 }

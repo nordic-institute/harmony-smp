@@ -3,10 +3,6 @@
     <h3>{{ "domain.panel.title" | translate }}</h3>
     <div class="panel" *ngIf="_domain!=null &&  !_domain.domainId"><p
       style="font-weight: bold">{{ "domain.panel.text" | translate }}</div>
-    <smp-warning-panel *ngIf="showWarning"
-                       icon="warning"
-                       type="warning"
-                       [htmlContent]="warningMessage"></smp-warning-panel>
     <mat-form-field style="width:100%">
       <mat-label>{{ "domain.panel.label.domain" | translate }}</mat-label>
       <input matInput
@@ -65,7 +61,15 @@
         align="end">{{ "domain.panel.hint.domain.visibility" | translate }}
       </mat-hint>
     </mat-form-field>
-
+    <!-- Temporarily disabled for release DomiSMP 5.2 RC: see the ticket #EDELIVERY-12744
+    <mat-slide-toggle style="width:100%"
+                      formControlName="domainTrustStoreEnabled"
+                      id="domain-truststore-enabled_id"
+                      matTooltip="{{ 'domain.panel.label.domain.truststore.enabled.tooltip' | translate }}"
+    >
+      {{ "domain.panel.label.domain.truststore.enabled" | translate }}
+    </mat-slide-toggle>
+    -->
     <mat-form-field *ngIf="domainResourceTypes?.length" style="width:100%">
       <mat-label>{{ "domain.panel.label.domain.default.resource.type" | translate }}</mat-label>
       <select matNativeControl formControlName="defaultResourceTypeIdentifier"

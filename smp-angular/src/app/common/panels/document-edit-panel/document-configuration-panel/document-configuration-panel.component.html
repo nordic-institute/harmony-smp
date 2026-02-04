@@ -27,7 +27,7 @@
            readonly>
   </mat-form-field>
   <mat-checkbox formControlName="sharingEnabled"
-                (change)="onSharingEnabledChanged()"
+                (change)="onSharingEnabledChanged($event)"
                 matTooltip="{{ 'document.configuration.panel.tooltip.sharing.enabled' | translate }}"
                 id="sharingEnabled_id">
     {{ "document.configuration.panel.label.sharing.enabled" | translate }}
@@ -44,7 +44,7 @@
 
       <button mat-raised-button
               color="primary"
-              [disabled]="!hasReferenceDocument"
+              [disabled]="!hasReferenceDocument &&  !hasReferenceDocumentUrl"
               (click)="onClearReferenceDocument()">
         <mat-icon>delete</mat-icon>
         <span>{{ "document.configuration.panel.button.reference.clear" | translate }}</span>
@@ -67,6 +67,11 @@
 
   </div>
   <ng-template #noDataFound>
+    <div *ngIf="hasReferenceDocumentUrl;else noReferenceUrlFound" id="no_document-reference_url_exists_id" style="padding: 1em 0.4px ">
+      {{ "document.configuration.panel.label.incomplete.reference" | translate }}
+    </div>
+  </ng-template>
+  <ng-template #noReferenceUrlFound>
     <div id="no_document-reference_id" style="padding: 1em 0.4px ">
       {{ "document.configuration.panel.label.reference.document.not.selected" | translate }}
     </div>

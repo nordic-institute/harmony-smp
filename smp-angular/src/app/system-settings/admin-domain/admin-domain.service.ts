@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {SecurityService} from "../../security/security.service";
 import {
   AlertMessageService
@@ -10,11 +10,12 @@ import {DomainRo} from "../../common/model/domain-ro.model";
 import {User} from "../../security/user.model";
 import {SmpConstants} from "../../smp.constants";
 import {DomainPropertyRo} from "../../common/model/domain-property-ro.model";
+import {TableResult} from "../../common/model/table-result.model";
 
 @Injectable()
 export class AdminDomainService {
 
-  private domainUpdateSubject: Subject<DomainRo[]> = new Subject<DomainRo[]>();
+  private domainUpdateSubject: Subject<TableResult<DomainRo>> = new Subject<TableResult<DomainRo>>();
   private domainEntryUpdateSubject: Subject<DomainRo> = new Subject<DomainRo>();
   private domainPropertyUpdateSubject: Subject<DomainPropertyRo[]> = new Subject<DomainPropertyRo[]>();
 
@@ -27,13 +28,18 @@ export class AdminDomainService {
   /**
    * Get list of all domains the current user can administer
    */
-  public getDomains() {
+  public getDomains( filter: string="", page: number=-1, pageSize: number=10): void {
+    let params: HttpParams = new HttpParams()
+      .set('page', !page ? "0" : page.toString())
+      .set('pageSize', !pageSize ? "10" : pageSize.toString())
+      .set("filter", encodeURIComponent(filter));
+
 
     const currentUser: User = this.securityService.getCurrentUser();
-    this.http.get<DomainRo[]>(SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
-      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId))
+    this.http.get<TableResult<DomainRo>>(SmpConstants.REST_INTERNAL_DOMAIN_MANAGE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId), {params})
       .subscribe({
-        next: (result: DomainRo[]) => {
+        next: (result: TableResult<DomainRo>) => {
           this.notifyDomainsUpdated(result);
         },
         error: (error: any) => {
@@ -193,7 +199,7 @@ export class AdminDomainService {
   }
 
 
-  notifyDomainsUpdated(res: DomainRo[]) {
+  notifyDomainsUpdated(res: TableResult<DomainRo>) {
     this.domainUpdateSubject.next(res);
   }
 
@@ -205,7 +211,7 @@ export class AdminDomainService {
     this.domainPropertyUpdateSubject.next(properties);
   }
 
-  onDomainUpdatedEvent(): Observable<DomainRo[]> {
+  onDomainUpdatedEvent(): Observable<TableResult<DomainRo>> {
     return this.domainUpdateSubject.asObservable();
   }
 

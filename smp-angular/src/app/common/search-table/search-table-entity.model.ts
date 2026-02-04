@@ -8,4 +8,6 @@ export interface SearchTableEntity {
   deleted?: boolean;
   visibility?: VisibilityEnum;
   actionMessage?: string;
+  statusMessage?: string;
+  expanded?: boolean;
 }

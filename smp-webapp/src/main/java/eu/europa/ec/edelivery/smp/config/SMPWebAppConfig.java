@@ -106,13 +106,23 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods("*");
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE");
+        ;
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.setOrder(HIGHEST_ORDER)
-                .addResourceHandler("/index.html", "/favicon.png", "/favicon.ico").addResourceLocations("/html/");
+                .addResourceHandler("/index.html",
+                        "/images/DomiSMP_logo.svg",
+                        "/images/EC+Logo2.png",
+                        "/images/oasis-smp-1.png",
+                        "/images/oasis-smp-2.png",
+                        "/images/favicon.ico",
+                        "/styles/domismp.css")
+                .addResourceLocations("/html/");
 
         registry.setOrder(HIGHEST_ORDER - 2)
                 .addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources

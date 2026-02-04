@@ -32,17 +32,12 @@ public class SignatureException extends Exception {
         INTERNAL_ERROR,
     }
 
-    ErrorCode errorCode;
-    public SignatureException(ErrorCode code, String message) {
-        super(message);
+    private final ErrorCode errorCode;
+
+    public SignatureException(ErrorCode code, String messageCode) {
+        super(messageCode);
         this.errorCode = code;
     }
-
-    public SignatureException(ErrorCode code, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = code;
-    }
-
 
     public ErrorCode getErrorCode() {
         return errorCode;

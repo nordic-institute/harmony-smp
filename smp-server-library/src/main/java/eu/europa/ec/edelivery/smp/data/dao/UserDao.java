@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,26 +19,31 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidationMapping;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_IDENTIFIERS;
 
 /**
  * @author gutowpa
@@ -46,8 +51,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_ID
  */
 @Repository
 public class UserDao extends BaseDao<DBUser> {
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserDao.class);
 
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserDao.class);
 
     /**
      * Persists the user to the database. Before that test if user has identifiers. Usernames are saved to database in lower caps
@@ -59,10 +64,69 @@ public class UserDao extends BaseDao<DBUser> {
     public void persistFlushDetach(DBUser user) {
         // update username to lower caps
         if (StringUtils.isBlank(user.getUsername())) {
-            throw new SMPRuntimeException(INVALID_USER_NO_IDENTIFIERS);
+            throw new SMPRuntimeException(ErrorMessageType.USER_INVALID_NO_IDENTIFIERS);
         }
         user.setUsername(user.getUsername().toLowerCase());
         super.persistFlushDetach(user);
+    }
+
+    /**
+     * Returns all users that have resource admin role Or they have Review permission.
+     *
+     * @param resource the resource for which to find the resource member users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceAdminAndReviewUsers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, MembershipRoleType.ADMIN);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        query.setParameter(PARAM_PERMISSION_CAN_REVIEW, true);
+        return query.getResultList();
+    }
+
+    /**
+     * Returns all users that have resource admin role for the provided resource.
+     *
+     * @param resource the resource for which to find the resource admin users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceReviewUsers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, null);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        query.setParameter(PARAM_PERMISSION_CAN_REVIEW, true);
+        return query.getResultList();
+    }
+
+    /**
+     * Returns all users that have resource admin role for the provided resource.
+     *
+     * @param resource the resource for which to find the resource admin users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceAdminUsers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, MembershipRoleType.ADMIN);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        query.setParameter(PARAM_PERMISSION_CAN_REVIEW, null);
+        return query.getResultList();
+    }
+
+    /**
+     * Returns all users that have resource admin role for the provided resource.
+     *
+     * @param resource the resource for which to find the resource admin users
+     * @return the list of users that have resource admin role for the provided resource or an empty list when no matches found
+     */
+    public List<DBUser> getResourceReviewers(DBResource resource) {
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_RESOURCE_AND_ROLE_OR_REVIEW_PERMISSION, DBUser.class);
+
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, MembershipRoleType.ADMIN);
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        return query.getResultList();
     }
 
     /**
@@ -115,7 +179,6 @@ public class UserDao extends BaseDao<DBUser> {
                 CredentialTargetType.REST_API);
     }
 
-
     /**
      * Method finds user by certificateId. If user does not exist
      * Optional  with isPresent - false is returned.
@@ -149,7 +212,6 @@ public class UserDao extends BaseDao<DBUser> {
                 CredentialTargetType.REST_API);
     }
 
-
     /**
      * Method finds user by user credentials for credential name, type and target. If user identity token not exist
      * Optional  with isPresent - false is returned.
@@ -177,7 +239,8 @@ public class UserDao extends BaseDao<DBUser> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, credentialName);
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, credentialName);
         }
     }
 
@@ -200,8 +263,26 @@ public class UserDao extends BaseDao<DBUser> {
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, username);
+            throw new SMPRuntimeException(ErrorMessageType.USER_ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRIES)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, username);
         }
+    }
+
+    /**
+     * Returns all users that match the provided set of application roles.
+     *
+     * @param roles the set of application roles that users need to belong to
+     * @return the list of users matching the provided application roles or an empty list when no matches found or when
+     * the initial set of provided application roles is empty.
+     */
+    public List<DBUser> findUsersByApplicationRoles(Set<ApplicationRoleType> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BY_APPLICATION_ROLES, DBUser.class);
+        query.setParameter(PARAM_USER_APPLICATION_ROLES, roles);
+        return query.getResultList();
     }
 
     /**

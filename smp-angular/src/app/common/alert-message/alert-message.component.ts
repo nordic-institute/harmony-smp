@@ -11,9 +11,10 @@ import {Subscription} from "rxjs";
  * The messages can be of different types: success, error, info, warning.
  */
 @Component({
-  selector: 'alert',
-  templateUrl: './alert-message.component.html',
-  styleUrls: ['./alert-message.component.css']
+    selector: 'alert',
+    templateUrl: './alert-message.component.html',
+    styleUrls: ['./alert-message.component.css'],
+    standalone: false
 })
 export class AlertMessageComponent implements OnInit, OnDestroy {
 

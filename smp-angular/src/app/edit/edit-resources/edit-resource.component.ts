@@ -1,29 +1,25 @@
-import {Component, Input, OnInit,} from '@angular/core';
+import {AfterViewInit, Component, Input,} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {PageEvent} from "@angular/material/paginator";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
-import {
-  ResourceDefinitionRo
-} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
-import {
-  SmpTableColDef
-} from "../../common/components/smp-table/smp-table-coldef.model";
-
+import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
   templateUrl: './edit-resource.component.html',
-  styleUrls: ['./edit-resource.component.css']
+  styleUrls: ['./edit-resource.component.css'],
+  standalone: false
 })
-export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
+export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
-
   selected: ResourceRo;
   isLoadingResults = false;
   dataSource: EditResourceController;
+
   // define columns for smp-table
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
   columns: SmpTableColDef[];
@@ -43,23 +39,23 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
         cell: (row: ResourceRo) => row.identifierValue
       } as SmpTableColDef
     ];
+    // set loading state, it will be triggered in ngAfterViewInit
+    this.dataSource.loadingResults = true
+
   }
 
-  ngOnInit() {
-    console.log("EditResourceComponent: ngOnInit  " + this.columns.length);
-    this.editResourceController.refreshDataOnDataChange();
+  ngAfterViewInit() {
 
-    if (!this.selectedResource) {
+    if (this.editResourceController.dataChanged) {
+      this.editResourceController.refreshDataOnDataChange();
+    } else if (!this.selectedResource) {
       this.editResourceController.refreshDomains();
     } else {
       // always refresh resources when selected resource is set
       this.editResourceController.refreshResources();
+
     }
   }
-
-  ngAfterViewInit(): void {
-  }
-
 
   onFilterChangedEvent(filter: string) {
     this.editResourceController.applyResourceFilter(filter);
@@ -93,7 +89,6 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     this.editResourceController.selectedGroup = resource;
   };
 
-
   get selectedDomainResourceDefs(): ResourceDefinitionRo[] {
     return this.editResourceController._selectedDomainResourceDefs;
   }
@@ -114,16 +109,16 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     return !!this.editResourceController.resourcesFilter;
   }
 
+  get filterResourceValue(): string {
+    return this.editResourceController.resourcesFilter["filter"];
+  }
+
   get disabledResourceFilter(): boolean {
     return !this.editResourceController.filteredData;
   }
 
   get isLoading(): boolean {
-    return this.editResourceController.isLoadingResults;
-  }
-
-  get dataLength(): number {
-    return this.editResourceController.dataLength;
+    return this.editResourceController.loadingResults;
   }
 
   isDirty(): boolean {
@@ -140,5 +135,14 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
 
   get selectedResourceDefinition(): ResourceDefinitionRo {
     return this.editResourceController.selectedResourceDefinition;
+  }
+
+  getSelectedTabIndex() {
+    switch (this.editResourceController.selectedComponent) {
+      case 'subresources':
+        return 2;
+      default:
+        return 0;
+    }
   }
 }

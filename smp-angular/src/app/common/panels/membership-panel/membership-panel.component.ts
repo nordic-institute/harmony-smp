@@ -1,49 +1,38 @@
-import {Component, Input,} from '@angular/core';
+import {Component, Input, OnInit,} from '@angular/core';
 import {DomainRo} from "../../model/domain-ro.model";
-import {
-  AdminDomainService
-} from "../../../system-settings/admin-domain/admin-domain.service";
+import {AdminDomainService} from "../../../system-settings/admin-domain/admin-domain.service";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {
-  BeforeLeaveGuard
-} from "../../../window/sidenav/navigation-on-leave-guard";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {PageEvent} from "@angular/material/paginator";
 import {MemberRo} from "../../model/member-ro.model";
 import {finalize} from "rxjs/operators";
 import {TableResult} from "../../model/table-result.model";
-import {
-  MemberDialogComponent
-} from "../../dialogs/member-dialog/member-dialog.component";
+import {MemberDialogComponent} from "../../dialogs/member-dialog/member-dialog.component";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {GroupRo} from "../../model/group-ro.model";
 import {lastValueFrom, Observable} from "rxjs";
 import {SearchTableResult} from "../../search-table/search-table-result.model";
-import {
-  ConfirmationDialogComponent
-} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {ResourceRo} from "../../model/resource-ro.model";
 import {TranslateService} from "@ngx-translate/core";
 import {MembershipService} from "../../services/membership.service";
-import {
-  SmpTableColDef
-} from "../../components/smp-table/smp-table-coldef.model";
+import {SmpTableColDef} from "../../components/smp-table/smp-table-coldef.model";
 import {MatTableDataSource} from "@angular/material/table";
-
 
 @Component({
   selector: 'domain-member-panel',
   templateUrl: './membership-panel.component.html',
-  styleUrls: ['./membership-panel.component.scss']
+  styleUrls: ['./membership-panel.component.scss'],
+  standalone: false
 })
-export class MembershipPanelComponent implements BeforeLeaveGuard {
+export class MembershipPanelComponent implements BeforeLeaveGuard, OnInit {
 
   pageSize: number = 10;
   pageIndex: number = 0;
   dataLength: number = 0;
   @Input() membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
-
 
   private _domain: DomainRo;
   private _group: GroupRo;
@@ -58,15 +47,11 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   isLoadingResults = false;
   formTitle = "";
 
-  //@ViewChild('memberPaginator') paginator: MatPaginator;
-
   constructor(private domainService: AdminDomainService,
               private membershipService: MembershipService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private translateService: TranslateService) {
-    (async () => await this.updateTitle()) ();
-
     this.columns = [
       {
         columnDef: 'username',
@@ -98,10 +83,10 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       } as SmpTableColDef
 
     ];
-
   }
-  ngAfterViewInit() {
-    this.loadMembershipData();
+
+  ngOnInit(): void {
+    (async () => await this.updateTitle())();
   }
 
   async updateTitle() {
@@ -110,7 +95,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.domain", {value: (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")}));
         break;
       case MemberTypeEnum.GROUP:
-        this.formTitle =  await lastValueFrom(this.translateService.get("membership.panel.title.group", {value: (!!this._group ? ": [" + this._group.groupName + "]" : "")}));
+        this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.group", {value: (!!this._group ? ": [" + this._group.groupName + "]" : "")}));
         break;
       case MemberTypeEnum.RESOURCE:
         this.formTitle = await lastValueFrom(this.translateService.get("membership.panel.title.resource"));
@@ -129,7 +114,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   public get displayedColumns(): string[] {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-        return  ['username', 'fullName', 'roleType'];
+        return ['username', 'fullName', 'roleType'];
       case MemberTypeEnum.GROUP:
         return ['username', 'fullName', 'roleType'];
       case MemberTypeEnum.RESOURCE:
@@ -217,7 +202,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public refresh() {
-
     this.loadMembershipData();
   }
 
@@ -241,14 +225,20 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         resource: this._resource,
         member: member,
       }
-    }).afterClosed().subscribe(value => {
+    }).afterClosed().subscribe((newAdmin: number) => {
       this.refresh();
+      if (newAdmin) {
+        this._domain.adminMemberCount += newAdmin;
+        if (this._domain.adminMemberCount < 0) {
+          this._domain.adminMemberCount = 1;
+        }
+        this.domainService.notifyDomainEntryUpdated(this._domain);
+      }
     });
   }
 
   public async onDeleteSelectedButtonClicked() {
-
-
+    let selectedRole = this.selectedMember.roleType;
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: await lastValueFrom(this.translateService.get("membership.panel.delete.confirmation.dialog.title")),
@@ -256,8 +246,16 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.getDeleteMembershipService().subscribe(value => {
+        this.getDeleteMembershipService().subscribe(() => {
             this.refresh();
+            // refresh domain to update counts
+            if (this.membershipType === MemberTypeEnum.DOMAIN &&
+              selectedRole === MembershipRoleEnum.ADMIN) {
+              if (this._domain.adminMemberCount > 0) {
+                this._domain.adminMemberCount--;
+                this.domainService.notifyDomainEntryUpdated(this._domain);
+              }
+            }
           }, (error) => {
             this.alertService.error(error.error?.errorDescription);
           }
@@ -268,17 +266,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   isDirty(): boolean {
     return false
-  }
-
-  get entityNotSelected() {
-    switch (this.membershipType) {
-      case MemberTypeEnum.DOMAIN:
-        return !this._domain;
-      case MemberTypeEnum.GROUP:
-        return !this._group;
-      case MemberTypeEnum.RESOURCE:
-        return !this._resource;
-    }
   }
 
   protected getMembershipListService(): Observable<SearchTableResult> {
@@ -305,9 +292,3 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     }
   }
 }
-
-
-
-
-
-

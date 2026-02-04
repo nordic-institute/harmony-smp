@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,12 +18,13 @@
  */
 package eu.europa.ec.edelivery.smp.testutil;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.conversion.X509CertificateToCertificateROConverter;
+import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import org.springframework.util.MimeTypeUtils;
 
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
@@ -42,6 +43,26 @@ public class TestROUtils {
         resourceRO.setVisibility(VisibilityType.PUBLIC);
         resourceRO.setResourceTypeIdentifier(resourceType);
         return resourceRO;
+    }
+
+    public static DocumentPropertyRO createDocumentProperty(String property, String value, SMPPropertyTypeEnum type) {
+        DocumentPropertyRO resourceRO = new DocumentPropertyRO();
+        resourceRO.setStatus(EntityROStatus.NEW.getStatusNumber());
+        resourceRO.setProperty(property);
+        resourceRO.setValue(value);
+        resourceRO.setType(type);
+        return resourceRO;
+    }
+
+    public static DocumentRO createDocument(DocumentVersionStatusType documentVersionStatus, EntityROStatus payloadStatus, String content) {
+        DocumentRO doc = new DocumentRO();
+        doc.setDocumentVersionStatus(documentVersionStatus);
+        doc.setPayloadStatus(payloadStatus.getStatusNumber());
+        doc.setStatus(payloadStatus.getStatusNumber());
+        doc.setPayload(content);
+        doc.setMimeType(MimeTypeUtils.APPLICATION_XML_VALUE);
+        doc.setName("testXMl");
+        return doc;
     }
 
     public static CertificateRO createCertificateRO(String certSubject, BigInteger serial) throws Exception {

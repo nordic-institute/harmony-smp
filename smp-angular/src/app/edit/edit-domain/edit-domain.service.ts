@@ -12,6 +12,7 @@ import {DomainPropertyRo} from "../../common/model/domain-property-ro.model";
 import {
   AlertMessageService
 } from "../../common/alert-message/alert-message.service";
+import {DomainDocumentTemplateRo} from "../../common/model/domain-document-template.ro";
 
 @Injectable()
 export class EditDomainService {
@@ -139,4 +140,27 @@ export class EditDomainService {
     this.domainPropertyUpdateSubject.next(properties);
   }
 
+
+  public getDomainDocumentTemplatesObservable(domainId: string): Observable<DomainDocumentTemplateRo[]> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.get<GroupRo[]>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId));
+  }
+
+  public deleteDocumentTemplateObservable(domainId: string, templateId: string): Observable<DomainDocumentTemplateRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.delete<GroupRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_DELETE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_TEMPLATE_ID, templateId));
+  }
+
+  public createDocumentTemplateObservable(domainId: string, template: DomainDocumentTemplateRo): Observable<DomainDocumentTemplateRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.put<GroupRo>(SmpConstants.REST_EDIT_DOMAIN_TEMPLATE_CREATE
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
+      , template);
+  }
 }

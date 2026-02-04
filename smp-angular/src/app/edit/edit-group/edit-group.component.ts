@@ -3,11 +3,9 @@ import {
   EventEmitter,
   Input,
   OnInit,
-  Output,
-  ViewChild
+  Output
 } from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator} from "@angular/material/paginator";
 import {EditDomainService} from "../edit-domain/edit-domain.service";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {EditGroupService} from "./edit-group.service";
@@ -21,8 +19,9 @@ import {
 } from "../../common/error/http-error-handler.service";
 
 @Component({
-  templateUrl: './edit-group.component.html',
-  styleUrls: ['./edit-group.component.css']
+    templateUrl: './edit-group.component.html',
+    styleUrls: ['./edit-group.component.css'],
+    standalone: false
 })
 export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
 
@@ -60,8 +59,6 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   };
 
   loading: boolean = false;
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private domainService: EditDomainService,
               private groupService: EditGroupService,
@@ -116,7 +113,7 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   }
 
   updateDomainList(list: DomainRo[]) {
-    this.domainList = list;
+    this.domainList = list.sort((a, b) => a.domainCode.localeCompare(b.domainCode));
     if (!!this.domainList && this.domainList.length > 0) {
       this.selectedDomain = this.domainList[0];
     } else {
@@ -125,7 +122,7 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   }
 
   updateGroupList(list: GroupRo[]) {
-    this.groupList = list
+    this.groupList = list.sort((a, b) => a.groupName.localeCompare(b.groupName));
     if (!!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
     } else {
@@ -136,5 +133,4 @@ export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
   isDirty(): boolean {
     return false;
   }
-
 }

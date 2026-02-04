@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import org.springframework.core.Ordered;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.Map;
  * @author Joze Rihtarsic
  * @since 4.2
  */
-public interface PropertyUpdateListener {
+public interface PropertyUpdateListener extends Ordered {
 
     void updateProperties(Map<SMPPropertyEnum, Object> properties);
 
@@ -54,5 +55,9 @@ public interface PropertyUpdateListener {
 
     default void updateProperty(SMPPropertyEnum property, Object value) {
         updateProperties(Collections.singletonMap(property, value));
+    }
+
+    default int getOrder() {
+        return 1;
     }
 }

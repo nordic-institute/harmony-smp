@@ -1,16 +1,18 @@
 import {
+  AfterViewInit,
   Component,
   EventEmitter,
   Input,
-  OnDestroy, OnInit,
+  OnDestroy,
+  OnInit,
   Output,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
 import {DomainRo} from "../../../common/model/domain-ro.model";
 import {AdminDomainService} from "../admin-domain.service";
 import {MatDialogRef} from "@angular/material/dialog";
-import {
-  BeforeLeaveGuard
-} from "../../../window/sidenav/navigation-on-leave-guard";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {GlobalLookups} from "../../../common/global-lookups";
 import {DomainPropertyRo} from "../../../common/model/domain-property-ro.model";
 import {MatTableDataSource} from "@angular/material/table";
@@ -19,16 +21,20 @@ import {PropertyController} from "../../admin-properties/property-controller";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {PropertySourceEnum} from "../../../common/enums/property-source.enum";
 import {EditDomainService} from "../../../edit/edit-domain/edit-domain.service";
+import {SmpTableColDef} from "../../../common/components/smp-table/smp-table-coldef.model";
 
 @Component({
   selector: 'domain-properties-panel',
   templateUrl: './domain-properties-panel.component.html',
-  styleUrls: ['./domain-properties-panel.component.scss']
+  styleUrls: ['./domain-properties-panel.component.scss'],
+  standalone: false
 })
-export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, BeforeLeaveGuard {
+export class DomainPropertiesPanelComponent implements OnInit, AfterViewInit, OnDestroy, BeforeLeaveGuard {
+  @ViewChild('systemDefaultColumn') systemDefaultColumn: TemplateRef<any>;
   @Input() systemAdminService: boolean;
   @Output() onSavePropertiesDataEvent: EventEmitter<DomainRo> = new EventEmitter()
-  displayedColumns: string[] = ['systemDefault', 'property', 'value'];
+  displayedColumns: string[] = [];
+  columns: SmpTableColDef[];
   _domain: DomainRo = null;
   selected?: DomainPropertyRo;
   dataChanged: boolean = false
@@ -39,7 +45,6 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
               private editDomainService: EditDomainService,
               private propertyController: PropertyController,
               protected lookups: GlobalLookups) {
-
   }
 
   ngOnInit(): void {
@@ -56,8 +61,35 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
           }
         );
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.displayedColumns = ['systemDefault', 'property', 'value'];
+    this.columns = [
+      {
+        columnDef: 'systemDefault',
+        header: 'domain.properties.label.system.default',
+        cellTemplate: this.systemDefaultColumn,
+        cell: (row: DomainPropertyRo) => row.systemDefault,
+        style: "max-width: 50px; width: 50px; display: flex; justify-content: center;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'property',
+        header: 'domain.properties.label.domain.property',
+        tooltip: (row: DomainPropertyRo) => row?.desc,
+        cell: (row: DomainPropertyRo) => row.property,
+        style: "max-width: 350px; width: 200px; display: flex; justify-content: left;"
+      } as SmpTableColDef,
+      {
+        columnDef: 'value',
+        header: 'domain.properties.label.domain.value',
+        cell: (row: DomainPropertyRo) => this.getTableRowValue(row),
+        style: " display: flex; flex-grow: 1; justify-content: left;"
+      }
+    ];
     this.refresh();
   }
+
 
   ngOnDestroy(): void {
     this.domainPropertyUpdatedEventSub.unsubscribe();
@@ -67,6 +99,7 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
     this._domain = value
     this.refresh();
   }
+
   refresh(): void {
     if (!!this._domain) {
       if (!this.systemAdminService) {
@@ -94,7 +127,7 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
   }
 
   public onSaveButtonClicked() {
-     let changedProperties: DomainPropertyRo[] = this.propertyDataSource.data.filter(element => {
+    let changedProperties: DomainPropertyRo[] = this.propertyDataSource.data.filter(element => {
       return element.status == EntityStatus.UPDATED;
     })
     if (!this.systemAdminService) {
@@ -125,8 +158,8 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
    * then display the new value else display the old value
    * @param row
    */
-  getTableRowValue(row: DomainPropertyRo){
-    return  row.systemDefault ? row.systemDefaultValue  : row.value;
+  getTableRowValue(row: DomainPropertyRo) {
+    return row.systemDefault ? row.systemDefaultValue : row.value;
   }
 
   isDirty(): boolean {
@@ -137,8 +170,8 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
     this.selected = property;
   }
 
-  editSelectedRow():void {
-    const dialogRef: MatDialogRef<any> =  this.propertyController.edit({
+  editSelectedRow(): void {
+    const dialogRef: MatDialogRef<any> = this.propertyController.edit({
       data: {
         edit: this.selected?.status != EntityStatus.NEW,
         propertyType: PropertySourceEnum.DOMAIN,
@@ -146,11 +179,10 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
       }
     })
 
-
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        let changedProperty:DomainPropertyRo =  dialogRef.componentInstance.getCurrent();
-        for(let i=0;i<this.propertyDataSource.data.length ;i++){
+        let changedProperty: DomainPropertyRo = dialogRef.componentInstance.getCurrent();
+        for (let i = 0; i < this.propertyDataSource.data.length; i++) {
           let prop = this.propertyDataSource.data[i];
           if (changedProperty.property === prop.property) {
             this.propertyDataSource.data[i] = changedProperty;
@@ -163,18 +195,15 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
     });
   }
 
-  updateDomainPropertyList(updateDomainList: DomainPropertyRo[]): void {
-    this.propertyDataSource.data = [... updateDomainList]
-    this.dataChanged = false;
+  applyPropertyFilter(filterValue: string) {
+    this.propertyDataSource.filter = filterValue.trim().toLowerCase();
+    if (this.propertyDataSource.paginator) {
+      this.propertyDataSource.paginator.firstPage();
+    }
   }
 
-  getRowClass(row, oddRow: boolean) {
-    return {
-      'datatable-row-selected': row===this.selected,
-      'table-row-new': (row.status === EntityStatus.NEW),
-      'table-row-updated': (row.status === EntityStatus.UPDATED),
-      'deleted': (row.status === EntityStatus.REMOVED),
-      'datatable-row-odd': oddRow
-    };
+  updateDomainPropertyList(updateDomainList: DomainPropertyRo[]): void {
+    this.propertyDataSource.data = [...updateDomainList]
+    this.dataChanged = false;
   }
 }

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,17 +20,16 @@ package eu.europa.ec.edelivery.smp.auth.cas;
 
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
-import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 
 import java.net.URL;
@@ -53,6 +52,7 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SSO_CAS_UR
 public class SMPCasConfigurer {
 
     private static final Logger LOG = LoggerFactory.getLogger(SMPCasConfigurer.class);
+    private static final String LOG_MESSAGE_NOT_CONFIGURED = "Bean [{}] is not configured because SSO CAS authentication is not enabled!";
 
     final SmpUrlBuilder smpUrlBuilder;
     final ConfigurationService configurationService;
@@ -78,35 +78,10 @@ public class SMPCasConfigurer {
         return serviceProperties;
     }
 
-    /**
-     * The entry point of Spring Security authentication process (based on CAS).
-     * The user's browser will be redirected to the CAS login page.
-     *
-     * @return
-     */
-    @Bean
-    public CasAuthenticationEntryPoint casAuthenticationEntryPoint(@Nullable @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties serviceProperties) {
-
-        if (!configurationService.isSSOEnabledForUserAuthentication()) {
-            LOG.debug("Bean [{}] is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
-            return null;
-        }
-
-        String casUrl = configurationService.getCasURL().toString();
-        String casLoginPath = configurationService.getCasURLPathLogin();
-        String casUrlLogin = StringUtils.removeEnd(casUrl, "/") + StringUtils.prependIfMissing(casLoginPath, "/");
-
-        CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl(casUrlLogin);
-        entryPoint.setServiceProperties(serviceProperties);
-        LOG.info("Configured CAS CasAuthenticationEntryPoint Url: [{}]", entryPoint.getLoginUrl());
-        return entryPoint;
-    }
-
     @Bean
     public SMPCas20ServiceTicketValidator ecasServiceTicketValidator() {
         if (!configurationService.isSSOEnabledForUserAuthentication()) {
-            LOG.debug("Bean [{}] is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
+            LOG.debug(LOG_MESSAGE_NOT_CONFIGURED, "SMPCas20ServiceTicketValidator");
             return null;
         }
         if (configurationService.getCasURL() == null) {
@@ -151,7 +126,7 @@ public class SMPCasConfigurer {
             @Nullable SMPCasUserService smpCasUserService) {
 
         if (!configurationService.isSSOEnabledForUserAuthentication()) {
-            LOG.debug("Bean [CasAuthenticationProvider:{}] is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
+            LOG.debug(LOG_MESSAGE_NOT_CONFIGURED, "CasAuthenticationProvider");
             return null;
         }
 
@@ -168,21 +143,20 @@ public class SMPCasConfigurer {
     /**
      * Create CAS filter to processes a CAS service ticket
      *
-     * @param authenticationManager
-     * @param casServiceProperties
-     * @return Filter
-     * @throws Exception
+     * @param authenticationManager the authentication manager to use for processing the CAS service ticket
+     * @param casServiceProperties the service properties for the CAS service
+     * @return Filter that processes CAS authentication requests
      */
     @Bean(SMP_CAS_FILTER_BEAN)
     public CasAuthenticationFilter casAuthenticationFilter(
-            @Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager,
+            @Lazy @Qualifier(SMP_UI_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager,
             @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties casServiceProperties) {
 
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setFilterProcessesUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE + "/login");
         filter.setServiceProperties(casServiceProperties);
         filter.setAuthenticationManager(authenticationManager);
-        LOG.info("Created CAS Filter: [{}] with the properties: [{}]", filter.getClass().getSimpleName() , casServiceProperties.getArtifactParameter());
+        LOG.info("Created CAS Filter: [{}] with the properties: [{}]", filter.getClass().getSimpleName(), casServiceProperties.getArtifactParameter());
         return filter;
     }
 }

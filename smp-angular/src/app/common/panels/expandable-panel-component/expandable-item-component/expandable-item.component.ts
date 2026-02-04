@@ -32,9 +32,10 @@ import {
  * @since 5.1
  */
 @Component({
-  selector: 'expandable-item',
-  templateUrl: './expandable-item.component.html',
-  styleUrls: ['./expandable-item.component.scss'],
+    selector: 'expandable-item',
+    templateUrl: './expandable-item.component.html',
+    styleUrls: ['./expandable-item.component.scss'],
+    standalone: false
 })
 export class ExpandableItemComponent implements AfterViewInit {
 

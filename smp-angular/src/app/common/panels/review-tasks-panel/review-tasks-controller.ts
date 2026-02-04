@@ -1,23 +1,18 @@
-import {
-  SearchTableController
-} from '../../search-table/search-table-controller';
+import {SearchTableController} from '../../search-table/search-table-controller';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {GlobalLookups} from "../../global-lookups";
-import {SearchTableEntity} from "../../search-table/search-table-entity.model";
-import {
-  ObjectPropertiesDialogComponent
-} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
+import {ReviewDocumentVersionRo} from "../../model/review-document-version-ro.model";
 
-export class ReviewTasksController implements SearchTableController {
+export class ReviewTasksController implements SearchTableController<ReviewDocumentVersionRo> {
 
   constructor(protected lookups: GlobalLookups, public dialog: MatDialog) {
   }
 
-  validateDeleteOperation(rows: SearchTableEntity[]) {
+  validateDeleteOperation(rows: ReviewDocumentVersionRo[]) {
     return null;
   }
 
-  newRow(): SearchTableEntity {
+  newRow(): ReviewDocumentVersionRo {
     return null;
   }
 
@@ -29,19 +24,19 @@ export class ReviewTasksController implements SearchTableController {
     return false;
   }
 
-  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+  isRowExpanderDisabled(row: ReviewDocumentVersionRo): boolean {
     return true;
   }
 
-  public showDetails(row: any): MatDialogRef<any> {
+  public showDetails(row: ReviewDocumentVersionRo): MatDialogRef<any> {
     return null;
   }
 
-  public edit(row: any): MatDialogRef<any> {
+  public edit(row: ReviewDocumentVersionRo): MatDialogRef<any> {
     return null;
   }
 
-  public delete(row: any) {
+  public delete(row: ReviewDocumentVersionRo) {
   }
 
   newDialog(config): MatDialogRef<any> {

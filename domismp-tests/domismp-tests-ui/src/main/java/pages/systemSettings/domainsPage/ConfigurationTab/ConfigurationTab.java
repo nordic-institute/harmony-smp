@@ -1,7 +1,7 @@
 package pages.systemSettings.domainsPage.ConfigurationTab;
 
 import ddsl.dcomponents.DComponent;
-import ddsl.dcomponents.Grid.GridWithoutPagination;
+import ddsl.dcomponents.Grid.MatSmallGrid;
 import ddsl.dcomponents.commonComponents.domanPropertyEditDialog.DomainPropertyEditDialog;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -29,8 +29,8 @@ public class ConfigurationTab extends DComponent {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
-    private GridWithoutPagination getConfigurationGrid() {
-        return new GridWithoutPagination(driver, rightPanel);
+    private MatSmallGrid getConfigurationGrid() {
+        return new MatSmallGrid(driver, rightPanel);
     }
 
     public DomainPropertyEditDialog openProperty(String propertyName) {

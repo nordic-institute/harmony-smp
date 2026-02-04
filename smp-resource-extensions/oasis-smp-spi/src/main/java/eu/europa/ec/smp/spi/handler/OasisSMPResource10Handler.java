@@ -28,13 +28,13 @@ import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.def.OasisSMPSubresource10;
-import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import gen.eu.europa.ec.ddc.api.smp10.ParticipantIdentifierType;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceGroup;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadataReferenceCollectionType;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadataReferenceType;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class OasisSMPResource10Handler extends AbstractOasisSMPHandler {
         ServiceGroup resource = new ServiceGroup();
         resource.setParticipantIdentifier(new ParticipantIdentifierType());
         resource.getParticipantIdentifier().setValue(RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder());
-        if (identifier.getScheme()!= null) {
+        if (identifier.getScheme() != null) {
             resource.getParticipantIdentifier().setScheme(RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder());
         }
         resource.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
@@ -193,10 +193,10 @@ public class OasisSMPResource10Handler extends AbstractOasisSMPHandler {
             }
         } else {
             LOG.info("Update ServiceGroup identifier before saving. Old: [{}], New: [{}]", orgResourceId, nrmResourceId);
-            if (!StringUtils.equalsIgnoreCase(orgResourceId.getValue(), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
+            if (!Strings.CI.equals(orgResourceId.getValue(), RESOURCE_IDENTIFIER_VALUE.getPropertyPlaceholder())) {
                 orgResourceId.setValue(nrmResourceId.getValue());
             }
-            if (!StringUtils.equalsIgnoreCase(orgResourceId.getScheme(), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
+            if (!Strings.CI.equals(orgResourceId.getScheme(), RESOURCE_IDENTIFIER_SCHEME.getPropertyPlaceholder())) {
                 orgResourceId.setScheme(nrmResourceId.getScheme());
             }
             try {
@@ -251,7 +251,6 @@ public class OasisSMPResource10Handler extends AbstractOasisSMPHandler {
 
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(resourceData.getDomainCode(),
                 participantIdValue, participantIdScheme);
-
 
 
         if (!xmlResourceIdentifier.equals(identifier)) {

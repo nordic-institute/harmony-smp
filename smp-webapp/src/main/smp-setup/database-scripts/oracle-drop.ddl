@@ -1,0 +1,149 @@
+-- This is [DROP] database script for DomiSML version: [2.3.0-SNAPSHOT].
+-- This file was generated using hibernate version [6.6.38.Final] with dialect [org.hibernate.dialect.OracleDialect].
+-- For more information, refer to the Hibernate dialect documentation.
+
+    drop table SMP_ALERT cascade constraints;
+
+    drop table SMP_ALERT_AUD cascade constraints;
+
+    drop table SMP_ALERT_PROPERTY cascade constraints;
+
+    drop table SMP_ALERT_PROPERTY_AUD cascade constraints;
+
+    drop table SMP_CERTIFICATE cascade constraints;
+
+    drop table SMP_CERTIFICATE_AUD cascade constraints;
+
+    drop table SMP_CONFIGURATION cascade constraints;
+
+    drop table SMP_CONFIGURATION_AUD cascade constraints;
+
+    drop table SMP_CREDENTIAL cascade constraints;
+
+    drop table SMP_CREDENTIAL_AUD cascade constraints;
+
+    drop table SMP_DOCUMENT cascade constraints;
+
+    drop table SMP_DOCUMENT_AUD cascade constraints;
+
+    drop table SMP_DOCUMENT_CERTIFICATE cascade constraints;
+
+    drop table SMP_DOCUMENT_CERTIFICATE_AUD cascade constraints;
+
+    drop table SMP_DOCUMENT_PROPERTY cascade constraints;
+
+    drop table SMP_DOCUMENT_PROPERTY_AUD cascade constraints;
+
+    drop table SMP_DOCUMENT_VERSION cascade constraints;
+
+    drop table SMP_DOCUMENT_VERSION_AUD cascade constraints;
+
+    drop table SMP_DOCUMENT_VERSION_EVENT cascade constraints;
+
+    drop table SMP_DOMAIN cascade constraints;
+
+    drop table SMP_DOMAIN_AUD cascade constraints;
+
+    drop table SMP_DOMAIN_CONFIGURATION cascade constraints;
+
+    drop table SMP_DOMAIN_CONFIGURATION_AUD cascade constraints;
+
+    drop table SMP_DOMAIN_DOC_TMPL cascade constraints;
+
+    drop table SMP_DOMAIN_DOC_TMPL_AUD cascade constraints;
+
+    drop table SMP_DOMAIN_MEMBER cascade constraints;
+
+    drop table SMP_DOMAIN_MEMBER_AUD cascade constraints;
+
+    drop table SMP_DOMAIN_RESOURCE_DEF cascade constraints;
+
+    drop table SMP_DOMAIN_RESOURCE_DEF_AUD cascade constraints;
+
+    drop table SMP_EXTENSION cascade constraints;
+
+    drop table SMP_EXTENSION_AUD cascade constraints;
+
+    drop table SMP_GROUP cascade constraints;
+
+    drop table SMP_GROUP_AUD cascade constraints;
+
+    drop table SMP_GROUP_MEMBER cascade constraints;
+
+    drop table SMP_GROUP_MEMBER_AUD cascade constraints;
+
+    drop table SMP_PERIODICAL_ALERT cascade constraints;
+
+    drop table SMP_PERIODICAL_ALERT_AUD cascade constraints;
+
+    drop table SMP_RESOURCE cascade constraints;
+
+    drop table SMP_RESOURCE_AUD cascade constraints;
+
+    drop table SMP_RESOURCE_DEF cascade constraints;
+
+    drop table SMP_RESOURCE_DEF_AUD cascade constraints;
+
+    drop table SMP_RESOURCE_MEMBER cascade constraints;
+
+    drop table SMP_RESOURCE_MEMBER_AUD cascade constraints;
+
+    drop table SMP_REV_INFO cascade constraints;
+
+    drop table SMP_SUBRESOURCE cascade constraints;
+
+    drop table SMP_SUBRESOURCE_AUD cascade constraints;
+
+    drop table SMP_SUBRESOURCE_DEF cascade constraints;
+
+    drop table SMP_SUBRESOURCE_DEF_AUD cascade constraints;
+
+    drop table SMP_USER cascade constraints;
+
+    drop table SMP_USER_AUD cascade constraints;
+
+    drop sequence SMP_ALERT_PROP_SEQ;
+
+    drop sequence SMP_ALERT_SEQ;
+
+    drop sequence SMP_CREDENTIAL_SEQ;
+
+    drop sequence SMP_DOC_PROP_SEQ;
+
+    drop sequence SMP_DOCUMENT_SEQ;
+
+    drop sequence SMP_DOCUMENT_VERSION_SEQ;
+
+    drop sequence SMP_DOCVER_EVENT_SEQ;
+
+    drop sequence SMP_DOMAIN_CONF_SEQ;
+
+    drop sequence SMP_DOMAIN_DOC_TMPL_SEQ;
+
+    drop sequence SMP_DOMAIN_MEMBER_SEQ;
+
+    drop sequence SMP_DOMAIN_RESOURCE_DEF_SEQ;
+
+    drop sequence SMP_DOMAIN_SEQ;
+
+    drop sequence SMP_EXTENSION_SEQ;
+
+    drop sequence SMP_GROUP_MEMBER_SEQ;
+
+    drop sequence SMP_GROUP_SEQ;
+
+    drop sequence SMP_PERIODICAL_ALERT_SEQ;
+
+    drop sequence SMP_RESOURCE_DEF_SEQ;
+
+    drop sequence SMP_RESOURCE_MEMBER_SEQ;
+
+    drop sequence SMP_RESOURCE_SEQ;
+
+    drop sequence SMP_REVISION_SEQ;
+
+    drop sequence SMP_SUBRESOURCE_DEF_SEQ;
+
+    drop sequence SMP_SUBRESOURCE_SEQ;
+
+    drop sequence SMP_USER_SEQ;

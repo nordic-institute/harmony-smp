@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentReferenceData;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
@@ -30,14 +31,14 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType.PUBLISHED;
+import static eu.europa.ec.edelivery.smp.data.enums.VisibilityType.PUBLIC;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -106,7 +107,7 @@ class ResourceDaoTest extends AbstractBaseDao {
 
         assertTrue(optResult.isPresent());
         assertNotNull(optResult.get().getDocument());
-        assertEquals(docVersion , optResult.get().getDocument().getCurrentVersion());
+        assertEquals(docVersion, optResult.get().getDocument().getCurrentVersion());
         assertEquals(docCount + 1, optResult.get().getDocument().getDocumentVersions().size());
     }
 
@@ -257,6 +258,88 @@ class ResourceDaoTest extends AbstractBaseDao {
                 testUtilsDao.getResourceDefSmp(),
                 testUtilsDao.getUser2(), MembershipRoleType.ADMIN));
         assertEquals(0, result.intValue());
+    }
+
+    @Test
+    public void testGetDocumentReferenceDataNotAReference() {
+        DBDocumentReferenceData dcRef = testInstance.getDocumentReferenceData(testUtilsDao.getResourceD1G1RD1());
+
+        assertNotNull(dcRef);
+        assertFalse(dcRef.isSharingEnabled());
+        assertEquals(0, dcRef.getReferencedByCount());
+    }
+
+    @Test
+    public void testGetDocumentReferenceDataReference() {
+        // given
+        DBResource resourceTarget = testUtilsDao.createResource("target-reference", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), true);
+
+        // given
+        testUtilsDao.createResource("using-reference-01", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), resourceTarget.getDocument());
+        testUtilsDao.createResource("using-reference-02", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), resourceTarget.getDocument());
+
+        // when ( - the target resource is a reference and has one document which is using it)
+        DBDocumentReferenceData dcRef = testInstance.getDocumentReferenceData(resourceTarget);
+
+        assertNotNull(dcRef);
+        assertTrue(dcRef.isSharingEnabled());
+        assertEquals(2, dcRef.getReferencedByCount());
+    }
+
+    @Test
+    public void testGetDocumentReferenceDataMultipleResources() {
+        // given
+        DBResource resourceTarget = testUtilsDao.createResource("target-reference", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), true);
+
+        // given
+        testUtilsDao.createResource("using-reference-01", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), resourceTarget.getDocument());
+        DBResource resource02 =  testUtilsDao.createResource("using-reference-02", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), resourceTarget.getDocument());
+
+        // when ( - the target resource is a reference and has one document which is using it)
+        DBDocumentReferenceData dcRef = testInstance.getDocumentReferenceData(resourceTarget);
+        DBDocumentReferenceData resource02RefData = testInstance.getDocumentReferenceData(resource02);
+
+        assertNotNull(dcRef);
+        assertNotNull(resource02RefData);
+        assertTrue(dcRef.isSharingEnabled());
+        assertFalse(resource02RefData.isSharingEnabled());
+        assertEquals(2, dcRef.getReferencedByCount());
+        assertEquals(0, resource02RefData.getReferencedByCount());
+    }
+
+    @Test
+    public void testGetDocumentReferenceDataUsingReference() {
+        // given
+        DBResource resourceTarget = testUtilsDao.createResource("target-reference", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), true);
+
+        // given
+        DBResource resourceUsingTarget = testUtilsDao.createResource("using-reference-01", "doc-reference-scheme",
+                PUBLIC, PUBLISHED,
+                testUtilsDao.getDomainResourceDefD1R1(), testUtilsDao.getGroupD1G1(), resourceTarget.getDocument());
+
+
+        // when ( - the target resource is a reference and has one document which is using it)
+        DBDocumentReferenceData dcRef = testInstance.getDocumentReferenceData(resourceUsingTarget);
+
+        assertNotNull(dcRef);
+        assertFalse(dcRef.isSharingEnabled());
+        assertEquals(0, dcRef.getReferencedByCount());
+        assertEquals(dcRef.getReferencedDocumentId(), resourceTarget.getDocument().getId());
+        assertEquals("http://referencedocument", dcRef.getReferenceUrlPath());
     }
 
     protected static DBResourceFilter creatResourceFilter(DBGroup group, DBDomain domain, DBResourceDef resourceDef) {

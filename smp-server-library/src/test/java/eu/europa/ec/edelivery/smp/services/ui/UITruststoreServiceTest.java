@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.conversion.X509CertificateToCertificateROConverter;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
@@ -25,6 +26,8 @@ import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.MatcherAssert;
@@ -35,7 +38,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
@@ -44,16 +51,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.*;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class UITruststoreServiceTest {
+class  UITruststoreServiceTest {
+
     // test data
     protected Path resourceDirectory = Paths.get("src", "test", "resources", "truststore");
     protected Path targetDirectory = Paths.get("target", "test-uitruststoreservice");
@@ -68,10 +75,16 @@ class UITruststoreServiceTest {
 
     UITruststoreService testInstance = spy(new UITruststoreService(configurationService, crlVerifierService, conversionService, userDao));
 
+    File localeFolder = new File("target/locales");
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
+
     @BeforeEach
     public void setup() throws IOException {
         testInstance.init();
         resetKeystore();
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
 
     @Test
@@ -420,7 +433,8 @@ class UITruststoreServiceTest {
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () -> testInstance.addCertificate(alias, certificate));
 
         // then
-        Assertions.assertEquals("Certificate error [duplicate]. Error: The certificate you are trying to upload already exists under the [duplicate] entry!", smpRuntimeException.getMessage());
+        Assertions.assertEquals("Certificate error: duplicate certificate. The certificate you are trying to upload already exists under the [duplicate] entry!",
+                smpExceptionLanguageService.getMessageTranslation(smpRuntimeException.getMessageCode(), smpRuntimeException.getMessageArgs()));
     }
 
     @Test
@@ -443,5 +457,60 @@ class UITruststoreServiceTest {
     protected void resetKeystore() throws IOException {
         FileUtils.deleteDirectory(targetDirectory.toFile());
         FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
+    }
+
+    @Test
+    void testAboutToExpireCertificateAliases() throws Exception {
+        String subject = "CN=AboutToExpire,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(null,
+                subject,
+                subject,
+                OffsetDateTime.now(ZoneOffset.UTC).minusDays(10),
+                OffsetDateTime.now(ZoneOffset.UTC).plusDays(5),
+                Collections.emptyList());
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        when(conversionService.convert(any(X509Certificate.class), eq(CertificateRO.class))).thenAnswer(new Answer<>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return convertToRo((X509Certificate) invocation.getArguments()[0]);
+            }
+        });
+        testInstance.addCertificate("alias", certificate);
+
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(3);
+        assertFalse(expiredCertificateAliases.containsKey("alias"));
+
+        expiredCertificateAliases = testInstance.getAboutToExpireCertificateAliases(10);
+        assertTrue(expiredCertificateAliases.containsKey("alias"));
+    }
+
+    @Test
+    void testExpiredCertificateAliases() throws Exception {
+        String subject = "CN=Expired,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(null,
+                subject,
+                subject,
+                OffsetDateTime.now(ZoneOffset.UTC).minusDays(10),
+                OffsetDateTime.now(ZoneOffset.UTC).minusDays(5),
+                Collections.emptyList());
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        when(conversionService.convert(any(X509Certificate.class), eq(CertificateRO.class))).thenAnswer(new Answer<>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return convertToRo((X509Certificate) invocation.getArguments()[0]);
+            }
+        });
+        testInstance.addCertificate("alias", certificate);
+
+        Map<String, OffsetDateTime> expiredCertificateAliases = testInstance.getExpiredCertificateAliases();
+        assertTrue(expiredCertificateAliases.containsKey("alias"));
+    }
+
+    private CertificateRO convertToRo(X509Certificate certificate) {
+        return new X509CertificateToCertificateROConverter().convert(certificate);
     }
 }

@@ -84,7 +84,6 @@ class KeystoreAdminControllerIT extends AbstractControllerTest {
             assertNotNull(cert.getAlias());
             assertNotNull(cert.getCertificateId());
             assertNotNull(cert.getClientCertHeader());
-            assertNull(cert.getEncodedValue()); // submit only metadata
         });
     }
 

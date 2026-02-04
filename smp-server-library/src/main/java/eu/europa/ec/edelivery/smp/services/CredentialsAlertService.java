@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
-import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
@@ -29,7 +29,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -66,7 +66,7 @@ public class CredentialsAlertService {
     final MailService mailService;
     final ConfigurationService configurationService;
     final UserDao userDao;
-    final CredentialDao credentialDao;
+    final PeriodicalAlertDao periodicalAlertDao;
     final SMPDynamicCronTrigger alertCronTrigger;
     final SmpUrlBuilder smpUrlBuilder;
 
@@ -74,14 +74,14 @@ public class CredentialsAlertService {
                                    MailService mailService,
                                    ConfigurationService configurationService,
                                    UserDao userDao,
-                                   CredentialDao credentialDao,
+                                   PeriodicalAlertDao periodicalAlertDao,
                                    SmpUrlBuilder smpUrlBuilder,
                                    @Qualifier(TRIGGER_BEAN_CREDENTIAL_ALERTS) SMPDynamicCronTrigger alertCronTrigger) {
         this.alertDao = alertDao;
         this.mailService = mailService;
         this.configurationService = configurationService;
         this.userDao = userDao;
-        this.credentialDao = credentialDao;
+        this.periodicalAlertDao = periodicalAlertDao;
         this.alertCronTrigger = alertCronTrigger;
         this.smpUrlBuilder = smpUrlBuilder;
     }
@@ -100,7 +100,6 @@ public class CredentialsAlertService {
         OffsetDateTime expiredOn = userCredential.getExpireOn();
 
         // alert specific properties
-        String mailSubject;
         AlertLevelEnum alertLevel;
         if (credentialType == CredentialType.ACCESS_TOKEN) {
             alertLevel = configurationService.getAlertBeforeExpireAccessTokenLevel();
@@ -114,7 +113,7 @@ public class CredentialsAlertService {
         }
 
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
-        mailSubject = alertType.name() + " " +credentialType.name();
+        String mailSubject = alertType.name() + " " +credentialType.name();
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(userCredential, alert, credentialType, credentialId, expiredOn);
     }
@@ -138,10 +137,7 @@ public class CredentialsAlertService {
         String credentialId = userCredential.getName();
         OffsetDateTime expiredOn = userCredential.getExpireOn();
 
-        // alert specific properties
-        String mailSubject;
         AlertLevelEnum alertLevel;
-
         if (credentialType == CredentialType.ACCESS_TOKEN) {
             alertLevel = configurationService.getAlertExpiredAccessTokenLevel();
         } else if (credentialType == CredentialType.USERNAME_PASSWORD) {
@@ -153,9 +149,8 @@ public class CredentialsAlertService {
             return;
         }
 
-
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
-        mailSubject = alertType.name() + " " +credentialType.name();
+        String mailSubject = alertType.name() + " " +credentialType.name();
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(userCredential, alert, credentialType, credentialId, expiredOn);
     }
@@ -243,9 +238,10 @@ public class CredentialsAlertService {
         alertDao.persistFlushDetach(alert);
         // submit alerts
         submitAlertMail(alert, user);
+
         // when alert about to expire - check if the next cron execution is expired
         // and set date sent tp null to ensure alert submission in next cron execution
-        credentialDao.updateAlertSentForUserCredentials(credential,
+        periodicalAlertDao.updateAlertSentForUserCredentials(credential,
                 alert.getAlertType() == AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION
                         && isNextExecutionExpired(expirationDate) ?
                         null : OffsetDateTime.now());
@@ -299,7 +295,6 @@ public class CredentialsAlertService {
      * @param user created
      */
     public void alertUserCreated(DBUser user) {
-
         boolean userCreatedAlertEnabled = configurationService.getAlertUserCreatedEnabled();
         if (!userCreatedAlertEnabled) {
             LOG.debug("Suppress alert: Alert user created is disabled!");
@@ -321,6 +316,31 @@ public class CredentialsAlertService {
         // submit alerts
         submitAlertMail(alert, user);
     }
+
+    public void alertCasUserCreated(DBUser systemAdmin, DBUser user) {
+        boolean userCreatedAlertEnabled = configurationService.getAlertUserCreatedEnabled();
+        if (!userCreatedAlertEnabled) {
+            LOG.debug("Suppress alert: Alert EU Login user created is disabled!");
+            return;
+        }
+        String mailTo = systemAdmin.getEmailAddress();
+
+        AlertLevelEnum alertLevel = configurationService.getAlertUserCreatedLevel();
+        AlertTypeEnum alertType = AlertTypeEnum.USER_CREATED_EU_LOGIN;
+        String mailSubject = alertType.name();
+        DBAlert alert = createAlert(systemAdmin.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+
+        alert.addProperty(UserCreatedProperties.USERNAME.name(), user.getUsername());
+        alert.addProperty(UserCreatedProperties.EMAIL.name(), user.getEmailAddress());
+        alert.addProperty(UserCreatedProperties.FULL_NAME.name(), user.getFullName());
+        alert.addProperty(UserCreatedProperties.ACTIVATED.name(), Boolean.toString(user.isActive()));
+
+        alertDao.persistFlushDetach(alert);
+
+        // submit alerts
+        submitAlertMail(alert, systemAdmin);
+    }
+
 
     /**
      * Method generates request reset alert for credentials and submit mail to the user
@@ -384,7 +404,7 @@ public class CredentialsAlertService {
                 resetUrl = smpUrlBuilder.buildSMPUriForApplication().toURL();
                 LOG.warn("Reset URL is not set! Use default SMP URL [{}]", resetUrl);
             } catch (MalformedURLException e) {
-                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, e);
+                throw new SMPRuntimeException(ErrorMessageType.INTERNAL, e);
             }
         }
         String resetUrlPath = StringUtils.appendIfMissing(resetUrl.toString(), "/", "/") + "ui/#/reset-credential/" + token;
@@ -477,6 +497,7 @@ public class CredentialsAlertService {
         }
 
         String mailFrom = configurationService.getAlertEmailFrom();
+
         MailDataModel props = new MailDataModel(user.getSmpLocale(), alert);
 
         // add additional common properties to the model
@@ -486,9 +507,9 @@ public class CredentialsAlertService {
                 formatOffsetDateTimeWithLocal(OffsetDateTime.now(), user.getSmpLocale()));
 
         try {
-            String mailSubject = mailService.sendMail(props, mailFrom, alert.getMailTo());
+            String mailSubject = mailService.sendMail(props, mailFrom, mailTo);
             // update alert subject
-            if (mailSubject != null){
+            if (mailSubject != null) {
                 alert.setMailSubject(StringUtils.left(mailSubject, 1023));
             }
             updateAlertStatus(alert, AlertStatusEnum.SUCCESS, null);
@@ -498,7 +519,6 @@ public class CredentialsAlertService {
             LOG.error("Error sending mail", exc);
             updateAlertStatus(alert, AlertStatusEnum.FAILED, ExceptionUtils.getRootCauseMessage(exc));
         }
-
     }
 
     public void updateAlertStatus(DBAlert alert, AlertStatusEnum status, String statusDesc) {

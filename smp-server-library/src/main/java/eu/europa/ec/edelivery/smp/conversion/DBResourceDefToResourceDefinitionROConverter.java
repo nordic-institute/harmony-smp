@@ -54,7 +54,7 @@ public class DBResourceDefToResourceDefinitionROConverter implements Converter<D
             BeanUtils.copyProperties(target, source);
             List<SubresourceDefinitionRO> resourceDefinitionROList = source.getSubresources().stream().map(resourceDef ->
                     conversionService.convert(resourceDef, SubresourceDefinitionRO.class)
-            ).collect(Collectors.toList());
+            ).toList();
 
 
             target.getSubresourceDefinitions().addAll(resourceDefinitionROList);

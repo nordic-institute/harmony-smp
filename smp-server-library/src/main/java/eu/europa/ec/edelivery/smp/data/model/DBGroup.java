@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +42,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Entity
 @Audited
-@Table(name = "SMP_GROUP",
+@Table(name = "SMP_GROUP", comment = "The group spans the resources belonging to the domain group.",
         indexes = {@Index(name = "SMP_GRP_UNIQ_DOM_IDX", columnList = "NAME,FK_DOMAIN_ID", unique = true)
         })
-
-@org.hibernate.annotations.Table(appliesTo = "SMP_GROUP", comment = "The group spans the resources belonging to the domain group.")
 @NamedQuery(name = QUERY_GROUP_ALL, query = "SELECT u FROM DBGroup u")
 @NamedQuery(name = QUERY_GROUP_BY_DOMAIN, query = "SELECT u FROM DBGroup u where u.domain.id = :domain_id")
 @NamedQuery(name = QUERY_GROUP_BY_NAME_DOMAIN, query = "SELECT u FROM DBGroup u where u.groupName = :name and u.domain.id = :domain_id")
@@ -67,7 +65,9 @@ public class DBGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_GROUP_SEQ")
-    @GenericGenerator(name = "SMP_GROUP_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_GROUP_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique domain group id")
     Long id;

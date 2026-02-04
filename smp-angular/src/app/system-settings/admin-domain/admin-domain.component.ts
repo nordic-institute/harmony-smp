@@ -1,56 +1,42 @@
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatSort} from "@angular/material/sort";
+import {PageEvent} from "@angular/material/paginator";
 import {AdminDomainService} from "./admin-domain.service";
-import {
-  AlertMessageService
-} from "../../common/alert-message/alert-message.service";
-import {
-  ConfirmationDialogComponent
-} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
+import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {AdminKeystoreService} from "../admin-keystore/admin-keystore.service";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {
-  ResourceDefinitionRo
-} from "../admin-extension/resource-definition-ro.model";
+import {ResourceDefinitionRo} from "../admin-extension/resource-definition-ro.model";
 import {ExtensionService} from "../admin-extension/extension.service";
 import {ExtensionRo} from "../admin-extension/extension-ro.model";
 import {MatTabGroup} from "@angular/material/tabs";
-import {
-  CancelDialogComponent
-} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
+import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
 import {DomainPanelComponent} from "./domain-panel/domain-panel.component";
-import {
-  DomainResourceTypePanelComponent
-} from "./domain-resource-type-panel/domain-resource-type-panel.component";
-import {
-  DomainSmlIntegrationPanelComponent
-} from "./domain-sml-panel/domain-sml-integration-panel.component";
+import {DomainResourceTypePanelComponent} from "./domain-resource-type-panel/domain-resource-type-panel.component";
+import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-integration-panel.component";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {firstValueFrom, lastValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
 import {CertificateRo} from "../../common/model/certificate-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {TranslateService} from "@ngx-translate/core";
+import {SmpTableColDef} from "../../common/components/smp-table/smp-table-coldef.model";
+import {TableResult} from "../../common/model/table-result.model";
+import {SmpTableComponent} from "../../common/components/smp-table/smp-table.component";
 
 
 @Component({
   templateUrl: './admin-domain.component.html',
-  styleUrls: ['./admin-domain.component.css']
+  styleUrls: ['./admin-domain.component.css'],
+  standalone: false
 })
 export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, BeforeLeaveGuard {
   readonly membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
-  displayedColumns: string[] = ['domainCode'];
+  displayedColumns: string[] = ['domainCode', 'adminCnt'];
+  columns: SmpTableColDef[];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected?: DomainRo;
   domainList: DomainRo[] = [];
@@ -62,16 +48,18 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
 
   private domainUpdatedEventSub: Subscription = Subscription.EMPTY;
   private domainEntryUpdatedEventSub: Subscription = Subscription.EMPTY;
+  _isLoadingResults = false;
+  dataLength: number = 0;
+  pageIndex: number = 0;
+  pageSize: number = 10;
+  filterValue: string;
 
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  _warningMessage: string = "";
 
   @ViewChild('domainPanelComponent') domainPanelComponent: DomainPanelComponent;
   @ViewChild('domainResourceTypePanelComponent') domainResourceTypePanelComponent: DomainResourceTypePanelComponent;
   @ViewChild('domainSmlIntegrationPanelComponent') domainSmlIntegrationPanelComponent: DomainSmlIntegrationPanelComponent;
-
-
+  @ViewChild('domainTable') domainTable: SmpTableComponent;
   @ViewChild('domainTabs') domainTabs: MatTabGroup;
 
   constructor(private domainService: AdminDomainService,
@@ -82,9 +70,25 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
               private dialog: MatDialog,
               private translateService: TranslateService) {
 
+    this.columns = [
+      {
+        columnDef: 'domainCode',
+        header: 'admin.domain.label.domain.code',
+        cell: (row: DomainRo) => row.domainCode,
+        class: (row: DomainRo) => ({"datatable-row-error": this.hasRowErrors(row)}),
+      } as SmpTableColDef,
+      {
+        columnDef: 'adminCnt',
+        header: 'admin.domain.label.domain.admin.count',
+        cell: (row: DomainRo) => row.adminMemberCount?.toString() || '0',
+        class: (row: DomainRo) => ({"datatable-row-error": this.hasRowErrors(row)}),
+        style: "max-width: 80px; width: 50px; padding-right: 15px; display: flex; justify-content: right;"
+      } as SmpTableColDef,
+    ];
+
     this.domainUpdatedEventSub = domainService.onDomainUpdatedEvent()
-      .subscribe((updateDomainList: DomainRo[]): void => {
-          this.updateDomainList(updateDomainList);
+      .subscribe((result: TableResult<DomainRo>): void => {
+          this.updateDomainList(result.serviceEntities, result.count, result.page, result.pageSize);
         }
       );
 
@@ -104,7 +108,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     );
 
     extensionService.getExtensions();
-    domainService.getDomains();
+    domainService.getDomains(this.filterValue, this.pageIndex, this.pageSize);
     keystoreService.getKeystoreData();
   }
 
@@ -119,6 +123,47 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     this.domiSMPResourceDefinitions = allResourceDefinition;
   }
 
+  get showWarning() {
+    return this.hasRowErrors(this.selected);
+  }
+
+  get warningMessage() : string {
+    if(this.showWarning && !this._warningMessage) {
+      this.updateShowWarningMessage();
+    }
+    return this._warningMessage;
+  }
+
+  async updateShowWarningMessage() {
+    let message = await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.prefix"));
+    if (!this.selected?.signatureKeyAlias) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.signature.key"));
+    }
+    if (!this.domainResourceTypes(this.selected)?.length) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.resource.type"));
+    }
+    if (!this.selected?.adminMemberCount || this.selected?.adminMemberCount < 1) {
+      message += await lastValueFrom(this.translateService.get("domain.panel.warning.domain.configuration.option.admin.member"));
+    }
+    message += "</ul>"; // No need to translate this part
+
+    this._warningMessage = message;
+  }
+
+  domainResourceTypes(domain: DomainRo): ResourceDefinitionRo[] {
+    if (!domain || !domain.resourceDefinitions) {
+      return [];
+    }
+    return this.domiSMPResourceDefinitions.filter(resType => domain.resourceDefinitions.includes(resType.identifier))
+  }
+
+  hasRowErrors(domain: DomainRo): boolean {
+    return !!domain?.domainId && (!this.domainResourceTypes(domain)?.length
+      || !domain.signatureKeyAlias
+      || !domain.adminMemberCount
+      || domain.adminMemberCount < 1)
+  }
+
   ngOnInit(): void {
     // filter predicate for search the domain
     this.dataSource.filterPredicate =
@@ -128,8 +173,6 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
     // currently  MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
     // _handleClick handler
     this.registerTabClick();
@@ -168,18 +211,48 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     }
   }
 
-  updateDomainList(domainList: DomainRo[]) {
+  updateDomainList(domainList: DomainRo[],
+                   totalDataSize: number = 0,
+                   pageIndex: number = -1,
+                   pageSize: number = -1) {
+    let currR: DomainRo = this.selected;
+    this.selected = null;
     this.domainList = domainList
     this.dataSource.data = this.domainList;
+
+    this.dataLength = totalDataSize;
+    if (pageIndex !== -1) {
+      this.pageIndex = pageIndex;
+    }
+    if (pageSize !== -1) {
+      this.pageSize = pageSize;
+    }
+
+    if (!!currR) {
+      this.selected = domainList.find(d =>
+        d.domainCode == currR.domainCode);
+    }
+
+    if (!this.selected && !!domainList && domainList.length > 0) {
+      this.selected = domainList[0];
+    }
   }
 
   async updateDomain(domain: DomainRo) {
     if (domain == null) {
       return;
     }
-
+    this.updateShowWarningMessage();
     if (domain.status == EntityStatus.NEW) {
-      this.domainList.push(domain)
+      let itemIndex = this.domainList.findIndex(item => item?.domainId == domain?.domainId);
+      if (itemIndex != -1) {
+        // already exists - should not happen
+        this.domainList[itemIndex] = domain;
+      } else {
+        this.domainList.push(domain);
+        this.dataLength += 1;
+      }
+
       this.selected = domain;
       this.alertService.success(await lastValueFrom(this.translateService.get("admin.domain.success.create", {domainCode: domain.domainCode})));
     } else if (domain.status == EntityStatus.UPDATED) {
@@ -197,18 +270,27 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     this.dataSource.data = this.domainList;
 
     if (domain.status == EntityStatus.NEW) {
-      this.paginator.lastPage();
+      this.domainTable.lastPage();
     }
   }
 
-  applyDomainFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+  applyDomainFilter(filterValue: string) {
+    this.filterValue = filterValue.trim().toLowerCase();
+    this.refreshDomainList();
   }
+
+  refreshDomainList() {
+    this.domainService.getDomains(this.filterValue,
+      this.pageIndex,
+      this.pageSize);
+  }
+
+  onPageChanged(page: PageEvent) {
+    this.pageIndex = page.pageIndex;
+    this.pageSize = page.pageSize;
+    this.refreshDomainList();
+  }
+
 
   resetUnsavedDataValidation() {
     // current tab not changed - OK to change it
@@ -301,19 +383,23 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       this.registerTabClick();
     }
 
+
     if (this.selected == domainSelected) {
       return;
     }
+
     if (this.isCurrentTabDirty()) {
       let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
       canChangeTab.then((canChange: boolean) => {
         if (canChange) {
           // reset
           this.resetCurrentTabData();
+          this.updateShowWarningMessage();
           this.selected = domainSelected;
         }
       });
     } else {
+      this.updateShowWarningMessage();
       this.selected = domainSelected;
     }
   }
@@ -368,7 +454,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
    * or it is new domain
    */
   get canNotDelete(): boolean {
-    return !this.selected || this.isNewDomain() || this.isSelectedSMPRegister ;
+    return !this.selected || this.isNewDomain() || this.isSelectedSMPRegister;
 
   }
 
@@ -386,5 +472,16 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
 
   get editMode(): boolean {
     return this.isCurrentTabDirty();
+  }
+
+
+  // this flag is used to trigger data refresh when data is needed.
+  //The data can be changed for the user when adding/creating new resource in the edit group
+  @Input() set isLoadingResults(value: boolean) {
+    this._isLoadingResults = value;
+  }
+
+  get isLoadingResults(): boolean {
+    return this._isLoadingResults;
   }
 }

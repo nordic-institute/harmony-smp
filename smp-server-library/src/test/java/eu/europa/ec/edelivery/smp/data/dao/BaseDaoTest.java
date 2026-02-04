@@ -19,15 +19,16 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,8 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-class BaseDaoTest extends AbstractBaseDao {
-
+class  BaseDaoTest extends AbstractBaseDao {
 
     @Autowired
     DomainDao testInstance;
@@ -58,7 +58,8 @@ class BaseDaoTest extends AbstractBaseDao {
         CriteriaQuery res = testInstance.createSearchCriteria(filter, cls, false, null, null);
         //Then
         assertNotNull(res);
-        assertNull(res.getSelection());
+        assertNotNull(res.getSelection());
+        assertTrue(res.getSelection().getCompoundSelectionItems().isEmpty());
 
         // when
         res = testInstance.createSearchCriteria(filter, cls, true, null, null);
@@ -110,8 +111,6 @@ class BaseDaoTest extends AbstractBaseDao {
         CriteriaBuilder cb = memEManager.getCriteriaBuilder();
         CriteriaQuery<DBDomain> cq = cb.createQuery(DBDomain.class);
         Root<DBDomain> om = cq.from(DBDomain.class);
-        Predicate expected = cb.equal(testInstance.getPath(om, "DomainCodeList", "List"), filterValue);
-
         // when
         List<Predicate> lst = testInstance.createPredicates(filter, om, cb);
 

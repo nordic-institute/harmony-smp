@@ -23,6 +23,8 @@ import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.ui.AlertRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -31,8 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 @Service
 public class UIAlertService extends UIServiceBase<DBAlert, AlertRO> {
@@ -78,7 +78,8 @@ public class UIAlertService extends UIServiceBase<DBAlert, AlertRO> {
         } catch (InvocationTargetException | IllegalAccessException e) {
             String msg = "Error occurred while converting  DBAlert to AlertRO";
             LOG.error(msg, e);
-            throw new SMPRuntimeException(INTERNAL_ERROR, "DB to RO entity conversion.", msg);
+            throw new SMPRuntimeException(ErrorMessageType.INTERNAL_CONVERSION_FROM_DATABASE_ENTITY_TO_VALUE_OBJECT)
+                    .addParam(ErrorMessageArgument.ERROR, msg);
         }
         return alertRO;
     }

@@ -117,6 +117,9 @@ public class SignatureUtil {
 
         // Create a DOMValidateContext and specify a KeySelector and document context.
         DOMValidateContext valContext = new DOMValidateContext(new X509KeySelector(), sigPointer);
+        // Disable secure validation to allow old signatures to be validated with outdated sha1 algorithm to be validated.
+        // NOTE: this is OK for testing purposes, but should not be used in production code.
+        valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE);
 
         valContext.setProperty("javax.xml.crypto.dsig.cacheReference", Boolean.TRUE);
         // Unmarshal the XMLSignature.

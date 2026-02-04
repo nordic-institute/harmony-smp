@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.cas.authentication.CasServiceTicketAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -53,6 +54,10 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         LOG.debug("Authenticate authentication token type: [{}]", authenticationToken.getClass());
         if (authenticationToken instanceof UILoginAuthenticationToken) {
             authentication = authenticateByUsernamePassword((UILoginAuthenticationToken) authenticationToken);
+        } else if (authenticationToken instanceof CasServiceTicketAuthenticationToken
+                || authenticationToken.getClass().getSimpleName().equals("CasAuthenticationToken")) {
+            LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
+            return null;
         }
         return authentication;
     }
@@ -66,7 +71,8 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> auth) {
         LOG.info("Support authentication: [{}].", auth);
-        boolean supportAuthentication = auth.equals(UILoginAuthenticationToken.class);
+        boolean supportAuthentication = auth.equals(UILoginAuthenticationToken.class)
+                || auth.equals(CasServiceTicketAuthenticationToken.class);
         if (!supportAuthentication) {
             LOG.warn("SMP does not support authentication type: [{}].", auth);
         }

@@ -67,7 +67,7 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
      */
     @ParameterizedTest
     @CsvSource({"'Get with same user as resource admin: OK', 200, pat_smp_admin, 123456, pat_smp_admin, 123456, ''",
-            "'Non resource memeber is trying to get it ', 401, pat_smp_admin, 123456, test_pat_hashed_pass, 123456,''",
+            "'Non resource member is trying to get it ', 401, pat_smp_admin, 123456, test_pat_hashed_pass, 123456,''",
             "'Resource member with bad password, bad credentials: Fail', 401, pat_smp_admin, 123456, pat_smp_admin, 000000,''",
             "'Set same Owner as admin user: OK', 200, pat_smp_admin, 123456, pat_smp_admin, 123456,'pat_smp_admin'",
             "'Set resource owner user: OK', 200, test_pat_hashed_pass, 123456, test_pat_hashed_pass, 123456,'test_user_hashed_pass'",

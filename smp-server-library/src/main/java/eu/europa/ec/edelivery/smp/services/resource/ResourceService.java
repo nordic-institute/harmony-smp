@@ -23,7 +23,8 @@ import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_OWNER;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -168,13 +168,15 @@ public class ResourceService {
         }
 
         return optOwnerUser.orElseThrow(
-                () -> new SMPRuntimeException(ErrorCode.INVALID_OWNER, ownerName));
+                () -> new SMPRuntimeException(ErrorMessageType.USER_INVALID_OWNER)
+                        .addParam(ErrorMessageArgument.IDENTIFIER, ownerName));
     }
 
     public static String[] splitSerialFromSubject(String certificateId) {
         int idx = certificateId.lastIndexOf(":");
         if (idx <= 0) {
-            throw new SMPRuntimeException(INVALID_OWNER, certificateId);
+            throw new SMPRuntimeException(ErrorMessageType.USER_INVALID_OWNER)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, certificateId);
         }
         return new String[]{certificateId.substring(0, idx), certificateId.substring(idx + 1)};
 

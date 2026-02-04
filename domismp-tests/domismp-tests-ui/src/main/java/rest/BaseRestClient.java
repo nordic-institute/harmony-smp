@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BaseRestClient {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -39,28 +40,29 @@ public class BaseRestClient {
     }
 
     //	---------------------------------------Default request methods -------------------------------------------------
-    protected ClientResponse requestPUT(WebResource resource, JSONObject body, String type) {
+    protected ClientResponse requestPUT(WebResource resource, JSONObject body) {
 
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
-        return builder.type(type).put(ClientResponse.class, body.toString());
+
+        return builder.type(MediaType.APPLICATION_JSON).put(ClientResponse.class, body.toString());
     }
 
-    protected ClientResponse requestPUT(WebResource resource, String body, String type) {
+    protected ClientResponse requestPUT(WebResource resource, String body) {
 
         startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
-        return builder.type(type).put(ClientResponse.class, body);
+        return builder.type(MediaType.APPLICATION_JSON).put(ClientResponse.class, body);
     }
 
     protected ClientResponse jsonPUT(WebResource resource, JSONObject body) {
-        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+        return requestPUT(resource, body);
     }
 
     protected ClientResponse jsonPUT(WebResource resource, String body) {
-        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+        return requestPUT(resource, body);
     }
 
     protected ClientResponse requestPOST(WebResource resource, String body) {
@@ -69,6 +71,26 @@ public class BaseRestClient {
 
         return builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, body);
     }
+
+    protected ClientResponse requestGet(WebResource resource) {
+        startSession();
+        WebResource.Builder builder = decorateBuilder(resource);
+
+        return builder.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+    }
+
+    protected ClientResponse requestGET(WebResource resource, HashMap<String, String> params) {
+
+        if (params != null) {
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                resource = resource.queryParam(param.getKey(), param.getValue());
+            }
+        }
+
+        WebResource.Builder builder = decorateBuilder(resource);
+        return builder.get(ClientResponse.class);
+    }
+
 
     // -------------------------------------------- Login --------------------------------------------------------------
 

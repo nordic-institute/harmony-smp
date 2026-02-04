@@ -25,17 +25,22 @@ import eu.europa.ec.edelivery.smp.data.dao.SubresourceDefDao;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentReferenceInfoRO;
 import eu.europa.ec.edelivery.smp.data.ui.SubresourceRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
+import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -55,9 +60,6 @@ import java.util.stream.Collectors;
 @Service
 public class UISubresourceService {
 
-    private static final String ACTION_SUBRESOURCE_CREATE = "CreateSubresourceForResource";
-    private static final String ACTION_SUBRESOURCE_DELETE = "DeleteSubresourceFromResource";
-
     private final SubresourceDao subresourceDao;
     private final ResourceDao resourceDao;
     private final DocumentDao documentDao;
@@ -66,12 +68,16 @@ public class UISubresourceService {
     private final DocumentVersionService documentVersionService;
     private final UIDocumentService uiDocumentService;
     private final ConversionService conversionService;
+    private final DocumentMailService documentMailService;
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
     public UISubresourceService(SubresourceDao subresourceDao, ResourceDao resourceDao, SubresourceDefDao subresourceDefDao, IdentifierService identifierService,
                                 DocumentDao documentDao,
                                 ConversionService conversionService,
                                 DocumentVersionService documentVersionService,
-                                UIDocumentService uiDocumentService
+                                UIDocumentService uiDocumentService,
+                                DocumentMailService documentMailService,
+                                SMPExceptionLanguageService smpExceptionLanguageService
     ) {
         this.subresourceDao = subresourceDao;
         this.resourceDao = resourceDao;
@@ -81,31 +87,37 @@ public class UISubresourceService {
         this.conversionService = conversionService;
         this.documentVersionService = documentVersionService;
         this.uiDocumentService = uiDocumentService;
+        this.documentMailService = documentMailService;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
 
     @Transactional
     public List<SubresourceRO> getSubResourcesForResource(Long resourceId) {
         List<DBSubresource> list = this.subresourceDao.getSubResourcesForResourceId(resourceId);
-        return list.stream().map(subresource -> conversionService.convert(subresource, SubresourceRO.class)).collect(Collectors.toList());
+        return list.stream().map(this::convertSubresourceWithReferenceData).toList();
     }
 
     @Transactional
     public SubresourceRO deleteSubresourceFromResource(Long subResourceId, Long resourceId) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_DELETE, "Resource does not exist!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_DELETE_RESOURCE_NOT_EXISTS);
         }
         DBSubresource subresource = subresourceDao.find(subResourceId);
         if (subresource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_DELETE, "Subresource does not exist!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_DELETE_SUBRESOURCE_NOT_EXISTS);
         }
         if (!Objects.equals(subresource.getResource().getId(), resourceId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_DELETE, "Subresource does not belong to the resource!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_DELETE_SUBRESOURCE_NOT_PART_OF_RESOURCE);
         }
         resource.getSubresources().remove(subresource);
         documentDao.unlinkDocument(subresource.getDocument());
         subresourceDao.remove(subresource);
+        documentMailService.sendDocumentActionNotification(resource, subresource, MailDocumentActionType.DELETED,
+                subresource.getDocument().getCurrentVersion(),
+                subresource.getDocument().getName(), SessionSecurityUtils.getSessionUserDetails());
+
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
@@ -114,12 +126,13 @@ public class UISubresourceService {
 
         DBResource resParent = resourceDao.find(resourceId);
         if (resParent == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Resource does not exist!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_CREATE_RESOURCE_NOT_EXISTS);
         }
 
         Optional<DBSubresourceDef> optRedef = subresourceDefDao.getSubresourceDefByIdentifier(subResourceRO.getSubresourceTypeIdentifier());
-        if (!optRedef.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Subresource definition [" + subResourceRO.getSubresourceTypeIdentifier() + "] does not exist!");
+        if (optRedef.isEmpty()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_CREATE_SUBRESOURCE_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, subResourceRO.getSubresourceTypeIdentifier());
         }
         DBDomain domain = resParent.getDomainResourceDef().getDomain();
 
@@ -127,7 +140,9 @@ public class UISubresourceService {
                 subResourceRO.getIdentifierValue());
         Optional<DBSubresource> exists = subresourceDao.getSubResourcesForResource(docId, resParent);
         if (exists.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Subresource definition [val:" + docId.getValue() + " scheme:" + docId.getScheme() + "] already exists for the resource!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_SUBRESOURCE_CREATE_SUBRESOURCE_ALREADY_EXISTS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, docId.getValue())
+                    .addParam(ErrorMessageArgument.SCHEME, docId.getScheme());
         }
 
         DBSubresource subresource = new DBSubresource();
@@ -139,6 +154,11 @@ public class UISubresourceService {
         subresource.setDocument(document);
         subresourceDao.persist(subresource);
         // create first member as admin user
+
+        documentMailService.sendDocumentActionNotification(resParent, subresource, MailDocumentActionType.CREATED,
+                document.getCurrentVersion(),
+                document.getName(), SessionSecurityUtils.getSessionUserDetails());
+
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
@@ -161,5 +181,26 @@ public class UISubresourceService {
         uiDocumentService.generateDocumentForSubresource(resource, subresource, baos);
         version.setContent(baos.toByteArray());
         return document;
+    }
+
+    private SubresourceRO convertSubresourceWithReferenceData(DBSubresource resource) {
+        SubresourceRO subresourceRO = conversionService.convert(resource, SubresourceRO.class);
+        DBDocumentReferenceData docRefData = subresourceDao.getDocumentReferenceData(resource);
+        if (docRefData != null && subresourceRO != null) {
+            DocumentReferenceInfoRO docRefInfo = new DocumentReferenceInfoRO();
+            docRefInfo.setReferencedByCount(docRefData.getReferencedByCount());
+            docRefInfo.setReferencedDocumentExists(docRefData.getReferencedDocumentId() != null);
+            docRefInfo.setReferenceUrlPath(docRefData.getReferenceUrlPath());
+            docRefInfo.setSharingEnabled(docRefData.isSharingEnabled());
+            subresourceRO.setDocumentReferenceInfo(docRefInfo);
+            if (StringUtils.isNotBlank(docRefData.getReferenceUrlPath()) && docRefData.getReferencedDocumentId() == null) {
+                subresourceRO.setStatus(EntityROStatus.ERROR.getStatusNumber());
+                String currentLocale = LocaleUtils.getCurrentLocale();
+                subresourceRO.setStatusMessage(this.smpExceptionLanguageService
+                        .getMessageTranslation(ErrorMessageType.UI_SUBRESOURCE_INVALID_REFERENCE.getMessageCode(), currentLocale)
+                );
+            }
+        }
+        return subresourceRO;
     }
 }
