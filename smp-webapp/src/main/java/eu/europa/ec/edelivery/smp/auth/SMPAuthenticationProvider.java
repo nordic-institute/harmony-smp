@@ -24,6 +24,7 @@ import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CredentialService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.Nullable;
@@ -80,7 +81,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             LOG.info("try to authentication Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
             authentication = authenticateByAuthenticationToken((UsernamePasswordAuthenticationToken) authenticationToken);
         } else if (authenticationToken instanceof BearerTokenAuthenticationToken) {
-            LOG.info("try to authentication Bearer Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
+            String token = ((BearerTokenAuthenticationToken) authenticationToken).getToken();
+            String fingerprint = DigestUtils.sha256Hex(token).substring(0, 12);
+            LOG.info("try to authentication Bearer Token: [{}] with token fingerprint:[{}]", authenticationToken.getClass(), fingerprint);
             authentication = authenticateByBareTokenAuthenticationToken((BearerTokenAuthenticationToken) authenticationToken);
         }
 
