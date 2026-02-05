@@ -57,6 +57,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
@@ -68,6 +69,7 @@ import static org.apache.commons.lang3.BooleanUtils.isTrue;
 @Service
 public class UIResourceService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIResourceService.class);
+    private static final Pattern FORBIDDEN_CHARS_PATTERN = Pattern.compile("[\\p{Cntrl}<>\"'`&]");
 
     private final ResourceDao resourceDao;
 
@@ -216,6 +218,8 @@ public class UIResourceService {
     @Transactional
     public ResourceRO createResourceForGroup(ResourceRO resourceRO, Long groupId, Long domainId, Long userId) {
 
+        validateResourceIdentifierValue(resourceRO);
+
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
             throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_GROUP_NOT_EXISTS);
@@ -285,6 +289,24 @@ public class UIResourceService {
                 document.getName(), SessionSecurityUtils.getSessionUserDetails());
 
         return conversionService.convert(resource, ResourceRO.class);
+    }
+
+    /**
+     * Validates the resource identifier value by rejecting characters that are not allowed.
+     */
+    private void validateResourceIdentifierValue(ResourceRO resourceRO) {
+        if (resourceRO == null) {
+            return;
+        }
+        String identifierValue = resourceRO.getIdentifierValue();
+        if (identifierValue == null) {
+            return;
+        }
+
+        if (FORBIDDEN_CHARS_PATTERN.matcher(identifierValue).find()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_IDENTIFIER_VALUE_INVALID_CHARACTERS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, identifierValue);
+        }
     }
 
     /**

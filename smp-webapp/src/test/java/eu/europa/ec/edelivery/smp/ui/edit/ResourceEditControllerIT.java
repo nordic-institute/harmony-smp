@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.ui.edit;
 
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceSearchService;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
@@ -142,6 +143,43 @@ class ResourceEditControllerIT extends AbstractControllerTest {
         assertEquals(resource.getIdentifierScheme(), response.getIdentifierScheme());
 
         assertEquals(initialSize + 1, getResourceCount());
+    }
+
+    @Test
+    void testCreateResourceRejectsForbiddenCharactersInIdentifierValue() throws Exception {
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+
+        DomainRO domainRO = geUserDomainsForRole(mvc, session, userRO, null).get(0);
+        GroupRO groupRO = geUserGroups(mvc, session, userRO, domainRO, null).get(0);
+
+        ResourceRO resource = new ResourceRO();
+        resource.setIdentifierValue("Test Value <a href=https://bing.com>Click Here</a>");
+        resource.setIdentifierScheme("test-test-test");
+        resource.setVisibility(VisibilityType.PUBLIC);
+
+        int initialSize = getResourceCount();
+
+        MvcResult result = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_CREATE,
+                        userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
+                        .session(session)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getObjectMapper().writeValueAsBytes(resource)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponseRO error = getObjectFromResponse(result, ErrorResponseRO.class);
+        assertNotNull(error);
+
+        assertNotNull(error.getErrorCode());
+        assertEquals("error.invalid.request.resource.create.identifier.value.contains.forbidden.characters",
+                error.getErrorCode());
+
+        assertNotNull(error.getErrorDescription());
+        assertTrue(error.getErrorDescription().toLowerCase().contains("resource identifier"));
+
+        assertEquals(initialSize, getResourceCount());
     }
 
     @Test
