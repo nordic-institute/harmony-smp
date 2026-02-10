@@ -77,9 +77,11 @@ export class LoginComponent implements OnInit, OnDestroy {
                 user: user,
                 adminUser: false
               }
-            }).afterClosed().subscribe(res =>
-              this.securityService.finalizeLogout(res)
-            );
+            }).afterClosed().subscribe((result) => {
+              if (result) {
+                this.securityService.refreshLoggedUserFromServer();
+              }
+            });
           } else {
             this.dialog.open(ExpiredPasswordDialogComponent).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
           }

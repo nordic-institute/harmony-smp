@@ -128,7 +128,14 @@ export class PasswordChangeDialogComponent {
       this.userDetailsService.changePassword(this.current.userId,
         this.dialogForm.controls['new-password'].value,
         this.dialogForm.controls['current-password'].value).subscribe((res: boolean) => {
+          this.current.forceChangeExpiredPassword = false;
+          this.current.defaultPasswordUsed = false;
+          this.securityService.updateUserDetails({
+            ...this.securityService.getCurrentUser(),
+            ...this.current
+          });
           this.showPassChangeDialog();
+          this.dialogRef.close(this.current);
         },
         (err) => {
           this.showErrorMessage(err.error.errorDescription);
@@ -138,15 +145,10 @@ export class PasswordChangeDialogComponent {
   }
 
   async showPassChangeDialog() {
-    this.alertService.success(this.adminUser
-        ? await lastValueFrom(this.translateService.get("password.change.dialog.success.password.change.admin"))
-        : await lastValueFrom(this.translateService.get("password.change.dialog.success.password.change.user")), true);
-
-
-    if (!this.adminUser) {
-      // logout if changed for itself
-      this.securityService.finalizeLogout({});
-    }
+    this.alertService.success(
+      await lastValueFrom(this.translateService.get("password.change.dialog.success.password.change")),
+      true
+    );
   }
 
   showSuccessMessage(value: string) {

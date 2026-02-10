@@ -144,6 +144,7 @@ public class CredentialService {
         SMPUserDetails userDetails = new SMPUserDetails(user,
                 SecurityUtils.generatePrivateSymmetricKey(true),
                 Collections.singletonList(authority));
+        userDetails.setCredentialChangedOn(credential.getChangedOn());
         UILoginAuthenticationToken smpAuthenticationToken = new UILoginAuthenticationToken(username, userCredentialToken,
                 userDetails);
         try {

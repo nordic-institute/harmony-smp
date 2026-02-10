@@ -192,6 +192,42 @@ class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
+    void changeOwnPasswordKeepsCurrentSessionAndInvalidatesOtherSession() throws Exception {
+        String newPassword = "TESTtest1234!@#$";
+
+        MockHttpSession sessionA = loginWithSystemAdmin(mvc);
+        MockHttpSession sessionB = loginWithSystemAdmin(mvc);
+        UserRO adminUser = getLoggedUserData(mvc, sessionA);
+        assertNotNull(adminUser);
+
+        PasswordChangeRO newPass = new PasswordChangeRO();
+        newPass.setUsername(SYS_ADMIN_USERNAME);
+        newPass.setCurrentPassword(SYS_ADMIN_PASSWD);
+        newPass.setNewPassword(newPassword);
+        assertNotEquals(SYS_ADMIN_PASSWD, newPassword);
+
+        mvc.perform(put(PATH_INTERNAL + "/" + adminUser.getUserId() + "/change-password-for/" + adminUser.getUserId())
+                .with(csrf())
+                .session(sessionA)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(getObjectMapper().writeValueAsString(newPass))
+        ).andExpect(status().isOk()).andReturn();
+
+        mvc.perform(get(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER)
+                .with(csrf())
+                .session(sessionA)
+        ).andExpect(status().isOk());
+
+        mvc.perform(get(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER)
+                .with(csrf())
+                .session(sessionB)
+        ).andExpect(status().isUnauthorized());
+
+        MockHttpSession sessionNew = loginWithCredentials(mvc, SYS_ADMIN_USERNAME, newPassword);
+        assertNotNull(sessionNew);
+    }
+
+    @Test
     void testGetUserData() throws Exception {
         MockHttpSession sessionAdmin = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, sessionAdmin);
