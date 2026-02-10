@@ -121,7 +121,8 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
                         "/images/oasis-smp-1.png",
                         "/images/oasis-smp-2.png",
                         "/images/favicon.ico",
-                        "/styles/domismp.css")
+                        "/styles/domismp.css",
+                        "/scripts/smp.js")
                 .addResourceLocations("/html/");
 
         registry.setOrder(HIGHEST_ORDER - 2)

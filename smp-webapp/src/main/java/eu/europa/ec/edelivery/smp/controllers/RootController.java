@@ -53,6 +53,7 @@ public class RootController {
 
     private final Map<String, String[]> STATIC_RESOURCES = Collections.unmodifiableMap(new HashMap() {{
         put("domismp.css", new String[]{"text/css", "/html/styles/domismp.css"});
+        put("smp.js", new String[]{"application/javascript", "/html/scripts/smp.js"});
         put("DomiSMP_logo.svg", new String[]{"image/svg+xml", "/html/images/DomiSMP_logo.svg"});
         put("EC+Logo2.png", new String[]{"image/png", "/html/images/EC+Logo2.png"});
         put("oasis-smp-1.png", new String[]{"image/png", "/html/images/oasis-smp-1.png"});
@@ -74,6 +75,7 @@ public class RootController {
     @GetMapping(produces = {MediaType.TEXT_HTML_VALUE,
             MediaType.IMAGE_PNG_VALUE,
             "text/css",
+            "application/javascript",
             "image/ico",
             "image/x-ico",
             "image/svg+xml"
@@ -83,7 +85,8 @@ public class RootController {
             "/images/oasis-smp-1.png",
             "/images/oasis-smp-2.png",
             "/images/favicon.ico",
-            "/styles/domismp.css"})
+            "/styles/domismp.css",
+            "/scripts/smp.js"})
     @ResponseBody
     public ResponseEntity<InputStreamResource> getStaticResources(HttpServletRequest httpReq) {
         String host = getRemoteHost(httpReq);
