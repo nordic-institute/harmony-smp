@@ -36,6 +36,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -161,7 +162,8 @@ public class UserAdminController {
     @PreAuthorize("@smpAuthorizationService.isSystemAdministrator")
     public UserRO changePassword(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
                                  @PathVariable("update-user-id") String regenerateForUserId,
-                                 @RequestBody PasswordChangeRO newPassword) {
+                                 @RequestBody PasswordChangeRO newPassword,
+                                 HttpServletRequest request) {
         Long authorizedUserId = decryptEntityId(userId);
         Long changeUserId = decryptEntityId(regenerateForUserId);
         LOG.info("change the password of the currently logged in user:[{}] with id:[{}] ", changeUserId, regenerateForUserId);
@@ -172,6 +174,10 @@ public class UserAdminController {
         }
 
         DBUser user = uiUserService.updateUserPassword(authorizedUserId, changeUserId, newPassword.getCurrentPassword(), newPassword.getNewPassword(),!currentUser.isCasAuthenticated());
+        if (authorizedUserId.equals(changeUserId)) {
+            authorizationService.refreshSessionCredentialChangedOn(currentUser);
+            request.changeSessionId();
+        }
 
         return authorizationService.sanitize(uiUserService.convertToRo(user));
     }

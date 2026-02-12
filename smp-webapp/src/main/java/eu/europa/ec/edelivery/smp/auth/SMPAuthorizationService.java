@@ -19,11 +19,13 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
@@ -48,6 +50,7 @@ import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
@@ -65,6 +68,7 @@ public class SMPAuthorizationService {
     private final DomainMemberDao domainMemberDao;
     private final GroupMemberDao groupMemberDao;
     private final ResourceMemberDao resourceMemberDao;
+    private final CredentialDao credentialDao;
 
     private final ConversionService conversionService;
     private final ConfigurationService configurationService;
@@ -74,6 +78,7 @@ public class SMPAuthorizationService {
                                    DomainMemberDao domainMemberDao,
                                    GroupMemberDao groupMemberDao,
                                    ResourceMemberDao resourceMemberDao,
+                                   CredentialDao credentialDao,
                                    ConversionService conversionService,
                                    ConfigurationService configurationService,
                                    SMPExceptionLanguageService smpExceptionLanguageService) {
@@ -81,6 +86,7 @@ public class SMPAuthorizationService {
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
         this.resourceMemberDao = resourceMemberDao;
+        this.credentialDao = credentialDao;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
     }
@@ -214,7 +220,35 @@ public class SMPAuthorizationService {
         if (userDetails == null) {
             throw new SessionAuthenticationException(ERR_INVALID_OR_NULL);
         }
+        validatePasswordNotChanged(userDetails);
         return userDetails;
+    }
+
+    protected void validatePasswordNotChanged(SMPUserDetails userDetails) {
+        if (userDetails == null || userDetails.getUser() == null) {
+            return;
+        }
+        if (userDetails.isCasAuthenticated() || userDetails.isJwtAuthenticated()) {
+            return;
+        }
+        Optional<DBCredential> credentialOpt = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(userDetails.getUser().getId());
+        if (credentialOpt.isEmpty()) {
+            return;
+        }
+        OffsetDateTime currentChangedOn = credentialOpt.get().getChangedOn();
+        OffsetDateTime sessionChangedOn = userDetails.getCredentialChangedOn();
+        if (currentChangedOn != null && (sessionChangedOn == null || currentChangedOn.isAfter(sessionChangedOn))) {
+            LOG.info(SMPLogger.SECURITY_MARKER, "Password changed for user [{}]; invalidating session", userDetails.getUsername());
+            throw new SessionAuthenticationException(ERR_INVALID_OR_NULL);
+        }
+    }
+
+    public void refreshSessionCredentialChangedOn(SMPUserDetails userDetails) {
+        if (userDetails == null || userDetails.getUser() == null) {
+            return;
+        }
+        Optional<DBCredential> credentialOpt = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(userDetails.getUser().getId());
+        credentialOpt.map(DBCredential::getChangedOn).ifPresent(userDetails::setCredentialChangedOn);
     }
 
     public UserRO getLoggedUserData() {

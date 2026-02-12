@@ -28,6 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.time.OffsetDateTime;
 
 /**
  * Object contains Session details for logged user. For the UI it also generated the session secret for encrypting the
@@ -46,6 +47,8 @@ public class SMPUserDetails implements UserDetails {
     private final List<String> authorizedScopes;
     @Transient
     private final List<SMPAuthority> smpAuthorities;
+    @Transient
+    private OffsetDateTime credentialChangedOn;
 
     public SMPUserDetails(DBUser user, SecurityUtils.Secret sessionSecret, List<SMPAuthority> smpAuthorities) {
         this(user, sessionSecret, smpAuthorities, null);
@@ -66,6 +69,14 @@ public class SMPUserDetails implements UserDetails {
 
     public SecurityUtils.Secret getSessionSecret() {
         return sessionSecret;
+    }
+
+    public OffsetDateTime getCredentialChangedOn() {
+        return credentialChangedOn;
+    }
+
+    public void setCredentialChangedOn(OffsetDateTime credentialChangedOn) {
+        this.credentialChangedOn = credentialChangedOn;
     }
 
     @Override
