@@ -23,16 +23,7 @@ limitations under the License.
   <link rel="icon" type="image/x-icon"
         href="images/favicon.ico"/>
   <link rel="stylesheet" href="styles/domismp.css"/>
-
-  <script type="text/javascript">
-
-    function toggleToolbar() {
-      const toolbar = document.getElementById('toolbar');
-      const content = document.getElementById('content');
-      toolbar.classList.toggle('tb-collapsed');
-      content.classList.toggle('tb-collapsed');
-    }
-  </script>
+  <script type="text/javascript" src="scripts/smp.js" defer="defer"></script>
 </head>
 <body>
 <div class="toolbar" id="toolbar">
@@ -53,7 +44,12 @@ limitations under the License.
     <span class="action-icon icon-oasis-logo-old">&nbsp;</span>
     <span class="action-label">Oasis SMP 1.0</span></a>
 
-  <button class="toggle-button" onclick="toggleToolbar()">
+  <button id="toolbarToggleButton"
+          class="toggle-button"
+          type="button"
+          aria-controls="toolbar"
+          aria-expanded="true"
+          title="Toggle toolbar">
     <span id="expanded">&#x2770;</span>
     <span id="collapsed">&#x2771;</span>
   </button>

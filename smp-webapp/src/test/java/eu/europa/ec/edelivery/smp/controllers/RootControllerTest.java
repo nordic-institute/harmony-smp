@@ -55,6 +55,7 @@ class RootControllerTest {
             "/favicon.ico, image/x-ico",
             "images/favicon.ico, image/x-ico",
             "styles/domismp.css, text/css",
+            "scripts/smp.js, application/javascript",
             "images/DomiSMP_logo.svg, image/svg+xml",
             "images/EC+Logo2.png, image/png",
             "images/oasis-smp-1.png, image/png",
