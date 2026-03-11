@@ -20,12 +20,17 @@ package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -34,6 +39,115 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.EXTERNAL_T
 import static org.junit.jupiter.api.Assertions.*;
 
 class SMPEnvironmentPropertiesTest {
+
+    private static SMPEnvironmentProperties createWithEnv(Map<String, String> envVars) {
+        return new SMPEnvironmentProperties(null) {
+            @Override
+            protected Map<String, String> getEnvironmentVariables() {
+                return envVars != null ? envVars : Collections.emptyMap();
+            }
+        };
+    }
+
+    @Test
+    void getPropertyValueReturnsExactEnvVarMatch() {
+        Map<String, String> env = Map.of("smp.jdbc.url", "jdbc:mysql://exact");
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        assertEquals("jdbc:mysql://exact", instance.getPropertyValue("smp.jdbc.url", null));
+    }
+
+    @Test
+    void getPropertyValueFallsBackToLowercasePosixEnvVar() {
+        Map<String, String> env = Map.of("smp_jdbc_url", "jdbc:mysql://lower");
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        assertEquals("jdbc:mysql://lower", instance.getPropertyValue("smp.jdbc.url", null));
+    }
+
+    @Test
+    void getPropertyValueFallsBackToUppercasePosixEnvVar() {
+        Map<String, String> env = Map.of("SMP_JDBC_URL", "jdbc:mysql://upper");
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        assertEquals("jdbc:mysql://upper", instance.getPropertyValue("smp.jdbc.url", null));
+    }
+
+    @Test
+    void getPropertyValueExactEnvVarTakesPriorityOverPosix() {
+        Map<String, String> env = Map.of(
+                "smp.jdbc.url", "jdbc:mysql://exact",
+                "SMP_JDBC_URL", "jdbc:mysql://posix"
+        );
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        assertEquals("jdbc:mysql://exact", instance.getPropertyValue("smp.jdbc.url", null));
+    }
+
+    @Test
+    void getPropertyValueLowercasePosixTakesPriorityOverUppercase() {
+        Map<String, String> env = new HashMap<>();
+        env.put("smp_jdbc_url", "jdbc:mysql://lower");
+        env.put("SMP_JDBC_URL", "jdbc:mysql://upper");
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        assertEquals("jdbc:mysql://lower", instance.getPropertyValue("smp.jdbc.url", null));
+    }
+
+    @Test
+    void getPropertyValueReturnsDefaultWhenNoEnvVarMatches() {
+        SMPEnvironmentProperties instance = createWithEnv(Collections.emptyMap());
+
+        assertEquals("fallback", instance.getPropertyValue("smp.nonexistent.prop", "fallback"));
+    }
+
+    @Test
+    void getPropertyValueReturnsNullDefaultWhenNoMatch() {
+        SMPEnvironmentProperties instance = createWithEnv(Collections.emptyMap());
+
+        assertNull(instance.getPropertyValue("smp.nonexistent.prop", null));
+    }
+
+    @Test
+    void getPropertyValueConvertsDashesToUnderscores() {
+        Map<String, String> env = Map.of("SMP_SOME_HYPHENATED_PROPERTY", "hyphen-value");
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        assertEquals("hyphen-value", instance.getPropertyValue("smp.some-hyphenated.property", null));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "smp.jdbc.url,           SMP_JDBC_URL",
+            "smp.jdbc.driver,        SMP_JDBC_DRIVER",
+            "smp.jdbc.user,          SMP_JDBC_USER",
+            "smp.jdbc.password,      SMP_JDBC_PASSWORD",
+            "smp.datasource.jndi,    SMP_DATASOURCE_JNDI",
+            "smp.configuration.file, SMP_CONFIGURATION_FILE",
+            "smp.security.folder,    SMP_SECURITY_FOLDER",
+            "smp.database.hibernate.dialect, SMP_DATABASE_HIBERNATE_DIALECT",
+    })
+    void getPropertyValueResolvesAllDropinEnvVarNames(String propertyName, String envVarName) {
+        String expected = "test-value-" + envVarName;
+        Map<String, String> env = Map.of(envVarName, expected);
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        assertEquals(expected, instance.getPropertyValue(propertyName, null));
+    }
+
+    @Test
+    void systemPropertyTakesPriorityOverEnvVar() {
+        String propKey = "smp.test.priority." + UUID.randomUUID();
+        Map<String, String> env = Map.of(propKey, "from-env");
+        SMPEnvironmentProperties instance = createWithEnv(env);
+
+        System.setProperty(propKey, "from-system");
+        try {
+            assertEquals("from-system", instance.getPropertyValue(propKey, null));
+        } finally {
+            System.clearProperty(propKey);
+        }
+    }
 
     @Test
     void testUpdateDeprecatedValues() {
