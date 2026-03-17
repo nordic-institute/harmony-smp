@@ -114,21 +114,9 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.setOrder(HIGHEST_ORDER)
-                .addResourceHandler("/index.html",
-                        "/images/DomiSMP_logo.svg",
-                        "/images/EC+Logo2.png",
-                        "/images/oasis-smp-1.png",
-                        "/images/oasis-smp-2.png",
-                        "/images/favicon.ico",
-                        "/styles/domismp.css",
-                        "/scripts/smp.js")
-                .addResourceLocations("/html/");
-
-        registry.setOrder(HIGHEST_ORDER - 2)
-                .addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources
-        registry.setOrder(HIGHEST_ORDER - 3)
-                .addResourceHandler("/ui/**").addResourceLocations("/ui/"); // angular pages
+        registry.setOrder(HIGHEST_ORDER);
+        registry.addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources
+        registry.addResourceHandler("/ui/**").addResourceLocations("/ui/"); // angular pages
     }
 
     @Override
