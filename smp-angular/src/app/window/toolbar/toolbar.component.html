@@ -28,6 +28,10 @@
                 (click)="openCurrentCasUserData()">
           <span>{{ "toolbar.component.button.open.cas.profile" | translate }}</span>
         </button>
+        <button id="versionInfo_id" mat-menu-item (click)="showVersionInfo()">
+          <mat-icon>info</mat-icon>
+          <span>{{ "toolbar.component.button.version.info" | translate }}</span>
+        </button>
         <hr/>
         <button id="logout_id" mat-menu-item (click)="logout($event)">
           <mat-icon>power_settings_new</mat-icon>
