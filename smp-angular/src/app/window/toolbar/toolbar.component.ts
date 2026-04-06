@@ -28,7 +28,6 @@ import {InformationDialogComponent} from "../../common/dialogs/information-dialo
 
 export class ToolbarComponent implements OnDestroy{
 
-  fullMenu: boolean = true;
   userController: UserController;
   currentUserRoleDescription = "";
   private loginSubscription: Subscription;
@@ -125,10 +124,6 @@ export class ToolbarComponent implements OnDestroy{
     this.userController.changePasswordDialog({
       data: {user: this.securityService.getCurrentUser(), adminUser: false}
     });
-  }
-
-  showExpanded(expand: boolean) {
-    this.fullMenu = expand;
   }
 
   async showVersionInfo() {

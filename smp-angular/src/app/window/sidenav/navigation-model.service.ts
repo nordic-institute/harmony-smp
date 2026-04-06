@@ -177,7 +177,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   public reset() {
-    this.rootNode = PUBLIC_NAVIGATION_TREE;
+    this.rootNode = structuredClone(PUBLIC_NAVIGATION_TREE);
     this.data = this.rootNode.children;
     this.select(this.rootNode)
   }
@@ -392,9 +392,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   public navigateToLogin(): void {
     this.securityService.clearLocalStorage();
     this.reset();
-    let node: NavigationNode = this.createLoginNode();
-    this.rootNode.children.push(node);
-    this.select(node);
+    this.router.navigate(['login']);
+  }
+
+  public isInSelectedPath(node: NavigationNode): boolean {
+    return this._selectedPath?.includes(node) ?? false;
   }
 
   public navigateToHome(): void {
@@ -416,19 +418,6 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   public navigateToEditResourceSubresources(): void {
     this.setNavigationTreeByPath(['edit', 'edit-resource'], this.rootNode);
-  }
-
-  public createLoginNode(): NavigationNode {
-    return {
-      code: "login",
-      icon: "login",
-      i18n: "navigation.label.login",
-      routerLink: "login",
-      clickable: true,
-      selected: true,
-      tooltipI18n: "",
-      transient: true
-    };
   }
 
 }

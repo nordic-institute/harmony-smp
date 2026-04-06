@@ -1,7 +1,7 @@
 export class SmpConstants {
 
-  public static readonly EXPANDED_MENU_WIDTH: string = "180px"
-  public static readonly COLLAPSED_MENU_WIDTH: string = "50px"
+  public static readonly EXPANDED_MENU_WIDTH: string = "270px"
+  public static readonly COLLAPSED_MENU_WIDTH: string = "60px"
   public static readonly NULL_VALUE: string = "-----------"
   public static readonly DATE_TIME_FORMAT = 'dd/MM/yyyy HH:mm:ss z';
   public static readonly DATE_FORMAT = 'dd/MM/yyyy';
