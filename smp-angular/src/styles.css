@@ -119,15 +119,6 @@ div.mat-mdc-tab-body-wrapper {
     [STRUCTURE]
 ----------------------------------------------------*/
 
-#topLogo {
-  background-color: #f0fbfc;
-  border-right: solid 1px rgba(0, 0, 0, 0.12);
-}
-
-.mat-drawer-inner-container {
-  background-color: #f0fbfc;
-}
-
 /* --- Collapse button ---*/
 .collapse-button {
   position: absolute;
@@ -161,7 +152,7 @@ div.mat-mdc-tab-body-wrapper {
 }
 
 #sandwichMenu .material-icons:hover {
-  color: #003399;
+  color: #03A9F4;
 }
 
 /* --- Help button ---*/
@@ -322,7 +313,7 @@ mat-card {
 
 /* --- TABS --- */
 .md2-tab-ink-bar {
-  background-color: #003399 !important;
+  background-color: #03A9F4 !important;
 }
 
 /* mat-tab  set multiline table labels. Check the domain configuration */
