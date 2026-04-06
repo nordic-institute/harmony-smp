@@ -38,11 +38,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED;
+import static eu.europa.ec.edelivery.smp.utils.PropertyUtils.getMaskedData;
 import static eu.europa.ec.edelivery.smp.utils.PropertyUtils.printProperties;
 
 /**
@@ -199,6 +201,10 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
         return getPropertyValue(property.getProperty(), property.getDefValue());
     }
 
+    protected Map<String, String> getEnvironmentVariables() {
+        return System.getenv();
+    }
+
     /**
      * Get configuration properties in the following order
      * <ol>
@@ -213,41 +219,52 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
     public String getPropertyValue(String propertyName, String defValue) {
         if (System.getProperties().containsKey(propertyName)) {
             String propVal = System.getProperty(propertyName);
-            LOG.debug("Got system property: [{}] with value: [{}].", propertyName, propVal);
+            logPropertyResolved("system", propertyName, propVal);
             return propVal;
         }
 
-        if (System.getenv().containsKey(propertyName)) {
-            String propVal = System.getenv(propertyName);
-            LOG.debug("Got OS environment property: [{}] with value: [{}].", propertyName, propVal);
-            return propVal;
+        Map<String, String> envVars = getEnvironmentVariables();
+        String posixName = propertyName.replace('.', '_').replace('-', '_');
+        for (String candidate : new String[]{propertyName, posixName, posixName.toUpperCase()}) {
+            String propVal = envVars.get(candidate);
+            if (propVal != null) {
+                logPropertyResolved("OS environment", candidate, propVal);
+                return propVal;
+            }
         }
 
         if (extInitFileProperties != null && extInitFileProperties.containsKey(propertyName)) {
             String propVal = extInitFileProperties.getProperty(propertyName);
-            LOG.debug("Got external init property: [{}] with value: [{}].", propertyName, propVal);
+            logPropertyResolved("external init", propertyName, propVal);
             return propVal;
         }
 
         if (extEnvFileProperties != null && extEnvFileProperties.containsKey(propertyName)) {
             String propVal = extEnvFileProperties.getProperty(propertyName);
-            LOG.debug("Got external configuration property: [{}] with value: [{}].", propertyName, propVal);
+            logPropertyResolved("external configuration", propertyName, propVal);
             return propVal;
         }
 
         if (extSpringBootFileProperties != null && extSpringBootFileProperties.containsKey(propertyName)) {
             String propVal = extSpringBootFileProperties.getProperty(propertyName);
-            LOG.debug("Got springboot configuration property: [{}] with value: [{}].", propertyName, propVal);
+            logPropertyResolved("springboot configuration", propertyName, propVal);
             return propVal;
         }
 
         if (classPathEnvFileProperties != null && classPathEnvFileProperties.containsKey(propertyName)) {
             String propVal = classPathEnvFileProperties.getProperty(propertyName);
-            LOG.debug("Got classpath configuration property: [{}] with value: [{}].", propertyName, propVal);
+            logPropertyResolved("classpath configuration", propertyName, propVal);
             return propVal;
         }
         // get default value.
         return defValue;
+    }
+
+    private static void logPropertyResolved(String source, String key, String value) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Got {} property: [{}] with value: [{}].",
+                    source, key, getMaskedData(key, value));
+        }
     }
 
     public static void updateLogConfiguration(String logFileFolder, String logPropertyFile) {
