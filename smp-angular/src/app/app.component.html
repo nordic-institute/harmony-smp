@@ -1,26 +1,36 @@
 <alert #alertMessage ></alert>
 <spinner [show]="showSpinner" [size]="150"></spinner>
 <div style="display:flex; flex-direction: column;height: 100%">
-  <window-toolbar #windowToolbar/>
-  <mat-drawer-container id="smp-window" [hasBackdrop]="false" style="flex: 1 1 auto;">
-    <mat-drawer #drawer [mode]="'side'" opened="true">
+  <mat-sidenav-container id="smp-window" style="flex: 1 1 auto;">
+    <mat-sidenav #sidenavDrawer [ngClass]="menuClass" mode="side" opened>
+      <div id="topLogo">
+        <img src="assets/images/Logo.svg"/>
+      </div>
       <smp-sidenav #sidenav />
-      <div class="bottom-link" *ngIf="fullMenu">
-        <a target="_blank"
-           href="https://edelivery.digital/smp-licence-info">License info</a>
-      </div>
+      <a
+        mat-menu-item
+        [disableRipple]="true"
+        href="https://edelivery.digital/smp-licence-info"
+        target="_blank"
+        rel="noopener"
+        class="nav-tree-licence-button"
+        [matTooltip]="!fullMenu ? 'Licence info' : ''"
+        matTooltipPosition="right"
+      >
+        <mat-icon>business</mat-icon>
+        <span>Licence info</span>
+        <mat-icon iconPositionEnd class="open-external-icon">open_in_new</mat-icon>
+      </a>
       <div class="collapse-button">
-        <button *ngIf="fullMenu" mat-raised-button id="expand_id" (click)="toggleMenu()">
-          <mat-icon matTooltip="{{ 'app.component.tooltip.collapse' | translate }}" [matTooltipPosition]="'right'">chevron_left</mat-icon>
-          {{ "app.component.button.collapse" | translate }}
-        </button>
-        <button *ngIf="!fullMenu" mat-raised-button id="collapse_id" (click)="toggleMenu()">
-          <mat-icon matTooltip="{{ 'app.component.tooltip.expand' | translate }}" [matTooltipPosition]="'right'">chevron_right</mat-icon>
+        <button mat-icon-button id="collapse_toggle_id" (click)="toggleMenu()"
+                [attr.aria-label]="fullMenu ? ('app.component.tooltip.collapse' | translate) : ('app.component.tooltip.expand' | translate)">
+          <mat-icon [class.collapse-icon-rotated]="!fullMenu">chevron_left</mat-icon>
         </button>
       </div>
-    </mat-drawer>
-    <mat-drawer-content (scroll)="onDrawerContentScroll($event);">
+    </mat-sidenav>
+    <mat-sidenav-content (scroll)="onDrawerContentScroll($event);">
+      <window-toolbar />
       <router-outlet></router-outlet>
-    </mat-drawer-content>
-  </mat-drawer-container>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>

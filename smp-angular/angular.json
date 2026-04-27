@@ -23,8 +23,9 @@
               "src/favicon.ico"
             ],
             "styles": [
-              "src/styles.css",
-              "src/theme.scss"
+              "src/assets/fonts/fonts.css",
+              "src/assets/stylesheets/angularMaterial2Icons.css",
+              "src/theme-harmony.scss"
             ],
             "scripts": [],
             "browser": "src/main.ts"
@@ -86,6 +87,9 @@
           "configurations": {
             "production": {
               "buildTarget": "SMP-UI:build:production"
+            },
+            "dev": {
+              "buildTarget": "SMP-UI:build:development"
             }
           }
         },
@@ -104,8 +108,9 @@
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
             "styles": [
-              "src/styles.css",
-              "src/theme.scss"
+              "src/assets/fonts/fonts.css",
+              "src/assets/stylesheets/angularMaterial2Icons.css",
+              "src/theme-harmony.scss"
             ],
             "assets": [
               "src/assets",

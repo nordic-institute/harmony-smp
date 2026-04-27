@@ -1,15 +1,8 @@
-﻿<mat-toolbar color="primary" id="window-toolbar">
-  <mat-toolbar-row>
-    <div id="topLogo">
-      <img src="assets/images/Logo.svg" width="178px" *ngIf="fullMenu"/>
-      <img src="assets/images/Logomark.svg" width="48px" *ngIf="!fullMenu"/>
-    </div>
-    <smp-breadcrumb [style.padding-left]="fullMenu ? '180px' : '60px'"></smp-breadcrumb>
-    <span class="window-toolbar-spacer"></span>
-    <a id="login_id" class="window-toolbar-item" *ngIf="!currentUser"
-       (click)="navigateToLogin()"> Login </a>
-    <span class="window-toolbar-item" *ngIf="currentUser">{{currentUserRoleDescription}}: {{currentUser}}  </span>
-    <button class="window-toolbar-item" [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id"
+<div id="sandwichMenuHolder">
+  <div id="sandwichMenu">
+    <a id="login_id" class="sandwich-menu-item" *ngIf="!currentUser"
+       (click)="navigateToLogin()">Login</a>
+    <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id"
             matTooltip="Menu">
       <mat-icon>menu</mat-icon>
     </button>
@@ -22,11 +15,16 @@
         </button>
         <button id="changePassword_id" *ngIf="isUserAuthPasswdEnabled" mat-menu-item
                 (click)="changeCurrentUserPassword()">
+          <mat-icon>edit</mat-icon>
           <span>{{ "toolbar.component.button.change.password" | translate }}</span>
         </button>
         <button id="showSSODetails_id" *ngIf="isUserAuthSSOEnabled" mat-menu-item
                 (click)="openCurrentCasUserData()">
           <span>{{ "toolbar.component.button.open.cas.profile" | translate }}</span>
+        </button>
+        <button id="versionInfo_id" mat-menu-item (click)="showVersionInfo()">
+          <mat-icon>info</mat-icon>
+          <span>{{ "toolbar.component.button.version.info" | translate }}</span>
         </button>
         <hr/>
         <button id="logout_id" mat-menu-item (click)="logout($event)">
@@ -42,6 +40,5 @@
         </button>
       </div>
     </mat-menu>
-  </mat-toolbar-row>
-
-</mat-toolbar>
+  </div>
+</div>

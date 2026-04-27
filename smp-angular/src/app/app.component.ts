@@ -5,13 +5,8 @@ import {Authority} from "./security/authority.model";
 import {
   AlertMessageService
 } from "./common/alert-message/alert-message.service";
-import {MatDialog} from "@angular/material/dialog";
-import {GlobalLookups} from "./common/global-lookups";
-import {HttpClient} from "@angular/common/http";
 import {SidenavComponent} from "./window/sidenav/sidenav.component";
-import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
-import {UserController} from "./common/services/user-controller";
 import {TranslateService} from "@ngx-translate/core";
 import {WindowSpinnerService} from "./common/services/window-spinner.service";
 
@@ -25,25 +20,20 @@ import {WindowSpinnerService} from "./common/services/window-spinner.service";
 export class AppComponent {
 
   @ViewChild('sidenav') sidenav: SidenavComponent;
-  @ViewChild('windowToolbar') windowToolbar: ToolbarComponent;
-
 
   fullMenu: boolean = true;
-  menuClass: string = this.fullMenu ? "menu-expanded" : "menu-collapsed";
-  userController: UserController;
+  get menuClass(): string {
+    return this.fullMenu ? 'menu-expanded' : 'menu-collapsed';
+  }
 
   constructor(
     private alertService: AlertMessageService,
     private securityService: SecurityService,
     private windowSpinnerService: WindowSpinnerService,
     private router: Router,
-    private http: HttpClient,
-    private dialog: MatDialog,
-    private lookups: GlobalLookups,
     private themeService: ThemeService,
     private translateService: TranslateService,
   ) {
-    this.userController = new UserController(this.http, this.lookups, this.dialog);
     this.themeService.updateThemeFromLocalStorage();
 
     this.translateService.setDefaultLang("en");
@@ -77,7 +67,6 @@ export class AppComponent {
   toggleMenu() {
     this.fullMenu = !this.fullMenu;
     this.sidenav.showExpanded(this.fullMenu);
-    this.windowToolbar.showExpanded(this.fullMenu);
 
     window.dispatchEvent(new Event('resize'));
   }

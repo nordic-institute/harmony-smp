@@ -1039,6 +1039,8 @@
   "toolbar.component.button.open.cas.profile": "Open CAS user data",
   "toolbar.component.label.system.administrator.role": "System administrator",
   "toolbar.component.label.user.role": "SMP user",
+  "toolbar.component.button.version.info": "Version Info",
+  "toolbar.component.version.info.title": "Harmony SMP Version Info",
 
   "expandable.panel.label.expand.collapse": "Expand/Collapse",
   "expandable.panel.tooltip.expand.collapse": "Expand/Collapse panel",

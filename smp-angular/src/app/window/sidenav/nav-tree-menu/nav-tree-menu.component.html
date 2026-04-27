@@ -14,7 +14,9 @@
 <ng-template #menuItem>
   <button mat-menu-item
           [id]="data.code+'Button'"
+          [class.navigation-selected]="data.selected"
           (click)="triggerClickEvent()">
     <mat-icon *ngIf="data.icon">{{data.icon}}</mat-icon>
-    <span>{{ name }}</span></button>
+    <span>{{ name }}</span>
+  </button>
 </ng-template>
