@@ -2,7 +2,7 @@
           [treeControl]="treeControl"
           class="nav-tree">
   <!-- Leaf nodes -->
-  <mat-tree-node  *matTreeNodeDef="let node" matTreeNodeToggle>
+  <mat-nested-tree-node *matTreeNodeDef="let node">
     <li *ngIf="!node.transient" class="mat-tree-node nav-tree-leaf" [ngClass]="{ 'navigation-selected': navigationModel.selected === node}">
       <button [id]="node.code+'Button'" mat-menu-item (click)="menuClickHandler(node)"
               [matTooltip]="!fullMenu ? (node.i18n | translate) : ''"
@@ -11,7 +11,7 @@
         <span *ngIf="fullMenu">{{ node.i18n | translate }}</span>
       </button>
     </li>
-  </mat-tree-node>
+  </mat-nested-tree-node>
   <!-- expandable nodes -->
   <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
     <li>
