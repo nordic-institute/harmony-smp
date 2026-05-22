@@ -26,13 +26,17 @@
         <notes><![CDATA[
    file name: spring-web-5.3.*.jar
    CVE-2016-1000027 - The data serialized by the application are from authenticated users and trusted
+   CVE-2025-41234 - The application does not set a “Content-Disposition” response header and filenames are not derived from user-supplied input.
+   CVE-2025-41242 - SMP does not server static resources with Spring resource handling.
+   CVE-2024-38820: see below the spring-*-5.3.39.jar for the same issue explanation
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2024-38828</cve>
-        <!-- Application does not use affected headers or vulnerable URL construction patterns -->
         <vulnerabilityName>CVE-2025-41234</vulnerabilityName>
+        <vulnerabilityName>CVE-2025-41242</vulnerabilityName>
+        <vulnerabilityName>CVE-2025-41249</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -40,6 +44,7 @@
    The data serialized by the application are from authenticated users and trusted
    NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
    - CVE-2024-38820: see below the spring-*-5.3.39.jar for the same issue explanation
+   - CVE-2025-41249 - The application does not use volnerable functionality @EnableMethodSecurity .
    ]]></notes>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2024-38820</cve>
@@ -103,6 +108,7 @@
         <cve>CVE-2023-41080</cve>
         <cve>CVE-2024-38286</cve>
         <cve>CVE-2025-24813</cve>
+        <vulnerabilityName>CVE-2025-48988</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -133,5 +139,54 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
         <vulnerabilityName>CVE-2024-38816</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: cxf-core-3.5.11.jar
+   CVE-2025-48913 - DomiSMP does not use JMS and it does not allow user to configure JMS
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf-.*@.*$</packageUrl>
+        <cve>CVE-2025-48913</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: log4j-api-2.17.2.jar
+   The DomiSMP does not use The Socket Appender
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-api@.*$</packageUrl>
+        <cve>CVE-2025-68161</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: @angular/platform-server:18.2.9
+
+   ]]></notes>
+        <packageUrl regex="true">^pkg:npm/%40angular%2Fplatform-server@.*$</packageUrl>
+        <vulnerabilityName>GHSA-68x2-mx4q-78m7</vulnerabilityName>
+        <vulnerabilityName>GHSA-jrmj-c5cx-3cw6</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: @angular/common:18.2.9
+   False Positive: the DomiSMP application does not use protocol-relative URLs (URLs starting with `//`) in HttpClient requests
+   ]]></notes>
+        <packageUrl regex="true">^pkg:npm/%40angular%2Fcommon@.*$</packageUrl>
+        <vulnerabilityName>GHSA-58c5-g7wp-6w37</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: @angular/core:18.2.9
+   ]]></notes>
+        <packageUrl regex="true">^pkg:npm/%40angular%2Fcore@.*$</packageUrl>
+        <vulnerabilityName>GHSA-jrmj-c5cx-3cw6</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: @angular/compiler:18.2.9
+   False Positive: The  vulnerable attributes is never sourced from untrusted user input
+   ]]></notes>
+        <packageUrl regex="true">^pkg:npm/%40angular%2Fcompiler@.*$</packageUrl>
+        <vulnerabilityName>GHSA-v4hv-rgfq-gp49</vulnerabilityName>
+        <vulnerabilityName>GHSA-jrmj-c5cx-3cw6</vulnerabilityName>
     </suppress>
 </suppressions>
