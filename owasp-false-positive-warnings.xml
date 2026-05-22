@@ -189,4 +189,116 @@
         <vulnerabilityName>GHSA-v4hv-rgfq-gp49</vulnerabilityName>
         <vulnerabilityName>GHSA-jrmj-c5cx-3cw6</vulnerabilityName>
     </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: harmonysmp-angular-*.jar
+   Maven wrapper for the project's Angular UI. Its module version
+   collides with the CPE for the AngularJS / Angular 2.x framework, so
+   these CVEs are reported against this module by mistake. The real Angular
+   runtime version lives in smp-angular/package.json (covered by npm audit).
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.niis/harmonysmp\-angular@.*$</packageUrl>
+        <cve>CVE-2025-66412</cve>
+        <cve>CVE-2026-22610</cve>
+        <cve>CVE-2026-27970</cve>
+        <cve>CVE-2026-41423</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: hibernate-core-5.6.15.Final.jar
+   False positive: https://github.com/dependency-check/DependencyCheck/issues/8238
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate\-core@.*$</packageUrl>
+        <cve>CVE-2026-0603</cve>
+    </suppress>
+
+    <!-- ============================================================================
+         Spring Framework 5.3.x / Spring Security 5.8.x / Spring Boot 2.7.x.
+         EOL on the Java 8 baseline. Fixes are available only in 6.x/7.x lines
+         which require Java 17.
+
+         Per-CVE exposure:
+           CVE-2026-22748 (NimbusJwtDecoder JWT validation): NOT EXPOSED.
+                 SMP does not use NimbusJwtDecoder / OAuth2 resource server.
+           CVE-2026-22747 (X.509 user impersonation): REDUCED EXPOSURE.
+                 X.509 auth is handled by EDeliveryX509AuthenticationFilter
+                 (eu.europa.ec.edelivery.security) wired in WSSecurityConfigurerAdapter;
+                 SMPAuthenticationProvider consumes a custom PreAuthenticatedCertificatePrincipal,
+                 not the default subjectPrincipalRegex-parsed string the advisory targets.
+           CVE-2026-22746 (DaoAuthenticationProvider timing attack): NOT EXPOSED.
+                 SMP does not use DaoAuthenticationProvider.
+           CVE-2026-22732 (HTTP security headers under default-config edges): REDUCED EXPOSURE.
+                 HSTS and CSP are set explicitly in WSSecurityConfigurerAdapter /
+                 UISecurityConfigurerAdapter, not relying on framework defaults.
+           CVE-2026-22740 / -22737 / -22745 / -22741 / -22735 (Spring Framework family): NOT EXPOSED.
+                 SMP does not use Spring WebFlux nor functional web routing.
+           CVE-2026-40972 / -40973 / -40974 / -40975 / -40977 / -22733 (Spring Boot 2.7): REDUCED EXPOSURE.
+                 SMP ships as a WAR, does not depend on spring-boot-devtools, and does not use
+                 Cassandra. Actuator exposure is restricted by SMP's own security configuration.
+         To be re-evaluated against Spring 6.x fixes when the Java baseline is raised.
+         ============================================================================ -->
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-core-5.3.39.jar / spring-web-5.3.39.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(core|web|webmvc|messaging|context|context\-support|expression|beans|aop|tx|orm|jdbc|jms|test|jcl)@.*$</packageUrl>
+        <cve>CVE-2026-22740</cve>
+        <cve>CVE-2026-22737</cve>
+        <cve>CVE-2026-22745</cve>
+        <cve>CVE-2026-22741</cve>
+        <cve>CVE-2026-22735</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: harmonysmp-*.war: spring-*.jar
+   OWASP scans jars embedded inside smp.war and reports them with the dependency name
+   "harmonysmp-X.Y.Z.war: spring-core-5.3.39.jar" but with an EMPTY packageUrl field,
+   so the per-packageUrl suppression above does not match. This filePath regex catches
+   the war-bundled copies. Same EOL Spring 5.3.x rationale as the parent suppression.
+   ]]></notes>
+        <filePath regex="true">.*harmonysmp.*\.war.*spring-.*\.jar.*</filePath>
+        <cve>CVE-2026-22740</cve>
+        <cve>CVE-2026-22737</cve>
+        <cve>CVE-2026-22745</cve>
+        <cve>CVE-2026-22741</cve>
+        <cve>CVE-2026-22735</cve>
+        <cve>CVE-2026-22732</cve>
+        <cve>CVE-2026-22747</cve>
+        <cve>CVE-2026-22748</cve>
+        <cve>CVE-2026-22746</cve>
+        <cve>CVE-2026-40972</cve>
+        <cve>CVE-2026-40973</cve>
+        <cve>CVE-2026-40974</cve>
+        <cve>CVE-2026-40975</cve>
+        <cve>CVE-2026-40977</cve>
+        <cve>CVE-2026-22733</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-core-5.8.16.jar / spring-security-web-5.8.16.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-.*@.*$</packageUrl>
+        <cve>CVE-2026-22732</cve>
+        <cve>CVE-2026-22747</cve>
+        <cve>CVE-2026-22748</cve>
+        <cve>CVE-2026-22746</cve>
+        <vulnerabilityName>GHSA-mf92-479x-3373</vulnerabilityName>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-boot-2.7.18.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot.*@.*$</packageUrl>
+        <cve>CVE-2026-40972</cve>
+        <cve>CVE-2026-40973</cve>
+        <cve>CVE-2026-40974</cve>
+        <cve>CVE-2026-40975</cve>
+        <cve>CVE-2026-40977</cve>
+        <cve>CVE-2026-22733</cve>
+    </suppress>
 </suppressions>

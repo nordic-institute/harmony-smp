@@ -107,10 +107,13 @@ See the Licence for the specific language governing permissions and limitations 
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.113</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.118</spring-boot.tomcat.version>
         <spring.security.version>5.8.16</spring.security.version>
         <spring.version>5.3.39</spring.version>
         <xmlunit.version>2.10.4</xmlunit.version>
+        <neethi.version>3.2.2</neethi.version>
+        <bouncycastle.version>1.84</bouncycastle.version>
+        <log4j.version>2.26.0</log4j.version>
 
         <!-- plugins -->
         <plugin.frontend-maven-plugin.version>1.15.4</plugin.frontend-maven-plugin.version>
@@ -201,6 +204,31 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${dynamic-discovery-client.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcutil-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>eu.europa.ec.bdmsl</groupId>
                 <artifactId>bdmsl-api</artifactId>
                 <version>${bdmsl-api.version}</version>
@@ -209,6 +237,11 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-frontend-jaxws</artifactId>
                 <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.neethi</groupId>
+                <artifactId>neethi</artifactId>
+                <version>${neethi.version}</version>
             </dependency>
             <!-- Ehcache -->
             <dependency>
