@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.DNSQueryRequestRO;
 import eu.europa.ec.edelivery.smp.services.spi.SmpIdentifierService;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -60,6 +61,7 @@ class UIDynamicDiscoveryToolsTest {
      * domain and resource identifier
      */
     @Test
+    @Disabled("Depends on live records in the EC eDelivery DNS server. The CNAME record has been removed upstream")
     void testGetDNSQuerySuccess() {
         DNSQueryRequestRO request = createDNSQueryRequestRO("test.acc.edelivery.tech.ec.europa.eu");
 

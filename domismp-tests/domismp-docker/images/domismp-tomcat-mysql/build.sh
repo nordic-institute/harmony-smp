@@ -5,7 +5,7 @@
 # then it builds the image using docker-compose.build.yml
 # and finally it cleans the external resources
 WORKING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "${WORKING_DIR}"
+cd "${WORKING_DIR}" || exit 1
 
 source "${WORKING_DIR}/../../functions/common.functions"
 initializeCommonVariables
@@ -47,6 +47,14 @@ copyExternalImageResources() {
       # for mysql data
       cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./artefacts/smp-setup.zip
     fi
+
+
+    echo "Copy artefacts from [${ORACLE_ARTEFACTS}] to ./artefacts/"
+
+     if [[ -f "${ORACLE_ARTEFACTS}/apache-tomcat-9.0.113.tar.gz" ]]; then
+        echo "copy apache-tomcat-9.0.113.tar.gz"
+        cp "${ORACLE_ARTEFACTS}/apache-tomcat-9.0.113.tar.gz" ./artefacts/apache-tomcat-9.0.113.tar.gz
+      fi
 }
 
 cleanExternalImageResources() {

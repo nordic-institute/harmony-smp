@@ -9,10 +9,10 @@ ENV SMP_HOME=/opt/smp  \
     MYSQL_DRV_VERSION=9.3.0  \
     MYSQL_DRV_SHA1=6dbc33cd9534ec2715a8269fced1cd872630999d \
     TOMCAT_MAJOR=9  \
-    TOMCAT_VERSION=9.0.105 \
+    TOMCAT_VERSION=9.0.113\
     TOMCAT_NATIVE_VERSION=1.3.1 \
     TOMCAT_TLS_KEY_ALIAS=eulogin.protected.smp.local  \
-    TOMCAT_SHA512=e6b052f8d79284f90ced604988ca870d5811e8f333aa7083aa8be30b5c5582eb1542737475129cb729d32cb90005dc8dd1ed2cc04fb5cd890c19851fba77a6ec \
+    TOMCAT_SHA512=1b8d9ba5c5e2ed2b4134a3fe6f206b3bb1184391e5c112ca7ea6a49ecadca63a7fc565c83caa610f0a8341988777870302a8162a84f0880af751531cdd4a2ee5 \
     JAVA_8_VERSION="jdk8u452-b09" \
     JAVA_8_URL_FILENAME="OpenJDK8U-jdk_x64_linux_hotspot_8u452b09.tar.gz" \
     JAVA_8_SHA256=9448308a21841960a591b47927cf2d44fdc4c0533a5f8111a4b243a6bafb5d27 \
@@ -77,9 +77,13 @@ RUN apt-get update -qqy \
 	    gcc \
 	    make \
   && rm -rf /var/lib/apt/lists/*
+
+ADD ./artefacts /tmp/artefacts
+
 RUN mkdir -p /opt/java \
-    && wget -O /opt/java/${JAVA_11_VERSION}.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/${JAVA_11_VERSION}/${JAVA_11_URL_FILENAME} \
-    && wget -O /opt/java/${JAVA_8_VERSION}.tar.gz https://github.com/adoptium/temurin8-binaries/releases/download/${JAVA_8_VERSION}/${JAVA_8_URL_FILENAME} \
+    && chmod u+x /tmp/artefacts/shared-artefacts/fetch_file.sh \
+    && /tmp/artefacts/shared-artefacts/fetch_file.sh "${JAVA_11_URL_FILENAME}" "https://github.com/adoptium/temurin11-binaries/releases/download/${JAVA_11_VERSION}/${JAVA_11_URL_FILENAME}" "/opt/java/${JAVA_11_VERSION}.tar.gz" \
+    && /tmp/artefacts/shared-artefacts/fetch_file.sh "${JAVA_11_URL_FILENAME}" "https://github.com/adoptium/temurin8-binaries/releases/download/${JAVA_8_VERSION}/${JAVA_8_URL_FILENAME}" "/opt/java/${JAVA_8_VERSION}.tar.gz" \
     && sha256sum /opt/java/${JAVA_11_VERSION}.tar.gz | grep ${JAVA_11_SHA256} \
     && sha256sum /opt/java/${JAVA_8_VERSION}.tar.gz | grep ${JAVA_8_SHA256} \
     && tar -xvf /opt/java/${JAVA_11_VERSION}.tar.gz -C /opt/java/ \
@@ -93,11 +97,11 @@ RUN   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF
     && cd $SMP_HOME \
     && curl -o mysql-connector-j.jar https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/$MYSQL_DRV_VERSION/mysql-connector-j-$MYSQL_DRV_VERSION.jar \
     && sha1sum mysql-connector-j.jar  | grep $MYSQL_DRV_SHA1 \
-    && curl -o tomcat.zip "https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.zip" \
-    && sha512sum tomcat.zip | grep $TOMCAT_SHA512    \
-    && unzip tomcat.zip \
+    && /tmp/artefacts/shared-artefacts/fetch_file.sh "apache-tomcat-$TOMCAT_VERSION.tar.gz" "https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz"  "$SMP_HOME/tomcat.tar.gz" \
+    && sha512sum tomcat.tar.gz | grep $TOMCAT_SHA512    \
+    && tar -xvf tomcat.tar.gz  -C  $SMP_HOME \
     && mv mysql-connector-j.jar $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/lib/ \
-    && rm tomcat.zip   \
+    && rm tomcat.tar.gz   \
     && mkdir -p $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/  \
     && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
 # add sml and smp datasource 
@@ -136,8 +140,7 @@ RUN  curl -o $SMP_HOME/edelivery-sml.war "$SML_DISTRIBUTION_URL/$SML_VERSION/bdm
     && mv $SMP_HOME/edelivery-sml.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/
 
 ENV BIND_USER=bind
-    
-ADD ./artefacts /tmp/artefacts
+
 COPY ./entrypoint.sh /sbin/entrypoint.sh
 
 

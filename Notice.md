@@ -1,19 +1,27 @@
-Copyright 2017, 2024 European Union
+# NOTICE
 
-Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
-You may not use this work except in compliance with the Licence.
-You may obtain a copy of the Licence at:
+This project is licensed under the European Union Public Licence v. 1.2 or – as soon they are adopted by the European Commission – subsequent versions of the EUPL (the "Licence").
 
-[https://joinup.ec.europa.eu/software/page/eupl](https://joinup.ec.europa.eu/software/page/eupl)
+## Copyright Notice
 
-Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the Licence for the specific language governing permissions and limitations under the Licence.
+Copyright 2017-2026 European Union
+
+## Licence
+
+This software is distributed under the terms of the Licence.
+A copy of the Licence is available in the LICENSE.txt file or at:
+[https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12](https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
+
+## Compatibility Notice
+
+The EUPL v. 1.2 is compatible with several other open source licences.
+For details on compatible licences, see Article 5 of the EUPL v. 1.2.
+
+## Third-Party Components
 
 This product includes dynamically linked software developed by third parties which is provided under their respective licences:
 
-
-***ch.qos.logback:logback-classic:1.5.18*** 
+### ch.qos.logback:logback-classic:1.3.16
 - License: EPL-1.0
 - Url: http://www.eclipse.org/legal/epl-v10.html
 - File: license/third-party-licenses/EPL-1.0.txt
@@ -22,65 +30,65 @@ This product includes dynamically linked software developed by third parties whi
 - Url: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 - File: license/third-party-licenses/LGPL-2.1+.txt
 - Copyright:
-  - Copyright (c) 2005 - 2024 QOS.ch (http://www.qos.ch), Ceki Gulcu, Joern Huxhorn
+  - Copyright (c) 2005 - 2026 QOS.ch (http://www.qos.ch), Ceki Gulcu, Joern Huxhorn
 
-***com.fasterxml.jackson.core:jackson-core:2.19.0*** 
+### com.fasterxml.jackson.core:jackson-core:2.19.4
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2008 - 2024 FasterXML (http://fasterxml.com/), Tatu Saloranta
+  - Copyright (c) 2008 - 2026 FasterXML (http://fasterxml.com/), Tatu Saloranta
 
-***com.fasterxml.jackson.core:jackson-databind:2.19.0*** 
+### com.fasterxml.jackson.core:jackson-databind:2.19.4
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2008 - 2024 FasterXML (http://fasterxml.com/), Tatu Saloranta
+  - Copyright (c) 2008 - 2026 FasterXML (http://fasterxml.com/), Tatu Saloranta
 
-***com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0*** 
+### com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.4
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 FasterXML (http://fasterxml.com/), Nick Williams
 
-***com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.19.0*** 
+### com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.19.4
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 FasterXML (http://fasterxml.com/), Tatu Saloranta
 
-***com.mysql:mysql-connector-j:8.4.0*** 
+### com.mysql:mysql-connector-j:8.4.0
 - License: GPL-2.0-or-later
 - Url: 
 - File: license/third-party-licenses/GPL-2.0-or-later.txt
 - Copyright:
   - Copyright (c) 2024 Oracle Corporation (https://www.oracle.com/), Filipe Silva
 
-***com.sun.mail:javax.mail:1.6.2*** 
+### com.sun.mail:javax.mail:1.6.2
 - License: CDDL-1.1
 - Url: https://javaee.github.io/javamail/LICENSE
 - File: license/third-party-licenses/CDDL-1.1.txt
 - Copyright:
   - Copyright (c) 2024 Oracle (http://www.oracle.com), Bill Shannon
 
-***commons-fileupload:commons-fileupload:1.5*** 
+### commons-fileupload:commons-fileupload:1.6.0
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2002 - 2024 The Apache Software Foundation (https://www.apache.org/), Martin Cooper, dIon Gillard, John McNally, Daniel Rall, Jason van Zyl, Robert Burrell Donkin, Sean C. Sullivan, Jochen Wiedmann, Simone Tripodi, Gary Gregory, Rob Tompkins
+  - Copyright (c) 2002 - 2026 The Apache Software Foundation (https://www.apache.org/), Martin Cooper, dIon Gillard, John McNally, Daniel Rall, Jason van Zyl, Robert Burrell Donkin, Sean C. Sullivan, Jochen Wiedmann, Simone Tripodi, Gary Gregory, Rob Tompkins
 
-***commons-validator:commons-validator:1.9.0*** 
+### commons-validator:commons-validator:1.10.1
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2002 - 2024 The Apache Software Foundation (https://www.apache.org/), Don Brown, Martin Cooper, David Graham, Ted Husted, Rob Leland, Craig McClanahan, James Mitchell, Niall Pemberton, James Turner, David Winterfeldt, Henri Yandell, Ben Speakmon, Nick Burch, SimoneTripodi, Benedikt Ritter, Gary Gregory
+  - Copyright (c) 2002 - 2026 The Apache Software Foundation (https://www.apache.org/), Don Brown, Martin Cooper, David Graham, Ted Husted, Rob Leland, Craig McClanahan, James Mitchell, Niall Pemberton, James Turner, David Winterfeldt, Henri Yandell, Ben Speakmon, Nick Burch, SimoneTripodi, Benedikt Ritter, Gary Gregory
 
-***jakarta.servlet:jakarta.servlet-api:4.0.4*** 
+### jakarta.servlet:jakarta.servlet-api:4.0.4
 - License: EPL-2.0
 - Url: http://www.eclipse.org/legal/epl-2.0
 - File: license/third-party-licenses/EPL-2.0.txt
@@ -89,198 +97,198 @@ This product includes dynamically linked software developed by third parties whi
 - Url: https://www.gnu.org/software/classpath/license.html
 - File: license/third-party-licenses/GPL2 w/ CPE.txt
 - Copyright:
-  - Copyright (c) 2017 - 2024 Eclipse Foundation (https://www.eclipse.org), Yamini K B
+  - Copyright (c) 2017 - 2026 Eclipse Foundation (https://www.eclipse.org), Yamini K B
 
-***jakarta.xml.bind:jakarta.xml.bind-api:2.3.3*** 
+### jakarta.xml.bind:jakarta.xml.bind-api:2.3.3
 - License: BSD-3-Clause
 - Url: http://www.eclipse.org/org/documents/edl-v10.php
 - File: license/third-party-licenses/BSD-3-Clause.txt
 - Copyright:
-  - Copyright (c) 2017 - 2024 Eclipse Foundation (https://www.eclipse.org), Roman Grigoriadi
+  - Copyright (c) 2017 - 2026 Eclipse Foundation (https://www.eclipse.org), Roman Grigoriadi
 
-***javax:javaee-api:7.0*** 
+### javax:javaee-api:7.0
 - License: CDDL-1.1
 - Url: http://glassfish.java.net/nonav/public/CDDL+GPL.html
 - File: license/third-party-licenses/CDDL-1.1.txt
 - Copyright:
   - Copyright (c) 2024, Bill Shannon, Linda De Michiel
 
-***javax.annotation:javax.annotation-api:1.3.2*** 
+### javax.annotation:javax.annotation-api:1.3.2
 - License: CDDL-1.1
 - Url: https://github.com/javaee/javax.annotation/blob/master/LICENSE
 - File: license/third-party-licenses/CDDL-1.1.txt
 - Copyright:
   - Copyright (c) 2024 GlassFish Community (https://javaee.github.io/glassfish), Linda De Michiel
 
-***org.apache.commons:commons-lang3:3.17.0*** 
+### org.apache.commons:commons-lang3:3.18.0
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2001 - 2024 The Apache Software Foundation (https://www.apache.org/), Daniel Rall, Stephen Colebourne, Henri Yandell, Steven Caswell, Robert Burrell Donkin, Gary Gregory, Fredrik Westermarck, James Carman, Niall Pemberton, Matt Benson, Joerg Schaible, Oliver Heger, Paul Benedict, Benedikt Ritter, Duncan Jones, Loic Guibert, Rob Tompkins
+  - Copyright (c) 2001 - 2026 The Apache Software Foundation (https://www.apache.org/), Daniel Rall, Stephen Colebourne, Henri Yandell, Steven Caswell, Robert Burrell Donkin, Gary Gregory, Fredrik Westermarck, James Carman, Niall Pemberton, Matt Benson, Joerg Schaible, Oliver Heger, Paul Benedict, Benedikt Ritter, Duncan Jones, Loic Guibert, Rob Tompkins
 
-***org.apache.cxf:cxf-rt-features-logging:3.6.6*** 
+### org.apache.cxf:cxf-rt-features-logging:3.5.11
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2006 - 2024 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
+  - Copyright (c) 2006 - 2026 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
 
-***org.apache.cxf:cxf-rt-frontend-jaxws:3.6.6*** 
+### org.apache.cxf:cxf-rt-frontend-jaxws:3.5.11
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2006 - 2024 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
+  - Copyright (c) 2006 - 2026 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
 
-***org.apache.cxf:cxf-rt-transports-http:3.6.6*** 
+### org.apache.cxf:cxf-rt-transports-http:3.5.11
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2006 - 2024 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
+  - Copyright (c) 2006 - 2026 The Apache Software Foundation (https://www.apache.org/), The Apache CXF Team
 
-***org.apache.httpcomponents:httpclient:4.5.14*** 
+### org.apache.httpcomponents:httpclient:4.5.14
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 1999 - 2024 The Apache Software Foundation (http://www.apache.org/), Ortwin Glueck, Oleg Kalnichevski, Asankha C. Perera, Sebastian Bazley, Erik Abele, Ant Elder, Paul Fremantle, Roland Weber, Sam Berlin, Sean C. Sullivan, Jonathan Moore, Gary Gregory, William Speirs, Karl Wright, Francois-Xavier Bonnet
+  - Copyright (c) 1999 - 2026 The Apache Software Foundation (http://www.apache.org/), Ortwin Glueck, Oleg Kalnichevski, Asankha C. Perera, Sebastian Bazley, Erik Abele, Ant Elder, Paul Fremantle, Roland Weber, Sam Berlin, Sean C. Sullivan, Jonathan Moore, Gary Gregory, William Speirs, Karl Wright, Francois-Xavier Bonnet
 
-***org.apache.tomcat.embed:tomcat-embed-jasper:9.0.105*** 
+### org.apache.tomcat.embed:tomcat-embed-jasper:9.0.113
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024
 
-***org.ehcache:ehcache:3.10.8*** 
+### org.ehcache:ehcache:3.11.1
 - License: Apache-2.0
 - Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
-  - Copyright (c) 2024 Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc. (http://terracotta.org), Terracotta Engineers
+  - Copyright (c) 2024 IBM Corp. (http://terracotta.org), Terracotta Engineers
 
-***org.glassfish.jaxb:jaxb-runtime:2.3.9*** 
-- License: BSD-3-Clause
-- Url: http://www.eclipse.org/org/documents/edl-v10.php
-- File: license/third-party-licenses/BSD-3-Clause.txt
+### org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438
+- License: CDDL-1.1
+- Url: http://glassfish.java.net/public/CDDL+GPL_1_1.html
+- File: license/third-party-licenses/CDDL-1.1.txt
 - Copyright:
-  - Copyright (c) 2017 - 2024 Eclipse Foundation (https://www.eclipse.org), Roman Grigoriadi
+  - Copyright (c) 2024 Oracle Corporation (http://www.oracle.com/), Martin Grebac, Jaroslav Savytskyi
 
-***org.hibernate:hibernate-core:5.6.15.Final*** 
+### org.hibernate:hibernate-core:5.6.15.Final
 - License: LGPL-2.1+
 - Url: https://www.opensource.org/licenses/LGPL-2.1
 - File: license/third-party-licenses/LGPL-2.1+.txt
 - Copyright:
   - Copyright (c) 2024 Hibernate.org (https://hibernate.org), The Hibernate Development Team
 
-***org.hibernate:hibernate-envers:5.6.15.Final*** 
+### org.hibernate:hibernate-envers:5.6.15.Final
 - License: LGPL-2.1+
 - Url: https://www.opensource.org/licenses/LGPL-2.1
 - File: license/third-party-licenses/LGPL-2.1+.txt
 - Copyright:
   - Copyright (c) 2024 Hibernate.org (https://hibernate.org), The Hibernate Development Team
 
-***org.slf4j:slf4j-api:1.7.36*** 
+### org.slf4j:slf4j-api:2.0.17
 - License: MIT
-- Url: http://www.opensource.org/licenses/mit-license.php
+- Url: https://opensource.org/license/mit
 - File: license/third-party-licenses/MIT.txt
 - Copyright:
-  - Copyright (c) 2005 - 2024 QOS.ch (http://www.qos.ch), Ceki Gulcu
+  - Copyright (c) 2005 - 2026 QOS.ch (http://www.qos.ch), Ceki Gulcu
 
-***org.slf4j:slf4j-ext:1.7.36*** 
+### org.slf4j:slf4j-ext:2.0.17
 - License: MIT
-- Url: http://www.opensource.org/licenses/mit-license.php
+- Url: https://opensource.org/license/mit
 - File: license/third-party-licenses/MIT.txt
 - Copyright:
-  - Copyright (c) 2005 - 2024 QOS.ch (http://www.qos.ch), Ceki Gulcu
+  - Copyright (c) 2005 - 2026 QOS.ch (http://www.qos.ch), Ceki Gulcu
 
-***org.springframework:spring-beans:5.3.39*** 
+### org.springframework:spring-beans:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-context:5.3.39*** 
+### org.springframework:spring-context:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-context-support:5.3.39*** 
+### org.springframework:spring-context-support:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-core:5.3.39*** 
+### org.springframework:spring-core:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-jdbc:5.3.39*** 
+### org.springframework:spring-jdbc:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-orm:5.3.39*** 
+### org.springframework:spring-orm:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-web:5.3.39*** 
+### org.springframework:spring-web:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework:spring-webmvc:5.3.39*** 
+### org.springframework:spring-webmvc:5.3.39
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Spring IO (https://spring.io/projects/spring-framework), Juergen Hoeller
 
-***org.springframework.boot:spring-boot-starter-web:2.7.18*** 
+### org.springframework.boot:spring-boot-starter-web:2.7.18
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 VMware, Inc. (https://spring.io), Spring
 
-***org.springframework.security:spring-security-cas:5.8.16*** 
+### org.springframework.security:spring-security-cas:5.8.16
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-config:5.8.16*** 
+### org.springframework.security:spring-security-config:5.8.16
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-core:5.8.16*** 
+### org.springframework.security:spring-security-core:5.8.16
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
 - Copyright:
   - Copyright (c) 2024 Pivotal Software, Inc. (https://spring.io), Pivotal
 
-***org.springframework.security:spring-security-test:5.8.16*** 
+### org.springframework.security:spring-security-test:5.8.16
 - License: Apache-2.0
 - Url: https://www.apache.org/licenses/LICENSE-2.0
 - File: license/third-party-licenses/Apache-2.0.txt
