@@ -107,7 +107,7 @@ deploySMP() {
    
    # set initial application properties
    echo "smp.datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >   $CWD/tomcat/classes/smp.config.properties
-   echo "smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect" >>  $CWD/tomcat/classes/smp.config.properties
+   echo "smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQLDialect" >>  $CWD/tomcat/classes/smp.config.properties
    # optional parameters 
   echo "" >>  $CWD/tomcat/classes/smp.config.properties  
    echo "log.folder=$CWD/tomcat/logs/" >>  $CWD/tomcat/classes/smp.config.properties  
@@ -135,9 +135,9 @@ initDatabaseSMP() {
     #recreate database
     mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD -e "drop schema if exists $SMP_DB_SCHEMA;DROP USER IF EXISTS $SMP_DB_USER;  create schema $SMP_DB_SCHEMA;alter database $SMP_DB_SCHEMA charset=utf8; create user $SMP_DB_USER identified by '$SMP_DB_USER_PASSWORD';grant all on $SMP_DB_SCHEMA.* to $SMP_DB_USER;"
     
-    mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < $CWD/smp-$SMP_VERSION/database-scripts/mysql5innodb.ddl
+    mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < $CWD/smp-$SMP_VERSION/database-scripts/mysql.ddl
 
-    mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < $CWD/smp-$SMP_VERSION/database-scripts/mysql5innodb-data.sql
+    mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < $CWD/smp-$SMP_VERSION/database-scripts/mysql-data.sql
 
 }
 

@@ -28,6 +28,8 @@ export class SecurityService {
   public static readonly MAXIMUM_TIMEOUT_VALUE: number = 2147483647;
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
 
+  private recheckAfterPwdChange: boolean = false;
+
   lastUIActivity: Date = new Date();
   lastUISessionCall: Date = new Date();
 
@@ -154,22 +156,46 @@ export class SecurityService {
   }
 
   refreshLoggedUserFromServer() {
-    this.getCurrentUsernameFromServer().subscribe((userDetails: User) => {
-      this.updateUserDetails(userDetails);
-      this.securityEventService.notifyLoginSuccessEvent(userDetails);
-      if (userDetails?.forceChangeExpiredPassword) {
-        this.dialog.open(PasswordChangeDialogComponent, {
-          data: {
-            user: userDetails,
-            adminUser: false
+    this.getCurrentUsernameFromServer().subscribe({
+      next: (userDetails: User | null) => {
+        if (!userDetails) {
+          this.finalizeLogout({ reason: 'unauthenticated_or_session_expired' });
+          return;
+        }
+
+        if (this.recheckAfterPwdChange && userDetails?.forceChangeExpiredPassword) {
+          this.finalizeLogout({ reason: 'password_changed_but_server_still_forces_change' });
+          return;
+        }
+
+        this.updateUserDetails(userDetails);
+        this.translateService.use(userDetails?.smpLocale);
+        this.securityEventService.notifyLoginSuccessEvent(userDetails);
+
+        if (userDetails?.forceChangeExpiredPassword) {
+          this.dialog.open(PasswordChangeDialogComponent, {
+            data: {
+              user: userDetails,
+              adminUser: false
+            }
+          }).afterClosed().subscribe(() => {
+            this.recheckAfterPwdChange = true;
+            this.refreshLoggedUserFromServer();
+          });
+        } else {
+          this.recheckAfterPwdChange = false;
+        }
+      },
+      error: (err: any) => {
+        if (err instanceof HttpErrorResponse) {
+          if (err.status === 0 || (err.status >= 500 && err.status < 600)) {
+            this.alertService.error(err.error?.errorDescription || err.message);
+            return;
           }
-        }).afterClosed().subscribe(res =>
-          this.finalizeLogout(res)
-        );
+        }
+
+        this.finalizeLogout(err);
       }
-    }, (error: any) => {
-      // just clean local storage
-      this.localStorageService.clearLocalStorage();
     });
   }
 

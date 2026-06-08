@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -22,13 +22,16 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -41,10 +44,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
  */
 @Entity
 @Audited
-@Table(name = "SMP_RESOURCE_DEF",
+@Table(name = "SMP_RESOURCE_DEF", comment = "SMP extension resource definitions",
         indexes = {@Index(name = "SMP_RESDEF_UNIQ_EXTID_CODE_IDX", columnList = "FK_EXTENSION_ID,IDENTIFIER", unique = true)
-})
-@org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE_DEF", comment = "SMP extension resource definitions")
+        })
 
 @NamedQuery(name = QUERY_RESOURCE_DEF_ALL, query = "SELECT d FROM DBResourceDef d order by d.id asc")
 @NamedQuery(name = QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION, query = "SELECT d FROM DBResourceDef d WHERE d.extension.id = :extension_id AND d.identifier = :identifier")
@@ -62,7 +64,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
         "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
-        "   ) " )
+        "   ) ")
 @NamedQuery(name = QUERY_RESOURCE_DEF_FOR_USER_COUNT, query = "SELECT count(distinct rd.id) FROM DBResourceDef rd " +
         " JOIN DBDomainResourceDef drd ON drd.resourceDef.id = rd.id " +
         " JOIN DBDomain d ON d.id = drd.domain.id " +
@@ -74,13 +76,16 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "               (select count(dm.id) FROM  DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = d.id) > 0 " +
         "            OR (select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = g.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0) " +
-        "   ) " )
+        "   ) ")
 public class DBResourceDef extends BaseEntity {
+    @Serial
     private static final long serialVersionUID = 1008583888835630001L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_RESOURCE_DEF_SEQ")
-    @GenericGenerator(name = "SMP_RESOURCE_DEF_SEQ", strategy = "native")
+    @GenericGenerator(name = "SMP_RESOURCE_DEF_SEQ", strategy = "native", parameters = {
+            @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+    })
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique id")
     Long id;
@@ -101,7 +106,11 @@ public class DBResourceDef extends BaseEntity {
     @ColumnDescription(comment = "resources are published under url_segment.")
     String urlSegment;
 
-    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512 )
+    @Column(name = "URL_SEGMENT_OPTIONAL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
+    @ColumnDescription(comment = "Comma separated optional resources url_segment.")
+    String optionalUrlSegment;
+
+    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512)
     private String handlerImplementationName;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -202,6 +211,17 @@ public class DBResourceDef extends BaseEntity {
         return domainResourceDefs;
     }
 
+    @Transient
+    public List<String> getOptionalUrlSegments() {
+        return optionalUrlSegment == null ? Collections.emptyList() :
+                Arrays.stream(optionalUrlSegment.split(","))
+                        .map(String::trim).toList();
+    }
+
+    public void setOptionalUrlSegments(List<String> segments) {
+        this.optionalUrlSegment = segments.isEmpty() ? null : String.join(",", segments);
+    }
+
     @Override
     public String toString() {
         return "DBResourceDef{" +
@@ -212,6 +232,7 @@ public class DBResourceDef extends BaseEntity {
                 ", handlerImplementationName='" + handlerImplementationName + '\'' +
                 '}';
     }
+
 
     @Override
     public boolean equals(Object o) {

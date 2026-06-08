@@ -34,7 +34,7 @@ export class AdminKeystoreService {
   }
 
 
-  uploadKeystore(selectedFile, keystoreType, password):Observable<KeystoreResult> {
+  uploadKeystore(selectedFile, keystoreType, password): Observable<KeystoreResult> {
 
     // upload file as binary file
     const headers = new HttpHeaders()
@@ -60,12 +60,13 @@ export class AdminKeystoreService {
     this.http.delete<CertificateRo>(SmpConstants.REST_INTERNAL_KEYSTORE_DELETE_ENTRY
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_CERT_ALIAS, certificateAliasEncoded))
-      .subscribe(
-        (response: CertificateRo) => {
+      .subscribe({
+        next: (response: CertificateRo) => {
           this.notifyKeystoreEntryUpdated(response)
-        }, error => {
+        }, error: (error: any) => {
           this.alertService.error(error.error?.errorDescription)
-        });
+        }
+      });
   }
 
   notifyKeystoreUpdated(res: CertificateRo[]) {

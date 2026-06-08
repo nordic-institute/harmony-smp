@@ -14,13 +14,13 @@ mysql -h localhost -u root --password=root -e "drop schema if exists $DATABASE;D
 echo "create database"
 
 # create old database 
-mysql -h localhost -u root --password=root $DATABASE < "$SQLFOLDER/mysql5innodb-4.0.0.ddl"
+mysql -h localhost -u root --password=root $DATABASE < "$SQLFOLDER/mysql-4.0.0.ddl"
 
 echo "init data for old database"
 mysql -h localhost -u root --password=root $DATABASE < "mysql-init-data-4.0.sql"
 
 echo "database created - run migration"
-mysql -h localhost -u root --password=root $DATABASE < "$SQLFOLDER/migration from 4.0.x to 4.1.0/mysql5innoDb_4.0_to_4.1.sql"
+mysql -h localhost -u root --password=root $DATABASE < "$SQLFOLDER/migration from 4.0.x to 4.1.0/mysql_4.0_to_4.1.sql"
 
 
 

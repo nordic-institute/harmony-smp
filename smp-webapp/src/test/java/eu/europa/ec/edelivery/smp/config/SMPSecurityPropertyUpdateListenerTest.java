@@ -35,17 +35,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SMPSecurityPropertyUpdateListenerTest {
 
-    WSSecurityConfigurerAdapter wsSecurityConfigurerAdapter = Mockito.mock(WSSecurityConfigurerAdapter.class);
+    WSSecurityConfig wsSecurityConfig = Mockito.mock(WSSecurityConfig.class);
     ForwardedHeaderTransformer forwardedHeaderTransformer = Mockito.mock(ForwardedHeaderTransformer.class);
-    SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(wsSecurityConfigurerAdapter, forwardedHeaderTransformer);
+    SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(wsSecurityConfig, forwardedHeaderTransformer);
 
     @Test
     void testPropertiesUpdateClientCertTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, TRUE);
         testInstance.updateProperties(prop);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(true);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfig, Mockito.times(1)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(true);
+        Mockito.verify(wsSecurityConfig, Mockito.times(0)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(0)).setRemoveOnly(false);
     }
 
@@ -54,8 +54,8 @@ class SMPSecurityPropertyUpdateListenerTest {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, TRUE);
         testInstance.updateProperties(prop);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(true);
+        Mockito.verify(wsSecurityConfig, Mockito.times(0)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfig, Mockito.times(1)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(true);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(0)).setRemoveOnly(false);
     }
 
@@ -64,8 +64,8 @@ class SMPSecurityPropertyUpdateListenerTest {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(HTTP_FORWARDED_HEADERS_ENABLED, FALSE);
         testInstance.updateProperties(prop);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfig, Mockito.times(0)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfig, Mockito.times(0)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(TRUE);
     }
 
@@ -76,8 +76,8 @@ class SMPSecurityPropertyUpdateListenerTest {
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, FALSE);
         prop.put(HTTP_FORWARDED_HEADERS_ENABLED, FALSE);
         testInstance.updateProperties(prop);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfig, Mockito.times(1)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfig, Mockito.times(1)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(true);
     }
 

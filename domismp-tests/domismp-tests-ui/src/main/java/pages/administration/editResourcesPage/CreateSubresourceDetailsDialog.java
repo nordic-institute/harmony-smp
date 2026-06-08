@@ -7,16 +7,17 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-import rest.models.ResourceModel;
+import rest.models.SubresourceModel;
 
 public class CreateSubresourceDetailsDialog extends DComponent {
 
-
+    @FindBy(id = "subresourceTypeIdentifier")
+    private WebElement subresourceTypeDdl;
     @FindBy(id = "identifierValue_id")
     private WebElement subresourceIdentifierInput;
     @FindBy(id = "identifierScheme_id")
     private WebElement subresourceSchemeInput;
-    @FindBy(id = "createButton")
+    @FindBy(css = "mat-dialog-actions button[id=\"createButton\"]")
     private WebElement createBtn;
     private AlertComponent alertComponent = null;
 
@@ -34,15 +35,16 @@ public class CreateSubresourceDetailsDialog extends DComponent {
     }
 
 
-    public void fillResourceDetails(ResourceModel resourceModel) {
-        weToDInput(subresourceIdentifierInput).fill(resourceModel.getIdentifierValue());
-        weToDInput(subresourceSchemeInput).fill(resourceModel.getIdentifierScheme());
+    public void fillResourceDetails(SubresourceModel subresourceModel) {
+        weToDInput(subresourceIdentifierInput).fill(subresourceModel.getIdentifierValue());
+        weToDInput(subresourceSchemeInput).fill(subresourceModel.getIdentifierScheme());
     }
 
     public Boolean tryClickOnSave() {
         wait.forElementToBeClickable(createBtn);
         if (weToDButton(createBtn).isEnabled()) {
             weToDButton(createBtn).click();
+            wait.forElementToBeGone(createBtn);
             return true;
         } else {
             return false;

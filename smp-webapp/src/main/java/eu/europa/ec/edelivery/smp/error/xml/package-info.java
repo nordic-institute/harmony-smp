@@ -23,5 +23,5 @@
 // Generated on: 2023.04.13 at 02:31:58 PM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "ec:services:SMP:1.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "ec:services:SMP:1.0", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package eu.europa.ec.edelivery.smp.error.xml;

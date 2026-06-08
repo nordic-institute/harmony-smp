@@ -24,6 +24,7 @@ import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CredentialValidatorService;
+import eu.europa.ec.edelivery.smp.services.SystemCertificateValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -37,8 +38,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_CREDENTIAL_ALERTS;
-import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_PROPERTY_REFRESH;
+import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.*;
 
 @Configuration
 @EnableScheduling
@@ -47,8 +47,10 @@ public class SMPTaskSchedulerConfig implements SchedulingConfigurer {
 
     final ConfigurationDao configurationDao;
     final CredentialValidatorService credentialValidatorService;
+    final SystemCertificateValidatorService systemCertificateValidatorService;
     final SMPDynamicCronTrigger refreshPropertiesTrigger;
     final SMPDynamicCronTrigger credentialsAlertTrigger;
+    final SMPDynamicCronTrigger systemCertificateAlertTrigger;
 
     ScheduledTaskRegistrar taskRegistrar;
 
@@ -56,13 +58,17 @@ public class SMPTaskSchedulerConfig implements SchedulingConfigurer {
     public SMPTaskSchedulerConfig(
             ConfigurationDao configurationDao,
             CredentialValidatorService credentialValidatorService,
+            SystemCertificateValidatorService systemCertificateValidatorService,
             @Qualifier(TRIGGER_BEAN_PROPERTY_REFRESH) SMPDynamicCronTrigger refreshPropertiesTrigger,
-            @Qualifier(TRIGGER_BEAN_CREDENTIAL_ALERTS) SMPDynamicCronTrigger credentialsAlertTrigger
+            @Qualifier(TRIGGER_BEAN_CREDENTIAL_ALERTS) SMPDynamicCronTrigger credentialsAlertTrigger,
+            @Qualifier(TRIGGER_BEAN_SYSTEM_CERTIFICATES_ALERTS) SMPDynamicCronTrigger systemCertificateAlertTrigger
     ) {
         this.configurationDao = configurationDao;
         this.credentialValidatorService = credentialValidatorService;
+        this.systemCertificateValidatorService = systemCertificateValidatorService;
         this.refreshPropertiesTrigger = refreshPropertiesTrigger;
         this.credentialsAlertTrigger = credentialsAlertTrigger;
+        this.systemCertificateAlertTrigger = systemCertificateAlertTrigger;
     }
 
     @Bean
@@ -89,6 +95,15 @@ public class SMPTaskSchedulerConfig implements SchedulingConfigurer {
                     credentialValidatorService.validateCredentials();
                 },
                 credentialsAlertTrigger
+        );
+
+
+        LOG.debug("Configure cron task for alerts: system certificates validation");
+        this.taskRegistrar.addTriggerTask(
+                () -> {
+                    systemCertificateValidatorService.validateSystemCertificates();
+                },
+                systemCertificateAlertTrigger
         );
     }
 

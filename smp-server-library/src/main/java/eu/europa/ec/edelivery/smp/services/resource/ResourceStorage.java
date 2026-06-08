@@ -19,22 +19,23 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionEventType;
 import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.EventSourceType;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.smp.spi.enums.TransientDocumentPropertyType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,8 @@ public class ResourceStorage {
     final ResourceDao resourceDao;
     final SubresourceDao subresourceDao;
     private final DocumentVersionService documentVersionService;
+    private static final String CERTIFICATE_HEADER_BEGIN = "-----BEGIN CERTIFICATE-----";
+    private static final String CERTIFICATE_HEADER_END = "-----END CERTIFICATE-----";
 
     public ResourceStorage(DocumentDao documentDao, ResourceDao resourceDao, SubresourceDao subresourceDao, DocumentVersionService documentVersionService) {
         this.documentDao = documentDao;
@@ -74,7 +77,7 @@ public class ResourceStorage {
     public byte[] getDocumentContentForResource(DBResource dbResource) {
         LOG.debug("getDocumentContentForResource: [{}]", dbResource);
         Optional<DBDocument> document = documentDao.getDocumentForResource(dbResource);
-        return document.isPresent() ? getDocumentContent(document.get(), true) : null;
+        return document.map(dbDocument -> getDocumentContent(dbDocument, true)).orElse(null);
     }
 
     public byte[] getDocumentContent(DBDocument document, boolean followReference) {
@@ -88,7 +91,7 @@ public class ResourceStorage {
                 // target reference document can not be a reference (prevent cycling)
                 return getDocumentContent(referenceDocument, false);
             }
-            LOG.warn("Content resolution: Document [{}] has reference document [{}] which is not shared!",document,  document.getReferenceDocument());
+            LOG.warn("Content resolution: Document [{}] has reference document [{}] which is not shared!", document, document.getReferenceDocument());
         }
 
         LOG.debug("getDocumentContent: [{}]", document);
@@ -99,15 +102,17 @@ public class ResourceStorage {
     public byte[] getDocumentContentForSubresource(DBSubresource subresource) {
         LOG.debug("getDocumentContentForSubresource: [{}]", subresource);
         Optional<DBDocument> document = documentDao.getDocumentForSubresource(subresource);
-        return document.isPresent() ? getDocumentContent(document.get(), true) : null;
+        return document.map(dbDocument -> getDocumentContent(dbDocument, true))
+                .orElse(null);
     }
+
     @Transactional
     public Map<String, String> getResourceProperties(DBResource resource) {
 
         Optional<DBDocument> optDocument = documentDao.getDocumentForResource(resource);
-        if (!optDocument.isPresent()) {
+        if (optDocument.isEmpty()) {
             LOG.debug("Document not found for resource [{}]", resource);
-            return Collections.emptyMap();
+            return new HashMap<>();
         }
         Map<String, String> documentProperties = getDocumentProperties(optDocument.get(), true);
         // then overwrite with document properties
@@ -122,7 +127,7 @@ public class ResourceStorage {
     public Map<String, String> getSubresourceProperties(DBResource resource, DBSubresource subresource) {
 
         Optional<DBDocument> optDocument = documentDao.getDocumentForSubresource(subresource);
-        if (!optDocument.isPresent()) {
+        if (optDocument.isEmpty()) {
             LOG.debug("Document not found for subresource [{}]", resource);
             return Collections.emptyMap();
         }
@@ -159,15 +164,57 @@ public class ResourceStorage {
                 // target reference document can not be a reference (prevent cycling)
                 documentProperties.putAll(getDocumentProperties(referenceDocument, false));
             }
-            LOG.warn("Property resolution: Document [{}] has reference document [{}] which is not shared!",document,  document.getReferenceDocument());
+            LOG.warn("Property resolution: Document [{}] has reference document [{}] which is not shared!", document, document.getReferenceDocument());
         }
         //add/overwrite with document properties
         documentProperties.put(DOCUMENT_NAME.getPropertyName(), document.getName());
         documentProperties.put(DOCUMENT_MIMETYPE.getPropertyName(), document.getMimeType());
         documentProperties.put(DOCUMENT_VERSION.getPropertyName(), String.valueOf(document.getCurrentVersion()));
         document.getDocumentProperties().forEach(property ->
-            documentProperties.put(property.getProperty(), property.getValue()));
+                documentProperties.put(property.getProperty(), getDocumentPropertyValue(property)));
         return documentProperties;
+    }
+
+    /**
+     * Get the property value. If the property is of type CERTIFICATE, the value is converted to plain base64 string.
+     * For other types, the value is returned as is.
+     * @param property document property
+     * @return property value
+     */
+    protected String getDocumentPropertyValue(DBDocumentProperty property) {
+        if (property.getType() == SMPPropertyTypeEnum.CERTIFICATE && property.getDocumentCertificate() != null) {
+            return toPlainBase64FromPem(property.getDocumentCertificate().getPemEncoding());
+        }
+        return property.getValue();
+    }
+
+    /**
+     * Convert PEM encoded certificate to plain base64 string. If the data is already
+     * in base64 format e.g. missing headers it returned as is.
+     * If the data is null or blank, null is returned.
+     * @param data PEM encoded certificate or base64 string
+     * @return plain base64 string or null
+     */
+    protected String toPlainBase64FromPem(String data) {
+        if (StringUtils.isBlank(data)) {
+            return null;
+        }
+        data = data.trim();
+        // check if the data starts with  the -----BEGIN CERTIFICATE-----
+        if (!data.contains(CERTIFICATE_HEADER_BEGIN)) {
+            LOG.debug("Certificate data does not contain the certificate header, assume it is base64 encoded");
+            // assume the data is already base64 encoded
+            return data;
+        }
+
+        // read data line by line and ignore the -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- lines
+        BufferedReader br = new BufferedReader(new StringReader(data));
+        StringBuilder sb = new StringBuilder();
+        br.lines()
+                .filter(line -> !line.startsWith(CERTIFICATE_HEADER_BEGIN)
+                        && !line.startsWith(CERTIFICATE_HEADER_END))
+                .forEach(line -> sb.append(line.trim()));
+        return sb.toString();
     }
 
 
@@ -180,7 +227,7 @@ public class ResourceStorage {
         DBResource managedResource = resource.getId() != null ? resourceDao.find(resource.getId()) : resourceDao.merge(resource);
         DBDocument document = managedResource.getDocument();
 
-            // if document is not and alread have published version, retire it
+        // if document is not and alread have published version, retire it
         document.getDocumentVersions().stream().filter(v -> v.getStatus() == DocumentVersionStatusType.PUBLISHED)
                 .forEach(documentVersion -> documentVersionService.retireDocumentVersion(documentVersion, EventSourceType.REST_API, null));
 
@@ -200,10 +247,12 @@ public class ResourceStorage {
         // retire existing published version
         document.getDocumentVersions().stream()
                 .filter(v -> v.getStatus() == DocumentVersionStatusType.PUBLISHED)
-                .forEach(v -> {v.setStatus(DocumentVersionStatusType.RETIRED);
+                .forEach(v -> {
+                    v.setStatus(DocumentVersionStatusType.RETIRED);
                     v.getDocumentVersionEvents().add(documentVersionService.createDocumentVersionEvent(DocumentVersionEventType.RETIRE,
                             DocumentVersionStatusType.RETIRED,
-                            EventSourceType.REST_API, null));});
+                            EventSourceType.REST_API, null));
+                });
         managedResource.getDocument().addNewDocumentVersion(version);
         return managedResource;
     }

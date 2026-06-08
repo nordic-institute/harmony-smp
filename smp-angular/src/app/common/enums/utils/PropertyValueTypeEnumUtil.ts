@@ -24,14 +24,14 @@ export class PropertyValueTypeEnumUtil {
     switch (enumItem) {
       case PropertyValueTypeEnum.STRING:
         return 'String';
-      case PropertyValueTypeEnum.LIST_STRING:
-        return 'List of strings';
-      case PropertyValueTypeEnum.MAP_STRING:
-        return 'Map of strings';
-      case PropertyValueTypeEnum.FILENAME:
-        return 'Filename';
-      case PropertyValueTypeEnum.PATH:
-        return 'Path';
+      // case PropertyValueTypeEnum.LIST_STRING:
+      //   return 'List of strings';
+      // case PropertyValueTypeEnum.MAP_STRING:
+      //   return 'Map of strings';
+      // case PropertyValueTypeEnum.FILENAME:
+      //   return 'Filename';
+      // case PropertyValueTypeEnum.PATH:
+      //   return 'Path';
       case PropertyValueTypeEnum.INTEGER:
         return 'Integer';
       case PropertyValueTypeEnum.BOOLEAN:
@@ -42,6 +42,8 @@ export class PropertyValueTypeEnumUtil {
         return 'Email';
       case PropertyValueTypeEnum.URL:
         return 'URL';
+      case PropertyValueTypeEnum.CERTIFICATE:
+        return 'CERTIFICATE';
       default:
         return '';
     }
@@ -51,10 +53,10 @@ export class PropertyValueTypeEnumUtil {
     console.log("Get input type for row " + propertyType)
     switch (propertyType) {
       case PropertyValueTypeEnum.STRING:
-      case PropertyValueTypeEnum.LIST_STRING:
-      case PropertyValueTypeEnum.MAP_STRING:
-      case PropertyValueTypeEnum.FILENAME:
-      case PropertyValueTypeEnum.PATH:
+      //case PropertyValueTypeEnum.LIST_STRING:
+      //case PropertyValueTypeEnum.MAP_STRING:
+      //case PropertyValueTypeEnum.FILENAME:
+      //case PropertyValueTypeEnum.PATH:
       case PropertyValueTypeEnum.REGEXP:
         return 'text';
       case PropertyValueTypeEnum.INTEGER:
@@ -74,12 +76,12 @@ export class PropertyValueTypeEnumUtil {
     console.log("Get input pattern for row " + enumItem)
     switch (enumItem) {
       case PropertyValueTypeEnum.STRING:
-      case PropertyValueTypeEnum.LIST_STRING:
-      case PropertyValueTypeEnum.MAP_STRING:
-      case PropertyValueTypeEnum.FILENAME:
-        return /.*/
-      case PropertyValueTypeEnum.PATH:
-        return /^(.+)\/([^\/]+)$/;
+      //case PropertyValueTypeEnum.LIST_STRING:
+      //case PropertyValueTypeEnum.MAP_STRING:
+      //case PropertyValueTypeEnum.FILENAME:
+      //   return /.*/
+      //case PropertyValueTypeEnum.PATH:
+      //  return /^(.+)\/([^\/]+)$/;
       case PropertyValueTypeEnum.INTEGER:
         return /^-?\d+$/;
       case PropertyValueTypeEnum.BOOLEAN:

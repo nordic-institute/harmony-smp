@@ -28,11 +28,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -97,7 +97,6 @@ public abstract class BaseDao<E extends BaseEntity> {
 
     public void persist(E entity) {
         memEManager.persist(entity);
-
     }
 
     /**
@@ -110,6 +109,15 @@ public abstract class BaseDao<E extends BaseEntity> {
         memEManager.merge(entity);
         memEManager.flush();
         memEManager.detach(entity);
+    }
+
+    @Transactional
+    public void persistOrUpdate(E entity) {
+        if (entity.getId() != null) {
+            update(entity);
+        } else {
+            persist(entity);
+        }
     }
 
     public E merge(E entity) {
@@ -269,7 +277,7 @@ public abstract class BaseDao<E extends BaseEntity> {
                         if (!((String) searchValue).isEmpty()) {
                             // like search is also case insensitive
                             String searchPhraze = ((String) searchValue).toLowerCase().trim();
-                            lstPredicate.add(cb.like(cb.lower(getPath(om, fieldName, "Like")), "%" + searchPhraze + "%"));
+                            lstPredicate.add(cb.like(cb.lower(getPath(om, fieldName, "Like")), "%" + searchPhraze + "%",  cb.literal('\\')));
                         }
                     } else if (searchValue instanceof String) {
                         if (!((String) searchValue).isEmpty()) {

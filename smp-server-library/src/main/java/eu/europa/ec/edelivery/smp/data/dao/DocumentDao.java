@@ -23,18 +23,18 @@ import eu.europa.ec.edelivery.smp.data.enums.DocumentVersionStatusType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.*;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -66,7 +66,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_RESOURCE_ID, dbResource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), "Multiple documents");
+            LOG.error("Non unique document for resource with id [{}] ", dbResource.getId());
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -79,7 +82,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * @return document for the resource or empty if not found
      */
     public Optional<DBDocument> getDocumentForSubresource(DBSubresource dbSubresource) {
-        if (dbSubresource == null|| dbSubresource.getId() == null) {
+        if (dbSubresource == null || dbSubresource.getId() == null) {
             LOG.debug("Can not get document for subresource, because resource is not persisted to the database");
             return Optional.empty();
         }
@@ -89,7 +92,13 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_SUBRESOURCE_ID, dbSubresource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, dbSubresource.getIdentifierValue(), dbSubresource.getIdentifierScheme(), "Multiple documents");
+            LOG.error("Non unique document for subresource with id [{}] ", dbSubresource.getId());
+            DBResource dbResource = dbSubresource.getResource();
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource == null ? "" : dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource == null ? "" : dbResource.getIdentifierScheme())
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, dbSubresource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, dbSubresource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -103,14 +112,16 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_RESOURCE_ID, dbResource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), "Multiple documents");
+            LOG.error("Non unique current document version for resource with id [{}] ", dbResource.getId());
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }
     }
 
     public Optional<DBDocumentVersion> getCurrentDocumentVersionForDocument(DBDocument document) {
-
         try {
             // expected is only one domain,
             TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_CURRENT_FOR_DOCUMENT, DBDocumentVersion.class);
@@ -122,19 +133,20 @@ public class DocumentDao extends BaseDao<DBDocument> {
     }
 
 
-    public Optional<DBDocumentVersion> getCurrentDocumentVersionForSubresource(DBSubresource subresource) {
-
+    public Optional<DBDocumentVersion> getCurrentDocumentVersionForSubresource(DBSubresource dbSubresource) {
         try {
             // expected is only one domain,
             TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_CURRENT_FOR_SUBRESOURCE, DBDocumentVersion.class);
-            query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
+            query.setParameter(PARAM_SUBRESOURCE_ID, dbSubresource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            DBResource resource = subresource.getResource();
-            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_ERROR,
-                    subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
-                    resource.getIdentifierValue(), resource.getIdentifierScheme(),
-                    "Multiple documents for subresource");
+            LOG.error("Non unique current document version for subresource with id [{}] ", dbSubresource.getId());
+            DBResource dbResource = dbSubresource.getResource();
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_DOCUMENT_READING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, dbResource == null ? "" : dbResource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, dbResource == null ? "" : dbResource.getIdentifierScheme())
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, dbSubresource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, dbSubresource.getIdentifierScheme());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -162,6 +174,19 @@ public class DocumentDao extends BaseDao<DBDocument> {
         TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE,
                 DBDocumentVersion.class);
         query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
+        return query.getResultList();
+    }
+
+    /**
+     * Method returns list of document versions for the document
+     *
+     * @param document which owns the document versions
+     * @return document version list
+     */
+    public List<DBDocumentVersion> getDocumentVersionsForDocument(DBDocument document) {
+        TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_LIST_FOR_DOCUMENT,
+                DBDocumentVersion.class);
+        query.setParameter(PARAM_DOCUMENT_ID, document.getId());
         return query.getResultList();
     }
 
@@ -209,19 +234,20 @@ public class DocumentDao extends BaseDao<DBDocument> {
      *
      * @param document the target document
      */
-    public void unlinkDocument(DBDocument document){
+    public void unlinkDocument(DBDocument document) {
         if (document == null || document.getId() == null) {
             LOG.debug("Can not unlink document, because document is not persisted to the database");
             return;
         }
-        TypedQuery<DBDocument> query =  memEManager.createNamedQuery(QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, DBDocument.class);
+        TypedQuery<DBDocument> query = memEManager.createNamedQuery(QUERY_DOCUMENT_LIST_FOR_TARGET_DOCUMENT, DBDocument.class);
         query.setParameter(PARAM_DOCUMENT_ID, document.getId());
         // user stream ulink to capture audit record
         List<DBDocument> lstDocuments = query.getResultList();
         lstDocuments.forEach(linkedDoc -> {
             linkedDoc.setReferenceDocument(null);
         });
-   }
+    }
+
 
     /**
      * Method creates query for searching reference document resources
@@ -235,7 +261,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
      */
     private <T> TypedQuery<T> createSearchReferenceDocumentResourcesQuery(Class<T> resultClass, DBResource dbTargetResource, String searchResourceIdentifier, String searchResourceScheme) {
 
-        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_REFERENCES_COUNT : QUERY_SEARCH_DOCUMENT_REFERENCES;
+        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_TEMPLATES_COUNT : QUERY_SEARCH_DOCUMENT_TEMPLATES;
         LOG.debug("Create search query [{}] for resource references class [{}] with resource [{}] - [{}]", queryName, resultClass,
                 searchResourceIdentifier, searchResourceScheme);
 
@@ -263,8 +289,8 @@ public class DocumentDao extends BaseDao<DBDocument> {
                                                                              String searchSubresourceIdentifier,
                                                                              String searchSubresourceScheme) {
 
-        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES_COUNT :
-                QUERY_SEARCH_DOCUMENT_REFERENCES_FOR_SUBRESOURCES;
+        String queryName = resultClass == Long.class ? QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES_COUNT :
+                QUERY_SEARCH_DOCUMENT_TEMPLATES_FOR_SUBRESOURCES;
         LOG.debug("Create search query [{}] for subresource references with class [{}] with resource [{}] - [{}], subresource [{}] - [{}]",
                 queryName, resultClass,
                 searchResourceIdentifier,

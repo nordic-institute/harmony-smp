@@ -30,8 +30,9 @@ import {TranslateService} from "@ngx-translate/core";
 import {WindowSpinnerService} from "../common/services/window-spinner.service";
 
 @Component({
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
@@ -76,9 +77,11 @@ export class LoginComponent implements OnInit, OnDestroy {
                 user: user,
                 adminUser: false
               }
-            }).afterClosed().subscribe(res =>
-              this.securityService.finalizeLogout(res)
-            );
+            }).afterClosed().subscribe((result) => {
+              if (result) {
+                this.securityService.refreshLoggedUserFromServer();
+              }
+            });
           } else {
             this.dialog.open(ExpiredPasswordDialogComponent).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
           }

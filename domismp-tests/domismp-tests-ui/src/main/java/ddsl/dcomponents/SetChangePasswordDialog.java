@@ -1,6 +1,7 @@
 package ddsl.dcomponents;
 
 import ddsl.DomiSMPPage;
+import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -8,7 +9,6 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.userSettings.SuccesfullPasswordChangedPopup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class SetChangePasswordDialog extends DComponent {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
-    public void fillChangePassword(String currentPassword, String newPassword) throws Exception {
+    public void fillChangePassword(String currentPassword, String newPassword) {
 
         LOG.info("Set new password");
         weToDInput(currentPasswordInput).fill(currentPassword);
@@ -42,7 +42,15 @@ public class SetChangePasswordDialog extends DComponent {
         weToDInput(confirmationPasswordInput).fill(newPassword, true);
     }
 
-    public DomiSMPPage TryClickOnChangePassword(){
+    public void fillChangePassword(String currentPassword, String newPassword, String confirmationNewPassword) {
+
+        LOG.info("Set new password");
+        weToDInput(currentPasswordInput).fill(currentPassword);
+        weToDInput(newPasswordInput).fill(newPassword, true);
+        weToDInput(confirmationPasswordInput).fill(confirmationNewPassword, true);
+    }
+
+    public DomiSMPPage tryClickOnChangePassword() {
         //wait.forElementToBeClickable(setPasswordBtn);
         if (weToDButton(setPasswordBtn).isEnabled()) {
             weToDButton(setPasswordBtn).click();
@@ -60,6 +68,10 @@ public class SetChangePasswordDialog extends DComponent {
             });
         }
         return fieldErrors;
+    }
+
+    public DButton getSetPasswordBtn() {
+        return weToDButton(setPasswordBtn);
     }
 }
 

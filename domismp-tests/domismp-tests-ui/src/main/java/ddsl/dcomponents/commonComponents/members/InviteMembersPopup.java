@@ -1,6 +1,7 @@
 package ddsl.dcomponents.commonComponents.members;
 
 import ddsl.dcomponents.DComponent;
+import ddsl.dobjects.DButton;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,7 +18,9 @@ public class InviteMembersPopup extends DComponent {
 
     private final static Logger LOG = LoggerFactory.getLogger(InviteMembersPopup.class);
     @FindBy(id = "saveButton")
-    public WebElement saveBtn;
+    private WebElement saveBtn;
+    @FindBy(id = "closeDialogButton")
+    private WebElement closeBtn;
     @FindBy(id = "member-user")
     private WebElement selectMemberBtn;
     @FindBy(css = "[formcontrolname=\"member-roleType\"]")
@@ -45,5 +48,9 @@ public class InviteMembersPopup extends DComponent {
             LOG.debug("Changing role to {}", newRole);
         }
         saveBtn.click();
+    }
+
+    public DButton getCloseBtn() {
+        return weToDButton(closeBtn);
     }
 }

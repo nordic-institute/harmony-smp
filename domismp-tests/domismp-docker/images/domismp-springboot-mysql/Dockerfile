@@ -19,16 +19,13 @@ ENV SMP_HOME=/opt/smp  \
     JPDA_ADDRESS="5005" \
     JPDA_TRANSPORT="dt_socket" \
     SMP_PORT=8084 \
-    JAVA_8_VERSION="jdk8u452-b09" \
-    JAVA_8_URL_FILENAME="OpenJDK8U-jdk_x64_linux_hotspot_8u452b09.tar.gz " \
-    JAVA_8_SHA256=9448308a21841960a591b47927cf2d44fdc4c0533a5f8111a4b243a6bafb5d27 \
-    JAVA_11_VERSION="jdk-11.0.27+6" \
-    JAVA_11_URL_FILENAME="OpenJDK11U-jdk_x64_linux_hotspot_11.0.27_6.tar.gz" \
-    JAVA_11_SHA256=dc6136eaa8c1898cbf8973bb1e203e1f653f4c9166be0f5bebe0b02c5f3b5ae3  \
-    JDK_VERSION=11
+    JAVA_RELEASE="temurin21-binaries" \
+    JAVA_VERSION="jdk-21.0.7+6" \
+    JAVA_URL_FILENAME="OpenJDK21U-jdk_x64_linux_hotspot_21.0.7_6.tar.gz" \
+    JAVA_SHA256=974d3acef0b7193f541acb61b76e81670890551366625d4f6ca01b91ac152ce0
 
 # set default java home environment variable
-ENV JAVA_HOME=/opt/java/${JAVA_11_VERSION}/
+ENV JAVA_HOME=/opt/java/${JAVA_VERSION}/
 # Exposing ports used in entrypoint.sh ..
 # - 3306 Mysql port
 # - 8080 springboot port
@@ -50,13 +47,10 @@ RUN apt-get update -qqy \
         unzip   \
         haveged \
     && rm -rf /var/lib/apt/lists/*
-RUN mkdir -p /opt/java \
-        && wget -O /opt/java/${JAVA_11_VERSION}.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/${JAVA_11_VERSION}/${JAVA_11_URL_FILENAME} \
-        && wget -O /opt/java/${JAVA_8_VERSION}.tar.gz https://github.com/adoptium/temurin8-binaries/releases/download/${JAVA_8_VERSION}/${JAVA_8_URL_FILENAME} \
-        && sha256sum /opt/java/${JAVA_11_VERSION}.tar.gz | grep ${JAVA_11_SHA256} \
-        && sha256sum /opt/java/${JAVA_8_VERSION}.tar.gz | grep ${JAVA_8_SHA256} \
-        && tar -xvf /opt/java/${JAVA_11_VERSION}.tar.gz -C /opt/java/ \
-        && tar -xvf /opt/java/${JAVA_8_VERSION}.tar.gz -C /opt/java/
+RUN  mkdir -p /opt/java/
+RUN  wget -O /opt/java/${JAVA_VERSION}.tar.gz https://github.com/adoptium/${JAVA_RELEASE}/releases/download/${JAVA_VERSION}/${JAVA_URL_FILENAME}
+RUN  sha256sum /opt/java/${JAVA_VERSION}.tar.gz | grep ${JAVA_SHA256}
+RUN  tar -xvf /opt/java/${JAVA_VERSION}.tar.gz -C /opt/java/
 RUN   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
 # set user
     && addgroup mysql mysql   \

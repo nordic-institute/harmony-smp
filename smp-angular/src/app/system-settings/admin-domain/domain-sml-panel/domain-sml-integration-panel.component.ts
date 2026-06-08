@@ -13,12 +13,18 @@ import {SmlIntegrationService} from "../../../common/services/sml-integration.se
 import {SMLResult} from "../../../common/model/sml-result.model";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom} from "rxjs";
+import {
+  PrepareCertificateDialogComponent
+} from "../../../common/dialogs/prepare-certificate-dialog/prepare-certificate-dialog.component";
+import {SMLChangeCertificate} from "../../../common/model/sml-change-certificate.model";
+import {DateTimeService} from "../../../common/services/date-time.service";
 
 
 @Component({
   selector: 'domain-sml-integration-panel',
   templateUrl: './domain-sml-integration-panel.component.html',
-  styleUrls: ['./domain-sml-integration-panel.component.scss']
+  styleUrls: ['./domain-sml-integration-panel.component.css'],
+  standalone: false
 })
 export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   @Output() onSaveSmlIntegrationDataEvent: EventEmitter<DomainRo> = new EventEmitter();
@@ -36,7 +42,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     smlsmpidTimeout: null,
   };
   editMode: boolean;
-
+  changeCertificate: SMLChangeCertificate;
 
   notInList(list: string[], exception: string) {
     if (!list || !exception) {
@@ -54,7 +60,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
 
   /**
    * Show warning if domain code exceed the maxlength.
-   * @param value
    */
   onFieldKeyPressed(controlName: string, showTheWarningReference: string) {
     let value = this.domainForm.get(controlName).value
@@ -73,8 +78,8 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
               protected lookups: GlobalLookups,
               private dialog: MatDialog,
               private formBuilder: FormBuilder,
-              private translateService: TranslateService) {
-
+              private translateService: TranslateService,
+              protected dateTimeService: DateTimeService,) {
     this.domainForm = formBuilder.group({
       'smlSubdomain': new FormControl({
         value: '',
@@ -88,19 +93,23 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSmpId), this._domain?.smlSmpId)]),
       'smlClientKeyAlias': new FormControl({value: '', readonly: true}),
       'smlClientCertAuth': new FormControl({value: '', readonly: true}),
+      'smlUrlDomainCodeSuffixEnabled': new FormControl({value: '', readonly: true}),
       'smlClientKeyCertificate': new FormControl({value: '', readonly: true}),
       'smlRegistered': new FormControl({value: '', readonly: true}),
-
     });
   }
 
-  get domain(): DomainRo {
+  get dateTimeFormat(): string {
+    return this.dateTimeService.userDateTimeFormat;
+  }
 
+  get domain(): DomainRo {
     let newDomain = {...this._domain};
     newDomain.smlSubdomain = this.domainForm.get('smlSubdomain').value;
     newDomain.smlSmpId = this.domainForm.get('smlSmpId').value;
     newDomain.smlClientKeyAlias = this.domainForm.get('smlClientKeyAlias').value;
     newDomain.smlClientCertAuth = this.domainForm.get('smlClientCertAuth').value;
+    newDomain.smlUrlDomainCodeSuffixEnabled = this.domainForm.get('smlUrlDomainCodeSuffixEnabled').value;
     return newDomain;
   }
 
@@ -112,9 +121,11 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['smlClientKeyAlias'].setValue(this._domain.smlClientKeyAlias);
       this.domainForm.controls['smlRegistered'].setValue(this._domain.smlRegistered);
       this.domainForm.controls['smlClientCertAuth'].setValue(this._domain.smlClientCertAuth);
+      this.domainForm.controls['smlUrlDomainCodeSuffixEnabled'].setValue(this._domain.smlUrlDomainCodeSuffixEnabled);
       this.domainForm.enable();
       if (this.isDomainRegistered) {
         this.domainForm.controls['smlSmpId'].disable()
+        this.domainForm.controls['smlUrlDomainCodeSuffixEnabled'].disable()
       }
     } else {
       this.domainForm.controls['smlSubdomain'].setValue("");
@@ -124,6 +135,8 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['smlClientCertAuth'].setValue("");
       this.domainForm.disable();
     }
+
+    this.smlIntegrationService.getChangeCertificateDetails$(this._domain).subscribe(result => this.changeCertificate = result);
 
     this.domainForm.markAsPristine();
   }
@@ -160,7 +173,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       return false;
     }
 
-    if (!this._domain.smlClientKeyAlias ) {
+    if (!this._domain.smlClientKeyAlias) {
       return false;
     }
     // entity must be first persisted in order to be enabled to register to SML
@@ -180,10 +193,9 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     return this.isDomainRegistered;
   }
 
-  get isDomainRegistered():boolean {
+  get isDomainRegistered(): boolean {
     return !!this._domain?.smlRegistered;
   }
-
 
   async smlUnregisterSelectedDomain() {
     if (!this._domain) {
@@ -244,7 +256,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
   }
 
   smlUnregisterDomain(domain: DomainRo) {
-
     this.smlIntegrationService.unregisterDomainToSML$(domain).toPromise().then(async (res: SMLResult) => {
         if (res) {
           if (res.success) {
@@ -267,5 +278,61 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         this.alertService.exception(await lastValueFrom(this.translateService.get("domain.sml.integration.panel.error.unregister", {domainCode: domain.domainCode})), err);
       }
     )
+  }
+
+  async onPrepareCertificateClicked() {
+    this.dialog.open(PrepareCertificateDialogComponent, {
+      data: {
+        title: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.prepare.certificate.dialog.title")),
+        certificates: this.keystoreCertificates,
+        domain: this.domain
+      }
+    }).afterClosed().subscribe(changeCertificate => {
+      if (changeCertificate) {
+        this.smlIntegrationService.prepareChangeCertificateDetails$(this.domain, changeCertificate).subscribe({
+          next: () => {
+            this.changeCertificate = changeCertificate;
+          }, error: (error: any) => {
+            error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
+          }
+        });
+      }
+    });
+  }
+
+  async onChangeCertificateClicked() {
+
+
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.confirm.change.certificate.dialog.title")),
+        description: await lastValueFrom(this.translateService.get("domain.sml.integration.panel.confirm.change.certificate.dialog.description", {alias: this.changeCertificate.certificateAlias}))
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.changeCertificateAliasWithPreparedCertificate();
+      }
+    });
+  }
+
+
+  changeCertificateAliasWithPreparedCertificate() {
+
+    this.smlIntegrationService.changeCertificateDetails$(this.domain).subscribe({
+      next: () => {
+        this.domainForm.controls['smlClientKeyAlias'].setValue(this.changeCertificate.certificateAlias);
+        this.changeCertificate = null;
+      }, error: (error: any) => {
+        error?.error?.errorDescription && this.alertService.error(error.error.errorDescription);
+      }
+    });
+  }
+
+  get changeCertificateAliasSet(): boolean {
+    return this.changeCertificate && !!this.changeCertificate.certificateAlias;
+  }
+
+  get changeCertificateDateInPast(): boolean {
+    return this.changeCertificate && this.changeCertificate.changeDateTime && this.changeCertificate.changeDateTime < new Date();
   }
 }

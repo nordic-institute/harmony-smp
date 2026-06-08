@@ -3,15 +3,11 @@ import {GroupRo} from "../../common/model/group-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {TableResult} from "../../common/model/table-result.model";
 import {DomainRo} from "../../common/model/domain-ro.model";
-import {
-  ResourceDefinitionRo
-} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditResourceService} from "./edit-resource.service";
 import {EditDomainService} from "../edit-domain/edit-domain.service";
 import {EditGroupService} from "../edit-group/edit-group.service";
-import {
-  AlertMessageService
-} from "../../common/alert-message/alert-message.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {SecurityEventService} from "../../security/security-event.service";
 
@@ -30,19 +26,18 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   // data changed indicates the cached data may be outdated and need to be refreshed
   _dataChanged: boolean = false;
-  _isLoadingResults:boolean = false;
+  _loadingResults: boolean = false;
 
   _selectedDomain: DomainRo;
   _selectedGroup: GroupRo;
   _selectedResource: ResourceRo;
   _selectedDomainResourceDefs: ResourceDefinitionRo[];
+  _selectedComponent = '';
 
   resourcesFilter: any = {};
-
-  dataLength:number = 0;
-  pageIndex:number = 0;
-  pageSize:number = 10;
-
+  public resourceCount: number = -1;
+  public resourcePageSize: number = 10;
+  public resourcePageIndex: number = 0;
 
 
   constructor(
@@ -73,16 +68,16 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
 
   // this flag is used to trigger data refresh when data is needed.
   //The data can be changed for the user when adding/creating new resource in the edit group
-  @Input() set isLoadingResults(value: boolean) {
+  @Input() set loadingResults(value: boolean) {
     if (!value) {
       // data was loaded, and we can reset the flag for data changed
-      this._dataChanged = value
+      this._dataChanged = value;
     }
-    this._isLoadingResults = value;
+    this._loadingResults = value;
   }
 
-  get isLoadingResults(): boolean {
-    return this._isLoadingResults;
+  get loadingResults(): boolean {
+    return this._loadingResults;
   }
 
   private clearSelectedData() {
@@ -92,9 +87,10 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     this._selectedGroup = null;
     this._selectedResource = null;
     this._selectedDomainResourceDefs = [];
+    this._selectedComponent = '';
     this.resourcesFilter = {};
-    this.isLoadingResults = false;
-    this.updateResourceList([], 0, -1, -1);
+    this.updateResourceList([], 0, -1, this.resourcePageSize);
+    this.loadingResults = false;
   }
 
   get selectedDomain(): DomainRo {
@@ -107,29 +103,49 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
       this.refreshGroups();
       this.refreshDomainsResourceDefinitions();
     } else {
-      this.isLoadingResults = false;
+      this.loadingResults = false;
       this.groupList = [];
       this._selectedDomainResourceDefs = [];
     }
   };
 
+  // overwrite the set paginator and refresh paginator
+  override set paginator(paginator: any) {
+    console.log("Setting paginator in EditResourceController", paginator);
+    super.paginator = paginator;
+    console.log("Paginator set:", this.paginator);
+    this.refreshPaginator();
+  }
+
+  override get paginator(): any {
+    return super.paginator;
+  }
+
   get selectedGroup(): GroupRo {
     return this._selectedGroup;
   };
 
-  @Input() set selectedGroup(resource: GroupRo) {
-    this._selectedGroup = resource;
-    if (!!this._selectedGroup || this.dataChanged ) {
+  @Input() set selectedGroup(group: GroupRo) {
+    this._selectedGroup = group;
+    if (!!this._selectedGroup || this.dataChanged) {
       this.refreshResources();
     } else {
-      this.isLoadingResults = false;
-      this.updateResourceList([], 0, -1, -1);
+      this.loadingResults = false;
+      this.updateResourceList([], 0, -1, this.resourcePageSize);
     }
   };
 
   get selectedResource(): ResourceRo {
     return this._selectedResource;
   };
+
+  set selectedComponent(component: string) {
+    this._selectedComponent = component;
+  }
+
+  get selectedComponent(): string {
+    return this._selectedComponent;
+  }
 
   selectedResourceUpdated(resource: ResourceRo) {
     // find current resource from list by resource id
@@ -154,20 +170,20 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
    */
   refreshDataOnDataChange() {
     if (this.dataChanged) {
+      this.filter = '';
       this.refreshDomains();
     }
   }
 
-
   refreshDomains() {
-    this.isLoadingResults = true;
+    this.loadingResults = true;
     this.domainService.getDomainsForResourceAdminUserObservable()
       .subscribe({
         next: (result: DomainRo[]) => {
-          this.updateDomainList(result)
+          this.updateDomainList(result);
         }, error: (err: any) => {
           this.alertService.error(err.error?.errorDescription)
-          this.isLoadingResults = false;
+          this.loadingResults = false;
         }
       });
   }
@@ -176,46 +192,57 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
     if (!this.selectedDomain) {
       this.updateGroupList([]);
 
-      this.isLoadingResults = false;
+      this.loadingResults = false;
       return;
     }
-    this.isLoadingResults = true;
+    this.loadingResults = true;
     this.groupService.getDomainGroupsForResourceAdminObservable(this.selectedDomain)
       .subscribe({
         next: (result: GroupRo[]) => {
-          this.updateGroupList(result)
+          this.updateGroupList(result);
         }, error: (error: any) => {
-          this.isLoadingResults = false;
+          this.loadingResults = false;
           this.alertService.error(error.error?.errorDescription)
         }
       });
   }
 
   refreshResources() {
+
     if (!this._selectedGroup) {
-      this.isLoadingResults = false;
-      this.updateResourceList([], 0, -1, -1);
+      this.loadingResults = false;
+      this.updateResourceList([], 0, -1, this.resourcePageSize);
       return;
     }
-    this.isLoadingResults = true;
+    this.loadingResults = true;
     this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
-      this.resourcesFilter, this.pageIndex, this.pageSize)
+      this.resourcesFilter, this.resourcePageIndex, this.resourcePageSize)
       .subscribe({
         next: (result: TableResult<ResourceRo>) => {
-          this.updateResourceList(result.serviceEntities, result.count,  result.page, result.pageSize);
-          this.isLoadingResults = false;
+          this.updateResourceList(result.serviceEntities, result.count, result.page, result.pageSize);
+          this.loadingResults = false;
         }, error: (error: any) => {
-          this.isLoadingResults = false;
+          this.loadingResults = false;
           this.alertService.error(error.error?.errorDescription)
         }
       });
+    // reset values so that when reloaded via updateResourceList paginator detect changes
+    this.resourceCount = -1;
+    this.resourcePageIndex = -1;
+    this.resourcePageSize = 10;
   }
 
   refreshDomainsResourceDefinitions() {
+    let domain = this.selectedDomain;
+    if (!domain || domain.domainId == null) {
+      this._selectedDomainResourceDefs = [];
+      return;
+    }
+
     this.domainService.getDomainResourceDefinitionsObservable(this.selectedDomain)
       .subscribe({
         next: (result: ResourceDefinitionRo[]) => {
-          this._selectedDomainResourceDefs = result
+          this._selectedDomainResourceDefs = result;
         }, error: (error: any) => {
           this.alertService.error(error.error?.errorDescription)
         }
@@ -223,47 +250,90 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   updateDomainList(list: DomainRo[]) {
-    this.domainList = list;
-    if (!!this.domainList && this.domainList.length > 0) {
+    let currentSelection: DomainRo = this.selectedDomain;
+    this.selectedDomain = null;
+
+    this.domainList = list.sort((a, b) => a.domainCode.localeCompare(b.domainCode));
+    if (!!currentSelection) {
+      this.selectedDomain = this.domainList.find(d =>
+        d.domainCode == currentSelection.domainCode);
+    }
+
+    if (!this.selectedDomain && !!this.domainList && this.domainList.length > 0) {
       this.selectedDomain = this.domainList[0];
     } else {
       this._dataChanged = false;
-      this.isLoadingResults = false;
+      this.loadingResults = false;
     }
   }
 
   updateGroupList(list: GroupRo[]) {
-    this.groupList = list
-    if (!!this.groupList && this.groupList.length > 0) {
+    let currentSelection: GroupRo = this.selectedGroup;
+    this.selectedGroup = null;
+
+    this.groupList = list.sort((a, b) => a.groupName.localeCompare(b.groupName));
+    if (!!currentSelection) {
+      this.selectedGroup = this.groupList.find(g =>
+        g.groupName == currentSelection.groupName);
+    }
+
+    if (!this.selectedGroup && !!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
     } else {
       this._dataChanged = false;
-      this.isLoadingResults = false;
+      this.loadingResults = false;
     }
   }
 
-  updateResourceList(list: ResourceRo[], totalDataSize: number = 0, pageIndex: number = -1, pageSize: number = -1) {
-    let currR: ResourceRo = this.selectedResource;
+  updateResourceList(list: ResourceRo[], totalDataSize: number = 0, pageIndex: number = 0, pageSize: number = 10) {
+    let currentSelection: ResourceRo = this.selectedResource;
     this.selectedResource = null;
+
+    console.log("Loading resources... 3, list size=" + list?.length + ". totalDataSize=" + totalDataSize + ", pageIndex=" + pageIndex + ", pageSize=" + pageSize);
+
+
+    this.resourcePageIndex = pageIndex;
+    this.resourcePageSize = pageSize;
+    this.resourceCount = totalDataSize;
+    this.refreshPaginator()
     this.data = list;
 
-    this.dataLength = totalDataSize;
-    if (pageIndex !== -1) {
-      this.pageIndex = pageIndex;
-    }
-    if (pageSize !== -1) {
-      this.pageSize = pageSize;
-    }
-
-    if (!!currR) {
+    if (!!currentSelection) {
       this.selectedResource = list.find(r =>
-        r.identifierScheme == currR.identifierScheme &&
-        r.identifierValue == currR.identifierValue);
+        r.identifierScheme == currentSelection.identifierScheme &&
+        r.identifierValue == currentSelection.identifierValue);
     }
 
     if (!this.selectedResource && !!list && list.length > 0) {
       this.selectedResource = list[0];
     }
+  }
+
+  refreshPaginator() {
+    if (this.paginator) {
+      console.log("Refreshing paginator: pageIndex=" + this.resourcePageIndex + ", pageSize=" + this.resourcePageSize + ", totalDataSize=" + this.resourceCount);
+      this.paginator.pageSize = this.resourcePageSize;
+      this.paginator.pageIndex = this.resourcePageIndex;
+      this.paginator.length = this.resourceCount;
+    }
+  }
+
+
+  /**
+   *  Set target resource for  domain, group
+   */
+  selectTargetResource(resource: ResourceRo, group: GroupRo, domain: DomainRo) {
+    // set selected domain, group and resource and then refresh data if needed
+    this.loadingResults = true;
+    let filterValue: string = resource.identifierValue;
+    this._selectedDomain = domain;
+    this._selectedGroup = group;
+    this._selectedResource = resource;
+    // set filter to find the resource
+    this.resourcesFilter["filter"] = !filterValue ? '' : filterValue.trim().toLowerCase();
+    // refresh data and set data changed as false to avoid multiple refreshes
+    this.refreshDomains();
+    this.dataChanged = false;
   }
 
   /**
@@ -277,13 +347,16 @@ export class EditResourceController extends MatTableDataSource<ResourceRo> {
   }
 
   applyResourcePage(pageIndex: number, pageSize: number) {
-    this.pageSize = pageSize;
-    this.pageIndex = pageIndex;
+    this.resourcePageIndex = pageIndex;
+    this.resourcePageSize = pageSize;
+    if (this.paginator) {
+      console.log("Applying paginator: pageIndex=" + pageIndex + ", pageSize=" + pageSize);
+      this.refreshPaginator()
+    }
     this.refreshResources();
   }
 
   get selectedResourceDefinition(): ResourceDefinitionRo {
-
     if (!this._selectedResource) {
       return null;
     }

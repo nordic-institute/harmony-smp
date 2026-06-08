@@ -11,6 +11,7 @@ import {UserController} from "../../common/services/user-controller";
 import {TranslateService} from "@ngx-translate/core";
 import {lastValueFrom, Subscription} from "rxjs";
 import {SecurityEventService} from "../../security/security-event.service";
+import {InformationDialogComponent} from "../../common/dialogs/information-dialog/information-dialog.component";
 
 /**
  * Expanded side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
@@ -19,14 +20,14 @@ import {SecurityEventService} from "../../security/security-event.service";
  * @since 5.0
  */
 @Component({
-  selector: 'window-toolbar',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss']
+    selector: 'window-toolbar',
+    templateUrl: './toolbar.component.html',
+    styleUrls: ['./toolbar.component.scss'],
+    standalone: false
 })
 
 export class ToolbarComponent implements OnDestroy{
 
-  fullMenu: boolean = true;
   userController: UserController;
   currentUserRoleDescription = "";
   private loginSubscription: Subscription;
@@ -125,8 +126,14 @@ export class ToolbarComponent implements OnDestroy{
     });
   }
 
-  showExpanded(expand: boolean) {
-    this.fullMenu = expand;
+  async showVersionInfo() {
+    const title = await lastValueFrom(this.translateService.get("toolbar.component.version.info.title"));
+    this.dialog.open(InformationDialogComponent, {
+      data: {
+        title: title,
+        description: this.lookups.cachedApplicationInfo?.version || 'Version info not available'
+      }
+    });
   }
 
 }

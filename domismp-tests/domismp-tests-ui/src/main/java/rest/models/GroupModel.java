@@ -7,10 +7,12 @@ public class GroupModel {
     private String groupName;
     private String visibility;
     private String groupDescription;
-    private Object actionMessage;
+    private String actionMessage;
     private String groupId;
     private Long index;
     private Long status;
+    private String statusMessage;
+
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
@@ -24,7 +26,7 @@ public class GroupModel {
         this.groupDescription = groupDescription;
     }
 
-    public void setActionMessage(Object actionMessage) {
+    public void setActionMessage(String actionMessage) {
         this.actionMessage = actionMessage;
     }
 
@@ -52,6 +54,14 @@ public class GroupModel {
     }
     public String getGroupDescription() {
         return groupDescription;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 
     public static GroupModel generatePublicGroup() {

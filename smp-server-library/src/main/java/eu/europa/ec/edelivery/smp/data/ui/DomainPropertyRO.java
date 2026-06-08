@@ -18,6 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
+
 /**
  * Domain property contains domain configuration property for UI representation.
  * Some of the system properties can be overridden by domain administrator.
@@ -27,6 +29,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
  */
 public class DomainPropertyRO extends BaseRO {
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630035L;
     private String property;
     private String value;

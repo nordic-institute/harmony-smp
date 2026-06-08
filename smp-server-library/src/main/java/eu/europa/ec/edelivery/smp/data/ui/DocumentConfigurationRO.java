@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
  * @since 5.1
  */
 public class DocumentConfigurationRO extends BaseRO {
+    @Serial
     private static final long serialVersionUID = 9008583888835630040L;
 
     String name;

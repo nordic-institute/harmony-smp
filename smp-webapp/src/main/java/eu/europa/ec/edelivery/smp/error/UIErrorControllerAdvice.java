@@ -23,6 +23,8 @@ import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -42,6 +44,12 @@ import static java.lang.String.format;
  */
 @RestControllerAdvice({"eu.europa.ec.edelivery.smp.ui"})
 public class UIErrorControllerAdvice extends AbstractErrorControllerAdvice {
+
+
+    @Autowired
+    public UIErrorControllerAdvice(SMPExceptionLanguageService smpExceptionLanguageService) {
+        super(smpExceptionLanguageService);
+    }
 
     @Override
     @ExceptionHandler({BadCredentialsException.class,

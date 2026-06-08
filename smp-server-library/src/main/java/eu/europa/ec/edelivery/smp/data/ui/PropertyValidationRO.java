@@ -18,16 +18,19 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
-public class PropertyValidationRO {
-    public static final int ERROR_CODE_OK =0;
-    public static final int ERROR_CODE_SERVICE_GROUP_EXISTS =1;
-    public static final int ERROR_CODE_INVALID_EXTENSION =2;
+import java.io.Serial;
+import java.io.Serializable;
+
+public class PropertyValidationRO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9008583888835630046L;
 
     String property;
     String value;
 
     boolean propertyValid;
     String errorMessage;
+    String errorMessageCode;
 
     public String getProperty() {
         return property;
@@ -59,5 +62,12 @@ public class PropertyValidationRO {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getErrorMessageCode() {
+        return errorMessageCode;
+    }
+    public void setMessageCode(String errorMessageCode) {
+        this.errorMessageCode = errorMessageCode;
     }
 }

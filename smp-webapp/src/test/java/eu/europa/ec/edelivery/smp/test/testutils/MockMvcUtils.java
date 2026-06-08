@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.test.testutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -39,8 +40,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -63,6 +64,7 @@ public class MockMvcUtils {
     public static Logger LOG = LoggerFactory.getLogger(MockMvcUtils.class);
     static ObjectMapper mapper = JsonMapper.builder()
             .findAndAddModules()
+            .configure(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true)
             .build();
     // The values match the values in the test data in webapp_integration_test_data.sql
     public static final String SYS_ADMIN_USERNAME = "sys_admin";
@@ -158,7 +160,8 @@ public class MockMvcUtils {
     public static UserRO getLoggedUserData(MockMvc mvc, MockHttpSession session) throws Exception {
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY + "/user")
                         .session(session)
-                        .with(csrf()))
+                       .with(csrf())
+                )
                 .andExpect(status().isOk()).andReturn();
         byte[] asByteArray = result.getResponse().getContentAsByteArray();
         LOG.info("User session validated with logged data: []", new String(asByteArray));

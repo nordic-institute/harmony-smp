@@ -25,11 +25,11 @@ import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.slf4j.MDC;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -47,8 +47,7 @@ public class MDCLogRequestFilter extends GenericFilterBean {
         String username = SessionSecurityUtils.getAuthenticationName();
         String requestId = UUID.randomUUID().toString();
         String sessionId = null;
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if (request instanceof HttpServletRequest httpRequest) {
             sessionId = httpRequest.getSession() != null ? httpRequest.getSession().getId() : null;
         }
         MDC.put(SMPLogger.MDC_USER, username);

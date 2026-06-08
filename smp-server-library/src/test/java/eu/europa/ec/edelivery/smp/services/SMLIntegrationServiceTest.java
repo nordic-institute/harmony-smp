@@ -36,8 +36,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.regex.Pattern;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -51,6 +49,8 @@ import static org.mockito.Mockito.verify;
  */
 class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
+    @Autowired
+    private SMPExceptionLanguageService smpExceptionLanguageService;
     @Autowired
     IdentifierService identifierService;
     @MockBean
@@ -154,7 +154,7 @@ class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.registerDomain(testDomain01));
-        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        assertEquals("Configuration error: DomiSML integration is not enabled!", smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()));
     }
 
     @Test
@@ -167,7 +167,7 @@ class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.unRegisterDomain(testDomain01));
-        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        assertEquals("Configuration error: DomiSML integration is not enabled!", smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()));
     }
 
     @Test
@@ -200,7 +200,7 @@ class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         givenSmlIntegrationEnabled(false);
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.participantExists(resource, domain));
-        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        assertEquals("Configuration error: DomiSML integration is not enabled!", smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()));
     }
 
     @Test
@@ -210,7 +210,7 @@ class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         givenSmlIntegrationEnabled(false);
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.isDomainValid(domain));
-        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        assertEquals("Configuration error: DomiSML integration is not enabled!", smpExceptionLanguageService.getMessageTranslation(result.getMessageCode()));
     }
 
     private void givenSmlIntegrationEnabled(boolean enabled) {

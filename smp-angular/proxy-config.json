@@ -1,54 +1,29 @@
 {
-  "/rest/**": {
-    "target" : "https://niis-smp.lxd:8443/ui/",
-    "secure" : "false",
-    "pathRewrite": {
-      "^/rest": "/smp/ui/rest"
-    },
-    "logLevel": "debug",
-    "changeOrigin": true,
-    "cookiePathRewrite": {
-      "/smp": "/"
-    },
-    "cookieDomainRewrite": "localhost"
-  },
   "/public/**": {
-    "target" : "https://niis-smp.lxd:8443/ui/",
-    "secure" : "false",
+    "target": "https://localhost:8443",
+    "secure": false,
     "pathRewrite": {
-      "^/public": "/smp/ui/public"
+      "^/public": "/ui/public"
     },
     "logLevel": "debug",
-    "changeOrigin": true,
-    "cookiePathRewrite": {
-      "/smp": "/"
-    },
-    "cookieDomainRewrite": "localhost"
-  },
-  "/edit/**": {
-    "target" : "http://localhost:8080/",
-    "secure" : "false",
-    "pathRewrite": {
-      "^/edit": "/smp/ui/edit"
-    },
-    "logLevel": "debug",
-    "changeOrigin": true,
-    "cookiePathRewrite": {
-      "/smp": "/"
-    },
-    "cookieDomainRewrite": "localhost"
+    "changeOrigin": true
   },
   "/internal/**": {
-    "target" : "https://niis-smp.lxd:8443/ui/",
-    "secure" : "false",
+    "target": "https://localhost:8443",
+    "secure": false,
     "pathRewrite": {
-      "^/internal": "/smp/ui/internal"
+      "^/internal": "/ui/internal"
     },
     "logLevel": "debug",
-    "changeOrigin": true,
-    "cookiePathRewrite": {
-      "/smp": "/"
+    "changeOrigin": true
+  },
+  "/edit/**": {
+    "target": "https://localhost:8443",
+    "secure": false,
+    "pathRewrite": {
+      "^/edit": "/ui/edit"
     },
-    "cookieDomainRewrite": "localhost"
+    "logLevel": "debug",
+    "changeOrigin": true
   }
 }

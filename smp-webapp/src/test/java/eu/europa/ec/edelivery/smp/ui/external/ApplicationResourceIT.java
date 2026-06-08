@@ -42,8 +42,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithSystemAdmin;
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithUserGroupAdmin;
@@ -128,7 +128,7 @@ class ApplicationResourceIT {
         // when
         mvc.perform(get(PATH + "/config")
                         .with(csrf()))
-                .andExpect(status().isForbidden())
+                .andExpect(status().isUnauthorized())
                 .andReturn()
                 .getResponse();
     }

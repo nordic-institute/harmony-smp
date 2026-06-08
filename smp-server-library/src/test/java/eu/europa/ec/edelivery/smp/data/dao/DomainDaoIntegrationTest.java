@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hamcrest.CoreMatchers;
@@ -48,7 +48,6 @@ class DomainDaoIntegrationTest extends AbstractBaseDao {
         testUtilsDao.clearData();
     }
 
-
     @Test
     void persistDomain() {
         // set
@@ -75,15 +74,14 @@ class DomainDaoIntegrationTest extends AbstractBaseDao {
 
         // execute
         Exception exception = assertThrows(Exception.class, () -> testInstance.persistFlushDetach(d2));
-        assertThat(exception.getMessage(), CoreMatchers.containsString("ConstraintViolationException"));
+        assertThat(exception.getMessage(), CoreMatchers.containsString("Unique index or primary key violation"));
     }
 
     @Test
     void getTheOnlyDomainNoDomain() {
-
         // execute
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testInstance.getTheOnlyDomain());
-        assertEquals(ErrorCode.NO_DOMAIN.getMessage(), exception.getMessage());
+        SMPRuntimeException exception = assertThrows(SMPRuntimeException.class, () -> testInstance.getTheOnlyDomain());
+        assertEquals("No domain configured on SMP, at least one domain is mandatory!", exception.getMessage());
     }
 
     @Test

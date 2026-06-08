@@ -19,16 +19,14 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.dao.PeriodicalAlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.CredentialService;
-import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
+import eu.europa.ec.edelivery.smp.services.*;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -58,12 +56,14 @@ class SMPAuthenticationProviderTest {
     CRLVerifierService mockCrlVerifierService = Mockito.mock(CRLVerifierService.class);
     UITruststoreService mockTruststoreService = Mockito.mock(UITruststoreService.class);
     ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
-    CredentialsAlertService mocAlertService = Mockito.mock(CredentialsAlertService.class);
+    CredentialsAlertService mockAlertService = Mockito.mock(CredentialsAlertService.class);
     UserDao mockUserDao = Mockito.mock(UserDao.class);
+    PeriodicalAlertDao mockPeriodicalAlertDao = Mockito.mock(PeriodicalAlertDao.class);
+    SMPExceptionLanguageService smpExceptionLanguageService = Mockito.mock(SMPExceptionLanguageService.class);
 
 
-    CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mocAlertService);
-    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService);
+    CredentialService mockCredentialService = new CredentialService(mockUserDao, mockCredentialDao, mockConversionService, mockCrlVerifierService, mockTruststoreService, mockConfigurationService, mockAlertService, mockPeriodicalAlertDao, smpExceptionLanguageService);
+    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService, null);
 
 
     // response time for existing and nonexistent user should be "approx. equal"
@@ -82,7 +82,7 @@ class SMPAuthenticationProviderTest {
         credential.setCredentialType(CredentialType.ACCESS_TOKEN);
         credential.setCredentialTarget(CredentialTargetType.REST_API);
 
-        doReturn(1000).when(mockConfigurationService).getAccessTokenLoginFailDelayInMilliSeconds();
+        doReturn(2000).when(mockConfigurationService).getAccessTokenLoginFailDelayInMilliSeconds();
         doReturn(count + 5).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
 
         doReturn(Optional.of(credential)).when(mockCredentialDao).findAccessTokenCredentialForAPI(any());

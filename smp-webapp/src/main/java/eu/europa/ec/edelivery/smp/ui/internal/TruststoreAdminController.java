@@ -66,9 +66,7 @@ public class TruststoreAdminController {
         logAdminAccess("getSystemTruststoreCertificates");
 
         List<CertificateRO> truststoreEntriesList = uiTruststoreService.getCertificateROEntriesList();
-        // clear encoded value to reduce http traffic
         truststoreEntriesList.forEach(certificateRO -> {
-            certificateRO.setEncodedValue(null);
             certificateRO.setStatus(EntityROStatus.PERSISTED.getStatusNumber());
         });
         return truststoreEntriesList;

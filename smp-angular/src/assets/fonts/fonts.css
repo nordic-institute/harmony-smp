@@ -1,0 +1,32 @@
+/* open-sans-regular - cyrillic, cyrillic-ext, greek, greek-ext, hebrew, latin, latin-ext, vietnamese */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('open-sans-v43-regular.woff2') format('woff2');
+}
+/* open-sans-500 - cyrillic, cyrillic-ext, greek, greek-ext, hebrew, latin, latin-ext, vietnamese */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('open-sans-v43-500.woff2') format('woff2');
+}
+/* open-sans-600 - cyrillic, cyrillic-ext, greek, greek-ext, hebrew, latin, latin-ext, vietnamese */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('open-sans-v43-600.woff2') format('woff2');
+}
+/* open-sans-700 - cyrillic, cyrillic-ext, greek, greek-ext, hebrew, latin, latin-ext, vietnamese */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('open-sans-v43-700.woff2') format('woff2');
+}

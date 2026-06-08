@@ -1,0 +1,227 @@
+/*-
+ * #START_LICENSE#
+ * smp-server-library
+ * %%
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
+ * %%
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
+ * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ * #END_LICENSE#
+ */
+package eu.europa.ec.edelivery.smp.services.resource;
+
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
+import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.spi.SPIUtils;
+import eu.europa.ec.edelivery.smp.services.spi.data.SpiRequestData;
+import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
+import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
+import eu.europa.ec.smp.spi.api.model.RequestData;
+import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
+import eu.europa.ec.smp.spi.api.model.ResponseData;
+import eu.europa.ec.smp.spi.exceptions.ResourceException;
+import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
+import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
+import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * The resource request handler with method implementations which interacts with the SPI implementations.
+ * @author Joze Rihtarsic
+ * @since 5.0
+ */
+public class ResourceSPIHandler {
+    protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceSPIHandler.class);
+    private static final String EXPECTED_RESOURCE_CHARSET = "UTF-8";
+    // the Spring beans for the resource definitions
+    final List<ResourceDefinitionSpi> resourceDefinitionSpiList;
+    final ResourceStorage resourceStorage;
+
+    protected ResourceSPIHandler(List<ResourceDefinitionSpi> resourceDefinitionSpiList, ResourceStorage resourceStorage) {
+        this.resourceDefinitionSpiList = resourceDefinitionSpiList;
+        this.resourceStorage = resourceStorage;
+    }
+
+    public ResourceDefinitionSpi getResourceDefinition(DBResourceDef resourceDef) {
+        LOG.debug("Get resource definition for the [{}]", resourceDef);
+        Optional<ResourceDefinitionSpi> definitionSpi = resourceDefinitionSpiList.stream()
+                .filter(rdspi -> Strings.CI.equals(resourceDef.getIdentifier(), rdspi.identifier()))
+                .findFirst();
+
+        return definitionSpi.orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INTERNAL_CANNOT_FIND_RESOURCE_DEFINITION_FOR_IDENTIFIER)
+                .addParam(ErrorMessageArgument.IDENTIFIER, resourceDef.getIdentifier())
+                .addParam(ErrorMessageArgument.IDENTIFIERS, resourceDefinitionSpiList.stream()
+                        .map(ResourceDefinitionSpi::identifier)
+                        .collect(Collectors.joining(","))));
+    }
+
+    public ResourceHandlerSpi getResourceHandler(DBResourceDef resourceDef) {
+        LOG.debug("Get resource handler for the [{}]", resourceDef);
+        return getResourceDefinition(resourceDef).getResourceHandler();
+    }
+
+    public SubresourceDefinitionSpi getSubresourceDefinition(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
+        LOG.debug("Get resource definition for the [{}] for resource [{}]", subresourceDef, resourceDef);
+        ResourceDefinitionSpi resourceDefinitionSpi = getResourceDefinition(resourceDef);
+        String subResourceId = subresourceDef.getIdentifier();
+        // get subresource implementation by identifier
+        Optional<SubresourceDefinitionSpi> optSubresourceDefinitionSpi = resourceDefinitionSpi.getSubresourceSpiList().stream()
+                .filter(def -> StringUtils.equals(def.identifier(), subResourceId)).findFirst();
+
+        return optSubresourceDefinitionSpi.orElseThrow(
+                () -> new SMPRuntimeException(ErrorMessageType.INTERNAL_CANNOT_FIND_SUBRESOURCE_DEFINITION_FOR_IDENTIFIER)
+                        .addParam(ErrorMessageArgument.IDENTIFIER, subResourceId)
+                        .addParam(ErrorMessageArgument.IDENTIFIERS, resourceDefinitionSpi.getSubresourceSpiList().stream()
+                                .map(SubresourceDefinitionSpi::identifier)
+                                .collect(Collectors.joining(","))));
+    }
+
+    public ResourceHandlerSpi getSubresourceHandler(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
+        LOG.debug("Get resource handler for the [{}]", subresourceDef);
+        return getSubresourceDefinition(subresourceDef, resourceDef).getResourceHandler();
+    }
+
+    /**
+     * Build handler RequestData and add resource from the database
+     *
+     * @param domain   for the resource
+     * @param resource an entity
+     * @return data handler request data
+     */
+    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, Map<String, String> requestProperties) {
+
+        byte[] content = resourceStorage.getDocumentContentForResource(resource);
+        InputStream inputStream = null;
+        if (content != null && content.length != 0) {
+            inputStream = new ByteArrayInputStream(content);
+        }
+        /*if (content == null || content.length == 0) {
+            throw new SMPRuntimeException(ErrorMessageType.RESOURCE_DOCUMENT_MISSING)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
+        }*/
+        return buildRequestDataForResource(domain, resource,inputStream, requestProperties);
+    }
+
+    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream, Map<String, String> requestProperties) {
+        Map<String, String> docProp = resourceStorage.getResourceProperties(resource);
+        if (requestProperties!= null && !requestProperties.isEmpty()){
+            docProp.putAll(requestProperties);
+        }
+
+        return buildRequestData(domain,
+                SPIUtils.toUrlIdentifier(resource),
+                null,
+                docProp, inputStream);
+    }
+
+
+    public RequestData buildRequestData(DBDomain domain,
+                                        ResourceIdentifier resourceIdentifier,
+                                        ResourceIdentifier subresourceIdentifier,
+                                        Map<String, String> docProp,
+                                        InputStream inputStream) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            if (inputStream != null && inputStream.available() != 0) {
+                StringNamedSubstitutor.resolve(inputStream, docProp, baos, EXPECTED_RESOURCE_CHARSET);
+            }
+            return new SpiRequestData(domain.getDomainCode(),
+                    docProp,
+                    resourceIdentifier,
+                    subresourceIdentifier,
+                    new ByteArrayInputStream(baos.toByteArray()));
+        } catch (IOException e) {
+            throw new SMPRuntimeException(
+                    subresourceIdentifier == null
+                            ? ErrorMessageType.RESOURCE_DOCUMENT_READING
+                            : ErrorMessageType.SUBRESOURCE_DOCUMENT_READING,
+                    e)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceIdentifier.getValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resourceIdentifier.getScheme())
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, subresourceIdentifier != null ? subresourceIdentifier.getValue() : null)
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, subresourceIdentifier != null ? subresourceIdentifier.getScheme() : null);
+        }
+    }
+
+    /**
+     * Build handler RequestData and add resource from the database for the subresource
+     * It reads the content of the subresource from the database and replaces the properties in the document.
+     *
+     * @param domain    of the resource
+     * @param resource
+     * @param subresource
+     * @return
+     */
+    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource,
+                                                      DBSubresource subresource) {
+        byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
+        if (content == null || content.length == 0) {
+            throw new SMPRuntimeException(ErrorMessageType.SUBRESOURCE_DOCUMENT_MISSING)
+                    .addParam(ErrorMessageArgument.DOCUMENT_IDENTIFIER, subresource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.DOCUMENT_SCHEME, subresource.getIdentifierScheme())
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resource.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resource.getIdentifierScheme());
+        }
+        return buildRequestDataForSubResource(domain, resource, subresource, new ByteArrayInputStream(content));
+    }
+
+    /**
+     * Build handler RequestData and add resource from the database. The input stream is used to replace the properties
+     * in the document and the new bytearrays is used as stream  to create the RequestData.
+     *
+     * @param domain      of the resource
+     * @param resource    the parent resource of the subresource
+     * @param subresource an entity with the subresource data
+     * @param inputStream the input stream to replace the properties in the document
+     * @return request data for the subresource
+     */
+    public RequestData buildRequestDataForSubResource(DBDomain domain,
+                                                      DBResource resource,
+                                                      DBSubresource subresource,
+                                                      InputStream inputStream) {
+        Map<String, String> docProp = resourceStorage.getSubresourceProperties(resource, subresource);
+        return buildRequestData(domain,
+                SPIUtils.toUrlIdentifier(resource),
+                SPIUtils.toUrlIdentifier(subresource),
+                docProp, inputStream);
+    }
+
+    public void handleReadResource(ResourceHandlerSpi handlerSpi, RequestData requestData, ResponseData responseData, ResourceResponse resourceResponse) {
+        try {
+            handlerSpi.readResource(requestData, responseData);
+            if (StringUtils.isNotBlank(responseData.getContentType())) {
+                resourceResponse.setContentType(responseData.getContentType());
+            }
+            responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
+
+        } catch (ResourceException e) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_HTTP_RESPONSE_OUTPUT_STREAM, e);
+        }
+    }
+}

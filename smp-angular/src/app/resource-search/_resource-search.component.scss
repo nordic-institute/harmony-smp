@@ -1,0 +1,10 @@
+@use '../../smp-theme-helper' as smp;
+
+@mixin set-component-colors($theme) {
+
+  .subresource-item-table-row:hover > div {
+    background-color: smp.get-theme-color($theme, primary, 300) !important;
+    /* Highlight entire row on hover */
+    transition: background 0.15s;
+  }
+}

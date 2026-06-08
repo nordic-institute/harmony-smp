@@ -35,6 +35,8 @@ public enum SMPMessageCode implements MessageCode {
     BUS_HTTP_GET_SERVICE_GROUP("BUS-005", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
     BUS_HTTP_GET_END_SERVICE_GROUP("BUS-006", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
     BUS_HTTP_GET_END_STATIC_CONTENT("BUS-007", "End Http GET static content from host: {}, Path: {}."),
+    BUS_HTTP_GET_END_STATIC_CONTENT_NOT_FOUND("BUS-024", "End Http GET static content from host: {}, Path: {}."),
+
 
 
     BUS_HTTP_PUT_SERVICE_METADATA("BUS-008", "Http PUT ServiceGroupMetadata from user {} from host: {}. ServiceGroup with domain: {}, ServiceGroup id: {} , metadata id {}."),
@@ -57,6 +59,9 @@ public enum SMPMessageCode implements MessageCode {
     BUS_SML_UNREGISTER_END_SERVICE_GROUP("BUS-021", "End unregistering participant:  part. Id: {} part. scheme {} to domain {}"),
     BUS_SML_UNREGISTER_SERVICE_GROUP_ALREADY_REGISTERED("BUS-022", "Participant:  part. Id: {} part. scheme {} to domain {} marked as already unregistered to SML"),
     BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED("BUS-023", "Participant unregistration:  part. Id: {} part. scheme {} to domain {} failed due to error: {}"),
+
+    BUS_SML_PREPARE_CERTIFICATE_CHANGE("BUS-025", "Start preparing domain certificate change:  certificate: {} migration date: {} to domain: {}"),
+    BUS_SML_PREPARE_CERTIFICATE_CHANGE_FAILED("BUS-026", "Prepare domain certificate change:  certificate: {} migration date: {} to domain: {} failed due to error: {}"),
 
     BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),
 

@@ -16,8 +16,9 @@ import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss']
+    templateUrl: './user-profile.component.html',
+    styleUrls: ['./user-profile.component.scss'],
+    standalone: false
 })
 export class UserProfileComponent implements OnInit, OnDestroy, BeforeLeaveGuard {
 
@@ -86,8 +87,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, BeforeLeaveGuard
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        this.currentUserData.passwordExpireOn = result.passwordExpireOn;
-        this.currentUserData = {...this.currentUserData}
+        this.securityService.refreshLoggedUserFromServer();
       }
     });
   }

@@ -40,10 +40,9 @@ public class SeleniumTest {
     public void beforeClass() {
         LOG.info("--------Initialize test class-------");
         driver = DriverManager.getDriver();
+        driver.manage().window().fullscreen();
         java.util.logging.Logger.getLogger("io.netty.util.NetUtil").setLevel(Level.OFF);
         java.util.logging.Logger.getLogger("org.asynchttpclient.netty.handler").setLevel(Level.OFF);
-
-
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -64,7 +63,7 @@ public class SeleniumTest {
         }
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     protected void afterMethod(Method method) {
         try {
             driver.quit();

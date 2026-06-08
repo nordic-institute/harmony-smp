@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  position: relative;
+  height: 100%;
+}
+
+#domain-ext-doc-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-right: 5px;
+}

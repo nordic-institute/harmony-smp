@@ -21,6 +21,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import java.util.List;
 public class ResourceSearchRO extends BaseRO {
 
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630016L;
     private Long id;
 

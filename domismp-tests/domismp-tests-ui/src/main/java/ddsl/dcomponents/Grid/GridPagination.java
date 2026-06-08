@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +20,13 @@ public class GridPagination extends DComponent {
 
     public GridPagination(WebDriver driver, WebElement parentElement) {
         super(driver);
-        PageFactory.initElements(driver, this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
         this.parentElement = parentElement;
 
     }
 
     public Integer getTotalPageNumber() {
+        wait.forElementToBeVisible(parentElement);
         String val = parentElement.findElement(currentElementsLblLocator).getText();
         Integer numofElementsPerPage = 5;
         Pattern pattern = Pattern.compile("of (\\d+)");

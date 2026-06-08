@@ -19,6 +19,8 @@
 package eu.europa.ec.edelivery.smp.data.dao.utils;
 
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SMPSchemaGeneratorTest {
 
-    private static final String DIALECT_ORACLE = "org.hibernate.dialect.Oracle10gDialect";
+    private static final String DIALECT_ORACLE = "org.hibernate.dialect.OracleDialect";
     private static final String DIALECT_MYSQL_INNO5 = "org.hibernate.dialect.MySQL5InnoDBDialect";
 
     protected static String ENTITY_PACKAGES = "eu.europa.ec.edelivery.smp.data.model," +
@@ -57,62 +59,34 @@ class SMPSchemaGeneratorTest {
         // given
         String folder = "target";
         String dialect = DIALECT_ORACLE;
-        String version = "5.1-SNAPSHOT";
+        String version = "4.1.0-SNAPSHOT";
         List<String> lstPackages = Arrays.asList(ENTITY_PACKAGES.split(","));
-        File f = new File("target/oracle10g.ddl");
-        File fDrop = new File("target/oracle10g-drop.ddl");
+        String hibernateVersion = "6.6.12.Final";
+        File f = new File("target/oracle.ddl");
         f.delete(); // delete if exists
-        fDrop.delete(); // delete if exists
         assertFalse(f.exists());
-        assertFalse(fDrop.exists());
-
-
-        testInstance.createDDLScript(folder, dialect, lstPackages, version);
-
+        // when
+        testInstance.createDDLScript(folder, dialect, lstPackages, version, hibernateVersion, null);
+        // then
         assertTrue(f.exists());
         assertTrue(f.length() > 0);
-        assertTrue(fDrop.exists());
-        assertTrue(fDrop.length() > 0);
     }
 
     @Test
-    void createFileNameOracleDialect() {
-        String dialect = DIALECT_ORACLE;
-        //when
-        String filaName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameTemplate);
+    void getFileNameFromDialectOracleDialect() {
+        //given when
+        String fileName = testInstance.getFileNameFromDialect(DIALECT_ORACLE);
         // then
-        assertEquals("oracle10g.ddl", filaName);
+        assertEquals("oracle", fileName);
     }
 
     @Test
-    void createFileNameMySQLDialect() {
-        // given
-        String dialect = DIALECT_MYSQL_INNO5;
-        //when
-        String fileName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameTemplate);
+    void getFileNameFromDialectMySQLDialect() {
+        //given when
+        String filaName = testInstance.getFileNameFromDialect(DIALECT_MYSQL_INNO5);
         // then
-        assertEquals("mysql5innodb.ddl", fileName);
+        assertEquals("mysql5innodb", filaName);
     }
-
-    @Test
-    void createDropFileNameOracleDialect() {
-        String dialect = DIALECT_ORACLE;
-        //when
-        String fileName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameDropTemplate);
-        // then
-        assertEquals("oracle10g-drop.ddl", fileName);
-    }
-
-    @Test
-    void createDropFileNameMySQLDialect() {
-        // given
-        String dialect = DIALECT_MYSQL_INNO5;
-        //when
-        String fileName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameDropTemplate);
-        // then
-        assertEquals("mysql5innodb-drop.ddl", fileName);
-    }
-
 
     @ParameterizedTest
     @MethodSource("dialectTestCases")
@@ -126,16 +100,15 @@ class SMPSchemaGeneratorTest {
 
     @Test
     void getAllEntityClassesNotFound() {
-
-        assertThrows(ClassNotFoundException.class, () -> testInstance.getAllEntityClasses("eu.not.exists"));
+        ClassNotFoundException result = assertThrows(ClassNotFoundException.class, () -> testInstance.getAllEntityClasses("eu.not.exists"));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("eu.not.exists"));
     }
 
     @Test
-    void getAllEntityClasses() throws ClassNotFoundException {
-
+    void getAllEntityClasses() throws ClassNotFoundException, IOException {
         // given when
-        List<Class> result = testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
+        List<Class<?>> result = testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
 
-        assertEquals(11, result.size());
+        assertEquals(26, result.size());
     }
 }

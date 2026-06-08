@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,11 +28,11 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.config.init.SMPConfigurationInitializer;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.ApplicationContext;
@@ -42,15 +42,17 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.TypedQuery;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.KeyException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType.*;
 
 /**
  * @author Joze Rihtarsic
@@ -62,17 +64,19 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
     boolean isRefreshProcess = false;
     final Properties cachedProperties = new Properties();
-    Map<String, Object> cachedPropertyValues = new HashMap();
+    Map<String, Object> cachedPropertyValues = new HashMap<>();
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
     boolean serverRestartNeeded = false;
+    private final VaultDao vaultDao;
 
     protected final SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
     protected final ApplicationContext applicationContext;
 
 
-    public ConfigurationDao(ApplicationContext applicationContext) {
+    public ConfigurationDao(ApplicationContext applicationContext, VaultDao vaultDao) {
         this.applicationContext = applicationContext;
+        this.vaultDao = vaultDao;
     }
 
     /**
@@ -94,10 +98,11 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @Transactional
     public DBConfiguration setPropertyToDatabase(String key, String value) {
         Optional<SMPPropertyEnum> optionalSMPPropertyEnum = SMPPropertyEnum.getByProperty(key);
-        if (!optionalSMPPropertyEnum.isPresent()) {
+        if (optionalSMPPropertyEnum.isEmpty()) {
             LOG.warn("Property: [{}] is not SMP property and it is ignored!", key);
             return null;
         }
+
         return setPropertyToDatabase(optionalSMPPropertyEnum.get(), value, null);
     }
 
@@ -105,12 +110,25 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
         File rootFolder = getSecurityFolder();
         if (!PropertyUtils.isValidProperty(key, value, rootFolder)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, key.getPropertyType().getErrorMessage(key.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_PROPERTY)
+                    .addParam(PROPERTY_NAME, key.getProperty())
+                    .addParam(ERROR_MESSAGE_CODE, key.getPropertyType().getErrorMessageCode());
+        }
+
+        // if is  vault secret store it to vault
+        if (isVaultManagedProperty(key)) {
+            if ( isVaultWriteEnabled()) {
+                return vaultDao.storeSecret(key.getProperty(), value,
+                        StringUtils.isBlank(description) ? key.getDesc() : description);
+            } else {
+                LOG.warn("Property [{}] is vault managed property but vault write permission is disabled! Property is ignored!", key.getProperty());
+                return null;
+            }
         }
 
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
         DBConfiguration configurationEntity;
-        if (!result.isPresent()) {
+        if (result.isEmpty()) {
             configurationEntity = new DBConfiguration();
             configurationEntity.setProperty(key.getProperty());
             configurationEntity.setValue(prepareValue(key, value));
@@ -142,7 +160,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
 
         if (prop.isEncrypted() && !StringUtils.isBlank(value)) {
-            return encryptString(prop, value);
+            return encryptStringToBase64(prop, value);
         }
         return value;
     }
@@ -150,7 +168,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @Transactional
     public Optional<DBConfiguration> deletePropertyFromDatabase(SMPPropertyEnum key) {
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
-        if (!result.isPresent()) {
+        if (result.isEmpty()) {
             return Optional.empty();
         }
         memEManager.remove(result.get());
@@ -172,10 +190,13 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     @Transactional
-    public <T extends Object> T getCachedPropertyValue(SMPPropertyEnum key) {
+    public <T> T getPropertyValue(SMPPropertyEnum key) {
         if (lastUpdate == null) {
             // init properties
             refreshProperties();
+        }
+        if (key.isEncrypted()) {
+            return (T) getSecurityToken(key);
         }
         return (T) cachedPropertyValues.get(key.getProperty());
     }
@@ -290,13 +311,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
         LOG.debug("Update all property listeners");
         Map<String, PropertyUpdateListener> updateListenerList = getPropertyUpdateListener();
-        if (updateListenerList != null) {
-            for (Map.Entry<String, PropertyUpdateListener> entry : updateListenerList.entrySet()) {
-                String key = entry.getKey();
-                PropertyUpdateListener value = entry.getValue();
-                updateListener(key, value);
-            }
+        if (updateListenerList == null) {
+            LOG.debug("No property listeners found to be updated!");
+            return;
         }
+
+        updateListenerList.forEach(this::updateListener);
     }
 
     /**
@@ -323,6 +343,73 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             }
         }
         listener.updateProperties(mapProp);
+        //
+        if (listener instanceof VaultDao vaultListener) {
+            updateVaultManagedProperties(vaultListener);
+        }
+    }
+
+    private void updateVaultManagedProperties(VaultDao vaultListener) {
+        if (!isVaultEnabled() || !isVaultWriteEnabled()) {
+            LOG.debug("Vault is not enabled or write permission is disabled. Skip vault property update!");
+            return;
+        }
+        List<SMPPropertyEnum> vaultProperties = Arrays.stream(SMPPropertyEnum.values())
+                .filter(SMPPropertyEnum::isEncrypted)
+                .toList();
+        Map<SMPPropertyEnum, Object> vaultProp = new HashMap<>();
+        for (SMPPropertyEnum prop : vaultProperties) {
+            if (cachedProperties.containsKey(prop.getProperty())) {
+                String val = cachedProperties.getProperty(prop.getProperty());
+                String decVal = null;
+                try {
+                    decVal = decryptStringToString(prop, val);
+                } catch (KeyException e) {
+                    LOG.warn("Can not decrypt property [{}]. Error: [{}]", val, ExceptionUtils.getRootCauseMessage(e));
+                }
+                vaultProp.put(prop, decVal);
+            }
+        }
+        vaultListener.updateVaultOnMissingProperties(vaultProp);
+    }
+
+
+    public String getSecurityToken(SMPPropertyEnum key) {
+        if (isVaultEnabled()) {
+            return vaultDao.getSecretAsString(key.getProperty());
+        }
+
+        String value = cachedProperties.getProperty(key.getProperty());
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        try {
+            return decryptStringToString(key, value);
+        } catch (KeyException e) {
+            LOG.error("Can not decrypt token [{}]! Error: [{}]", key, ExceptionUtils.getRootCauseMessage(e));
+        }
+        return null;
+    }
+
+    public boolean isVaultEnabled() {
+        return Boolean.parseBoolean(getCachedProperty(VAULT_ENABLED));
+    }
+
+    public boolean isVaultWriteEnabled() {
+        return Boolean.parseBoolean(getCachedProperty(VAULT_PERMISSION_WRITE_ENABLED));
+    }
+
+    /**
+     * Check if the property is a vault property and it should be stored or retrieved from the vault.
+     *
+     * @param key the property key
+     * @return true if the property is a vault property else false
+     */
+    boolean isVaultManagedProperty(SMPPropertyEnum key) {
+
+        return key != null
+                && isVaultEnabled()
+                && key.isEncrypted();
     }
 
     public OffsetDateTime getLastUpdate() {
@@ -372,7 +459,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
         // check SML integration data
         Boolean isSMLEnabled = (Boolean) propertyValues.get(SML_ENABLED.getProperty());
-        if (isSMLEnabled != null && isSMLEnabled.booleanValue()) {
+        if (isSMLEnabled != null && isSMLEnabled) {
             // if SML is enabled then following properties are mandatory
             validateIfExists(propertyValues, SML_URL);
             validateIfExists(propertyValues, SML_PHYSICAL_ADDRESS);
@@ -399,47 +486,53 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         // because they are important for 'parsing and validating' other parameters
         String encryptionKeyFilename = getProperty(properties, ENCRYPTION_FILENAME);
         if (StringUtils.isBlank(encryptionKeyFilename)) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Empty configuration folder. Property [%s] is mandatory", ENCRYPTION_FILENAME.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_MANDATORY_ENCRYPTION_FILE_NAME)
+                    .addParam(PROPERTY_NAME, ENCRYPTION_FILENAME.getProperty());
         }
 
         File configFolder = getSecurityFolder();
         if (!configFolder.exists()) {
             LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", configFolder.getPath(), configFolder.getAbsolutePath());
             if (!configFolder.mkdirs()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Configuration folder does not exists and can not be created! Value: [%s] (Absolute path [%s])",
-                        configFolder.getPath(), configFolder.getAbsolutePath()));
+                throw new SMPRuntimeException(CONFIGURATION_FOLDER_CREATION)
+                        .addParam(PATH, configFolder.getPath())
+                        .addParam(ABSOLUTE_PATH, configFolder.getAbsolutePath());
             }
         }
         if (!configFolder.isDirectory()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Configuration folder is not a folder! Value: [%s] (Absolute path [%s])",
-                    configFolder.getPath(), configFolder.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_FOLDER_NOT_DIRECTORY)
+                    .addParam(PATH, configFolder.getPath())
+                    .addParam(ABSOLUTE_PATH, configFolder.getAbsolutePath());
+
         }
 
         File encryptionKeyFile = new File(configFolder, encryptionKeyFilename);
         if (!encryptionKeyFile.exists() || !encryptionKeyFile.isFile()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Encryption file does not exists or is not a File! Value:  [%s]",
-                    encryptionKeyFile.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_ENCRYPTION_FILE_NOT_FILE)
+                    .addParam(ABSOLUTE_PATH, encryptionKeyFile.getAbsolutePath());
         }
 
         File localeFolder = getLocaleFolder();
         if (!localeFolder.exists()) {
             LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", localeFolder.getPath(), localeFolder.getAbsolutePath());
             if (!localeFolder.mkdirs()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Locale folder does not exists and can not be created! Value: [%s] (Absolute path [%s])",
-                        localeFolder.getPath(), localeFolder.getAbsolutePath()));
+                throw new SMPRuntimeException(CONFIGURATION_LOCALE_FOLDER_CREATION)
+                        .addParam(PATH, localeFolder.getPath())
+                        .addParam(ABSOLUTE_PATH, localeFolder.getAbsolutePath());
             }
         }
         if (!localeFolder.isDirectory()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Locale folder is not a folder! Value: [%s] (Absolute path [%s])",
-                    localeFolder.getPath(), localeFolder.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_LOCALE_FOLDER_NOT_DIRECTORY)
+                    .addParam(PATH, localeFolder.getPath())
+                    .addParam(ABSOLUTE_PATH, localeFolder.getAbsolutePath());
         }
     }
 
     /**
      * Method validates if new value for deprecated value is already set. If not it set the value from deprecated property if exists!
      *
-     * @param properties
-     * @return
+     * @param properties Properties to update
+     * @return Updated properties with deprecated values set
      */
     public Properties updateDeprecatedValues(Properties properties) {
         if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
@@ -463,7 +556,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         File configFolder = getSecurityFolder();
         File encryptionKeyFile = new File(configFolder, encryptionKeyFilename);
 
-        HashMap<String, Object> propertyValues = new HashMap();
+        HashMap<String, Object> propertyValues = new HashMap<>();
         // put the first two values
 
         propertyValues.put(ENCRYPTION_FILENAME.getProperty(), encryptionKeyFile);
@@ -497,20 +590,28 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     private static void validateIfExists(Map<String, Object> propertyValues, SMPPropertyEnum key) {
         Object value = propertyValues.get(key.getProperty());
         if (value == null) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Missing property %s.", key.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_MISSING_PROPERTY)
+                    .addParam(PROPERTY_NAME, key.getProperty());
         }
     }
 
 
-    private static File checkFileExist(File file) {
+    /**
+     * Checks if the file exists and is a file.
+     *
+     * @param file the file to check
+     * @throws SMPRuntimeException if the file does not exist or is not a file
+     */
+    private static void checkFileExist(File file) {
         if (file == null || !file.exists()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("The file [%s] not exists.", file == null ? "null" : file.getAbsolutePath()));
+            throw new SMPRuntimeException(CONFIGURATION_FILE_NOT_EXISTS)
+                    .addParam(ABSOLUTE_PATH, file == null ? "null" : file.getAbsolutePath());
         } else {
             if (!file.isFile()) {
-                throw new SMPRuntimeException(CONFIGURATION_ERROR, file.getAbsolutePath() + " must be a file");
+                throw new SMPRuntimeException(CONFIGURATION_FILE_NOT_FILE)
+                        .addParam(ABSOLUTE_PATH, file.getAbsolutePath());
             }
         }
-        return file;
     }
 
 
@@ -518,27 +619,53 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return StringUtils.trimToNull(properties.getProperty(key.getProperty()));
     }
 
-    protected String decryptString(SMPPropertyEnum key, String value, File encryptionKey) {
+
+    public String decryptStringToString(SMPPropertyEnum key, String value) throws KeyException {
         try {
-            return SecurityUtils.decrypt(encryptionKey, value);
+            File location = getEncryptionKeyFilepath();
+            if (location == null) {
+                throw new KeyException("Bad configuration. Encryption key does not exist!");
+            }
+            return decryptStringToString(key, value, location);
+        } catch (KeyException kexc) {
+            throw kexc;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Error occurred while decrypting the property: "
-                    + key.getProperty() + "Error:" + ExceptionUtils.getRootCause(exc));
+            throw new KeyException(exc.getMessage(), exc);
         }
     }
 
-    public String encryptString(SMPPropertyEnum key, String value, File encryptionKey) {
+    protected String decryptStringToString(SMPPropertyEnum key, String value, File encryptionKey) {
+        byte[] decValue = decryptString(key, value, encryptionKey);
+        return new String(decValue, StandardCharsets.UTF_8);
+    }
+
+    protected byte[] decryptString(SMPPropertyEnum key, String value, File encryptionKey) {
+        // check if value is not encrypted value e.g. starts with "DEC{....}"
+        if (SecurityUtils.isNonEncryptedValue(value)) {
+            return SecurityUtils.getNonEncryptedValue(value).getBytes(StandardCharsets.UTF_8);
+        }
         try {
-            return SecurityUtils.encrypt(encryptionKey, value);
+            return SecurityUtils.decryptBase64(encryptionKey, value);
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Error occurred while encrypting the property: "
-                    + key.getProperty() + "Error:" + ExceptionUtils.getRootCause(exc));
+            throw new SMPRuntimeException(CONFIGURATION_PROPERTY_DECRYPTION)
+                    .addParam(PROPERTY_VALUE, key.getProperty())
+                    .addParam(ERROR, ExceptionUtils.getRootCause(exc));
         }
     }
 
-    public String encryptString(SMPPropertyEnum key, String value) {
+    public String encryptStringToBase64(SMPPropertyEnum key, String value, File encryptionKey) {
+        try {
+            return SecurityUtils.encryptStringToBase64(encryptionKey, value);
+        } catch (Exception exc) {
+            throw new SMPRuntimeException(CONFIGURATION_PROPERTY_ENCRYPTION)
+                    .addParam(PROPERTY_VALUE, key.getProperty())
+                    .addParam(ERROR, ExceptionUtils.getRootCause(exc));
+        }
+    }
+
+    public String encryptStringToBase64(SMPPropertyEnum key, String value) {
         File encryptionKey = (File) cachedPropertyValues.get(ENCRYPTION_FILENAME.getProperty());
-        return encryptString(key, value, encryptionKey);
+        return encryptStringToBase64(key, value, encryptionKey);
     }
 
     public List<DBConfiguration> getPendingRestartProperties() {
@@ -567,6 +694,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     public File getSecurityFolder() {
         return Paths.get(environmentProperties.getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
+    }
+
+    public File getEncryptionKeyFilepath() {
+        File configFolder = getSecurityFolder();
+        String encryptionKeyFilename = cachedProperties.getProperty(ENCRYPTION_FILENAME.getProperty());
+        return new File(configFolder, encryptionKeyFilename);
     }
 
     public File getLocaleFolder() {

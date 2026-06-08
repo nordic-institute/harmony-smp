@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.NewCookie;
 import java.io.File;
 import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -21,79 +20,12 @@ import java.util.Properties;
 public class TestRunData {
     protected static final Logger LOG = LoggerFactory.getLogger(TestRunData.class);
 
-    /**
-     * Enum for the environment test properties
-     */
-    public enum TestEnvironmentProperty {
-        PROPERTIES_PATH("test.properties.path", "./test.properties", "Path to init properties. example: ./src/test/resources/test.properties"),
-        WEBDRIVER_PATH("test.webdriver.path", null, "Webdriver path"),
-        WEBDRIVER_TYPE("test.webdriver.type", "chrome", "Webdriver type: chrome, firefox"),
-        WEBDRIVER_HEADLESS("test.webdriver.headless", "false", "Run Webdriver headless. Default is false"),
-        APPLICATION_UI_URL("test.application.ui.url", "http://localhost:8080/smp/ui/", "Application UI url"),
-        SML_URL("test.sml.url", "http://localhost:8982/edelivery-sml/listDNS", "Webdriver type: chrome, gecko, edge"),
-        REPORT_FOLDER("test.reports.folder", "./reports/", "Reports folder"),
-        TIMEOUT_LONG("test.timeout.long", "15", "Long timeout in seconds"),
-        TIMEOUT_SHORT("test.timeout.short", "5", "Short timeout in seconds"),
-        ADMIN_USERNAME("test.user.SYSTEM_ADMIN.username", "system", "Username with admin/system role"),
-        ADMIN_PASSWORD("test.user.SYSTEM_ADMIN.password", "123456", "Password for username with admin/system role. User is used for setting up the test data"),
-        USER_USERNAME("test.user.USER.username", "user", "Username with user role (not admin). User is used for basic tests"),
-        USER_PASSWORD("test.user.USER.password", "123456", "Password for username with user role"),
-
-        TEST_DATA_PASSWORD_DEFAULT("test.data.password.default", "QW!@QW!@qw12qw12", "Default password when creating new users"),
-        TEST_DATA_PASSWORD_NEW("test.data.password.new", "Test1234!Test1234!", "New Password when changing users password "),
-        MAIL_URL("test.mail.url", "http://localhost:9005/", "Webdriver type: chrome, gecko, edge"),
-
-        ;
-
-        String propertyName;
-        String propertyEnvName;
-        String defaultValue;
-        String description;
-
-        TestEnvironmentProperty(String propertyName, String defaultValue, String description) {
-            this.propertyName = propertyName;
-            this.propertyEnvName = propertyName.toUpperCase().replace(".", "_");
-            this.defaultValue = defaultValue;
-            this.description = description;
-        }
-
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        /**
-         * Returns the environment property name with uppercase and _ instead of .
-         *
-         * @return
-         */
-        public String getEnvPropertyName() {
-            return propertyEnvName;
-        }
-
-        public String getDefaultValue() {
-            return defaultValue;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        @Override
-        public String toString() {
-            String sb = "TestEnvironmentProperty {" + "propertyName='" + propertyName + '\'' +
-                    ", defaultValue='" + defaultValue + '\'' +
-                    ", description='" + description + '\'' +
-                    '}';
-            return sb;
-        }
+    public Integer getWaitTimeoutShortMilliseconds() {
+        String intValue = getPropertyValue(TestEnvironmentProperty.TIMEOUT_SHORT_MILLISECONDS);
+        return Integer.valueOf(intValue);
     }
 
 
-    public static SimpleDateFormat UI_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    public static SimpleDateFormat UI_DATE_FORMAT2 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ssz");
-    public static SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    public static SimpleDateFormat REST_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    public static SimpleDateFormat REST_JMS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     static Properties prop = new Properties();
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     public String XSRFToken;
@@ -175,6 +107,10 @@ public class TestRunData {
         return getUser(ApplicationRoles.SYSTEM_ADMIN).get("username");
     }
 
+    public String getAdminPassword() {
+        return getUser(ApplicationRoles.SYSTEM_ADMIN).get("password");
+    }
+
     public String getDefaultPassword() {
         return getPropertyValue(TestEnvironmentProperty.TEST_DATA_PASSWORD_DEFAULT);
     }
@@ -199,9 +135,79 @@ public class TestRunData {
         return Integer.valueOf(intValue);
     }
 
+    /**
+     * Enum for the environment test properties
+     */
+    public enum TestEnvironmentProperty {
+        PROPERTIES_PATH("test.properties.path", "./test.properties", "Path to init properties. example: ./src/test/resources/test.properties"),
+        WEBDRIVER_PATH("test.webdriver.path", null, "Webdriver path"),
+        WEBDRIVER_TYPE("test.webdriver.type", "chrome", "Webdriver type: chrome, firefox"),
+        WEBDRIVER_HEADLESS("test.webdriver.headless", "false", "Run Webdriver headless. Default is false"),
+        APPLICATION_UI_URL("test.application.ui.url", "http://localhost:8080/smp/ui/", "Application UI url"),
+        SML_URL("test.sml.url", "http://localhost:8982/edelivery-sml/listDNS", "Webdriver type: chrome, gecko, edge"),
+        REPORT_FOLDER("test.reports.folder", "./reports/", "Reports folder"),
+        TIMEOUT_LONG("test.timeout.long", "15", "Long timeout in seconds"),
+        TIMEOUT_SHORT("test.timeout.short", "5", "Short timeout in seconds"),
+        TIMEOUT_SHORT_MILLISECONDS("test.timeout.short.milliseconds", "5", "Short timeout in miliseconds"),
+
+        ADMIN_USERNAME("test.user.SYSTEM_ADMIN.username", "system", "Username with admin/system role"),
+        ADMIN_PASSWORD("test.user.SYSTEM_ADMIN.password", "123456", "Password for username with admin/system role. User is used for setting up the test data"),
+        USER_USERNAME("test.user.USER.username", "user", "Username with user role (not admin). User is used for basic tests"),
+        USER_PASSWORD("test.user.USER.password", "123456", "Password for username with user role"),
+
+        TEST_DATA_PASSWORD_DEFAULT("test.data.password.default", "QW!@QW!@qw12qw12", "Default password when creating new users"),
+        TEST_DATA_PASSWORD_NEW("test.data.password.new", "Test1234!Test1234!", "New Password when changing users password "),
+        MAIL_URL("test.mail.url", "http://localhost:9005/", "Webdriver type: chrome, gecko, edge"),
+
+        ;
+
+        String propertyName;
+        String propertyEnvName;
+        String defaultValue;
+        String description;
+
+        TestEnvironmentProperty(String propertyName, String defaultValue, String description) {
+            this.propertyName = propertyName;
+            this.propertyEnvName = propertyName.toUpperCase().replace(".", "_");
+            this.defaultValue = defaultValue;
+            this.description = description;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        /**
+         * Returns the environment property name with uppercase and _ instead of .
+         *
+         * @return
+         */
+        public String getEnvPropertyName() {
+            return propertyEnvName;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public String toString() {
+            String sb = "TestEnvironmentProperty {" + "propertyName='" + propertyName + '\'' +
+                    ", defaultValue='" + defaultValue + '\'' +
+                    ", description='" + description + '\'' +
+                    '}';
+            return sb;
+        }
+    }
+
     public Duration getWaitDurationShort() {
         return Duration.ofSeconds(getWaitTimeShort());
     }
+
 
     public Integer getWaitTimeLong() {
         String intValue = getPropertyValue(TestEnvironmentProperty.TIMEOUT_LONG);

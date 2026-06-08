@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 
@@ -27,7 +28,9 @@ import java.io.Serializable;
  * @author Joze Rihtarsic
  * @since 4.2
  */
-public class PasswordChangeRO implements Serializable  {
+public class PasswordChangeRO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9008583888835630045L;
     String username;
     String currentPassword;
     String newPassword;

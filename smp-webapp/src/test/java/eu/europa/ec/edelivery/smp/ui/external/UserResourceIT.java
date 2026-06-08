@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -39,12 +40,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.ws.rs.core.MediaType;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -81,7 +80,7 @@ class UserResourceIT {
     }
 
     @Test
-    void testUpdateCurrentUserOK() throws Exception {
+    void testUpdateCurrentUserProfileOK() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
@@ -139,6 +138,7 @@ class UserResourceIT {
 
         UserRO updateUserData = mapper.readValue(resultUser.getResponse().getContentAsString(), UserRO.class);
         AccessTokenRO resAccessToken = mapper.readValue(result.getResponse().getContentAsString(), AccessTokenRO.class);
+        assertNotNull(updateUserData);
         assertNotNull(resAccessToken);
 
     }
@@ -166,5 +166,39 @@ class UserResourceIT {
         // test to login with new password
         MockHttpSession sessionNew = loginWithCredentials(mvc, SG_USER2_USERNAME, newPassword);
         assertNotNull(sessionNew);
+    }
+
+    @Test
+    void changePasswordInvalidatesOtherSession() throws Exception {
+        String newPassword = "TESTtest1234!@#$";
+
+        MockHttpSession sessionA = loginWithUser2(mvc);
+        MockHttpSession sessionB = loginWithUser2(mvc);
+
+        UserRO userRO = getLoggedUserData(mvc, sessionA);
+        assertNotNull(userRO);
+
+        PasswordChangeRO newPass = new PasswordChangeRO();
+        newPass.setUsername(SG_USER2_USERNAME);
+        newPass.setCurrentPassword(SG_USER2_PASSWD);
+        newPass.setNewPassword(newPassword);
+        assertNotEquals(newPassword, SG_USER2_PASSWD);
+
+        mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId() + "/change-password")
+                .with(csrf())
+                .session(sessionA)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(newPass))
+        ).andExpect(status().isOk()).andReturn();
+
+        mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY_USER)
+                .with(csrf())
+                .session(sessionA)
+        ).andExpect(status().isOk());
+
+        mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY_USER)
+                .with(csrf())
+                .session(sessionB)
+        ).andExpect(status().isUnauthorized());
     }
 }

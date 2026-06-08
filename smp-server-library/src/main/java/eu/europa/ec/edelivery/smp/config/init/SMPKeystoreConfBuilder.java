@@ -26,6 +26,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 
 /**
@@ -116,12 +117,13 @@ public class SMPKeystoreConfBuilder {
             LOG.info("generate new truststore token");
             String trustToken = SecurityUtils.generateAuthenticationToken(testMode);
             initPropertyService.storeProperty(propertyTruststoreDecToken, trustToken);
-            encTrustEncToken = SecurityUtils.encrypt(secret, trustToken);
+            encTrustEncToken = SecurityUtils.encryptStringToBase64(secret, trustToken);
         }
 
         LOG.info("Store truststore security token to database");
         // store token to database
-        String trustToken = SecurityUtils.decrypt(secret, encTrustEncToken);
+        String trustToken = SecurityUtils.decryptBase64ToString(secret, encTrustEncToken);
+
         String keystoreType = initPropertyService.getApplicationInitPropertyValue(propertyType);
 
         LOG.info("Generate new truststore to file [{}] in folder [{}]!", initFilename, outputFolder.getAbsolutePath());

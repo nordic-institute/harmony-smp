@@ -2,6 +2,9 @@ package utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,5 +31,12 @@ public class Utils {
         }
         LOG.error("No alias found in the message: "+message);
         throw new NullPointerException("No alias found in the message: "+message);
+    }
+
+    public static String getCurrentDate(String pattern) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        Date currentDate = new Date();
+        return dateFormat.format(currentDate);
+
     }
 }

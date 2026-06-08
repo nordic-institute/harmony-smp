@@ -2,9 +2,10 @@ import {Component} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-default-password-dialog',
-  templateUrl: './default-password-dialog.component.html',
-  styleUrls: ['./default-password-dialog.component.css']
+    selector: 'app-default-password-dialog',
+    templateUrl: './default-password-dialog.component.html',
+    styleUrls: ['./default-password-dialog.component.css'],
+    standalone: false
 })
 export class DefaultPasswordDialogComponent {
 

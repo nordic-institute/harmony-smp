@@ -1,4 +1,4 @@
-ng {
+{
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
@@ -9,11 +9,13 @@ ng {
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist",
+            "outputPath": {
+              "base": "./src/main/resources/META-INF/resources/ui/",
+              "browser": ""
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
             "polyfills": ["zone.js"],
             "assets": [
@@ -21,21 +23,34 @@ ng {
               "src/favicon.ico"
             ],
             "styles": [
-              "src/styles.css",
-              "src/theme.scss"
+              "src/assets/fonts/fonts.css",
+              "src/assets/stylesheets/angularMaterial2Icons.css",
+              "src/theme-harmony.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
-              "optimization": true,
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -48,8 +63,6 @@ ng {
               "sourceMap": true,
               "namedChunks": true,
               "extractLicenses": true,
-              "vendorChunk": true,
-              "buildOptimizer": false,
               "budgets": [
                 {
                   "type": "initial",
@@ -63,7 +76,8 @@ ng {
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -73,6 +87,9 @@ ng {
           "configurations": {
             "production": {
               "buildTarget": "SMP-UI:build:production"
+            },
+            "dev": {
+              "buildTarget": "SMP-UI:build:development"
             }
           }
         },
@@ -91,8 +108,9 @@ ng {
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
             "styles": [
-              "src/styles.css",
-              "src/theme.scss"
+              "src/assets/fonts/fonts.css",
+              "src/assets/stylesheets/angularMaterial2Icons.css",
+              "src/theme-harmony.scss"
             ],
             "assets": [
               "src/assets",
@@ -120,10 +138,30 @@ ng {
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "css"
+      "styleext": "css",
+      "type": "component"
     },
     "@schematics/angular:directive": {
-      "prefix": "app"
+      "prefix": "app",
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   },
   "cli": {

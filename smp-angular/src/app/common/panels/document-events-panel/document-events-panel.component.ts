@@ -49,16 +49,17 @@ import {
  * @since 5.1
  */
 @Component({
-  selector: 'document-events-panel',
-  templateUrl: './document-events-panel.component.html',
-  styleUrls: ['./document-events-panel.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DocumentEventsPanelComponent),
-      multi: true
-    }
-  ]
+    selector: 'document-events-panel',
+    templateUrl: './document-events-panel.component.html',
+    styleUrls: ['./document-events-panel.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => DocumentEventsPanelComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class DocumentEventsPanelComponent implements AfterViewInit, BeforeLeaveGuard, ControlValueAccessor {
 

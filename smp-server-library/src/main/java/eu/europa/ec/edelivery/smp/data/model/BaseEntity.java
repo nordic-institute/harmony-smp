@@ -21,10 +21,12 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -34,6 +36,7 @@ import java.util.Objects;
  */
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
+    @Serial
     private static final long serialVersionUID = 9008583888835630001L;
 
     public abstract Object getId();

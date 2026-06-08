@@ -37,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -119,7 +119,6 @@ class AuditIntegrationTest extends AbstractBaseDao {
         alterVal.put("credentialType", CredentialType.CAS);
         alterVal.put("credentialTarget", CredentialTargetType.REST_API);
         alterVal.put("changedOn", OffsetDateTime.now().plusMinutes(30));
-        alterVal.put("expireAlertOn", OffsetDateTime.now().plusMinutes(30));
         alterVal.put("activeFrom", OffsetDateTime.now().plusMinutes(30));
         alterVal.put("sequentialLoginFailureCount", 10);
 

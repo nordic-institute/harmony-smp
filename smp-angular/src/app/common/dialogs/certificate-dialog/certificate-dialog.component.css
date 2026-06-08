@@ -1,0 +1,12 @@
+.empty-field-label {
+  color: gray;
+}
+
+#certificate-file-upload_id {
+  display: none;
+}
+
+.certificate-file-upload {
+  display: inline-block;
+  cursor: pointer;
+}

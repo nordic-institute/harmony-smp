@@ -7,9 +7,10 @@ import {
 } from "../../document-edit-panel/document-edit-panel.component";
 
 @Component({
-  templateUrl: './review-document-panel.component.html',
-  styleUrls: ['./review-document-panel.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    templateUrl: './review-document-panel.component.html',
+    styleUrls: ['./review-document-panel.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ReviewDocumentPanelComponent implements BeforeLeaveGuard {
 

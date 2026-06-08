@@ -106,18 +106,17 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods("*");
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE");
+        ;
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.setOrder(HIGHEST_ORDER)
-                .addResourceHandler("/index.html", "/favicon.png", "/favicon.ico").addResourceLocations("/html/");
-
-        registry.setOrder(HIGHEST_ORDER - 2)
-                .addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources
-        registry.setOrder(HIGHEST_ORDER - 3)
-                .addResourceHandler("/ui/**").addResourceLocations("/ui/"); // angular pages
+        registry.setOrder(HIGHEST_ORDER);
+        registry.addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources
+        registry.addResourceHandler("/ui/**").addResourceLocations("/ui/"); // angular pages
     }
 
     @Override

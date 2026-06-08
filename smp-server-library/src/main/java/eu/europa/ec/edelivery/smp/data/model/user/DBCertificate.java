@@ -23,7 +23,7 @@ import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -36,8 +36,7 @@ import java.util.Objects;
 
 @Entity
 @Audited
-@Table(name = "SMP_CERTIFICATE")
-@org.hibernate.annotations.Table(appliesTo = "SMP_CERTIFICATE", comment = "SMP user certificates")
+@Table(name = "SMP_CERTIFICATE", comment = "SMP user certificates")
 public class DBCertificate extends BaseEntity {
 
     @Id
@@ -63,7 +62,7 @@ public class DBCertificate extends BaseEntity {
     @ColumnDescription(comment = "Certificate serial number")
     private String serialNumber;
 
-    @Column(name = "PEM_ENCODED_CERT")
+    @Column(name = "PEM_ENCODED_CERT", length = Integer.MAX_VALUE)
     @ColumnDescription(comment = "PEM encoded  certificate")
     @Lob
     private String pemEncoding;

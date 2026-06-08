@@ -19,6 +19,7 @@
 package eu.europa.ec.smp.spi.api.model;
 
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  *  An object implementing the interface provides a resource data for processing by the SPI resource handler.
@@ -35,5 +36,7 @@ public interface RequestData {
     ResourceIdentifier getSubresourceIdentifier();
 
     InputStream getResourceInputStream();
+
+    Map<String, String> getDocumentAttributes();
 
 }

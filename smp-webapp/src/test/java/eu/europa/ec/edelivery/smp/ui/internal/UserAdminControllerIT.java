@@ -27,10 +27,9 @@ import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
-
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
@@ -189,6 +188,42 @@ class UserAdminControllerIT extends AbstractControllerTest {
 
         // test to login with new password
         MockHttpSession sessionNew = loginWithCredentials(mvc, SG_USER2_USERNAME, newPassword);
+        assertNotNull(sessionNew);
+    }
+
+    @Test
+    void changeOwnPasswordKeepsCurrentSessionAndInvalidatesOtherSession() throws Exception {
+        String newPassword = "TESTtest1234!@#$";
+
+        MockHttpSession sessionA = loginWithSystemAdmin(mvc);
+        MockHttpSession sessionB = loginWithSystemAdmin(mvc);
+        UserRO adminUser = getLoggedUserData(mvc, sessionA);
+        assertNotNull(adminUser);
+
+        PasswordChangeRO newPass = new PasswordChangeRO();
+        newPass.setUsername(SYS_ADMIN_USERNAME);
+        newPass.setCurrentPassword(SYS_ADMIN_PASSWD);
+        newPass.setNewPassword(newPassword);
+        assertNotEquals(SYS_ADMIN_PASSWD, newPassword);
+
+        mvc.perform(put(PATH_INTERNAL + "/" + adminUser.getUserId() + "/change-password-for/" + adminUser.getUserId())
+                .with(csrf())
+                .session(sessionA)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(getObjectMapper().writeValueAsString(newPass))
+        ).andExpect(status().isOk()).andReturn();
+
+        mvc.perform(get(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER)
+                .with(csrf())
+                .session(sessionA)
+        ).andExpect(status().isOk());
+
+        mvc.perform(get(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER)
+                .with(csrf())
+                .session(sessionB)
+        ).andExpect(status().isUnauthorized());
+
+        MockHttpSession sessionNew = loginWithCredentials(mvc, SYS_ADMIN_USERNAME, newPassword);
         assertNotNull(sessionNew);
     }
 

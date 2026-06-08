@@ -21,8 +21,12 @@ package eu.europa.ec.edelivery.smp.data.ui;
 import eu.europa.ec.edelivery.smp.data.enums.MemberOfType;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 
-public class MemberRO {
+import java.io.Serial;
+import java.io.Serializable;
 
+public class MemberRO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9008583888835630044L;
     String memberId;
     String username;
     MemberOfType memberOf;

@@ -36,6 +36,7 @@ public class MailDataModel {
     public enum CommonProperties {
         CURRENT_DATETIME,
         SMP_INSTANCE_NAME,
+        SERVER_NAME,
     }
     private final String language;
     private final AlertTypeEnum alertType;

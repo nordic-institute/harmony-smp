@@ -22,6 +22,8 @@ package eu.europa.ec.edelivery.smp.data.ui;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serial;
+
 /**
  * @author Joze Rihtarsic
  * @since 4.1
@@ -29,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ServiceMetadataRO extends BaseRO {
 
 
+    @Serial
     private static final long serialVersionUID = 9008583888835630018L;
     private Long id;
     String documentIdentifier;

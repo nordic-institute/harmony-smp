@@ -19,28 +19,23 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
+import java.io.Serial;
+
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
 
 public class SubresourceDefinitionRO extends BaseRO {
+    @Serial
     private static final long serialVersionUID = 9008583888835630025L;
 
-    String resourceId;
     private String identifier;
     private String name;
     private String description;
     private String mimeType;
     String urlSegment;
 
-    public String getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
-    }
 
     public String getIdentifier() {
         return identifier;

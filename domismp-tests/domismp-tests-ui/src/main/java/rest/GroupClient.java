@@ -29,7 +29,7 @@ public class GroupClient extends BaseRestClient {
         ClientResponse response = jsonPUT(resource.path(addGroupMemberPath), membersJson);
         if (response.getStatus() != 200) {
             try {
-                throw new SMPRestException("Could not add members to group", response);
+                throw new SMPRestException("Could not add members to group", response.getStatus(), response.getEntity(String.class));
             } catch (SMPRestException e) {
                 throw new RuntimeException(e);
             }

@@ -17,7 +17,7 @@ See the Licence for the specific language governing permissions and limitations 
     <artifactId>harmonysmp-modules</artifactId>
     <packaging>pom</packaging>
     <name>Harmony SMP</name>
-    <version>2.2.1</version>
+    <version>2.3.0-SNAPSHOT</version>
     <licenses>
         <license>
             <name>EUPL-1.2</name>
@@ -39,132 +39,122 @@ See the Licence for the specific language governing permissions and limitations 
     </modules>
 
     <properties>
-        <prerequisites.maven_min_version>3.5</prerequisites.maven_min_version>
-        <jacocoRemotePort />
-        <jacocoRemoteAddress />
+
+        <prerequisites.maven_min_version>3.9</prerequisites.maven_min_version>
         <!-- the root/main folder of the project used by aggregation plugins (license).
         Alternative ${session.executionRootDirectory} -->
-
         <project.root.baseUri>${maven.multiModuleProjectDirectory}</project.root.baseUri>
-        <!-- Note: domismp application target is JDK 8, but minimal build JDK version must be Java 11 due to domismp-tests modules
-        -->
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.17</edelivery.ssl-auth.version>
-        <dynamic-discovery-client.version>2.4</dynamic-discovery-client.version>
-        <bdmsl-api.version>4.3.1</bdmsl-api.version>
+        <edelivery.ssl-auth.version>2.1</edelivery.ssl-auth.version>
+        <dynamic-discovery-client.version>3.1-SNAPSHOT</dynamic-discovery-client.version>
+        <edelivery-vault.version>2.1</edelivery-vault.version>
+        <bdmsl-api.version>5.0</bdmsl-api.version>
         <!-- plugin versions -->
-        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
-        <plugin.dependency-check-maven.version>12.1.3</plugin.dependency-check-maven.version>
-        <plugin.jacoco-maven-plugin.version>0.8.13</plugin.jacoco-maven-plugin.version>
+        <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+        <plugin.dependency-check-maven.version>12.1.6</plugin.dependency-check-maven.version>
+        <plugin.jacoco-maven-plugin.version>0.8.14</plugin.jacoco-maven-plugin.version>
+        <plugin.sonar-maven-plugin.version>5.4.0.6343</plugin.sonar-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.4.0</plugin.license-maven-plugin.version>
-        <plugin.maven-antrun-plugin.version>3.1.0</plugin.maven-antrun-plugin.version>
-        <plugin.maven-assembly-plugin.version>3.7.1</plugin.maven-assembly-plugin.version>
-        <plugin.maven-clean-plugin.version>3.4.1</plugin.maven-clean-plugin.version>
-        <plugin.maven-compiler-plugin.version>3.14.0</plugin.maven-compiler-plugin.version>
-        <plugin.maven-dependency-plugin.version>3.8.1</plugin.maven-dependency-plugin.version>
-        <plugin.maven-failsafe-plugin.version>3.5.3</plugin.maven-failsafe-plugin.version>
-        <plugin.maven-jar-plugin.version>3.4.2</plugin.maven-jar-plugin.version>
-        <plugin.maven-release-plugin.version>3.1.1</plugin.maven-release-plugin.version>
-        <plugin.maven-resources-plugin.version>3.3.1</plugin.maven-resources-plugin.version>
-        <plugin.maven-surefire-plugin.version>3.5.3</plugin.maven-surefire-plugin.version>
-        <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
-        <plugin.versions-maven-plugin.version>2.18.0</plugin.versions-maven-plugin.version>
+        <plugin.maven-antrun-plugin.version>3.2.0</plugin.maven-antrun-plugin.version>
+        <plugin.maven-assembly-plugin.version>3.8.0</plugin.maven-assembly-plugin.version>
+        <plugin.maven-clean-plugin.version>3.5.0</plugin.maven-clean-plugin.version>
+        <plugin.maven-compiler-plugin.version>3.14.1</plugin.maven-compiler-plugin.version>
+        <plugin.maven-dependency-plugin.version>3.9.0</plugin.maven-dependency-plugin.version>
+        <plugin.maven-failsafe-plugin.version>3.5.4</plugin.maven-failsafe-plugin.version>
+        <plugin.maven-jar-plugin.version>3.5.0</plugin.maven-jar-plugin.version>
+        <plugin.maven-release-plugin.version>3.2.0</plugin.maven-release-plugin.version>
+        <plugin.maven-resources-plugin.version>3.4.0</plugin.maven-resources-plugin.version>
+        <plugin.maven-surefire-plugin.version>3.5.4</plugin.maven-surefire-plugin.version>
+        <plugin.maven-war-plugin.version>3.5.1</plugin.maven-war-plugin.version>
+        <plugin.frontend-maven-plugin.version>1.15.4</plugin.frontend-maven-plugin.version>
+        <plugin.versions-maven-plugin.version>2.20.1</plugin.versions-maven-plugin.version>
 
-        <aspectj.version>1.9.24</aspectj.version>
+        <aspectj.version>1.9.25</aspectj.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-io.version>2.19.0</commons-io.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-collections.version>20040616</commons-collections.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
-        <commons-net.version>3.11.1</commons-net.version>
-        <commons-validator.version>1.9.0</commons-validator.version>
-        <cxf-xjc-runtime.version>3.3.4</cxf-xjc-runtime.version>
-        <cxf.version>3.5.11</cxf.version>
-        <ehcache.version>3.10.8</ehcache.version>
-        <h2.version>2.2.224</h2.version>
-        <hamcrest.version>2.2</hamcrest.version>
-        <hibernate-jpa.version>1.0.2.Final</hibernate-jpa.version>
+        <commons-io.version>2.21.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-net.version>3.12.0</commons-net.version>
+        <commons-validator.version>1.10.1</commons-validator.version>
+        <cxf-xjc-runtime.version>4.1.1</cxf-xjc-runtime.version>
+        <cxf.version>4.1.4</cxf.version>
+        <!-- dependant library of cxf  -->
+        <org.eclipse.angus-mail.version>2.0.4</org.eclipse.angus-mail.version>
+        <ehcache.version>3.11.1</ehcache.version>
+        <fasterxml.classmate.version>1.7.1</fasterxml.classmate.version>
+        <h2.version>2.4.240</h2.version>
+        <hamcrest.version>3.0</hamcrest.version>
+        <hibernate-tools-orm.version>6.6.38.Final</hibernate-tools-orm.version>
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
-        <hibernate.version>5.6.15.Final</hibernate.version>
-        <httpclient.version>4.5.14</httpclient.version>
-        <jackson.version>2.19.0</jackson.version>
-        <javaee-api.version>7.0</javaee-api.version>
+        <hibernate.version>6.6.38.Final</hibernate.version>
+        <httpclient5.version>5.5.1</httpclient5.version>
+        <jackson.version>2.20.1</jackson.version>
+        <jakarta.activation-api.version>2.1.4</jakarta.activation-api.version>
+        <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
+        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
+        <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
+        <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
+        <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
+        <jakarta.xml.bind-api.version>4.0.4</jakarta.xml.bind-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
-        <javax.mail.version>1.6.2</javax.mail.version>
+        <javax.cache-api.version>1.1.1</javax.cache-api.version>
+        <jakarta.mail.version>2.0.2</jakarta.mail.version>
         <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
-        <org.glassfish.jaxb.jaxb-runtime.version>2.3.9</org.glassfish.jaxb.jaxb-runtime.version>
-        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
-        <junit-jupiter.version>5.12.2</junit-jupiter.version>
+        <junit-jupiter.version>5.14.1</junit-jupiter.version>
         <junit-platform-surefire-provider.version>1.3.2</junit-platform-surefire-provider.version>
         <junitparams.version>1.1.1</junitparams.version>
-        <slf4j.version>2.0.9</slf4j.version>
-        <logback.version>1.3.15</logback.version>
-        <mysql.jdbc.version>8.4.0</mysql.jdbc.version>
+        <logback.version>1.5.21</logback.version>
         <metro.version>2.2.1-1</metro.version>
-        <mockito.version>4.11.0</mockito.version>
-        <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
 
+        <mockito.version>5.20.0</mockito.version>
+        <mysql.jdbc.version>9.5.0</mysql.jdbc.version>
+        <org.glassfish.jaxb.jaxb-runtime.version>4.0.6</org.glassfish.jaxb.jaxb-runtime.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <spring-boot.tomcat.version>10.1.50</spring-boot.tomcat.version>
+        <spring-boot.version>3.5.8</spring-boot.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.107</spring-boot.tomcat.version>
-        <spring.security.version>5.8.16</spring.security.version>
-        <spring.version>5.3.39</spring.version>
-        <xmlunit.version>2.10.1</xmlunit.version>
+        <spring.security.version>6.5.7</spring.security.version>
+        <!--When upgrading  spring.security the nimbus version is provided to avoid detected vulnerability issues  -->
+        <nimbus-jose-jwt.version>10.6</nimbus-jose-jwt.version>
+        <com.google.crypto.tink.version>1.19.0</com.google.crypto.tink.version>
+        <spring.version>6.2.14</spring.version>
+        <xmlunit.version>2.11.0</xmlunit.version>
 
         <!-- plugins -->
-        <plugin.frontend-maven-plugin.version>1.15.1</plugin.frontend-maven-plugin.version>
-        <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
-        <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
+        <skipUT>false</skipUT>
+        <skipIT>false</skipIT>
+        <maven.test.argLine> -XX:+EnableDynamicAgentLoading </maven.test.argLine>
+        <jacoco.append>true</jacoco.append>
+        <!-- push the aggregated reports which contains code coverage from linked modules
+        pushing each report like this
+        ${project.basedir}/target/site/jacoco/jacoco.xml,${project.basedir}/target/site/jacoco-it/jacoco.xml
+        will not cover the coverage from dependent modules when executing integration tests
+        -->
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.root.baseUri}/smp-aggregator/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
         <sonar.language>java</sonar.language>
-        <jacoco.append>true</jacoco.append>
-        <sonar.binaries>target/classes</sonar.binaries>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
-
-        <sonar.exclusions>
-            **/target/**,
-            **/smp-angular/node_modules/**,
-            **/swagger*.js,
-            **/web.xml,
-            **/smp-examples/**,
-        </sonar.exclusions>
-        <sonar.coverage.exclusions>
-            **/*Entity.java,
-            **/*RO.java,
-            **/DB*.java,
-            **/*Exception.java,
-            **/*Types.java,
-            **/*Constants.java,
-        </sonar.coverage.exclusions>
-
-        <plugin.sonar-maven-plugin.version>3.11.0.3922</plugin.sonar-maven-plugin.version>
         <release.arguments>-DusePreInstallNpm=${usePreInstallNpm} -Dnpm.path=${npm.path} -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
         </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
         <owasp.nvd-api-key></owasp.nvd-api-key>
     </properties>
 
-
-    <scm>
-        <developerConnection>scm:git:https://ec.europa.eu/digital-building-blocks/code/scm/edelivery/smp.git
-        </developerConnection>
-        <tag>5.1</tag>
-    </scm>
-
     <repositories>
         <repository>
-            <id>central</id>
-            <name>Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <layout>default</layout>
+            <id>Maven repository</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
         <repository>
             <id>harmony-releases</id>
@@ -202,6 +192,17 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${dynamic-discovery-client.version}</version>
             </dependency>
             <dependency>
+                <groupId>eu.europa.ec.edelivery.vault</groupId>
+                <artifactId>edelivery-vault-api</artifactId>
+                <version>${edelivery-vault.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.europa.ec.edelivery.vault</groupId>
+                <artifactId>edelivery-vault-demo</artifactId>
+                <version>${edelivery-vault.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>eu.europa.ec.bdmsl</groupId>
                 <artifactId>bdmsl-api</artifactId>
                 <version>${bdmsl-api.version}</version>
@@ -216,6 +217,7 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
                 <version>${ehcache.version}</version>
+                <classifier>jakarta</classifier>
             </dependency>
 
             <dependency>
@@ -227,6 +229,19 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-ws-security</artifactId>
                 <version>${cxf.version}</version>
+                <exclusions>
+                    <!-- Exclude opensaml-saml-impl it is not needed for DomiSML
+                     and to avoid conflict with jackson binding modules
+                      jackson-datatype-jsr310 in spring-boot-starter-web-->
+                    <exclusion>
+                        <groupId>org.opensaml</groupId>
+                        <artifactId>opensaml-saml-impl</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.opensaml</groupId>
+                        <artifactId>opensaml-xacml-impl</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
@@ -239,29 +254,44 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${cxf.version}</version>
             </dependency>
             <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jakarta.xml.bind-api.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>${org.glassfish.jaxb.jaxb-runtime.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${httpclient.version}</version>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.hibernate.javax.persistence</groupId>
-                <artifactId>hibernate-jpa-2.1-api</artifactId>
-                <version>${hibernate-jpa.version}</version>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>${jakarta.persistence-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.hibernate</groupId>
+                <groupId>org.hibernate.orm</groupId>
                 <artifactId>hibernate-core</artifactId>
                 <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.cache</groupId>
+                <artifactId>cache-api</artifactId>
+                <version>${javax.cache-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jakarta.xml.bind-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -269,9 +299,14 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${hibernate.validator.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.hibernate</groupId>
+                <groupId>org.hibernate.orm</groupId>
                 <artifactId>hibernate-envers</artifactId>
                 <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.tool</groupId>
+                <artifactId>hibernate-tools-orm</artifactId>
+                <version>${hibernate-tools-orm.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -348,12 +383,7 @@ See the Licence for the specific language governing permissions and limitations 
                 <artifactId>spring-security-cas</artifactId>
                 <version>${spring.security.version}</version>
                 <exclusions>
-                    <!-- exclude old org.bouncycastle:bcprov-jdk15on:jar:1.64 to use bcprov-jdk18on
-                     Check if this is needed when upgrading the library! -->
-                    <exclusion>
-                        <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcprov-jdk15on</artifactId>
-                    </exclusion>
+                    <!-- Exclude vulnerable bcpkix-jdk15on and use bcpkix-jdk18on instead -->
                     <exclusion>
                         <groupId>org.bouncycastle</groupId>
                         <artifactId>bcpkix-jdk15on</artifactId>
@@ -361,41 +391,42 @@ See the Licence for the specific language governing permissions and limitations 
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring-boot.version}</version>
-                <!-- exclude them and then manually include the same version! fix for the springboot jackson dependency conflicts
-             (current springboot uses 2.13.4! and maven upgrade just direct dependencies and not transit
-              dependencies with latest version!! )-->
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-annotations</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jsr310</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jdk8</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.module</groupId>
-                        <artifactId>jackson-module-parameter-names</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-resource-server</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+            <!-- Dependant lib of imbus-jose-jwt to validate EdDSA -->
+            <dependency>
+                <groupId>com.google.crypto.tink</groupId>
+                <artifactId>tink</artifactId>
+                <version>${com.google.crypto.tink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-jose</artifactId>
+                <version>${spring.security.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-tomcat</artifactId>
+                <artifactId>spring-boot-starter-logging</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
-            <!-- the upgraded transient dependency of the tomcat -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-jasper</artifactId>
@@ -405,6 +436,11 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-websocket</artifactId>
                 <version>${spring-boot.tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
@@ -438,11 +474,6 @@ See the Licence for the specific language governing permissions and limitations 
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
@@ -465,8 +496,8 @@ See the Licence for the specific language governing permissions and limitations 
 
             <dependency>
                 <groupId>com.sun.mail</groupId>
-                <artifactId>javax.mail</artifactId>
-                <version>${javax.mail.version}</version>
+                <artifactId>jakarta.mail</artifactId>
+                <version>${jakarta.mail.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -495,6 +526,22 @@ See the Licence for the specific language governing permissions and limitations 
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-parameter-names</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jdk8</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml</groupId>
+                <artifactId>classmate</artifactId>
+                <version>${fasterxml.classmate.version}</version>
+                <scope>compile</scope>
+            </dependency>
             <!-- End Jackson-->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -505,13 +552,6 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
                 <version>${commons-fileupload.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-                <version>${javaee-api.version}</version>
-                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.springmodules</groupId>
@@ -547,6 +587,11 @@ See the Licence for the specific language governing permissions and limitations 
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${jakarta.activation-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.servlet</groupId>
@@ -610,7 +655,6 @@ See the Licence for the specific language governing permissions and limitations 
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <pluginManagement>
             <plugins>
@@ -684,6 +728,11 @@ See the Licence for the specific language governing permissions and limitations 
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${plugin.maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -726,38 +775,32 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <systemPropertyVariables>
-                        <!-- build directory for test logging -->
-                        <buildDirectory>${project.build.directory}</buildDirectory>
-                    </systemPropertyVariables>
+                    <skipExec>${skipUT}</skipExec>
                     <!-- make sure methods are  always run in same order -->
                     <runOrder>alphabetical</runOrder>
-                    <argLine>-ea ${argLine}</argLine>
+                    <argLine>${maven.test.argLine} @{argLine}</argLine>
+                    <excludes>
+                        <exclude>**/*IntegrationTest.java</exclude>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <systemPropertyVariables>
-                        <!-- build directory for test logging -->
-                        <buildDirectory>${project.build.directory}</buildDirectory>
-                    </systemPropertyVariables>
-
-                    <!-- ... fool Sonar to show test success for both unit and integration tests together by
-                    instructing Failsafe to store its test reports to the same directory as Surefire instead of
-                    the default failsafe-reports.
-
-                    See https://jira.sonarsource.com/browse/SONAR-7526 -->
-
-                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <skipExec>${skipIT}</skipExec>
+                    <!-- make sure methods are  always run in same order -->
+                    <runOrder>alphabetical</runOrder>
+                    <argLine>${maven.test.argLine} @{argLine}</argLine>
                     <includes>
+                        <include>**/*IntegrationTest.java</include>
                         <include>**/*IT.java</include>
                     </includes>
-                    <runOrder>alphabetical</runOrder>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>default-integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
@@ -769,29 +812,37 @@ See the Licence for the specific language governing permissions and limitations 
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <formats>
+                        <!-- Eclipse uses exec files, SonarQube uses xml reports -->
+                        <format>XML</format>
+                        <format>HTML</format>
+                    </formats>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>prepare-agent</id>
+                        <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>package</phase>
+                        <id>default-prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>jacoco-agent-it</id>
+                        <id>default-report-integration</id>
                         <goals>
-                            <goal>prepare-agent-integration</goal>
+                            <goal>report-integration</goal>
                         </goals>
-                        <configuration>
-                            <destFile>${jacoco.report.it}</destFile>
-                            <propertyName>failsafeArgLine</propertyName>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -819,7 +870,7 @@ See the Licence for the specific language governing permissions and limitations 
                 <!--To update minor versions  mvn versions:update-properties -DallowSnapshots=false -DallowMajorUpdates=false  -->
                 <configuration>
                     <!-- ignore non numeric versions!-->
-                    <ignoredVersions>(?i).*-(alpha|beta|m|rc|published-by-mistake|atlassian-hosted|atlassian)([-.]?\d+)?</ignoredVersions>
+                    <ignoredVersions>(?i).*-(alpha|beta|m|rc|published-by-mistake)([-.]?\d+)?</ignoredVersions>
                 </configuration>
             </plugin>
         </plugins>

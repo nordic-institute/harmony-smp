@@ -16,7 +16,6 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-
 package eu.europa.ec.edelivery.smp.exceptions;
 
 /**

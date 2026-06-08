@@ -19,6 +19,9 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.SMPDatabaseConfig;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +49,10 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
         DomainConfigurationDao.class,
         UserDao.class,
         CredentialDao.class,
-        ConfigurationDao.class}
+        ConfigurationDao.class,
+        SMPExceptionLanguageService.class,
+        SMPLanguageResourceService.class,
+        ConfigurationService.class}
 )
 @DirtiesContext
 @Sql(scripts = {"classpath:cleanup-database.sql",
@@ -56,6 +62,7 @@ public abstract class AbstractBaseDao {
 
     @Autowired
     protected TestUtilsDao testUtilsDao;
+
     public static final String BUILD_FOLDER = "target";
     public static final Path SECURITY_PATH = Paths.get(BUILD_FOLDER, "smp");
     public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpTestDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;";
@@ -63,7 +70,6 @@ public abstract class AbstractBaseDao {
     public static final String DATABASE_PASS = "smp";
     public static final String DATABASE_DRIVER = "org.h2.Driver";
     public static final String DATABASE_DIALECT = "org.hibernate.dialect.H2Dialect";
-
 
     static {
         System.setProperty(JDBC_DRIVER.getProperty(), DATABASE_DRIVER);

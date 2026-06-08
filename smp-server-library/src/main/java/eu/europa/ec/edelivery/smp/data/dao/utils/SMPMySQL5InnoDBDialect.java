@@ -18,9 +18,17 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao.utils;
 
-import org.hibernate.dialect.MySQL5InnoDBDialect;
+import org.hibernate.boot.model.TypeContributions;
+import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType;
+import org.hibernate.type.descriptor.sql.internal.DdlTypeImpl;
+import org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry;
 
 import java.sql.Types;
+
+import static org.hibernate.type.SqlTypes.*;
+import static org.hibernate.type.SqlTypes.CHAR;
 
 /**
  *  Update the MySQL5InnoDBDialect to add CHARSET=utf8 to varchar columns and tables!
@@ -28,18 +36,44 @@ import java.sql.Types;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class SMPMySQL5InnoDBDialect extends MySQL5InnoDBDialect {
+public class SMPMySQL5InnoDBDialect extends MySQLDialect {
+
 
     @Override
-        public String getTableTypeString() {
-            return " ENGINE=InnoDB DEFAULT CHARSET=utf8";
-        }
-
-    @Override
-    protected void registerVarcharTypes() {
-        registerColumnType( Types.VARCHAR, "longtext" );
-        // TO  SET CHARACTER SET utf8 COLLATE utf8_bin
-        registerColumnType( Types.VARCHAR, 65535, "varchar($l)  CHARACTER SET utf8 COLLATE utf8_bin" );
-        registerColumnType( Types.LONGVARCHAR, "longtext" );
+    public String getTableTypeString() {
+        return " ENGINE=InnoDB DEFAULT CHARSET=utf8";
     }
+
+
+    @Override
+    protected void registerColumnTypes(TypeContributions typeContributions, ServiceRegistry serviceRegistry) {
+        super.registerColumnTypes(typeContributions, serviceRegistry);
+
+        final DdlTypeRegistry ddlTypeRegistry = typeContributions.getTypeConfiguration().getDdlTypeRegistry();
+        //ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.VARCHAR, "varchar($l)  CHARACTER SET utf8 COLLATE utf8_bin", this));
+        // this is the default ddl generation for clob
+        ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.CLOB, "longtext", this));
+        ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.LONGVARCHAR, "longtext", this));
+        // this is the default ddl generation for timestamp
+        ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.TIMESTAMP, "datetime", this));
+        ddlTypeRegistry.addDescriptor(new DdlTypeImpl(Types.TIMESTAMP_WITH_TIMEZONE, "datetime", this));
+
+        // this is added for audit table with clob otherwise it will be varchar(255)
+        final CapacityDependentDdlType.Builder varcharBuilder =
+                CapacityDependentDdlType.builder(
+                                VARCHAR,
+                                CapacityDependentDdlType.LobKind.BIGGEST_LOB,
+                                columnType(CLOB),
+                                columnType(CHAR),
+                                castType(CHAR),
+                                this
+                        )
+                        .withTypeCapacity(getMaxVarcharLength(), "varchar($l)  CHARACTER SET utf8 COLLATE utf8_bin")
+                        .withTypeCapacity(Integer.MAX_VALUE, "longtext");
+        ddlTypeRegistry.addDescriptor(varcharBuilder.build());
+
+
+    }
+
+
 }

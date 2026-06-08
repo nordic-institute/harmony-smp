@@ -28,27 +28,28 @@ import eu.europa.ec.edelivery.smp.data.ui.CredentialRequestResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.CredentialResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_USER;
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
 /**
@@ -73,15 +74,17 @@ public class AuthenticationController {
 
     private final CsrfTokenRepository csrfTokenRepository;
 
-    SMPCookieWriter smpCookieWriter;
+    private final SMPCookieWriter smpCookieWriter;
+
+    private final SecurityContextRepository securityContextRepository =
+            new HttpSessionSecurityContextRepository();
 
     @Autowired
-    public AuthenticationController(SMPAuthenticationService authenticationService
-            , SMPAuthorizationService authorizationService
-            , ConfigurationService configurationService
-            , SMPCookieWriter smpCookieWriter
-            , CsrfTokenRepository csrfTokenRepository
-            , UIUserService uiUserService) {
+    public AuthenticationController(SMPAuthenticationService authenticationService,
+                                    SMPAuthorizationService authorizationService,
+                                    ConfigurationService configurationService,
+                                    SMPCookieWriter smpCookieWriter,
+                                    CsrfTokenRepository csrfTokenRepository) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.configurationService = configurationService;
@@ -102,6 +105,11 @@ public class AuthenticationController {
                 loginRO.getPassword());
         SMPUserDetails user = authentication.getUserDetails();
 
+        SecurityContext securityContext = SecurityContextHolder.getContextHolderStrategy().createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        this.securityContextRepository.saveContext(securityContext, request, response);
+
         return authorizationService.getUserData(user.getUser(), authentication.getAuthorities());
     }
 
@@ -109,8 +117,10 @@ public class AuthenticationController {
      * Request reset of the credentials. The method generates a reset token and sends an email to the user.
      *
      * @param requestResetRO - the request object containing the credential name and type
+     * @throws SMPRuntimeException in case of invalid credential type
      */
     @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL_REQUEST)
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     public void requestResetCredentials(@RequestBody CredentialRequestResetRO requestResetRO) {
         LOG.debug("credentialRequestResetRO  [{}]", requestResetRO.getCredentialName());
         if (requestResetRO.getCredentialType() == CredentialType.USERNAME_PASSWORD) {
@@ -118,7 +128,7 @@ public class AuthenticationController {
         } else {
             LOG.warn("Invalid or null credential type [{}] not supported for reset!",
                     requestResetRO.getCredentialType());
-            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GENERIC);
 
         }
     }
@@ -127,6 +137,7 @@ public class AuthenticationController {
      * Reset the credentials. The method validates the reset token and updates the credentials.
      *
      * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
+     * @throws SMPRuntimeException in case of invalid/incomplete request
      */
     @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL)
     public void resetCredentials(@RequestBody CredentialResetRO resetRO) {
@@ -137,7 +148,7 @@ public class AuthenticationController {
                 || StringUtils.isBlank(resetRO.getCredentialName())
                 || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
             LOG.warn("Invalid or incomplete reset token!");
-            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GENERIC);
         }
         authenticationService.resetUsernamePassword(resetRO.getCredentialName(),
                 resetRO.getResetToken(),
@@ -152,14 +163,14 @@ public class AuthenticationController {
      * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
      *                Return 200 if token is valid, 401 if token is invalid
      */
-    @PostMapping(value = ResourceConstants.PATH_ACTION_VALIDATE_RESET_TOKEN)
+    @PostMapping(value = ResourceConstants.PATH_ACTION_VALIDATE_RESET_CREDENTIALS)
     public void validateResetToken(@RequestBody CredentialResetRO resetRO) {
         LOG.debug("validateResetToken [{}]", resetRO);
         if (resetRO == null
                 || StringUtils.isBlank(resetRO.getResetToken())
                 || resetRO.getCredentialType() != CredentialType.USERNAME_PASSWORD) {
             LOG.warn("Invalid or null reset token or invalid reset token type!");
-            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST_NO_DETAILS.getMessage());
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_GENERIC);
         }
 
         authenticationService.validateUsernamePasswordResetToken(resetRO.getResetToken());
@@ -187,17 +198,19 @@ public class AuthenticationController {
     }
 
     @GetMapping(value = "user")
-    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_USER})
+    @PreAuthorize("@smpAuthorizationService.isSMPUserMatchingAnyAuthority(" +
+            "T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SYSTEM_ADMIN," +
+            "T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_USER)")
     public UserRO getUser() {
         return authorizationService.getLoggedUserData();
     }
 
 
     /**
-     * set cookie parameters https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+     * set cookie parameters <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie">...</a>
      *
-     * @param request
-     * @param response
+     * @param request  - the HTTP request containing the session
+     * @param response - the HTTP response to which the session cookie will be written
      */
     public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
         // recreate session id  (first make sure it exists)

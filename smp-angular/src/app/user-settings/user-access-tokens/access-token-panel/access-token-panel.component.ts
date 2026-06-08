@@ -26,9 +26,10 @@ export function notBeforeCurrentDateValidator(): ValidatorFn {
 
 
 @Component({
-  selector: 'access-token-panel',
-  templateUrl: './access-token-panel.component.html',
-  styleUrls: ['./access-token-panel.component.scss']
+    selector: 'access-token-panel',
+    templateUrl: './access-token-panel.component.html',
+    styleUrls: ['./access-token-panel.component.scss'],
+    standalone: false
 })
 export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 

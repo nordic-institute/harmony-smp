@@ -15,8 +15,9 @@ import {MembershipService} from "../../services/membership.service";
 
 
 @Component({
-  templateUrl: './manage-members-dialog.component.html',
-  styleUrls: ['./manage-members-dialog.component.css']
+    templateUrl: './manage-members-dialog.component.html',
+    styleUrls: ['./manage-members-dialog.component.css'],
+    standalone: false
 })
 export class ManageMembersDialogComponent implements OnInit {
 

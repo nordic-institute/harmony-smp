@@ -29,9 +29,10 @@ import {firstValueFrom, lastValueFrom} from "rxjs";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'property-details-dialog',
-  templateUrl: './property-details-dialog.component.html',
-  styleUrls: ['./property-details-dialog.component.css']
+    selector: 'property-details-dialog',
+    templateUrl: './property-details-dialog.component.html',
+    styleUrls: ['./property-details-dialog.component.css'],
+    standalone: false
 })
 export class PropertyDetailsDialogComponent implements OnInit {
 

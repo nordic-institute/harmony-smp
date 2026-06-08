@@ -45,6 +45,13 @@
   min-height: 100px;
 }
 
+.smp-table-filter-container {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5em;
+}
 .smp-table-filter {
   width: 100%;
   padding-top: 1em;
@@ -52,6 +59,10 @@
 
 .smp-table-header-row{
   min-height: 36px;
+}
+
+.smp-table-detail-row {
+  height: unset;
 }
 
 

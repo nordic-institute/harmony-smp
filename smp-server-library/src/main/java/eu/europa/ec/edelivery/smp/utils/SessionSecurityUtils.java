@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,7 +20,6 @@ package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
-import eu.europa.ec.edelivery.smp.auth.SMPCertificateAuthentication;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -28,7 +27,9 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -55,8 +56,8 @@ public class SessionSecurityUtils {
     protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(
             UILoginAuthenticationToken.class,
             CasAuthenticationToken.class,
-            SMPAuthenticationToken.class,
-            SMPCertificateAuthentication.class);
+            JwtAuthenticationToken.class,
+            SMPAuthenticationToken.class);
 
     /**
      * SMP uses entity ids type long. Because the keys are sequence keys, SMP encrypts ids for the User.
@@ -74,7 +75,7 @@ public class SessionSecurityUtils {
             return idValue;
         }
         String valWithSeed = idValue + '#' + Calendar.getInstance().getTimeInMillis();
-        return SecurityUtils.encryptURLSafe(secret, valWithSeed);
+        return SecurityUtils.encryptToBase64URLSafe(secret, valWithSeed);
     }
 
 
@@ -87,9 +88,10 @@ public class SessionSecurityUtils {
             // try to convert to long value
             return Long.valueOf(id);
         }
-        String decVal = SecurityUtils.decryptUrlSafe(secret, id);
-        int indexOfSeparator = decVal.indexOf('#');
-        String value = indexOfSeparator > -1 ? decVal.substring(0, indexOfSeparator) : decVal;
+        byte[] decVal = SecurityUtils.decryptBase64UrlSafe(secret, id);
+        String decValStr = new String(decVal, Charset.defaultCharset());
+        int indexOfSeparator = decValStr.indexOf('#');
+        String value = indexOfSeparator > -1 ? decValStr.substring(0, indexOfSeparator) : decValStr;
         return Long.valueOf(value);
     }
 
@@ -113,6 +115,15 @@ public class SessionSecurityUtils {
         return null;
     }
 
+    public static Object getSessionAuthenticationPrincipal() {
+        Authentication authentication = getSessionAuthentication();
+        if (authentication == null) {
+            LOG.warn("No active SMP session Authentication!");
+            return null;
+        }
+        return authentication.getPrincipal();
+    }
+
     public static SMPUserDetails getSessionUserDetails() {
 
         Authentication authentication = getSessionAuthentication();
@@ -134,6 +145,10 @@ public class SessionSecurityUtils {
         if (authentication instanceof CasAuthenticationToken) {
             LOG.debug("Return session secret from CasAuthenticationToken");
             return (SMPUserDetails) ((CasAuthenticationToken) authentication).getUserDetails();
+        }
+
+        if (authentication instanceof JwtAuthenticationToken) {
+            return (SMPUserDetails) authentication.getDetails();
         }
 
         LOG.warn("Authentication class [{}] is not session enabled class types: [{}]!", authentication.getClass(),

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceFilterOptionsResult;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceSearchService;
@@ -33,8 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -64,25 +65,23 @@ public class SearchResource {
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
             @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = PARAM_QUERY_PARTC_ID, required = false) String participantIdentifier,
-            @RequestParam(value = PARAM_QUERY_PARTC_SCHEME, required = false) String participantScheme,
-            @RequestParam(value = PARAM_QUERY_DOMAIN_CODE, required = false) String domainCode,
+            @RequestParam(value = PARAM_QUERY_PARTC_ID, required = false) @Filter String participantIdentifier,
+            @RequestParam(value = PARAM_QUERY_PARTC_SCHEME, required = false) @Filter String participantScheme,
+            @RequestParam(value = PARAM_QUERY_DOMAIN_CODE, required = false) @Filter String domainCode,
             @RequestParam(value = PARAM_QUERY_DOCUMENT_TYPE, required = false) String documentType) {
 
-        String participantIdentifierDecoded = decodeUrlToUTF8(participantIdentifier);
-        String participantSchemeDecoded = decodeUrlToUTF8(participantScheme);
-        String domainCodeDecoded = decodeUrlToUTF8(domainCode);
-        String documentTypeDecoded = decodeUrlToUTF8(documentType);
 
-        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain: {}, document type: {}", page, pageSize, participantIdentifierDecoded,
-                participantSchemeDecoded, domainCodeDecoded, documentTypeDecoded);
+        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain: {}, document type: {}", page, pageSize, participantIdentifier,
+                participantScheme, domainCode, documentType);
 
         ResourceFilter sgf = new ResourceFilter();
-        sgf.setIdentifierValueLike(participantIdentifierDecoded);
-        sgf.setIdentifierSchemeLike(participantSchemeDecoded);
+        sgf.setIdentifierValueLike(participantIdentifier);
+        sgf.setIdentifierSchemeLike(participantScheme);
         // add domain search parameter
-        sgf.setDomain(domainDao.validateDomainCode(domainCodeDecoded));
-        sgf.setDocumentType(documentTypeDecoded);
+        sgf.setDomain(domainDao.validateDomainCode(domainCode));
+        if (StringUtils.isNotBlank(documentType)) {
+            sgf.setDocumentType(URLDecoder.decode(documentType, StandardCharsets.UTF_8));
+        }
 
         return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
     }
@@ -90,17 +89,5 @@ public class SearchResource {
     @GetMapping(path = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT_METADATA)
     public ResourceFilterOptionsResult serviceMetadataResultList() {
         return uiServiceGroupService.getResourceMetadata();
-    }
-
-    private String decodeUrlToUTF8(String value) {
-        if (StringUtils.isBlank(value)) {
-            return null;
-        }
-        try {
-            return URLDecoder.decode(value, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            LOG.error("Unsupported UTF-8 encoding while converting: " + value, ex);
-        }
-        return value;
     }
 }

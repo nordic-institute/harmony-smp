@@ -26,7 +26,8 @@ import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.SMPParticipantIdentifier;
 import eu.europa.ec.edelivery.smp.data.ui.DNSQueryRO;
 import eu.europa.ec.edelivery.smp.data.ui.DNSQueryRequestRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -105,17 +106,12 @@ public class UIDynamicDiscoveryTools {
                                       DefaultBDXRLocator bdxrLocator,
                                       DNSLookupType dnsLookupType) {
 
-        String dnsQuery;
-        switch (dnsLookupType) {
-            case CNAME:
-                dnsQuery = bdxrLocator.buildCNameDNSQuery(resourceIdentifier, domain);
-                break;
-            case NAPTR:
-                dnsQuery = bdxrLocator.buildNaptrDNSQuery(resourceIdentifier, domain);
-                break;
-            default:
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DNS Lookup", "Unknown DNS lookup type: " + dnsLookupType);
-        }
+        String dnsQuery = switch (dnsLookupType) {
+            case CNAME -> bdxrLocator.buildCNameDNSQuery(resourceIdentifier, domain);
+            case NAPTR -> bdxrLocator.buildNaptrDNSQuery(resourceIdentifier, domain);
+            default -> throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_DNS_LOOKUP_UNKNOWN)
+                    .addParam(ErrorMessageArgument.DNS_LOOKUP_TYPE, dnsLookupType);
+        };
 
         DNSQueryRO dnsQueryRO = new DNSQueryRO(dnsQuery,
                 dnsLookupType);

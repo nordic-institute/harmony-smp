@@ -18,8 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.ui.external;
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
@@ -34,11 +34,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.getSessionUserDetails;
 import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntityId;
 
 /**
@@ -53,25 +53,24 @@ public class UserController {
     private final UIUserService uiUserService;
     private final UIAlertService uiAlertService;
     private final SMPAuthorizationService authorizationService;
-    private final SMPAuthenticationService authenticationService;
 
-    public UserController(UIUserService uiUserService, SMPAuthorizationService authorizationService, SMPAuthenticationService authenticationService, UIAlertService uiAlertService) {
+    public UserController(UIUserService uiUserService, SMPAuthorizationService authorizationService, UIAlertService uiAlertService) {
         this.uiUserService = uiUserService;
         this.authorizationService = authorizationService;
-        this.authenticationService = authenticationService;
         this.uiAlertService = uiAlertService;
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(path = "/{user-id}/change-password", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public boolean changePassword(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
+    public boolean changePassword(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
+        SMPUserDetails currentUserDetails = getSessionUserDetails();
         // when user changing password the current password must be verified even if cas authenticated
         DBUser result = uiUserService.updateUserPassword(entityId, entityId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
-        if (result != null) {
-            LOG.info("Password successfully changed. Logout the user, to be able to login with the new password!");
-            authenticationService.logout(request, response);
+        if (result != null && currentUserDetails != null) {
+            authorizationService.refreshSessionCredentialChangedOn(currentUserDetails);
+            request.changeSessionId();
         }
         return result != null;
     }

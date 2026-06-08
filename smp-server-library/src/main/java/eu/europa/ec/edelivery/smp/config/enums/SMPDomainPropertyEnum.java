@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
  */
 public enum SMPDomainPropertyEnum {
 
-
     RESOURCE_SCH_VALIDATION_REGEXP(SMPPropertyEnum.RESOURCE_SCH_VALIDATION_REGEXP, false),
     RESOURCE_SCH_REGEXP_MSG(SMPPropertyEnum.RESOURCE_SCH_REGEXP_MSG, false),
     RESOURCE_SCH_MANDATORY(SMPPropertyEnum.RESOURCE_SCH_MANDATORY, false),
@@ -42,6 +41,20 @@ public enum SMPDomainPropertyEnum {
     RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME(SMPPropertyEnum.RESOURCE_IDENTIFIER_TMPL_CONCATENATE_NULL_SCHEME, false),
     RESOURCE_CASE_SENSITIVE_SCHEMES(SMPPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES, false),
     SUBRESOURCE_CASE_SENSITIVE_SCHEMES(SMPPropertyEnum.SUBRESOURCE_CASE_SENSITIVE_SCHEMES, false),
+
+    AUTOMATION_AUTHENTICATION_TYPES(SMPPropertyEnum.AUTOMATION_AUTHENTICATION_TYPES, false),
+   /* Temporarily disabled for release DomiSMP 5.2 RC: see the ticket #EDELIVERY-12744
+    TRUSTSTORE_TYPE(SMPPropertyEnum.TRUSTSTORE_TYPE, true),
+    TRUSTSTORE_PASSWORD(SMPPropertyEnum.TRUSTSTORE_PASSWORD, true),
+    CERTIFICATE_ALLOWED_CERT_POLICY_OIDS(SMPPropertyEnum.CERTIFICATE_ALLOWED_CERT_POLICY_OIDS, false),
+    CERTIFICATE_SUBJECT_REGULAR_EXPRESSION(SMPPropertyEnum.CERTIFICATE_SUBJECT_REGULAR_EXPRESSION, false),
+    CERTIFICATE_ALLOWED_KEY_TYPES(SMPPropertyEnum.CERTIFICATE_ALLOWED_KEY_TYPES, false),
+    CERTIFICATE_CRL_FORCE(SMPPropertyEnum.CERTIFICATE_CRL_FORCE, false),
+*/
+    SML_URL(SMPPropertyEnum.SML_URL, true),
+    SML_LOGICAL_ADDRESS(SMPPropertyEnum.SML_LOGICAL_ADDRESS, true),
+    SML_PHYSICAL_ADDRESS(SMPPropertyEnum.SML_PHYSICAL_ADDRESS, true),
+    SML_CUSTOM_NAPTR_SERVICE_PARAMS(SMPPropertyEnum.SML_CUSTOM_NAPTR_SERVICE_PARAMS, true),
     ;
     // System equivalent property
     private final SMPPropertyEnum propertyEnum;
@@ -57,10 +70,6 @@ public enum SMPDomainPropertyEnum {
 
     public boolean isSystemAdminOnly() {
         return systemAdminOnly;
-    }
-
-    public boolean isNotSystemAdminOnly() {
-        return !systemAdminOnly;
     }
 
     public String getProperty() {
@@ -89,10 +98,6 @@ public enum SMPDomainPropertyEnum {
 
     public Pattern getValuePattern() {
         return propertyEnum.getValuePattern();
-    }
-
-    public String getErrorValueMessage() {
-        return propertyEnum.getErrorValueMessage();
     }
 
     public SMPPropertyEnum getPropertyEnum() {

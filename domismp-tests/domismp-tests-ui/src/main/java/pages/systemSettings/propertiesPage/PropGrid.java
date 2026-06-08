@@ -1,12 +1,12 @@
 package pages.systemSettings.propertiesPage;
 
-import ddsl.dcomponents.Grid.BasicGrid;
+import ddsl.dcomponents.Grid.MatBasicGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 /**
  * This class is used to map Property grid component.
  */
-public class PropGrid extends BasicGrid {
+public class PropGrid extends MatBasicGrid {
     public PropGrid(WebDriver driver, WebElement container) {
         super(driver, container);
     }

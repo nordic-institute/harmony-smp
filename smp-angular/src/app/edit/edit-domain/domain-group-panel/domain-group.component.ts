@@ -34,15 +34,15 @@ import {
 } from "../../edit-resources/edit-resource.controller";
 
 @Component({
-  selector: 'domain-group-panel',
-  templateUrl: './domain-group.component.html',
-  styleUrls: ['./domain-group.component.scss']
+    selector: 'domain-group-panel',
+    templateUrl: './domain-group.component.html',
+    styleUrls: ['./domain-group.component.scss'],
+    standalone: false
 })
 export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
 
 
   private _domain: DomainRo;
-  private _domainResourceDefinitions: ResourceDefinitionRo[];
   title: string = ""
 
   filter: any = {};
@@ -104,15 +104,6 @@ export class DomainGroupComponent implements OnInit, BeforeLeaveGuard {
         this.isLoadingResults = false;
       }
     })();
-  }
-
-  get domainResourceDefinitions(): ResourceDefinitionRo[] {
-    // no changes for the domain data
-    return this._domainResourceDefinitions;
-  }
-
-  @Input() set domainResourceDefinitions(value: ResourceDefinitionRo[]) {
-    this._domainResourceDefinitions = value;
   }
 
   public refresh() {

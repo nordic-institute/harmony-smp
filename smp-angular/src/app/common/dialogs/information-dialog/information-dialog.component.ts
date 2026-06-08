@@ -2,7 +2,9 @@ import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
-  templateUrl: './information-dialog.component.html'})
+    templateUrl: './information-dialog.component.html',
+    standalone: false
+})
 export class InformationDialogComponent {
 
   title: string;

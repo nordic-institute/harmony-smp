@@ -11,8 +11,9 @@ import {UserService} from "../../common/services/user.service";
 
 
 @Component({
-  templateUrl: './user-alerts.component.html',
-  styleUrls: ['./user-alerts.component.scss']
+    templateUrl: './user-alerts.component.html',
+    styleUrls: ['./user-alerts.component.scss'],
+    standalone: false
 })
 export class UserAlertsComponent implements OnInit, OnDestroy, BeforeLeaveGuard {
 

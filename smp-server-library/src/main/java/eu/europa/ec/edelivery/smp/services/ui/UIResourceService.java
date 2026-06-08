@@ -25,24 +25,29 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
+import eu.europa.ec.edelivery.smp.data.model.doc.*;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.DocumentReferenceInfoRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageArgument;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorMessageType;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.mail.DocumentMailService;
+import eu.europa.ec.edelivery.smp.services.mail.prop.MailDocumentActionType;
 import eu.europa.ec.edelivery.smp.services.resource.DocumentVersionService;
+import eu.europa.ec.edelivery.smp.utils.LocaleUtils;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -52,7 +57,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
@@ -63,15 +68,8 @@ import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 @Service
 public class UIResourceService {
-    private static final String ACTION_RESOURCE_LIST = "GetResourceListForGroup";
-    private static final String ACTION_RESOURCE_CREATE = "CreateResourceForGroup";
-    private static final String ACTION_RESOURCE_DELETE = "DeleteResourceFromGroup";
-    private static final String ACTION_RESOURCE_UPDATE = "UpdateResource";
-
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIResourceService.class);
-    public static final String GROUP_DOES_NOT_EXIST = "Group does not exist!";
-    public static final String GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN = "Group does not belong to the given domain!";
-
+    private static final Pattern FORBIDDEN_CHARS_PATTERN = Pattern.compile("[\\p{Cntrl}<>\"'`&]");
 
     private final ResourceDao resourceDao;
 
@@ -86,7 +84,8 @@ public class UIResourceService {
     private final SMLIntegrationService smlIntegrationService;
     private final UIDocumentService uiDocumentService;
     private final DocumentVersionService documentVersionService;
-
+    private final DocumentMailService documentMailService;
+    private final SMPExceptionLanguageService smpExceptionLanguageService;
 
     public UIResourceService(ResourceDao resourceDao,
                              ResourceMemberDao resourceMemberDao,
@@ -96,7 +95,10 @@ public class UIResourceService {
                              IdentifierService identifierService,
                              ConversionService conversionService,
                              SMLIntegrationService smlIntegrationService,
-                             UIDocumentService uiDocumentService, DocumentVersionService documentVersionService) {
+                             UIDocumentService uiDocumentService,
+                             DocumentVersionService documentVersionService,
+                             DocumentMailService documentMailService,
+                             SMPExceptionLanguageService smpExceptionLanguageService) {
         this.resourceDao = resourceDao;
         this.resourceMemberDao = resourceMemberDao;
         this.resourceDefDao = resourceDefDao;
@@ -109,6 +111,8 @@ public class UIResourceService {
         this.smlIntegrationService = smlIntegrationService;
         this.uiDocumentService = uiDocumentService;
         this.documentVersionService = documentVersionService;
+        this.documentMailService = documentMailService;
+        this.smpExceptionLanguageService = smpExceptionLanguageService;
     }
 
 
@@ -117,7 +121,7 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, GROUP_DOES_NOT_EXIST);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_LIST_GROUP_NOT_EXISTS);
         }
 
         DBResourceFilter filter = DBResourceFilter.createBuilder()
@@ -136,7 +140,9 @@ public class UIResourceService {
         }
         result.setCount(count);
         List<DBResource> resources = resourceDao.getResourcesForFilter(page, pageSize, filter);
-        List<ResourceRO> resourceROS = resources.stream().map(resource -> conversionService.convert(resource, ResourceRO.class)).collect(Collectors.toList());
+        List<ResourceRO> resourceROS = resources.stream()
+                .map(this::convertResourceWithReferenceData)
+                .toList();
         resourceDao.getResourcesForFilter(page, pageSize, filter);
         result.getServiceEntities().addAll(resourceROS);
         return result;
@@ -148,11 +154,11 @@ public class UIResourceService {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, GROUP_DOES_NOT_EXIST);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_LIST_GROUP_NOT_EXISTS);
         }
         DBUser user = userDao.find(userId);
         if (user == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_LIST, "User does not exist!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_LIST_USER_NOT_EXISTS);
         }
 
         DBResourceFilter filter = DBResourceFilter.createBuilder()
@@ -173,8 +179,9 @@ public class UIResourceService {
         }
         result.setCount(count);
         List<DBResource> resources = resourceDao.getResourcesForFilter(page, pageSize, filter);
-        List<ResourceRO> resourceROS = resources.stream().map(resource -> conversionService.convert(resource, ResourceRO.class)).collect(Collectors.toList());
-        resourceDao.getResourcesForFilter(page, pageSize, filter);
+        List<ResourceRO> resourceROS = resources.stream()
+                .map(this::convertResourceWithReferenceData)
+                .toList();
         result.getServiceEntities().addAll(resourceROS);
         return result;
     }
@@ -183,13 +190,13 @@ public class UIResourceService {
     public ResourceRO deleteResourceFromGroup(Long resourceId, Long groupId, Long domainId) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Resource does not exist!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_REMOVE_RESOURCE_NOT_EXISTS);
         }
         if (!Objects.equals(resource.getGroup().getId(), groupId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Resource does not belong to the group!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_REMOVE_RESOURCE_NOT_PART_OF_GROUP);
         }
         if (!Objects.equals(resource.getGroup().getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_REMOVE_GROUP_NOT_PART_OF_DOMAIN);
         }
         DBDomain resourceDomain = resource.getGroup().getDomain();
         if (smlIntegrationService.isSMLIntegrationEnabled() &&
@@ -200,31 +207,39 @@ public class UIResourceService {
         // remove all documents where resource is used as reference
         documentDao.unlinkDocument(resource.getDocument());
 
+        List<DBUser> resourceAdmins = userDao.getResourceAdminUsers(resource);
         resourceDao.remove(resource);
+        documentMailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.DELETED,
+                resource.getDocument().getCurrentVersion(),
+                resource.getDocument().getName(), SessionSecurityUtils.getSessionUserDetails(), resourceAdmins);
         return conversionService.convert(resource, ResourceRO.class);
     }
 
     @Transactional
     public ResourceRO createResourceForGroup(ResourceRO resourceRO, Long groupId, Long domainId, Long userId) {
 
+        validateResourceIdentifierValue(resourceRO);
+
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, GROUP_DOES_NOT_EXIST);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_GROUP_NOT_EXISTS);
         }
 
         DBDomain domain = group.getDomain();
         if (!Objects.equals(domain.getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_GROUP_NOT_PART_OF_DOMAIN);
         }
 
         Optional<DBResourceDef> optRedef = resourceDefDao.getResourceDefByIdentifier(resourceRO.getResourceTypeIdentifier());
-        if (!optRedef.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] does not exist!");
+        if (optRedef.isEmpty()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_RESOURCE_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceRO.getResourceTypeIdentifier());
         }
 
         Optional<DBDomainResourceDef> optDoredef = domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(group.getDomain(), optRedef.get());
-        if (!optDoredef.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] is not registered for domain!");
+        if (optDoredef.isEmpty()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_RESOURCE_NOT_PART_OF_DOMAIN)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceRO.getResourceTypeIdentifier());
         }
         Identifier resourceIdentifier = identifierService.normalizeParticipant(
                 domain.getDomainCode(),
@@ -238,7 +253,9 @@ public class UIResourceService {
                 group.getDomain(),
                 isResourceIdentifierCaseSensitive);
         if (existResource.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_RESOURCE_ALREADY_EXISTS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceRO.getIdentifierValue())
+                    .addParam(ErrorMessageArgument.SCHEME, resourceRO.getIdentifierScheme());
         }
 
         DBResource resource = new DBResource();
@@ -267,38 +284,62 @@ public class UIResourceService {
             smlIntegrationService.registerParticipant(resource, resourceDomain);
         }
 
+        documentMailService.sendDocumentActionNotification(resource, null, MailDocumentActionType.CREATED,
+                document.getCurrentVersion(),
+                document.getName(), SessionSecurityUtils.getSessionUserDetails());
+
         return conversionService.convert(resource, ResourceRO.class);
+    }
+
+    /**
+     * Validates the resource identifier value by rejecting characters that are not allowed.
+     */
+    private void validateResourceIdentifierValue(ResourceRO resourceRO) {
+        if (resourceRO == null) {
+            return;
+        }
+        String identifierValue = resourceRO.getIdentifierValue();
+        if (identifierValue == null) {
+            return;
+        }
+
+        if (FORBIDDEN_CHARS_PATTERN.matcher(identifierValue).find()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_CREATE_IDENTIFIER_VALUE_INVALID_CHARACTERS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, identifierValue);
+        }
     }
 
     /**
      * Method allows Group admin and Resource admin to change resource visibility and enable/disable review flow.
      *
-     * @param resourceRO
-     * @param resourceId
-     * @param groupId
-     * @param domainId
-     * @return
+     * @param resourceRO input resource data to update
+     * @param resourceId resource id to update
+     * @param groupId    group id of the resource
+     * @param domainId   domain id of the group
+     * @return updated resource RO
      */
     @Transactional
     public ResourceRO updateResourceForGroup(ResourceRO resourceRO, Long resourceId, Long groupId, Long domainId) {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, GROUP_DOES_NOT_EXIST);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_UPDATE_GROUP_NOT_EXISTS);
         }
 
         if (!Objects.equals(group.getDomain().getId(), domainId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, GROUP_DOES_NOT_BELONG_TO_THE_GIVEN_DOMAIN);
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_UPDATE_GROUP_NOT_PART_OF_DOMAIN);
         }
 
         Optional<DBResourceDef> optRedef = resourceDefDao.getResourceDefByIdentifier(resourceRO.getResourceTypeIdentifier());
-        if (!optRedef.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] does not exist!");
+        if (optRedef.isEmpty()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_UPDATE_GROUP_RESOURCE_NOT_EXISTS)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceRO.getResourceTypeIdentifier());
         }
 
         Optional<DBDomainResourceDef> optDoredef = domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(group.getDomain(), optRedef.get());
-        if (!optDoredef.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_UPDATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] is not registered for domain!");
+        if (optDoredef.isEmpty()) {
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_UPDATE_GROUP_RESOURCE_NOT_PART_OF_DOMAIN)
+                    .addParam(ErrorMessageArgument.IDENTIFIER, resourceRO.getResourceTypeIdentifier());
         }
 
         // at the moment only visibility and review enabled
@@ -320,8 +361,8 @@ public class UIResourceService {
             }
             resource.setReviewEnabled(isTrue(resourceRO.isReviewEnabled()));
         }
-        ResourceRO resourceROResult = conversionService.convert(resource, ResourceRO.class);
-        if (StringUtils.isNotBlank(resourceRO.getResourceId())) {
+        ResourceRO resourceROResult = convertResourceWithReferenceData(resource);
+        if (StringUtils.isNotBlank(resourceRO.getResourceId()) && resourceROResult != null) {
             // return the same encrypted id so the UI can use update old resource
             resourceROResult.setResourceId(resourceRO.getResourceId());
         }
@@ -332,7 +373,9 @@ public class UIResourceService {
     public ServiceResult<MemberRO> getResourceMembers(Long resourceId, Long groupId, int page, int pageSize,
                                                       String filter) {
 
-        validateGroupAndResource(resourceId, groupId, "GetResourceMembers");
+        validateGroupAndResource(resourceId, groupId,
+                ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_GET_MEMBERS_RESOURCE_NOT_EXISTS,
+                ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_GET_MEMBERS_GROUP_NOT_PART_OF_DOMAIN);
         Long count = resourceMemberDao.getResourceMemberCount(resourceId, filter);
         ServiceResult<MemberRO> result = new ServiceResult<>();
         result.setPage(page);
@@ -343,7 +386,7 @@ public class UIResourceService {
         }
         result.setCount(count);
         List<DBResourceMember> memberROS = resourceMemberDao.getResourceMembers(resourceId, page, pageSize, filter);
-        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).collect(Collectors.toList());
+        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).toList();
 
         result.getServiceEntities().addAll(memberList);
         return result;
@@ -361,10 +404,13 @@ public class UIResourceService {
     @Transactional
     public MemberRO addUpdateMemberToResource(Long resourceId, Long groupId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to resource [{}]", memberRO.getUsername(), resourceId);
-        validateGroupAndResource(resourceId, groupId, "AddMemberToResource");
+        validateGroupAndResource(resourceId, groupId,
+                ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_ADD_MEMBER_RESOURCE_NOT_EXISTS,
+                ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_ADD_MEMBER_GROUP_NOT_PART_OF_DOMAIN);
 
         DBUser user = userDao.findUserByUsername(memberRO.getUsername())
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User [" + memberRO.getUsername() + "] does not exists!"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_ADD_USER_NOT_EXISTS)
+                        .addParam(ErrorMessageArgument.USERNAME, memberRO.getUsername()));
 
         DBResourceMember member;
         if (memberId != null) {
@@ -374,7 +420,8 @@ public class UIResourceService {
         } else {
             DBResource resource = resourceDao.find(resourceId);
             if (resourceMemberDao.isUserResourceMember(user, resource)) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add membership", "User [" + memberRO.getUsername() + "] is already a member!");
+                throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_ADD_USER_ALREADY_MEMBER)
+                        .addParam(ErrorMessageArgument.USERNAME, memberRO.getUsername());
             }
             member = resourceMemberDao.addMemberToResource(resource, user,
                     memberRO.getRoleType(),
@@ -387,28 +434,29 @@ public class UIResourceService {
     @Transactional
     public MemberRO deleteMemberFromResource(Long resourceId, Long groupId, Long memberId) {
         LOG.info("Delete member [{}] from resource [{}]", memberId, resourceId);
-        validateGroupAndResource(resourceId, groupId, "DeleteMemberFromResource");
+        validateGroupAndResource(resourceId, groupId,
+                ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_REMOVE_MEMBER_RESOURCE_NOT_EXISTS,
+                ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_REMOVE_MEMBER_GROUP_NOT_PART_OF_DOMAIN);
         DBResourceMember resourceMember = resourceMemberDao.find(memberId);
         if (resourceMember == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not exists!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_REMOVE_USER_NOT_MEMBER);
         }
         if (!Objects.equals(resourceMember.getResource().getId(), resourceId)) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not belong to resource!");
+            throw new SMPRuntimeException(ErrorMessageType.INVALID_REQUEST_RESOURCE_MEMBERSHIP_REMOVE_USER_NOT_PART_OF_RESOURCE);
         }
 
         resourceMemberDao.remove(resourceMember);
         return conversionService.convert(resourceMember, MemberRO.class);
     }
 
-    public DBResource validateGroupAndResource(Long resourceId, Long groupId, String action) {
+    public void validateGroupAndResource(Long resourceId, Long groupId, ErrorMessageType nonexistentResourceTranslationMessageCode, ErrorMessageType groupNotPartOfDomainTranslationMessageCode) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Resource does not exists!");
+            throw new SMPRuntimeException(nonexistentResourceTranslationMessageCode);
         }
         if (!Objects.equals(groupId, resource.getGroup().getId())) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Group does not belong to given domain!");
+            throw new SMPRuntimeException(groupNotPartOfDomainTranslationMessageCode);
         }
-        return resource;
     }
 
     /**
@@ -437,5 +485,26 @@ public class UIResourceService {
         uiDocumentService.generateDocumentForResource(resource, baos);
         version.setContent(baos.toByteArray());
         return document;
+    }
+
+    private ResourceRO convertResourceWithReferenceData(DBResource resource) {
+        ResourceRO resourceRO = conversionService.convert(resource, ResourceRO.class);
+        DBDocumentReferenceData docRefData = resourceDao.getDocumentReferenceData(resource);
+        if (docRefData != null && resourceRO != null) {
+            DocumentReferenceInfoRO docRefInfo = new DocumentReferenceInfoRO();
+            docRefInfo.setReferencedByCount(docRefData.getReferencedByCount());
+            docRefInfo.setReferencedDocumentExists(docRefData.getReferencedDocumentId() != null);
+            docRefInfo.setReferenceUrlPath(docRefData.getReferenceUrlPath());
+            docRefInfo.setSharingEnabled(docRefData.isSharingEnabled());
+            resourceRO.setDocumentReferenceInfo(docRefInfo);
+            if (StringUtils.isNotBlank(docRefData.getReferenceUrlPath()) && docRefData.getReferencedDocumentId() == null) {
+                resourceRO.setStatus(EntityROStatus.ERROR.getStatusNumber());
+                String currentLocale = LocaleUtils.getCurrentLocale();
+                resourceRO.setStatusMessage(this.smpExceptionLanguageService
+                        .getMessageTranslation(ErrorMessageType.UI_RESOURCE_INVALID_REFERENCE.getMessageCode(), currentLocale)
+                );
+            }
+        }
+        return resourceRO;
     }
 }

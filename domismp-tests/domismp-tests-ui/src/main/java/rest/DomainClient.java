@@ -2,6 +2,7 @@ package rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.sun.jersey.api.client.ClientResponse;
 import ddsl.enums.ResourceTypes;
 import org.json.JSONObject;
@@ -96,4 +97,20 @@ public class DomainClient extends BaseRestClient {
         LOG.debug("Group have been added!");
         return response.getEntity(GroupModel.class);
     }
+
+    public GroupModel updateGroupForDomain(DomainModel domainModel, GroupModel groupToBeUpdated) {
+        String updateDomainPath = RestServicePaths.getUpdateGroupPath(TestRunData.getInstance().getUserId(), domainModel.getDomainId(), groupToBeUpdated.getGroupId());
+        ClientResponse response = requestPOST(resource.path(updateDomainPath), new Gson().toJson(groupToBeUpdated));
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not update group!", response.getStatus(), response.getEntity(String.class));
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        LOG.debug("Group " + groupToBeUpdated.getGroupName() + " has been updated!");
+        return response.getEntity(GroupModel.class);
+    }
+
+
 }

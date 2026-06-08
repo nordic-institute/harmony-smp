@@ -18,31 +18,38 @@
  */
 package eu.europa.ec.edelivery.smp.auth;
 
+import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMPExceptionLanguageService;
+import eu.europa.ec.edelivery.smp.services.SMPLanguageResourceService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
-
 
 class SMPAuthorizationServiceTest {
 
@@ -55,14 +62,19 @@ class SMPAuthorizationServiceTest {
     DomainMemberDao domainMemberDao = Mockito.mock(DomainMemberDao.class);
     GroupMemberDao groupMemberDao = Mockito.mock(GroupMemberDao.class);
     ResourceMemberDao resourceMemberDao = Mockito.mock(ResourceMemberDao.class);
+    CredentialDao credentialDao = Mockito.mock(CredentialDao.class);
+    File localeFolder = new File("target/locales");
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    SMPLanguageResourceService smpLanguageResourceService = new SMPLanguageResourceService(configurationService, resourcePatternResolver);
+    SMPExceptionLanguageService smpExceptionLanguageService = new SMPExceptionLanguageService(smpLanguageResourceService);
 
-    SMPAuthorizationService testInstance = new SMPAuthorizationService(userDao, domainMemberDao, groupMemberDao, resourceMemberDao, conversionService,
-            configurationService);
-
+    SMPAuthorizationService testInstance = new SMPAuthorizationService(userDao, domainMemberDao, groupMemberDao, resourceMemberDao, credentialDao, conversionService,
+            configurationService, smpExceptionLanguageService);
 
     @BeforeEach
     public void setup() {
-
+        Mockito.when(credentialDao.findUsernamePasswordCredentialForUserIdAndUI(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
         user = new UserRO();
         SMPUserDetails sysUserDetails = new SMPUserDetails(new DBUser() {{
             setId(10L);
@@ -97,6 +109,7 @@ class SMPAuthorizationServiceTest {
             }
         };
 
+        Mockito.when(configurationService.getLocaleFolder()).thenReturn(localeFolder);
     }
 
     @Test
@@ -197,6 +210,39 @@ class SMPAuthorizationServiceTest {
 
         assertFalse(user.isForceChangeExpiredPassword());
         assertTrue(user.isPasswordExpired());
+    }
+
+    @Test
+    void refreshSessionCredentialChangedOnUsesPersistedCredentialTimestamp() {
+        OffsetDateTime dbTimestamp = OffsetDateTime.now().plusSeconds(5);
+        SMPUserDetails userDetails = new SMPUserDetails(new DBUser() {{
+            setId(20L);
+            setUsername("user1");
+        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_USER));
+        DBCredential dbCredential = new DBCredential();
+        dbCredential.setChangedOn(dbTimestamp);
+        Mockito.when(credentialDao.findUsernamePasswordCredentialForUserIdAndUI(20L))
+                .thenReturn(Optional.of(dbCredential));
+
+        testInstance.refreshSessionCredentialChangedOn(userDetails);
+
+        assertEquals(dbTimestamp, userDetails.getCredentialChangedOn());
+    }
+
+    @Test
+    void refreshSessionCredentialChangedOnKeepsCurrentValueWhenCredentialIsMissing() {
+        OffsetDateTime currentTimestamp = OffsetDateTime.now();
+        SMPUserDetails userDetails = new SMPUserDetails(new DBUser() {{
+            setId(21L);
+            setUsername("user2");
+        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_USER));
+        userDetails.setCredentialChangedOn(currentTimestamp);
+        Mockito.when(credentialDao.findUsernamePasswordCredentialForUserIdAndUI(21L))
+                .thenReturn(Optional.empty());
+
+        testInstance.refreshSessionCredentialChangedOn(userDetails);
+
+        assertEquals(currentTimestamp, userDetails.getCredentialChangedOn());
     }
 
 }

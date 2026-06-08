@@ -34,11 +34,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -92,7 +92,7 @@ public class SMPSecurityExceptionHandler extends BasicAuthenticationEntryPoint i
                 .build();
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
-        String logMsg = errorUniqueId == null ? "Null Error ID" : format("UI Error unique ID: %s", errorUniqueId);
+        String logMsg = errorUniqueId == null ? "Null Error ID" : format("WS Error unique ID: %s", errorUniqueId);
         LOG.warn("Security error:[{}] with [{}].", errorMsg, logMsg);
         LOG.debug(logMsg, exception);
         return response;
@@ -118,7 +118,10 @@ public class SMPSecurityExceptionHandler extends BasicAuthenticationEntryPoint i
     protected boolean isUITRestRequest(HttpServletRequest request){
         String contextPath = request!=null?request.getRequestURI():null;
         boolean result  = StringUtils.isNotBlank(contextPath)
-                && StringUtils.containsAny(contextPath, ResourceConstants.CONTEXT_PATH_PUBLIC,ResourceConstants.CONTEXT_PATH_INTERNAL);
+                && StringUtils.containsAny(contextPath,
+                    ResourceConstants.CONTEXT_PATH_PUBLIC,
+                    ResourceConstants.CONTEXT_PATH_EDIT,
+                    ResourceConstants.CONTEXT_PATH_INTERNAL);
         LOG.debug("Context path: [{}] is UI rest request: [{}]", contextPath, result);
         return result;
     }
