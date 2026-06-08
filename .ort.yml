@@ -13,6 +13,10 @@ excludes:
       reason: "OPTIONAL_COMPONENT_OF"
       comment: "Not included in distributed build artifacts."
 
+    - pattern: "smp-soapui-tests/**"
+      reason: "TEST_OF"
+      comment: "This directory contains tests."
+
     - pattern: "smp-wls-deploy/**"
       reason: "OPTIONAL_COMPONENT_OF"
       comment: "Not included in distributed build artifacts."
@@ -21,7 +25,7 @@ excludes:
       reason: "DOCUMENTATION_OF"
       comment: "The file is a oss review toolkit configuration file."
 
-    - pattern: "license/third-party-licenses/**"
+    - pattern: "license/**"
       reason: "DOCUMENTATION_OF"
       comment: "Contains only text files of different third-party licenses."
 
