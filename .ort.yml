@@ -198,6 +198,30 @@ resolutions:
       reason: "LICENSE_ACQUIRED_EXCEPTION"
       comment: "The declared license is actually EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0 OR BSD-3-Clause."
 
+curations:
+  license_findings:
+    - path: ".ort.yml"
+      concluded_license: "EUPL-1.2"
+      reason: "REFERENCE"
+      comment: "This is a configuration file. The file is not itself licensed under the text it contains."
+    - path: "pom.xml"
+      concluded_license: "EUPL-1.2"
+      reason: "REFERENCE"
+      comment: "This is a configuration file. The file is not itself licensed under the text it contains."
+    - path: "smp-angular/package-lock.json"
+      concluded_license: "EUPL-1.2"
+      reason: "REFERENCE"
+      comment: "This is a configuration file. The file is not itself licensed under the text it contains."
+    - path: "license/third-party-licenses/GPL-2.0-or-later.txt"
+      concluded_license: "NONE"
+      reason: "REFERENCE"
+      comment: "Reference licence-text file held for third-party attribution; the file is not itself licensed under the text it contains."
+    - path: "Notice.md"
+      detected_license: "GPL-2.0-only"
+      concluded_license: "NONE"
+      reason: "REFERENCE"
+      comment: "The bare GPL-2.0-only at lines 787-890 is the embedded GPLv2 text supplied for com.mysql:mysql-connector-j:9.5.0, not a grant covering this file."
+      
 license_choices:
   repository_license_choices:
     - given: "EPL-1.0 OR LGPL-2.1-or-later OR GPL-2.0-or-later OR Apache-2.0 OR BSD-2-Clause"
