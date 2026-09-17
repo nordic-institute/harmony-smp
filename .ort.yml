@@ -101,9 +101,6 @@ resolutions:
     - message: ".*GPL-2.0-only WITH LicenseRef-scancode-mysql-linking-exception-2018.*"
       reason: "LICENSE_ACQUIRED_EXCEPTION"
       comment: "GPL-2.0-only with LicenseRef-scancode-mysql-linking-exception-2018. The exception allows for compatible linking with other FOSS projects."
-    - message: ".*Maven:org.niis:harmonysmp-modules:2.*"
-      reason: "LICENSE_ACQUIRED_EXCEPTION"
-      comment: "Problematic files contain lists of different third-party licenses."
     - message: "copyleft-LGPL license LGPL-2.1-or-later in Maven:org.niis:.*"
       reason: "LICENSE_ACQUIRED_EXCEPTION"
       comment: "The package's main license is EUPL-1.2, and LGPL-2.1 is compatible with the main license."
@@ -114,6 +111,9 @@ resolutions:
       reason: "LICENSE_ACQUIRED_EXCEPTION"
       comment: "License notice file."
     - message: "copyleft-LGPL license LGPL-2.1-only in Maven:org.niis:harmonysmp:.*"
+      reason: "LICENSE_ACQUIRED_EXCEPTION"
+      comment: "The package's main license is EUPL-1.2, and LGPL-2.1 is compatible with the main license."
+    - message: "copyleft-LGPL license LGPL-2.1-only in Maven:org.niis:harmonysmp-modules:.*"
       reason: "LICENSE_ACQUIRED_EXCEPTION"
       comment: "The package's main license is EUPL-1.2, and LGPL-2.1 is compatible with the main license."
     - message: "copyleft-LGPL license LGPL-2.1-or-later in Maven:org.niis:harmonysmp-modules:.*"
@@ -221,7 +221,7 @@ curations:
       concluded_license: "NONE"
       reason: "REFERENCE"
       comment: "The bare GPL-2.0-only at lines 787-890 is the embedded GPLv2 text supplied for com.mysql:mysql-connector-j:9.5.0, not a grant covering this file."
-      
+
 license_choices:
   repository_license_choices:
     - given: "EPL-1.0 OR LGPL-2.1-or-later OR GPL-2.0-or-later OR Apache-2.0 OR BSD-2-Clause"
