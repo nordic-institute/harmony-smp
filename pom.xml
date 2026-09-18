@@ -48,7 +48,7 @@ See the Licence for the specific language governing permissions and limitations 
         <maven.compiler.source>17</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <edelivery.ssl-auth.version>2.1</edelivery.ssl-auth.version>
-        <dynamic-discovery-client.version>3.1-SNAPSHOT</dynamic-discovery-client.version>
+        <dynamic-discovery-client.version>3.1</dynamic-discovery-client.version>
         <edelivery-vault.version>2.1</edelivery-vault.version>
         <bdmsl-api.version>5.0</bdmsl-api.version>
         <!-- plugin versions -->
@@ -73,7 +73,7 @@ See the Licence for the specific language governing permissions and limitations 
 
         <aspectj.version>1.9.25</aspectj.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-collections.version>20040616</commons-collections.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-io.version>2.21.0</commons-io.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
