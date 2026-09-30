@@ -7076,6 +7076,8 @@ purpose. It is provided "as is" without express or implied warranty.
 
 ----
 
+Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans)
+
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
 -----------------------------------------------------------
